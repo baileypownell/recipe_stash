@@ -1,0 +1,40 @@
+
+@import '../../scss/main.scss';
+
+#home {
+  min-height: 100vh;
+  padding: 0 5vw;
+  background-image: url("../../images/cutting_vegetables.jpg");
+  background-size:cover;
+  background-position: center;
+  text-align: center;
+  .flex {
+    padding-top: 15vh;
+    @include flexRow;
+    img {
+      height: 50px;
+      margin-right: 10px;
+    }
+    h1 {
+      font-family: 'Lancelot', cursive;
+      font-size: 40px;
+    }
+  }
+  h2 {
+    color: white;
+  }
+  .blurbs {
+    padding-top: 5vh;
+  //  text-align: right;
+    h2 {
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 30px;
+    }
+  }
+  button {
+    @include button;
+    background-color: #292828;
+    color: white;
+    border: 2px solid darken(#F00, 15%);
+  }
+}

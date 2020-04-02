@@ -1,0 +1,23 @@
+
+@import '../../scss/main.scss';
+
+nav {
+  @include flexRow;
+  background-color: #292828;
+  justify-content: space-between;
+  align-items: center;
+  img {
+    height: 55px;
+    margin: 10px;
+  }
+  div {
+    padding-right: 10px;
+    a {
+      font-family: 'Didact Gothic', sans-serif;
+      color: white;
+      padding-left: 15px;
+      text-decoration: none;
+      font-size: 20px;
+    }
+  }
+}

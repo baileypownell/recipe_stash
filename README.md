@@ -12,3 +12,6 @@ And the answer isn't pinning recipes on a website that may not even exist in 20 
 This is what this web app will do.
 
 ### (It's a work in progress).
+
+
+![homepage](src/images/mobileView.PNG)
