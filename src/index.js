@@ -21,7 +21,8 @@ import {
 //
 // import CreateAccount from './components/CreateAccount/CreateAccount';
  import Home from './components/Home/Home';
-// import LogIn from './components/LogIn/LogIn';
+ import Login from './components/Login/Login';
+ import Signup from './components/Signup/Signup';
 // import Program from './components/Program/Program';
 // import LogInOrSignUp from './components/LogInOrSignUp/LogInOrSignUp';
 //
@@ -45,6 +46,8 @@ ReactDOM.render(
     <Nav />
     <Switch>
       <Route exact={true} path="/" component={Home}/>
+      <Route path="/login" component={Login}/>
+      <Route path="/signup" component={Signup}/>
       <Redirect to="/" />
     </Switch>
   </BrowserRouter>,

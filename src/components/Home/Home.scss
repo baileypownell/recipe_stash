@@ -21,7 +21,7 @@
     }
   }
   h2 {
-    color: white;
+    color: $white;
   }
   .blurbs {
     padding-top: 5vh;
@@ -33,8 +33,12 @@
   }
   button {
     @include button;
-    background-color: #292828;
-    color: white;
-    border: 2px solid darken(#F00, 15%);
+    background-color: $secondary;
+    color: $white;
+    border: 2px solid $primary;
+    &:hover {
+      color:  $secondary;
+      background-color: $white;
+    }
   }
 }

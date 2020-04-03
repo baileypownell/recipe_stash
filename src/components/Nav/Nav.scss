@@ -3,7 +3,7 @@
 
 nav {
   @include flexRow;
-  background-color: #292828;
+  background-color: $secondary;
   justify-content: space-between;
   align-items: center;
   img {
@@ -14,10 +14,19 @@ nav {
     padding-right: 10px;
     a {
       font-family: 'Didact Gothic', sans-serif;
-      color: white;
-      padding-left: 15px;
+      color: $white;
+      padding: 15px;
+      margin-left: 5px;
       text-decoration: none;
       font-size: 20px;
+      border-radius: 15px;
+      &:hover {
+        //color: $secondary;
+        background-color: $green;
+      }
     }
+  }
+  .active {
+    background-color: $green;
   }
 }
