@@ -23,7 +23,7 @@ import {
  import Home from './components/Home/Home';
  import Login from './components/Login/Login';
  import Signup from './components/Signup/Signup';
-// import Program from './components/Program/Program';
+ import Dashboard from './components/Dashboard/Dashboard';
 // import LogInOrSignUp from './components/LogInOrSignUp/LogInOrSignUp';
 //
 // import './scss/main.scss';
@@ -48,6 +48,7 @@ ReactDOM.render(
       <Route exact={true} path="/" component={Home}/>
       <Route path="/login" component={Login}/>
       <Route path="/signup" component={Signup}/>
+      <Route path="/dashboard" component={Dashboard}/>
       <Redirect to="/" />
     </Switch>
   </BrowserRouter>,
