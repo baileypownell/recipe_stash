@@ -1,27 +1,20 @@
 const express = require('express');
+//const { createProxyMiddleware } = require('http-proxy-middleware');
 const bodyParser = require('body-parser');
 var cors = require('cors');
+
 const app = express();
-const routes = require('./routes')
+const routes = require('./routes');
+
 // middleware
 app.use(cors());
+//app.use('/api', createProxyMiddleware({ target: 'http://localhost:3000', changeOrigin: true }));
 app.use(bodyParser.json());
 app.use('/', routes);
 
 app.use((err, req, res, next) => {
   res.json(err);
-})
-
-app.get('/api/customers', (req, res) => {
-  const customers = [
-    {id: 1, firstName: 'John', lastName: 'Doe'},
-    {id: 2, firstName: 'Brad', lastName: 'Traversy'},
-    {id: 3, firstName: 'Mary', lastName: 'Swanson'},
-  ];
-
-  res.json(customers);
 });
-
 
 const port = 3000;
 

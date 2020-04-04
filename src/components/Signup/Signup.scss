@@ -3,3 +3,8 @@
 .auth {
   @include auth;
 }
+
+.disabled {
+  opacity: .8;
+  cursor: default;
+}

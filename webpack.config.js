@@ -37,6 +37,10 @@ module.exports = {
      contentBase: __dirname,
      hot: true,
      historyApiFallback: true,
-     proxy: '/api': 'http://localhost:3000'
- }
+     open: true
+    //  proxy: {
+    //   '/api': 'http://localhost:3000',
+    //   changeOrigin: true
+    // }
+  }
 };

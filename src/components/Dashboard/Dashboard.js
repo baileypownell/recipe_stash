@@ -11,25 +11,23 @@ class Home extends React.Component {
 
 componentDidMount() {
   // fails:
-  axios.get('/api/users', {
-      headers: { 'Content-Type': 'application/json' }
-    })
-  .then((response) => {
-    console.log(response)
-  })
-  .catch((err) => {
-    console.log(err);
-    console.log(err.response)
-  })
-
-  // works fine:
-  // axios.get('http://localhost:2020/users')
+  // axios.get('/users')
   // .then((response) => {
   //   console.log(response)
   // })
   // .catch((err) => {
-  //   console.log(err)
+  //   console.log(err);
+  //   console.log(err.response)
   // })
+
+  // works fine:
+  axios.get('http://localhost:3000/users')
+  .then((response) => {
+    console.log(response)
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 }
 
   render() {
