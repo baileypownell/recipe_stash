@@ -1,0 +1,66 @@
+
+@import '../../scss/mixins.scss';
+
+.dashboard {
+  width: 90%;
+  margin: 0 auto;
+  padding: 5vw;
+  .recipeBox {
+    @include flexRow;
+    justify-content: center;
+    #addRecipe {
+      width: 150px;
+      height: 150px;
+      background-color: lighten($primary-transparent, 20%);
+      background-image: url('../../images/pizza.jpg');
+      background-blend-mode: overlay;
+      background-size: cover;
+      background-position: center;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      color: 	$primary;
+      @include flexColumn;
+      justify-content: center;
+      align-items: center;
+      border-radius: 20px;
+      border: 2px solid $primary;
+      cursor: pointer;
+      transition: background-color .5s;
+      &:hover {
+        background-color: $primary-transparent;
+        i {
+          color: $white;
+          transform: scale(1.15);
+        }
+      }
+      > i {
+        font-size: 50px;
+        transition: all .4s;
+        // &:hover {
+        //   color: $white;
+        // }
+      }
+    }
+    .recipeCard {
+      width: 150px;
+      height: 150px;
+      background-color: $primary;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      font-family: 'Didact Gothic', sans-serif;
+      color: $white;
+      @include flexColumn;
+      justify-content: center;
+      align-items: center;
+      border-radius: 20px;
+      flex-grow: 1;
+      cursor: pointer;
+    }
+  }
+  h1 {
+    font-family: 'Lancelot', cursive;
+  }
+  h2 {
+    font-family: 'Didact Gothic', sans-serif;
+  }
+}

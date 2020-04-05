@@ -4,7 +4,6 @@ const pool = require('../db');
 const router = Router();
 
 router.get('/', (request, response, next) => {
-  console.log('the users endpoint was hit')
   pool.query('SELECT * FROM users', (err, res) => {
     if (err) return next(err);
     response.json(res.rows)

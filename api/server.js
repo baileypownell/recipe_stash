@@ -1,5 +1,8 @@
+// const dotenv = require('dotenv');
+// dotenv.config();
+
+
 const express = require('express');
-//const { createProxyMiddleware } = require('http-proxy-middleware');
 const bodyParser = require('body-parser');
 var cors = require('cors');
 
@@ -8,9 +11,27 @@ const routes = require('./routes');
 
 // middleware
 app.use(cors());
-//app.use('/api', createProxyMiddleware({ target: 'http://localhost:3000', changeOrigin: true }));
 app.use(bodyParser.json());
 app.use('/', routes);
+
+// const passport = require('passport');
+// const passportJWT = require('passport-jwt');
+// const JwtStrategy = passportJWT.Strategy;
+// const ExtractJwt = passportJWT.ExtractJwt;
+//
+// const opts = {
+//   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+//   secretOrKey: process.env.SECRET_OR_KEY
+// }
+//
+// const strategy = new JwtStrategy(opts, (payload, next) => {
+//   const user = null;
+//   next(null, user);
+// });
+// passport.use(strategy);
+// app.use(passport.initialize());
+app.use(express.json())
+
 
 app.use((err, req, res, next) => {
   res.json(err);
@@ -22,6 +43,4 @@ app.listen(port, () => {
    console.log(`listening on port ${port}`)
  });
 
-
-// export app so www file can access it
 module.exports = app;

@@ -17,7 +17,8 @@ class Signup extends React.Component {
     confirmPasswordMessage: false,
     insufficientPasswordMessage: false,
     formValid: false,
-    loading: false
+    loading: false,
+    submissionError: ''
   }
 
   signup = (e) => {
@@ -25,23 +26,34 @@ class Signup extends React.Component {
     this.setState({
       loading: true
     })
-    // hash passowrd before sending
-    let hashedPassword = bcrypt.hashSync(this.state.password, 10);
-
-    axios.post(`${process.env.API_URL}/signup`, {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      password: hashedPassword,
-      email: this.state.email
-    })
+    // make sure user doesn't already exist in the DB
+    axios.get(`${process.env.API_URL}/userByEmail/${this.state.email}`)
     .then(res => {
-      console.log(res);
-      // redirect to /dashboard
-      this.props.history.push('/dashboard')
+      if (res.data.rowCount > 0) {
+        this.setState({
+          submissionError: 'An account already exists for this email.',
+          loading: false
+        })
+        return;
+      } else {
+        // hash password before sending
+        let hashedPassword = bcrypt.hashSync(this.state.password, 10);
+        axios.post(`${process.env.API_URL}/signup`, {
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          password: hashedPassword,
+          email: this.state.email
+        })
+        .then(res => {
+          // redirect to /dashboard
+          this.props.history.push('/dashboard')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      }
     })
-    .catch((err) => {
-      console.log(err)
-    })
+    .catch(err => console.log(err))
   }
 
   checkFormValidation = () => {
@@ -60,10 +72,17 @@ class Signup extends React.Component {
   }
 
   updateInput = (e) => {
+    console.log(e.target.id === 'email')
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkFormValidation()
     );
+    // remove email error if it exists
+    if (e.target.id === 'email' && this.state.submissionError === 'An account already exists for this email.') {
+      this.setState({
+        submissionError: ''
+      })
+    }
   }
 
   validatePassword = (e) => {
@@ -128,14 +147,15 @@ class Signup extends React.Component {
           <label>
             Password
             <input onChange={this.validatePassword} id="password" type="password" name="password" />
-            {this.state.insufficientPasswordMessage ? 'Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.' : null}
+            {this.state.insufficientPasswordMessage ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
           </label>
           <label>
             Confirm Password
             <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
-            {this.state.confirmPasswordMessage ? 'Passwords must match.' : null}
+            {this.state.confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
           </label>
           <button
+            disabled={!this.state.formValid}
             className={this.state.formValid ? 'enabled' : 'disabled'}>
             {this.state.loading?
               <ClipLoader
@@ -146,6 +166,10 @@ class Signup extends React.Component {
               />
           : 'Submit'}
           </button>
+          {this.state.submissionError.length > 0 ?
+            <p className="error">{this.state.submissionError}</p>
+              : null
+          }
         </form>
       </div>
     )

@@ -26,7 +26,7 @@ import {
  import Dashboard from './components/Dashboard/Dashboard';
 // import LogInOrSignUp from './components/LogInOrSignUp/LogInOrSignUp';
 //
-// import './scss/main.scss';
+ import './scss/main.scss';
 //
 // const persistConfig = {
 //   key: 'root',
