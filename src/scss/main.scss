@@ -82,10 +82,12 @@ $white: #FFFFFF;
         margin: 20px auto;
         background-color: $green;
         color: $white;
-        &:hover {
-          color: $green;
-          background-color: $white;
-        }
+        transition: transform .4s;
+        // &:hover {
+        //   transform: scale(1.08);
+        //   -webkit-transform: scale(1.08);
+        //   -ms-transform: scale(1.08);
+        // }
       }
     }
 }

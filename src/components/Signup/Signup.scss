@@ -6,5 +6,14 @@
 
 .disabled {
   opacity: .8;
-  cursor: default;
+  cursor: default!important;
+  transition: none!important;
+}
+
+.enabled {
+  &:hover {
+    transform: scale(1.08);
+    -webkit-transform: scale(1.08);
+    -ms-transform: scale(1.08);
+  }
 }
