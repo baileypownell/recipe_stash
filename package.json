@@ -38,7 +38,9 @@
     "react-router-redux": "^4.0.8",
     "react-spinners": "^0.8.1",
     "reactdom": "^2.0.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "redux-devtools": "^3.5.0",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

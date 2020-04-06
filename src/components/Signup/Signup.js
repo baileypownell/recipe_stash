@@ -72,7 +72,6 @@ class Signup extends React.Component {
   }
 
   updateInput = (e) => {
-    console.log(e.target.id === 'email')
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkFormValidation()

@@ -3,13 +3,14 @@ const pool = require('../db');
 
 const router = Router();
 
-router.get('/', (request, response, next) => {
-  // pool.query('SELECT * FROM users', (err, res) => {
-  //   if (err) return next(err);
-  //   response.json(res.rows)
-  // });
-  console.log('you hit the recipes endpoint!');
-  response.json({recipe: 'Baklava'})
+router.get('/:id', (request, response, next) => {
+  const { id } = request.params;
+  pool.query('SELECT * FROM recipes WHERE user_id=$1',
+  [id],
+   (err, res) => {
+    if (err) return next(err);
+    response.json(res.rows)
+  });
 });
 
 module.exports = router;

@@ -4,14 +4,19 @@
 
 #home {
   min-height: 100vh;
-  padding: 0 5vw;
-  background-image: url("../../images/cutting_vegetables.jpg");
-  background-size:cover;
-  background-position: center;
-  text-align: center;
+  position:relative;
+  #picture {
+    background-image: url("../../images/cutting_vegetables.jpg");
+    background-color: $green-transparent;
+    background-blend-mode: multiply;
+    background-size:cover;
+    background-position: center;
+    min-height: 75vh;
+  }
   .flex {
-    padding-top: 15vh;
+    padding-top: 5vh;
     @include flexRow;
+    justify-content: center;
     img {
       height: 50px;
       margin-right: 10px;
@@ -23,12 +28,13 @@
   }
   h2 {
     color: $white;
+    font-family: 'Didact Gothic', sans-serif;
   }
   .blurbs {
     padding-top: 5vh;
-  //  text-align: right;
+    text-align: right;
+    padding: 5vw;
     h2 {
-      font-family: 'Didact Gothic', sans-serif;
       font-size: 30px;
     }
   }
@@ -36,10 +42,46 @@
     @include button;
     background-color: $secondary;
     color: $white;
-    border: 2px solid $primary;
+    border: 2px solid $white;
     &:hover {
       color:  $secondary;
       background-color: $white;
     }
+  }
+  #skew {
+    height: 65vh;
+    width: 100vw;
+    background: linear-gradient(120deg, $primary, $orange);
+    padding: 10vw 5vw;
+    // transform: skewY(8deg);
+    // transform-origin: top left;
+    #button_parent {
+      text-align: right
+    }
+      position: absolute;
+      top: 40vh;
+      clip-path: polygon(
+      0 0, 100% 24%, 100% 100%, 0 100%
+    );
+    > img {
+      width: 120px;
+      margin: 5vw;
+      animation-name: rotate;
+      animation-duration: 3s;
+      animation-iteration-count: infinite;
+    }
+    h1, h2 {
+      text-align: right;
+    }
+    h1 {
+      color: $white;
+      font-family: 'Didact Gothic', sans-serif;
+      font-size: 40px;
+    }
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0deg)}
+    50% {transform: rotate(10deg)}
+    100% {transform: rotate(0deg)}
   }
 }

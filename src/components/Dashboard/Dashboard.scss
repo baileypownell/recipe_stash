@@ -1,16 +1,40 @@
 
 @import '../../scss/mixins.scss';
 
+.dashboardTitle {
+  background-color: $green;
+  color: $white;
+  font-family: 'Didact Gothic', sans-serif;
+  padding: 5vw!important;
+}
+
 .dashboard {
-  width: 90%;
+  width: 80%;
   margin: 0 auto;
-  padding: 5vw;
   .recipeBox {
     @include flexRow;
     justify-content: center;
-    #addRecipe {
-      width: 150px;
-      height: 150px;
+    #Breakfast {
+      background-image: url('../../images/french_toast.jpg');
+    }
+    #lunch {
+      background-image: url('../../images/lunch.jpg');
+    }
+    #side {
+      background-image: url('../../images/asparagus.jpg');
+    }
+    #drinks {
+      background-image: url('../../images/drinks.jpg');
+    }
+    #dessert {
+      background-image: url('../../images/dessert.jpg');
+    }
+    #other {
+      background-image: url('../../images/bread.jpg');
+    }
+    .addRecipe {
+      width: 120px;
+      height: 120px;
       background-color: lighten($primary-transparent, 20%);
       background-image: url('../../images/pizza.jpg');
       background-blend-mode: overlay;
@@ -25,15 +49,16 @@
       border-radius: 20px;
       border: 2px solid $primary;
       cursor: pointer;
+      flex-grow: 1;
       transition: background-color .5s;
       &:hover {
         background-color: $primary-transparent;
         i {
-          color: $white;
           transform: scale(1.15);
         }
       }
       > i {
+        color: $white;
         font-size: 50px;
         transition: all .4s;
         // &:hover {
@@ -42,8 +67,8 @@
       }
     }
     .recipeCard {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       background-color: $primary;
       margin-right: 10px;
       margin-bottom: 10px;
@@ -57,10 +82,7 @@
       cursor: pointer;
     }
   }
-  h1 {
-    font-family: 'Lancelot', cursive;
-  }
-  h2 {
+  h1, h2, h3 {
     font-family: 'Didact Gothic', sans-serif;
   }
 }

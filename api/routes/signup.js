@@ -13,17 +13,22 @@ router.post('/', (request, response, next) => {
   pool.query('INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
   [firstName, lastName, password, email],
    (err, res) => {
-    if (err) console(err);
+    if (err) return next(err);
+    if (res) {
+      if (res.rowCount === 1) {
+        return response.json({success: true})
+      }
+    } else {
+      return response.json({success: false, message: 'could not insert into DB'})
+    }
   });
-  // authenticate with JWT
-
-  const user = {
-    first_name: firstName,
-    last_name: lastName
-  };
-  let accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-
-  response.json({ accessToken: accessToken})
+  // // authenticate with JWT
+  // const user = {
+  //   first_name: firstName,
+  //   last_name: lastName
+  // };
+  // let accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+  // response.json({ accessToken: accessToken})
 })
 
 module.exports = router;

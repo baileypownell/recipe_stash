@@ -13,6 +13,12 @@
     margin-top: 10px;
     width: 70%;
   }
+
+  .dashboard .recipeCard,
+  .dashboard .addRecipe {
+    width: 250px;
+    height: 250px;
+  }
 }
 
 @media only screen and (min-width: 1000px) {
