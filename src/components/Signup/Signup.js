@@ -1,7 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import './Signup.scss';
-
+import { connect } from 'react-redux';
+import * as actions from '../../store/actionCreators';
 const axios = require('axios');
 var bcrypt = require('bcryptjs');
 import ClipLoader from "react-spinners/ClipLoader";
@@ -45,6 +46,8 @@ class Signup extends React.Component {
           email: this.state.email
         })
         .then(res => {
+          // update Redux
+          this.props.login(this.state.email)
           // redirect to /dashboard
           this.props.history.push('/dashboard')
         })
@@ -175,4 +178,10 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+const mapDispatchToProps = dispatch => {
+  return {
+    login: (email) => dispatch(actions.login(email))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Signup);

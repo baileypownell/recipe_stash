@@ -8,10 +8,10 @@
   #picture {
     background-image: url("../../images/cutting_vegetables.jpg");
     background-color: $green-transparent;
-    background-blend-mode: multiply;
+    background-blend-mode: overlay;
     background-size:cover;
     background-position: center;
-    min-height: 75vh;
+    min-height: 65vh;
   }
   .flex {
     padding-top: 5vh;
@@ -31,9 +31,8 @@
     font-family: 'Didact Gothic', sans-serif;
   }
   .blurbs {
-    padding-top: 5vh;
     text-align: right;
-    padding: 5vw;
+    padding: 3vw 10vw;
     h2 {
       font-size: 30px;
     }
@@ -52,20 +51,32 @@
     height: 65vh;
     width: 100vw;
     background: linear-gradient(120deg, $primary, $orange);
-    padding: 10vw 5vw;
+    padding: 10vw;
     // transform: skewY(8deg);
     // transform-origin: top left;
+    > div {
+      padding-top: 10vw;
+    }
+    @include desktop {
+      height: 60vh;
+      display:flex;
+      justify-content: space-between;
+      > div {
+        padding: 0;
+        @include flexColumn;
+        justify-content: flex-end;
+      }
+    }
     #button_parent {
       text-align: right
     }
       position: absolute;
       top: 40vh;
       clip-path: polygon(
-      0 0, 100% 24%, 100% 100%, 0 100%
+      0 0, 100% 34%, 100% 100%, 0 100%
     );
     > img {
       width: 120px;
-      margin: 5vw;
       animation-name: rotate;
       animation-duration: 3s;
       animation-iteration-count: infinite;

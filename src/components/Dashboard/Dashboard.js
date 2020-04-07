@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
 const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
 
@@ -26,7 +27,7 @@ class Dashboard extends React.Component {
       other: []
     }
     // API call to get all recipes
-    axios.get(`${process.env.API_URL}/recipes/1`)
+    axios.get(`${process.env.API_URL}/recipes/${this.props.userId}`)
     .then(res => {
       if (res) {
         res.data.forEach((recipe) => {
@@ -57,14 +58,14 @@ class Dashboard extends React.Component {
     })
   }
 
+
   render() {
-    console.log('this.state.recipes = ', this.state.recipes)
     return (
       <>
       <h1 className="Title">Recipe Box<i className="fas fa-utensils"></i></h1>
       <div className="dashboard">
         {this.state.loading_recipes ?
-          <div class="BounceLoader">
+          <div className="BounceLoader">
             <BounceLoader
               size={100}
               color={"#689943"}
@@ -116,4 +117,11 @@ class Dashboard extends React.Component {
   }
 }
 
-export default Dashboard;
+
+const mapStateToProps = state => {
+  return {
+    userId: state.user.id
+  }
+}
+
+export default connect(mapStateToProps)(Dashboard);

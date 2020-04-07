@@ -14,4 +14,4 @@ This is what this web app will do.
 ### (It's a work in progress).
 
 
-![homepage](src/images/mobileView.PNG)
+![homepage](src/images/mobileView2.PNG)

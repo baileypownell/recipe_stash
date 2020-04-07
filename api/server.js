@@ -14,6 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/', routes);
 
+
 // const passport = require('passport');
 // const passportJWT = require('passport-jwt');
 // const JwtStrategy = passportJWT.Strategy;
@@ -32,12 +33,12 @@ app.use('/', routes);
 // app.use(passport.initialize());
 app.use(express.json())
 
-
 app.use((err, req, res, next) => {
   res.json(err);
 });
 
-const port = 3000;
+const port = 3001;
+
 
 app.listen(port, () => {
    console.log(`listening on port ${port}`)

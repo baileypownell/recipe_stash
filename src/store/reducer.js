@@ -16,12 +16,7 @@ const reducer = (state = initialState, action) => {
         user: {
           ...state.user,
           email: action.email,
-        },
-        expiresIn: action.expiresIn,
-        idToken: action.idToken,
-        localId: action.localId,
-        refreshToken: action.refreshToken,
-        userLoggedIn: true
+        }
       };
     case actionTypes.SET_USER_LOGGED_OUT:
       return {
@@ -30,16 +25,8 @@ const reducer = (state = initialState, action) => {
           firstName: '',
           lastName: '',
           email: '',
-          firebaseAuthID: '',
-          weightHistory: []
         },
-        expiresIn: '',
-        idToken: '',
-        localId: '',
-        refreshToken: '',
         userLoggedIn: false,
-        todaysWeight: '',
-        error: ''
     }
     case actionTypes.DELETE_USER:
       return {

@@ -51,8 +51,9 @@ class Login extends React.Component {
         })
         .then(res => {
           if (res) {
+            console.log(res)
             // update Redux
-            this.props.login(res.email);
+            this.props.login(res.data.id, res.data.first_name, res.data.last_name, res.data.email);
             // redirect to /dashboard
             this.props.history.push('/dashboard')
           } else {
@@ -109,7 +110,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    login: (email) => dispatch(actions.login(email))
+    login: (id, firstName, lastName, email) => dispatch(actions.login(id, firstName, lastName, email))
   }
 }
 

@@ -17,7 +17,6 @@
   ],
   "author": "Bailey Pownell",
   "license": "ISC",
-  "proxy": "http://localhost:3000",
   "bugs": {
     "url": "https://github.com/baileypownell/Virtual-Cookbook/issues"
   },

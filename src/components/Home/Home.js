@@ -14,21 +14,6 @@ class Home extends React.Component {
     message: 'All of your recipes.',
     messageNum: 0
   }
-
-  // componentDidMount() {
-  //   let messages = [
-  //     'All of your recipes.',
-  //     'All in one place',
-  //     'And it\'s free'
-  //   ];
-  //   setInterval(() => {
-  //     this.setState(prevState => ({
-  //       messageNum: prevState.messageNum+1,
-  //       message: messages[prevState.messageNum+1]
-  //     }))
-  //   }, 3000)
-  // }
-
   render() {
     return (
       <div id="home">
@@ -45,10 +30,12 @@ class Home extends React.Component {
           </div>
           <div id="skew">
             <img id="whisk" src={whisk} alt="whisk" />
-            <h2>Create an acount and start saving your recipes</h2>
-            <h1>FOREVER</h1>
-            <div id="button_parent">
-              <button className="button">Start Cooking</button>
+            <div>
+              <h2>Create an acount and start saving your recipes</h2>
+              <h1>FOREVER</h1>
+              <div id="button_parent">
+                <button className="button">Start Cooking</button>
+              </div>
             </div>
           </div>
      </div>

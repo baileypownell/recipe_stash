@@ -1,0 +1,42 @@
+@import '../../scss/mixins.scss';
+
+.fa-chevron-circle-left {
+  padding-right: 10px;
+  padding-left: 0px!important;
+  cursor: pointer;
+}
+
+.recipe {
+  @include flexColumn;
+  justify-content: space-between;
+  min-height: 75vh;
+  padding: 5vw;
+  font-family: 'Didact Gothic', sans-serif;
+  h2 {
+    @include flexRow;
+    justify-content: space-between;
+  }
+  .fa-edit {
+    color: $primary;
+  }
+  #pot {
+    text-align: center;
+    padding-top: 10vh;
+    img {
+    width: 100px;
+  }
+}
+  button {
+    @include button;
+    background-color: $primary;
+    color: $white;
+  }
+}
+
+.BounceLoader {
+  @include flexColumn;
+  align-items: center;
+  height: 65vh;
+  justify-content: center;
+
+}

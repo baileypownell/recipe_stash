@@ -25,6 +25,7 @@ import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
+import Recipe from './components/Recipe/Recipe';
 import Settings from './components/Settings/Settings';
 
 import './scss/main.scss';
@@ -35,7 +36,7 @@ const initialState = {
     email: null,
     id: null
   },
-  userLoggedIn: false,
+  userLoggedIn: false
 };
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -45,60 +46,57 @@ const reducer = (state = initialState, action) => {
         user: {
           ...state.user,
           email: action.email,
+          firstName: action.firstName,
+          lastName: action.lastName,
+          id: action.id
         },
-        expiresIn: action.expiresIn,
-        idToken: action.idToken,
-        localId: action.localId,
-        refreshToken: action.refreshToken,
         userLoggedIn: true
       };
     case 'SET_USER_LOGGED_OUT':
       return {
         ...state,
         user: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          firebaseAuthID: '',
-          weightHistory: []
+          ...state.user,
+          email: null,
+          firstName: null,
+          lastName: null,
+          id: null
         },
-        expiresIn: '',
-        idToken: '',
-        localId: '',
-        refreshToken: '',
         userLoggedIn: false,
-        todaysWeight: '',
-        error: ''
+        recipe: null
     }
     default:
       return state;
   }
 };
 
-// const persistConfig = {
-//   key: 'root',
-//   storage,
-// }
-// const persistedReducer = persistReducer(persistConfig, reducer)
+const persistConfig = {
+  key: 'root',
+  storage,
+}
+const persistedReducer = persistReducer(persistConfig, reducer)
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducer, composeEnhancers());
+const store = createStore(persistedReducer, composeEnhancers());
 
-// let persistor = persistStore(store)
+let persistor = persistStore(store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter>
-      <Nav />
-      <Switch>
-        <Route exact={true} path="/" component={Home}/>
-        <Route path="/login" component={Login}/>
-        <Route path="/signup" component={Signup}/>
-        <Route path="/dashboard" component={Dashboard}/>
-        <Route path="/settings" component={Settings}/>
-        <Redirect to="/" />
-      </Switch>
-    </BrowserRouter>
+    <PersistGate loading={null} persistor={persistor}>
+      <BrowserRouter>
+        <Nav />
+        <Switch>
+          <Route exact={true} path="/" component={Home}/>
+          <Route path="/login" component={Login}/>
+          <Route path="/signup" component={Signup}/>
+          <Route path="/dashboard" exact={true} component={Dashboard}/>
+          <Route path="/recipe"  component={Recipe}/>
+          <Route path="/settings" component={Settings}/>
+          <Redirect to="/" />
+        </Switch>
+      </BrowserRouter>
+    </PersistGate>
 </Provider>,
   document.getElementById('app')
 );

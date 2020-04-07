@@ -66,6 +66,7 @@ return {
      contentBase: __dirname,
      hot: true,
      historyApiFallback: true,
+     contentBase: './',
      open: true
   }
 }

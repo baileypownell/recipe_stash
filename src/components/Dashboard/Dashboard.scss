@@ -5,7 +5,8 @@
   background-color: $green;
   color: $white;
   font-family: 'Didact Gothic', sans-serif;
-  padding: 5vw;
+  padding: 3vw;
+  font-size: 28px;
   @include tablet {
     padding: 2vw;
   }
@@ -28,6 +29,9 @@
   width: 80%;
   margin: 0 auto;
   padding: 5vw 0;
+  @include desktop {
+    padding: 2vw 0;
+  }
   .recipeBox {
     @include flexRow;
     justify-content: center;
