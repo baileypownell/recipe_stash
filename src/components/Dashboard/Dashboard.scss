@@ -1,16 +1,33 @@
 
 @import '../../scss/mixins.scss';
 
-.dashboardTitle {
+.Title {
   background-color: $green;
   color: $white;
   font-family: 'Didact Gothic', sans-serif;
-  padding: 5vw!important;
+  padding: 5vw;
+  @include tablet {
+    padding: 2vw;
+  }
+  i {
+    padding-left: 10px;
+    @include tablet {
+      padding-left: 20px;
+    }
+  }
 }
 
 .dashboard {
+  .BounceLoader {
+    @include flexColumn;
+    align-items: center;
+    height: 65vh;
+    justify-content: center;
+
+  }
   width: 80%;
   margin: 0 auto;
+  padding: 5vw 0;
   .recipeBox {
     @include flexRow;
     justify-content: center;
@@ -57,6 +74,10 @@
           transform: scale(1.15);
         }
       }
+      @include tablet {
+        width: 175px;
+        height: 100px;
+      }
       > i {
         color: $white;
         font-size: 50px;
@@ -80,6 +101,20 @@
       border-radius: 20px;
       flex-grow: 1;
       cursor: pointer;
+      transition: all .3s;
+      border: 2px solid $primary;
+      h3 {
+        padding: 10px;
+        text-align: center;
+      }
+      &:hover {
+        background-color: $white;
+        color: $primary;
+      }
+      @include tablet {
+        width: 175px;
+        height: 100px;
+      }
     }
   }
   h1, h2, h3 {

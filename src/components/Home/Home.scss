@@ -69,6 +69,9 @@
       animation-name: rotate;
       animation-duration: 3s;
       animation-iteration-count: infinite;
+      @include tablet {
+        width: 220px;
+      }
     }
     h1, h2 {
       text-align: right;

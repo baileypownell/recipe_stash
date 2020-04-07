@@ -1,5 +1,19 @@
 @import './variables.scss';
 
+// media query mixins
+
+@mixin tablet {
+  @media (min-width: 800px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 1000px) {
+    @content;
+  }
+}
+
 @mixin flexRow {
   display: flex;
   flex-wrap: wrap;
@@ -40,6 +54,10 @@
       margin: 5px auto;
       font-size: 16px;
       color: $white;
+      @include tablet {
+        margin-top: 10px;
+        width: 70%;
+      }
     }
     h1 {
       font-family: 'Lancelot', cursive;
@@ -52,6 +70,19 @@
       background: rgba(0, 0, 0, 0.5);
       padding: 5vw;
       border-radius: 30px;
+      @include tablet {
+        width: 50%;
+        padding: 2vw;
+        label {
+          font-size: 20px;
+        }
+        button {
+          width: 50%;
+        }
+      }
+      @include desktop {
+        width: 30%;
+      }
       label {
         @include flexColumn;
         padding: 5px 0;

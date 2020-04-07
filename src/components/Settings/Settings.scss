@@ -1,0 +1,17 @@
+@import '../../scss/mixins.scss';
+
+.Title {
+  background-color: $green;
+  color: $white;
+  font-family: 'Didact Gothic', sans-serif;
+  padding: 5vw;
+  @include tablet {
+    padding: 2vw;
+  }
+  i {
+    padding-left: 10px;
+    @include tablet {
+      padding-left: 20px;
+    }
+  }
+}
