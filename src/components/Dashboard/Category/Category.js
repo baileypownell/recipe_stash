@@ -1,5 +1,5 @@
 import React from 'react';
-
+import AddRecipe from './AddRecipe/AddRecipe';
 import Square from './Square/Square';
 
 const Category = (props) => {
@@ -7,9 +7,11 @@ const Category = (props) => {
       <>
         <h3>{props.title}</h3>
         <div className="recipeBox">
-          <div className="addRecipe" id={props.id} >
-            <i className="fas fa-plus-circle"></i>
-          </div>
+          <AddRecipe
+            id={props.id}
+            category={props.title}
+            updateDashboard={props.updateDashboard}
+          />
           {
               props.recipes.map((recipe) => {
               return (

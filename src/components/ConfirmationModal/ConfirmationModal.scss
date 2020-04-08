@@ -1,0 +1,20 @@
+
+@import '../../scss/mixins.scss';
+
+.modal {
+  text-align: center;
+  // > div {
+  //   @include flexRow;
+  //   justify-content: space-around;
+  // }
+  :nth-child(1) {
+    margin-right: 10px;
+  }
+}
+
+button {
+  @include button;
+  background-color: white;
+  color: $orange;
+  font-weight: bold;
+}

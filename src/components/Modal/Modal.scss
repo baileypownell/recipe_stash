@@ -1,0 +1,72 @@
+ @import '../../scss/mixins.scss';
+
+.modal {
+  background: linear-gradient(290deg, $primary, $orange);
+  position: fixed;
+  top: 0;
+  height: 100%;
+  overflow-y: hidden;
+  width: 100%;
+  padding: 10vw;
+  i {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: $white;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all .4s;
+    &:hover {
+      transform: scale(1.08)
+    }
+  }
+  h2, label {
+    color: $white;
+    font-family: 'Didact Gothic', sans-serif;
+  }
+  > div {
+    @include tablet {
+      width: 60%;
+      margin: 0 auto;
+    }
+  }
+  form {
+    @include flexColumn;
+    label {
+      @include flexColumn;
+      padding: 5px 0;
+      p {
+        margin: 0;
+        padding: 5px;
+        font-size: 18px;
+        @include tablet {
+          font-size: 22px;
+        }
+      }
+    }
+    input, select, textarea {
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      padding: 10px;
+      color: $orange;
+      font-weight: bold;
+    }
+    .tall {
+      min-height: 125px;
+    }
+    button {
+      @include button;
+      color: $orange;
+      background-color: white;
+      font-weight: 800;
+      @include tablet {
+        width: 55%;
+        margin: 1vw auto;
+      }
+      &:hover {
+        transform: scale(1.08)
+      }
+    }
+  }
+}

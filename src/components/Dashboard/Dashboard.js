@@ -15,7 +15,7 @@ class Dashboard extends React.Component {
     loading_recipes: true
   }
 
-  componentDidMount() {
+  fetchRecipes = () => {
     let recipes = {
       breakfast: [],
       lunch: [],
@@ -58,6 +58,15 @@ class Dashboard extends React.Component {
     })
   }
 
+  componentDidMount() {
+    this.fetchRecipes();
+  }
+
+  updateDashboard = () => {
+    console.log('updating the dashboard')
+    this.fetchRecipes();
+  }
+
 
   render() {
     return (
@@ -77,36 +86,43 @@ class Dashboard extends React.Component {
             title="Breakfast"
             id="breakfast"
             recipes={this.state.recipes.breakfast}
+            updateDashboard={this.updateDashboard}
           />
           <Category
             title="Lunch"
             id="lunch"
             recipes={this.state.recipes.lunch}
+            updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dinner"
             id="dinner"
             recipes={this.state.recipes.dinner}
+            updateDashboard={this.updateDashboard}
           />
           <Category
             title="Side Dishes"
             id="side"
             recipes={this.state.recipes.side_dishes}
+            updateDashboard={this.updateDashboard}
           />
           <Category
-            title="Desserts"
+            title="Dessert"
             id="dessert"
             recipes={this.state.recipes.desserts}
+            updateDashboard={this.updateDashboard}
           />
           <Category
             title="Drinks"
             id="drinks"
             recipes={this.state.recipes.drinks}
+            updateDashboard={this.updateDashboard}
             />
           <Category
             title="Other"
             id="other"
             recipes={this.state.recipes.other}
+            updateDashboard={this.updateDashboard}
             />
             </>
         }

@@ -10,11 +10,28 @@
   @include flexColumn;
   justify-content: space-between;
   min-height: 75vh;
-  padding: 5vw;
+  padding: 5vw 5vw 0 5vw;
   font-family: 'Didact Gothic', sans-serif;
+  @include tablet {
+    padding: 2vw 2vw 0 2vw;
+  }
+  @include desktop {
+    width: 50%;
+    margin: 0 auto;
+    > div {
+      @include flexRow;
+      justify-content: space-between;
+    }
+  }
   h2 {
     @include flexRow;
     justify-content: space-between;
+    @include tablet {
+      justify-content: flex-start;
+      i {
+        padding-left: 10px;
+      }
+    }
   }
   .fa-edit {
     color: $primary;
@@ -25,11 +42,28 @@
     img {
     width: 100px;
   }
+  @include tablet {
+    display: none;
+  }
 }
-  button {
-    @include button;
-    background-color: $primary;
-    color: $white;
+.bottom {
+  position: absolute;
+  bottom: 0px;
+  padding: 20px;
+  width: 90vw;
+  text-align: center;
+    button {
+      @include button;
+      background-color: $primary;
+      color: $white;
+      @include desktop {
+        margin: 0 auto;
+      }
+    }
+    @include desktop {
+      left: 0px;
+      width: 100%;
+    }
   }
 }
 
