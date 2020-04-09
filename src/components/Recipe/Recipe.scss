@@ -23,18 +23,21 @@
       justify-content: space-between;
     }
   }
+  .ingredients {
+    white-space: pre-line;
+  }
   h2 {
     @include flexRow;
     justify-content: space-between;
     @include tablet {
       justify-content: flex-start;
-      i {
-        padding-left: 10px;
-      }
     }
   }
   .fa-edit {
     color: $primary;
+    font-size: 30px;
+    position: absolute;
+    right: 20px;
   }
   #pot {
     text-align: center;

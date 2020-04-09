@@ -63,7 +63,6 @@ class Dashboard extends React.Component {
   }
 
   updateDashboard = () => {
-    console.log('updating the dashboard')
     this.fetchRecipes();
   }
 

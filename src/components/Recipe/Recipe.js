@@ -5,7 +5,7 @@ const axios = require('axios');
 import './Recipe.scss';
 import BounceLoader from "react-spinners/BounceLoader";
 import pot from '../../images/pot.svg';
-
+import Modal from '../Modal/Modal';
 import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 
 class Recipe extends React.Component {
@@ -16,18 +16,15 @@ class Recipe extends React.Component {
     directions: null,
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
     loading: null,
-    showConfirmation: false
+    showConfirmation: false,
+    showEditModal: false
   }
 
   goBack = () => {
     this.props.history.push('/dashboard')
   }
 
-  componentDidMount() {
-    this.setState({
-      loading: true
-    })
-    // get data
+  fetchData = () => {
     axios.get(`${process.env.API_URL}/specificRecipe/${this.props.userId}/${this.state.recipeId}`)
     .then(res => {
       this.setState({
@@ -42,11 +39,18 @@ class Recipe extends React.Component {
     })
   }
 
+  componentDidMount() {
+    this.setState({
+      loading: true
+    })
+    // get data
+    this.fetchData();
+  }
+
   deleteRecipe = () => {
     axios.delete(`${process.env.API_URL}/deleteRecipe/${this.state.recipeId}`)
     .then(res => {
       if (res) {
-        console.log('here')
         this.setState({
           loading: false,
           showConfirmation: false
@@ -73,9 +77,21 @@ class Recipe extends React.Component {
     })
   }
 
+  showEditModal = () => {
+    this.setState({
+      showEditModal: true
+    })
+  }
+
+  closeModal = () => {
+    this.setState({
+      showEditModal: false
+    })
+  }
+
 
   render() {
-    const { ingredients, directions, title } = this.state;
+    const { ingredients, directions, title, recipeId } = this.state;
 
     return (
       <>
@@ -91,12 +107,16 @@ class Recipe extends React.Component {
         <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{title}</h1>
         <div className="recipe">
           <div>
+            <i
+              className="fas fa-edit"
+              onClick={this.showEditModal}>
+            </i>
             <div className="ingredients">
-              <h2>Ingredients <i className="fas fa-edit"></i></h2>
+              <h2>Ingredients</h2>
               {ingredients}
             </div>
             <div className="directions">
-              <h2>Directions <i className="fas fa-edit"></i></h2>
+              <h2>Directions </h2>
               {directions}
             </div>
             <div id="pot">
@@ -114,6 +134,17 @@ class Recipe extends React.Component {
             confirmAction={this.deleteRecipe}
             closeModal={this.hideConfirmationModal}
             options={['Yes', 'No']} />
+        : null}
+        {this.state.showEditModal ?
+          <Modal
+            edit={true}
+            closeModal={this.closeModal}
+            fetchData={this.fetchData}
+            directions={directions}
+            title={title}
+            ingredients={ingredients}
+            recipeId={recipeId}
+            />
         : null}
         }
       </>

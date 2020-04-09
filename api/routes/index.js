@@ -8,6 +8,7 @@ const userByEmail = require('./userByEmail');
 const signin = require('./signin');
 const createRecipe = require('./createRecipe');
 const deleteRecipe = require('./deleteRecipe');
+const updateRecipe = require('./updateRecipe');
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/signin', signin);
 router.use('/userByEmail', userByEmail);
 router.use('/createRecipe', createRecipe);
 router.use('/deleteRecipe', deleteRecipe);
+router.use('/updateRecipe', updateRecipe);
 
 module.exports = router;

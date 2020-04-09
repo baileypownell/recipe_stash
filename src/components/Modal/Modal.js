@@ -20,6 +20,24 @@ class Modal extends React.Component {
     });
   }
 
+  componentDidMount = () => {
+    if (this.props.title) {
+      this.setState({
+        title: this.props.title
+      })
+    }
+    if (this.props.ingredients) {
+      this.setState({
+        ingredients: this.props.ingredients
+      })
+    }
+    if (this.props.directions) {
+      this.setState({
+        directions: this.props.directions
+      })
+    }
+  }
+
   createRecipe = (e) => {
     e.preventDefault();
     this.setState({
@@ -48,24 +66,76 @@ class Modal extends React.Component {
     })
   }
 
+  updateRecipe = (e) => {
+    e.preventDefault();
+    this.setState({
+      loading: true
+    });
+    axios.put(`${process.env.API_URL}/updateRecipe`, {
+      title: this.state.title,
+      ingredients: this.state.ingredients,
+      directions: this.state.directions,
+      recipeId: this.props.recipeId
+    })
+    .then(res => {
+      if (res) {
+        this.setState({
+          loading: false
+        });
+        this.props.closeModal();
+        // Update recipe details to reflect the change
+        this.props.fetchData();
+      }
+    })
+    .catch((err) => {
+      this.setState({
+        loading: false
+      })
+    })
+  }
+
   render() {
+    const { recipeId, title, ingredients, directions, edit } = this.props;
     return (
       <div className="modal">
-      <i onClick={this.props.closeModal} className="fas fa-times-circle"></i>
-        <h2>Add Recipe</h2>
+      <i
+        onClick={this.props.closeModal}
+        className="fas fa-times-circle">
+      </i>
+        <h2>{this.props.edit ? 'Edit' : 'Add'} Recipe</h2>
         <div>
-          <form onSubmit={this.createRecipe}>
+          <form onSubmit={edit ? this.updateRecipe : this.createRecipe}>
           <label>
             <p>Title</p>
-            <input type="text" id="title" onChange={this.updateInput}></input>
+            <input
+              type="text"
+              id="title"
+              onChange={this.updateInput}
+              value={this.state.title}
+              >
+            </input>
           </label>
           <label>
             <p>Ingredients</p>
-            <textarea className="tall" type="text" id="ingredients" onChange={this.updateInput}></textarea>
+            <textarea
+              className="tall"
+              type="text"
+              id="ingredients"
+              onChange={this.updateInput}
+              value={this.state.ingredients}
+              >
+            </textarea>
           </label>
           <label>
             <p>Directions</p>
-            <textarea className="tall" type="text" id="directions" onChange={this.updateInput}></textarea>
+            <textarea
+              className="tall"
+              type="text"
+              id="directions"
+              onChange={this.updateInput}
+              value={this.state.directions}
+              >
+            </textarea>
           </label>
           <button>{this.state.loading ?
             <ClipLoader
@@ -73,7 +143,7 @@ class Modal extends React.Component {
               color={"#689943"}
               loading={this.state.loading}
             /> :
-            'Create Recipe'}</button>
+            `${this.props.edit ? 'Edit' : 'Create'} Recipe`}</button>
           </form>
         </div>
       </div>
