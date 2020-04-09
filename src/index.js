@@ -91,7 +91,7 @@ ReactDOM.render(
           <Route path="/login" component={Login}/>
           <Route path="/signup" component={Signup}/>
           <Route path="/dashboard" exact={true} component={Dashboard}/>
-          <Route path="/recipe" component={Recipe}/>
+          <Route path="/dashboard/:id" component={Recipe}/>
           <Route path="/settings" component={Settings}/>
           <Redirect to="/" />
         </Switch>

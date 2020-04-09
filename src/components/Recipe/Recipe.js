@@ -107,12 +107,11 @@ class Recipe extends React.Component {
         <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{title}</h1>
         <div className="recipe">
           <div>
-            <i
-              className="fas fa-edit"
-              onClick={this.showEditModal}>
-            </i>
             <div className="ingredients">
-              <h2>Ingredients</h2>
+              <h2>Ingredients <i
+                className="fas fa-edit"
+                onClick={this.showEditModal}>
+              </i></h2>
               {ingredients}
             </div>
             <div className="directions">
@@ -146,7 +145,6 @@ class Recipe extends React.Component {
             recipeId={recipeId}
             />
         : null}
-        }
       </>
       }
       </>

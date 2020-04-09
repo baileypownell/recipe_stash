@@ -15,3 +15,69 @@
     }
   }
 }
+
+.settings {
+  width: 90%;
+  margin: 0 auto;
+  padding: 5vw 0;
+  > #profileParent {
+    @include flexRow;
+    justify-content: space-between;
+    #profile {
+      @include flexRow;
+      align-items: center;
+      i {
+        color: $green;
+        font-size: 60px;
+        padding-right: 15px;
+      }
+    }
+  }
+  h2, h3, p {
+    color: $green;
+    font-family: 'Didact Gothic', sans-serif;
+  }
+  #table {
+    padding: 5vw 0;
+  }
+  .row {
+    @include flexRow;
+    justify-content: space-between;
+    p {
+      margin: 0;
+      color: $secondary;
+    }
+    border-bottom: 1px solid $secondary;
+    padding: 8px 0;
+    button {
+      background-color: $secondary;
+      font-size: 16px;
+      padding: 10px;
+      font-weight: normal;
+      border: 2px solid $secondary;
+      &:hover {
+        color: $secondary;
+        background-color: white;
+      }
+    }
+  }
+  button {
+    margin: 0;
+    color: white;
+    background-color: $primary;
+    border: 2px solid $primary;
+    &:hover {
+      color: $primary;
+      background-color: white;
+      borer-color: $primary;
+    }
+  }
+  .buttonParent {
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    left: 0;
+    bottom: 20px;
+  }
+}

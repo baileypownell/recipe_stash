@@ -103,13 +103,9 @@
         margin: 10px auto;
         background-color: $green;
         color: $white;
-        transition: transform .4s;
+        transition: all .4s;
         width: 100%;
-        // &:hover {
-        //   transform: scale(1.08);
-        //   -webkit-transform: scale(1.08);
-        //   -ms-transform: scale(1.08);
-        // }
+        border: 2px solid $green;
       }
     }
 }

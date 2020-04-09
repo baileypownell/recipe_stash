@@ -9,7 +9,7 @@ class Square extends React.Component {
   }
 
   viewRecipe = () => {
-    this.props.history.push(`/recipe/${this.state.data.id}`);
+    this.props.history.push(`/dashboard/${this.state.data.id}`);
   }
 
   render() {

@@ -30,6 +30,12 @@ class Dashboard extends React.Component {
     axios.get(`${process.env.API_URL}/recipes/${this.props.userId}`)
     .then(res => {
       if (res) {
+        if (res.data.name === "error") {
+          this.setState({
+            loading_recipes: false
+          })
+          return;
+        }
         res.data.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
             recipes.dinner.push(recipe)
@@ -68,11 +74,14 @@ class Dashboard extends React.Component {
 
 
   render() {
+
+    const { recipes, loading_recipes } = this.state;
+
     return (
       <>
       <h1 className="Title">Recipe Box<i className="fas fa-utensils"></i></h1>
       <div className="dashboard">
-        {this.state.loading_recipes ?
+        {loading_recipes ?
           <div className="BounceLoader">
             <BounceLoader
               size={100}
@@ -84,43 +93,43 @@ class Dashboard extends React.Component {
           <Category
             title="Breakfast"
             id="breakfast"
-            recipes={this.state.recipes.breakfast}
+            recipes={recipes ? recipes.breakfast : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Lunch"
             id="lunch"
-            recipes={this.state.recipes.lunch}
+            recipes={recipes ? recipes.lunch : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dinner"
             id="dinner"
-            recipes={this.state.recipes.dinner}
+            recipes={recipes ? recipes.dinner : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Side Dishes"
             id="side"
-            recipes={this.state.recipes.side_dishes}
+            recipes={recipes ? recipes.side_dishes : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dessert"
             id="dessert"
-            recipes={this.state.recipes.desserts}
+            recipes={recipes ? recipes.dessert : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Drinks"
             id="drinks"
-            recipes={this.state.recipes.drinks}
+            recipes={recipes ? recipes.drinks : []}
             updateDashboard={this.updateDashboard}
             />
           <Category
             title="Other"
             id="other"
-            recipes={this.state.recipes.other}
+            recipes={recipes ? recipes.other : []}
             updateDashboard={this.updateDashboard}
             />
             </>

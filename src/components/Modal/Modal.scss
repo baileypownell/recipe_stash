@@ -51,6 +51,9 @@
       padding: 10px;
       color: $orange;
       font-weight: bold;
+      @include tablet {
+        font-size: 18px;
+      }
     }
     .tall {
       min-height: 125px;
@@ -60,12 +63,15 @@
       color: $orange;
       background-color: white;
       font-weight: 800;
+      border: 2px solid $primary;
       @include tablet {
         width: 55%;
         margin: 1vw auto;
       }
       &:hover {
-        transform: scale(1.08)
+        color: $white;
+        background-color: transparent;
+        border-color: white;
       }
     }
   }

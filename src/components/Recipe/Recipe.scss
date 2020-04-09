@@ -13,15 +13,11 @@
   padding: 5vw 5vw 0 5vw;
   font-family: 'Didact Gothic', sans-serif;
   @include tablet {
-    padding: 2vw 2vw 0 2vw;
+    padding: 5vw 10vw;
   }
   @include desktop {
-    width: 50%;
+    width: 60%;
     margin: 0 auto;
-    > div {
-      @include flexRow;
-      justify-content: space-between;
-    }
   }
   .ingredients {
     white-space: pre-line;
@@ -29,15 +25,11 @@
   h2 {
     @include flexRow;
     justify-content: space-between;
-    @include tablet {
-      justify-content: flex-start;
-    }
   }
   .fa-edit {
     color: $primary;
     font-size: 30px;
-    position: absolute;
-    right: 20px;
+    cursor: pointer;
   }
   #pot {
     text-align: center;
@@ -59,6 +51,11 @@
       @include button;
       background-color: $primary;
       color: $white;
+      border: 2px solid $primary;
+      &:hover {
+        color: $primary;
+        background-color: $white;
+      }
       @include desktop {
         margin: 0 auto;
       }

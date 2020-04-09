@@ -24,6 +24,7 @@ class Signup extends React.Component {
 
   signup = (e) => {
     e.preventDefault();
+    const { email, password, firstName, lastName } = this.state;
     this.setState({
       loading: true
     })
@@ -38,16 +39,16 @@ class Signup extends React.Component {
         return;
       } else {
         // hash password before sending
-        let hashedPassword = bcrypt.hashSync(this.state.password, 10);
+        let hashedPassword = bcrypt.hashSync(password, 10);
         axios.post(`${process.env.API_URL}/signup`, {
-          firstName: this.state.firstName,
-          lastName: this.state.lastName,
+          firstName: firstName,
+          lastName: lastName,
           password: hashedPassword,
-          email: this.state.email
+          email: email
         })
         .then(res => {
           // update Redux
-          this.props.login(this.state.email)
+          this.props.login(email, firstName, lastName)
           // redirect to /dashboard
           this.props.history.push('/dashboard')
         })
@@ -161,9 +162,9 @@ class Signup extends React.Component {
             className={this.state.formValid ? 'enabled' : 'disabled'}>
             {this.state.loading?
               <ClipLoader
-                css={`border-color: white;`}
-                size={20}
-                color={"white"}
+                css={`border-color: #689943;`}
+                size={30}
+                color={"#689943"}
                 loading={this.state.loading}
               />
           : 'Submit'}
@@ -180,7 +181,7 @@ class Signup extends React.Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    login: (email) => dispatch(actions.login(email))
+    login: (email, firstName, lastName) => dispatch(actions.login(email, firstName, lastName))
   }
 }
 

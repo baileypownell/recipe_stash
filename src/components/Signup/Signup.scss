@@ -12,8 +12,7 @@
 
 .enabled {
   &:hover {
-    transform: scale(1.08);
-    -webkit-transform: scale(1.08);
-    -ms-transform: scale(1.08);
+    color: $green;
+    background-color: transparent;
   }
 }

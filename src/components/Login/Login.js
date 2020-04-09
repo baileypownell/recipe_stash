@@ -88,9 +88,9 @@ class Login extends React.Component {
             className={this.state.formValid ? 'enabled' : 'disabled'}>
             {this.state.loading?
               <ClipLoader
-                css={`border-color: white;`}
-                size={20}
-                color={"white"}
+                css={`border-color: #689943;`}
+                size={30}
+                color={"#689943"}
                 loading={this.state.loading}
               />
           : 'Submit'}
