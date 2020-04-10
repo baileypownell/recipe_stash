@@ -91,11 +91,11 @@ class Recipe extends React.Component {
 
 
   render() {
-    const { ingredients, directions, title, recipeId } = this.state;
+    const { ingredients, directions, title, recipeId, loading, showConfirmation, showEditModal } = this.state;
 
     return (
       <>
-      {this.state.loading ?
+      {loading ?
         <div className="BounceLoader">
           <BounceLoader
             size={100}
@@ -127,14 +127,14 @@ class Recipe extends React.Component {
             <button onClick={this.showConfirmationModal}>Delete Recipe</button>
           </div>
         </div>
-        {this.state.showConfirmation ?
+        {showConfirmation ?
           <ConfirmationModal
             text={'Are you sure you want to delete this recipe?'}
             confirmAction={this.deleteRecipe}
             closeModal={this.hideConfirmationModal}
             options={['Yes', 'No']} />
         : null}
-        {this.state.showEditModal ?
+        {showEditModal ?
           <Modal
             edit={true}
             closeModal={this.closeModal}

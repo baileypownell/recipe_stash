@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-export const login = (id, firstName, lastName, email) => {
+export const login = (id, email, firstName, lastName) => {
   return {
     type: 'SET_USER_LOGGED_IN',
     email: email,
@@ -20,9 +18,17 @@ export const logout = () => {
   }
 }
 
-export const setRecipe = (recipe) => {
+export const updateEmail = (email) => {
   return {
-    type: 'SET_RECIPE',
-    recipe: recipe
+    type: 'UPDATE_EMAIL',
+    email: email
+  }
+}
+
+export const updateName = (firstName, lastName) => {
+  return {
+    type: 'UPDATE_NAME',
+    firstName: firstName,
+    lastName: lastName
   }
 }

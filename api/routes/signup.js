@@ -15,9 +15,17 @@ router.post('/', (request, response, next) => {
    (err, res) => {
     if (err) return next(err);
     if (res) {
-      if (res.rowCount === 1) {
-        return response.json({success: true})
+      pool.query('SELECT * FROM users WHERE email=$1',
+      [email],
+    (err, res) => {
+      if (err) {
+        return next(err);
       }
+      if (res) {
+        let id=res.rows[0].id;
+        return response.json({success: true, id: id})
+      }
+    })
     } else {
       return response.json({success: false, message: 'could not insert into DB'})
     }

@@ -7,10 +7,10 @@ import './Modal.scss';
 class Modal extends React.Component {
 
   state = {
-    title: null,
+    title: '',
     category: this.props.category,
-    ingredients: null,
-    description: null,
+    ingredients: '',
+    description: '',
     loading: false
   }
 

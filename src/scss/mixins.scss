@@ -83,11 +83,21 @@
       @include desktop {
         width: 30%;
       }
-      label {
+      label, p {
         @include flexColumn;
         padding: 5px 0;
         font-family: 'Didact Gothic', sans-serif;
         color: $white;
+      }
+      p {
+        font-size: 20px;
+        display: inline;
+      }
+      .link {
+        color: $green;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: underline;
       }
       input {
         //margin-left: 10px;

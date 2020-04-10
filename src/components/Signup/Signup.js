@@ -22,6 +22,18 @@ class Signup extends React.Component {
     submissionError: ''
   }
 
+
+    componentDidMount() {
+      let faded = document.querySelectorAll('.fade');
+
+      let Appear = () => {
+        for (let i = 0; i <faded.length; i++) {
+        faded[i].classList.add('fade-in');
+        }
+      }
+      setTimeout(Appear, 500);
+  }
+
   signup = (e) => {
     e.preventDefault();
     const { email, password, firstName, lastName } = this.state;
@@ -29,7 +41,7 @@ class Signup extends React.Component {
       loading: true
     })
     // make sure user doesn't already exist in the DB
-    axios.get(`${process.env.API_URL}/userByEmail/${this.state.email}`)
+    axios.get(`${process.env.API_URL}/userByEmail/${email}`)
     .then(res => {
       if (res.data.rowCount > 0) {
         this.setState({
@@ -48,12 +60,16 @@ class Signup extends React.Component {
         })
         .then(res => {
           // update Redux
-          this.props.login(email, firstName, lastName)
+          let id=res.data.id;
+          this.props.login(id, email, firstName, lastName)
           // redirect to /dashboard
           this.props.history.push('/dashboard')
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
+          this.setState({
+            loading: false
+          })
         })
       }
     })
@@ -129,11 +145,16 @@ class Signup extends React.Component {
     }
   }
 
+  login = () => {
+    this.props.history.push('/login')
+  }
+
   render() {
+    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid, submissionError } = this.state;
     return (
       <div className="auth">
 
-        <form onSubmit={this.signup}>
+        <form className="fade" onSubmit={this.signup}>
           <h1>Signup</h1>
           <label>
             First Name
@@ -150,17 +171,18 @@ class Signup extends React.Component {
           <label>
             Password
             <input onChange={this.validatePassword} id="password" type="password" name="password" />
-            {this.state.insufficientPasswordMessage ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
+            {insufficientPasswordMessage ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
           </label>
           <label>
             Confirm Password
             <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
-            {this.state.confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
+            {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
           </label>
+          <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
           <button
-            disabled={!this.state.formValid}
-            className={this.state.formValid ? 'enabled' : 'disabled'}>
-            {this.state.loading?
+            disabled={!formValid}
+            className={formValid ? 'enabled' : 'disabled'}>
+            {loading?
               <ClipLoader
                 css={`border-color: #689943;`}
                 size={30}
@@ -169,7 +191,7 @@ class Signup extends React.Component {
               />
           : 'Submit'}
           </button>
-          {this.state.submissionError.length > 0 ?
+          {submissionError.length > 0 ?
             <p className="error">{this.state.submissionError}</p>
               : null
           }
@@ -181,7 +203,7 @@ class Signup extends React.Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    login: (email, firstName, lastName) => dispatch(actions.login(email, firstName, lastName))
+    login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
   }
 }
 

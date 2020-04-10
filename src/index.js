@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
-//import thunk from "redux-thunk";
-//import reducer from './store/reducer';
 import Nav from './components/Nav/Nav';
 import {
   BrowserRouter,
@@ -19,8 +17,6 @@ import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import storage from 'redux-persist/lib/storage'
 // defaults to localStorage for web
-//
-// import CreateAccount from './components/CreateAccount/CreateAccount';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
@@ -64,6 +60,23 @@ const reducer = (state = initialState, action) => {
         },
         userLoggedIn: false,
         recipe: null
+    }
+    case 'UPDATE_EMAIL':
+    return {
+      ...state,
+      user: {
+        ...state.user,
+        email: action.email
+      }
+    }
+    case 'UPDATE_NAME':
+    return {
+      ...state,
+      user: {
+        ...state.user,
+        firstName: action.firstName,
+        lastName: action.lastName
+      }
     }
     default:
       return state;

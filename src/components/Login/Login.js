@@ -15,6 +15,17 @@ class Login extends React.Component {
     signInError: ''
   }
 
+  componentDidMount() {
+    let faded = document.querySelectorAll('.fade');
+
+    let Appear = () => {
+      for (let i = 0; i <faded.length; i++) {
+      faded[i].classList.add('fade-in');
+      }
+    }
+    setTimeout(Appear, 500);
+}
+
   updateInput = (e) => {
     this.setState({
       [e.target.id]: e.target.value
@@ -51,11 +62,10 @@ class Login extends React.Component {
         })
         .then(res => {
           if (res) {
-            console.log(res)
             // update Redux
-            this.props.login(res.data.id, res.data.first_name, res.data.last_name, res.data.email);
+            this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
             // redirect to /dashboard
-            this.props.history.push('/dashboard')
+            this.props.history.push('/dashboard');
           } else {
             this.setState({
               signInError: 'The password you entered is incorrect.',
@@ -71,9 +81,10 @@ class Login extends React.Component {
   }
 
   render() {
+    const { formValid, loading, signInError } = this.state;
     return (
       <div className="auth">
-        <form onSubmit={this.signin}>
+        <form className="fade" onSubmit={this.signin}>
           <h1>Login</h1>
           <label>
             Email
@@ -84,18 +95,18 @@ class Login extends React.Component {
             <input onChange={this.updateInput} id="password" type="password" name="password" />
           </label>
           <button
-            disabled={!this.state.formValid}
-            className={this.state.formValid ? 'enabled' : 'disabled'}>
-            {this.state.loading?
+            disabled={!formValid}
+            className={formValid ? 'enabled' : 'disabled'}>
+            {loading?
               <ClipLoader
                 css={`border-color: #689943;`}
                 size={30}
                 color={"#689943"}
-                loading={this.state.loading}
+                loading={loading}
               />
           : 'Submit'}
           </button>
-          {this.state.signInError.length > 0 ? <p className="error">{this.state.signInError}</p> : null}
+          {signInError.length > 0 ? <p className="error">{signInError}</p> : null}
         </form>
       </div>
     )
@@ -110,7 +121,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    login: (id, firstName, lastName, email) => dispatch(actions.login(id, firstName, lastName, email))
+    login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
   }
 }
 

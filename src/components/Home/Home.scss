@@ -1,6 +1,6 @@
 
- @import '../../scss/variables.scss';
-  @import '../../scss/mixins.scss';
+@import '../../scss/variables.scss';
+@import '../../scss/mixins.scss';
 
 #home {
   min-height: 100vh;
@@ -26,7 +26,7 @@
       font-size: 40px;
     }
   }
-  h2 {
+  h2, p {
     color: $white;
     font-family: 'Didact Gothic', sans-serif;
   }
@@ -35,57 +35,133 @@
     padding: 3vw 10vw;
     h2 {
       font-size: 30px;
+      @include desktop {
+        font-size: 45px;
+      }
     }
   }
   button {
     @include button;
-    background-color: $secondary;
+    background-color: $green;
     color: $white;
     border: 2px solid $white;
+    width: 80%;
+    margin: 0 5vw;
+    @include tablet {
+      width: 40%;
+      margin: 0 5vw;
+    }
+    @include desktop {
+      width: 30%;
+      margin: 0 2vw;
+    }
     &:hover {
-      color:  $secondary;
-      background-color: $white;
+      color:  $green;
+      background-color: transparent;
+      border-color: $green;
     }
   }
   #skew {
-    height: 65vh;
+    min-height: 65vh;
     width: 100vw;
     background: linear-gradient(120deg, $primary, $orange);
-    padding: 10vw;
-    // transform: skewY(8deg);
-    // transform-origin: top left;
+    padding: 10vw 0 0 0;
+    clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 100%);
+    position: absolute;
+    top: 35vh;
+    @include desktop {
+      padding-bottom: 0;
+    }
     > div {
       padding-top: 10vw;
+      > h1, h2 {
+          font-size: 22px;
+          //padding-bottom: 10vw;
+          @include desktop {
+            margin: 0 10vw 0 auto;
+            width: 40%;
+            padding: 2vw;
+            font-size: 30px;
+          }
+      }
     }
+    h1, h2, h3 {
+      color: white;
+      text-align: left;
+      width: 90%;
+      margin: 0 auto 0 0;
+      padding: 5vw;
+      font-family: 'Didact Gothic', sans-serif;
+    }
+    .center {
+      text-align: center;
+      h1, h2 {
+        text-align: center;
+        width: 100%;
+      }
+    }
+    #forever {
+      margin: 0;
+      padding-top: 0;
+      text-align: right;
+      width: 100%;
+      color: $orange;
+      @include desktop {
+        text-align: left;
+        padding-left: 2vw;
+      }
+    }
+    #question {
+      text-align: right;
+      background-image: url('../../images/people_cooking.jpg');
+      clip-path: polygon(0 0, 100% 17%, 100% 100%, 0 100%);
+      background-color: $secondary;
+      background-blend-mode: overlay;
+      background-position: center;
+      background-size: cover;
+      padding: 25vw 10vw;
+      @include desktop {
+        padding: 5vw;
+        text-align: left;
+      }
+      h2 {
+        width: 100%;
+        color: $white;
+        margin: 0 0 0 auto;
+        text-align: right;
+        @include tablet {
+          width: 60%;
+          padding-bottom: 0;
+        }
+        @include desktop {
+          width: 40%;
+          margin: 0 auto 0 0;
+          text-align: left;
+        }
+      }
+    }
+  > #whisk {
+    width: 120px;
+    margin-left: 5vw;
+    animation-name: rotate;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    @include tablet {
+      width: 220px;
+    }
+  }
     @include desktop {
-      height: 60vh;
-      display:flex;
-      justify-content: space-between;
+      position: absolute;
+      top: 40vh;
+
       > div {
         padding: 0;
         @include flexColumn;
         justify-content: flex-end;
       }
-    }
-    #button_parent {
-      text-align: right
-    }
-      position: absolute;
-      top: 40vh;
-      clip-path: polygon(
-      0 0, 100% 34%, 100% 100%, 0 100%
-    );
-    > img {
-      width: 120px;
-      animation-name: rotate;
-      animation-duration: 3s;
-      animation-iteration-count: infinite;
-      @include tablet {
-        width: 220px;
+      > #whisk {
+        position: absolute;
       }
-    }
-    h1, h2 {
-      text-align: right;
     }
     h1 {
       color: $white;
@@ -98,4 +174,28 @@
     50% {transform: rotate(10deg)}
     100% {transform: rotate(0deg)}
   }
+}
+
+
+
+.fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition-property: translate opacity;
+  transition-duration: 1s;
+}
+
+.fade-in {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.opacity {
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 1s;
+}
+
+.maxOpacity {
+  opacity: 1;
 }

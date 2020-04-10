@@ -22,7 +22,7 @@ class Dashboard extends React.Component {
       dinner: [],
       side_dishes: [],
       desserts: [],
-      desserts: [],
+      dessert: [],
       drinks: [],
       other: []
     }
@@ -40,7 +40,7 @@ class Dashboard extends React.Component {
           if (recipe.category === 'Dinner') {
             recipes.dinner.push(recipe)
           } else if (recipe.category === 'Dessert') {
-            recipes.desserts.push(recipe)
+            recipes.dessert.push(recipe)
           } else if (recipe.category === 'Drinks') {
             recipes.drinks.push(recipe)
           } else if (recipe.category === 'Lunch') {
@@ -60,18 +60,27 @@ class Dashboard extends React.Component {
       }
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      this.setState({
+        loading_recipes: false
+      })
     })
   }
 
   componentDidMount() {
     this.fetchRecipes();
+    let faded = document.querySelectorAll('.fade');
+    let Appear = () => {
+      for (let i = 0; i <faded.length; i++) {
+      faded[i].classList.add('fade-in');
+      }
+    }
+    setTimeout(Appear, 300);
   }
 
   updateDashboard = () => {
     this.fetchRecipes();
   }
-
 
   render() {
 
@@ -109,7 +118,7 @@ class Dashboard extends React.Component {
             updateDashboard={this.updateDashboard}
           />
           <Category
-            title="Side Dishes"
+            title="Side Dish"
             id="side"
             recipes={recipes ? recipes.side_dishes : []}
             updateDashboard={this.updateDashboard}
@@ -134,7 +143,6 @@ class Dashboard extends React.Component {
             />
             </>
         }
-
      </div>
      </>
     )

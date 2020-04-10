@@ -9,7 +9,10 @@ router.post('/', (request, response, next) => {
   pool.query('INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES($1, $2, $3, $4, $5)',
   [title, category, user_id, ingredients, directions],
    (err, res) => {
-    if (err) return next(err);
+    if (err) {
+      console.log(err)
+      return next(err);
+    }
     if (res) {
       if (res.rowCount === 1) {
         return response.json({success: true})

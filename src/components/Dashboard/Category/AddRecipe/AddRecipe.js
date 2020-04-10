@@ -20,18 +20,19 @@ class AddRecipe extends React.Component {
     })
   }
   render() {
+    const { id, category } = this.props;
     return (
       <>
         <div
           className="addRecipe"
-          id={this.props.id}
+          id={id}
           onClick={this.addRecipe} >
           <i className="fas fa-plus-circle"></i>
         </div>
         {this.state.showModal ?
         <Modal
-          id={this.props.id}
-          category={this.props.category}
+          id={id}
+          category={category}
           closeModal={this.closeModal}
           updateDashboard={this.props.updateDashboard}
         />

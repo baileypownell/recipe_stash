@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import * as actions from '../../../store/actionCreators';
 const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
 import './EditProfileModal.scss';
@@ -14,19 +15,20 @@ class EditProfileModal extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.email) {
+    const {email, firstName, lastName} = this.props;
+    if (email) {
       this.setState({
-        email: this.props.email
+        email: email
       })
     }
-    if (this.props.firstName) {
+    if (firstName) {
       this.setState({
-        firstName: this.props.firstName
+        firstName: firstName
       })
     }
-    if (this.props.lastName) {
+    if (lastName) {
       this.setState({
-        lastName: this.props.lastName
+        lastName: lastName
       })
     }
   }
@@ -38,24 +40,25 @@ class EditProfileModal extends React.Component {
   }
 
   updateProfile = (e) => {
+    const { firstName, lastName, email } = this.state;
+    const { id, property } = this.props;
     e.preventDefault();
     this.setState({
       loading: true
     });
     let payload;
-    if (this.props.property === 'name') {
+    if (property === 'name') {
       payload = {
-        first_name: this.state.firstName,
-        last_name: this.state.lastName,
-        id: this.props.id
+        first_name: firstName,
+        last_name: lastName,
+        id: id
       }
     } else {
       payload = {
-        email: this.state.email,
-        id: this.props.id
+        email: email,
+        id: id
       }
     }
-    console.log(payload)
     axios.put(`${process.env.API_URL}/updateProfile`, payload)
     .then((res) => {
       this.setState({
@@ -63,12 +66,17 @@ class EditProfileModal extends React.Component {
       });
       this.props.closeModal();
       // then update the page by updating redux
-
+      if (property === 'email') {
+        this.props.updateEmail(email)
+      } else if (property === 'name') {
+        this.props.updateName(firstName, lastName)
+      }
     })
     .catch(err => {console.log(err)})
   }
 
   render() {
+    const { email, firstName, lastName, loading } = this.state;
     return (
       <div className="modal">
         <i
@@ -81,8 +89,8 @@ class EditProfileModal extends React.Component {
         <label>
           <input
             id="email"
-            value={this.state.email}
-            type="text"
+            value={email}
+            type="email"
             onChange={this.updateInput}></input>
         </label>
         :
@@ -90,7 +98,7 @@ class EditProfileModal extends React.Component {
         <label>
           <input
             id="firstName"
-            value={this.state.firstName}
+            value={firstName}
             type="text"
             onChange={this.updateInput}>
           </input>
@@ -98,7 +106,7 @@ class EditProfileModal extends React.Component {
         <label>
           <input
             id="lastName"
-            value={this.state.lastName}
+            value={lastName}
             type="text"
             onChange={this.updateInput}>
           </input>
@@ -108,7 +116,7 @@ class EditProfileModal extends React.Component {
       <button
         onClick={this.updateProfile}
         >
-        {this.state.loading ?
+        {loading ?
           <ClipLoader
             css={`border-color: #dd4444;`}
             size={30}
@@ -127,4 +135,11 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(EditProfileModal);
+const mapDispatchToProps = dispatch => {
+  return {
+    updateEmail: (email) => dispatch(actions.updateEmail(email)),
+    updateName: (firstName, lastName) => dispatch(actions.updateName(firstName, lastName))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditProfileModal);
