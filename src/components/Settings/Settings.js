@@ -20,24 +20,19 @@ class Settings extends React.Component {
     this.props.history.push('/home')
   }
 
-  // showModal = (e) => {
-  //   this.setState({
-  //     showModal: true,
-  //     property: e.target.id
-  //   })
-  // }
-  //
-  // closeModal = (e) => {
-  //   this.setState({
-  //     showModal: false
-  //   })
-  // }
-
-  toggleModal = e => {
-    this.setState(prevState => ({
-      showModal: !prevState.showModal
-    }))
+  showModal = (e) => {
+    this.setState({
+      showModal: true,
+      property: e.target.id
+    })
   }
+
+  closeModal = (e) => {
+    this.setState({
+      showModal: false
+    })
+  }
+
 
   toggleConfirmationModal = () => {
     this.setState(prevState => ({
@@ -89,14 +84,14 @@ class Settings extends React.Component {
                 <p>Name</p>
                 <h3>{this.props.firstName} {this.props.lastName}</h3>
               </div>
-              <button onClick={this.toggleModal} id="name">Change</button>
+              <button onClick={this.showModal} id="name">Change</button>
             </div>
             <div className="row">
               <div>
                 <p>Email</p>
                 <h3>{this.props.email}</h3>
               </div>
-              <button onClick={this.toggleModal} id="email">Change</button>
+              <button onClick={this.showModal} id="email">Change</button>
             </div>
           </div>
           <div className="buttonParent">
@@ -107,7 +102,7 @@ class Settings extends React.Component {
         {
           this.state.showModal ?
             <EditProfileModal
-              closeModal={this.toggleModal}
+              closeModal={this.closeModal}
               property={this.state.property}
               email={this.props.email}
               firstName={this.props.firstName}

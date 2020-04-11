@@ -20,6 +20,12 @@
   width: 90%;
   margin: 0 auto;
   padding: 5vw 0;
+  @include tablet {
+    width: 50%;
+  }
+  @include desktop {
+    width: 35%;
+  }
   > #profileParent {
     @include flexRow;
     justify-content: space-between;

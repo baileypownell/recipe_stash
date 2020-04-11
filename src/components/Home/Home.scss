@@ -73,7 +73,6 @@
       padding-bottom: 0;
     }
     > div {
-      padding-top: 10vw;
       > h1, h2 {
           font-size: 22px;
           //padding-bottom: 10vw;
@@ -148,6 +147,7 @@
     animation-iteration-count: infinite;
     @include tablet {
       width: 220px;
+      margin-left: 15vw;
     }
   }
     @include desktop {

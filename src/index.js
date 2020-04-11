@@ -6,93 +6,35 @@ import Nav from './components/Nav/Nav';
 import {
   BrowserRouter,
   Route,
-  Link,
   Switch,
   Redirect
 } from "react-router-dom";
 
-
 // for presisting redux store through page refreshes
 import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage'
-// defaults to localStorage for web
-import Home from './components/Home/Home';
-import Login from './components/Login/Login';
-import Signup from './components/Signup/Signup';
-import Dashboard from './components/Dashboard/Dashboard';
-import Recipe from './components/Recipe/Recipe';
-import Settings from './components/Settings/Settings';
+import storage from 'redux-persist/lib/storage';
+import reducer from './store/reducer';
+
+import {
+  Home,
+  Login,
+  Signup,
+  Dashboard,
+  Recipe,
+  Settings
+} from './components/index';
 
 import './scss/main.scss';
-const initialState = {
-  user: {
-    firstName: null,
-    lastName: null,
-    email: null,
-    id: null
-  },
-  userLoggedIn: false
-};
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'SET_USER_LOGGED_IN':
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          email: action.email,
-          firstName: action.firstName,
-          lastName: action.lastName,
-          id: action.id
-        },
-        userLoggedIn: true
-      };
-    case 'SET_USER_LOGGED_OUT':
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          email: null,
-          firstName: null,
-          lastName: null,
-          id: null
-        },
-        userLoggedIn: false,
-        recipe: null
-    }
-    case 'UPDATE_EMAIL':
-    return {
-      ...state,
-      user: {
-        ...state.user,
-        email: action.email
-      }
-    }
-    case 'UPDATE_NAME':
-    return {
-      ...state,
-      user: {
-        ...state.user,
-        firstName: action.firstName,
-        lastName: action.lastName
-      }
-    }
-    default:
-      return state;
-  }
-};
 
 const persistConfig = {
   key: 'root',
   storage,
 }
 const persistedReducer = persistReducer(persistConfig, reducer)
-
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(persistedReducer, composeEnhancers());
-
-let persistor = persistStore(store)
+let persistor = persistStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
