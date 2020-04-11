@@ -12,6 +12,7 @@ const updateRecipe = require('./updateRecipe');
 const updateProfile = require('./updateProfile');
 const deleteAccount = require('./deleteAccount');
 const deleteAllUserRecipes = require('./deleteAllUserRecipes');
+const resetPassword = require('./resetPassword');
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/updateRecipe', updateRecipe);
 router.use('/updateProfile', updateProfile);
 router.use('/deleteAccount', deleteAccount);
 router.use('/deleteAllUserRecipes', deleteAllUserRecipes);
+router.use('/resetPassword', resetPassword);
 
 module.exports = router;
