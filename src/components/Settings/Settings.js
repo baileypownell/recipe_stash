@@ -12,7 +12,8 @@ class Settings extends React.Component {
   state = {
     showModal: false,
     property: null,
-    showConfirmation: false
+    showConfirmation: false,
+    showPasswordMessage: false
   }
 
   logout = () => {
@@ -38,6 +39,19 @@ class Settings extends React.Component {
     this.setState(prevState => ({
       showConfirmation: !prevState.showConfirmation
     }))
+  }
+
+  resetPassword = () => {
+    axios.post(`${process.env.API_URL}/resetPassword`, {
+      email: this.props.email
+    })
+    .then(res => {
+      console.log('the result is: ', res);
+      this.setState({
+        showPasswordMessage: true
+      })
+    })
+    .catch(err => console.log(err))
   }
 
   deleteAccount = () => {
@@ -96,8 +110,12 @@ class Settings extends React.Component {
           </div>
           <div className="buttonParent">
             <button onClick={this.toggleConfirmationModal}>Delete Account</button>
+            <button onClick={this.resetPassword}>Reset Password</button>
           </div>
-
+          {this.state.showPasswordMessage ?
+            <p class="passwordMessage">An email has been sent to your account with a link to reset your password.</p>
+            : null
+          }
         </div>
         {
           this.state.showModal ?

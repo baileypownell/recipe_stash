@@ -22,7 +22,8 @@ import {
   Signup,
   Dashboard,
   Recipe,
-  Settings
+  Settings,
+  ResetPassword
 } from './components/index';
 
 import './scss/main.scss';
@@ -48,6 +49,7 @@ ReactDOM.render(
           <Route path="/dashboard" exact={true} component={Dashboard}/>
           <Route path="/dashboard/:id" component={Recipe}/>
           <Route path="/settings" component={Settings}/>
+          <Route path="/reset" component={ResetPassword}/>
           <Redirect to="/" />
         </Switch>
       </BrowserRouter>

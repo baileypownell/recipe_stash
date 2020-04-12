@@ -7,7 +7,6 @@ const router = Router();
 
 router.post('/', (request, response, next) => {
   const { email } = request.body;
-  if (email) {
     pool.query('SELECT * FROM users WHERE email=$1',
     [email],
      (err, res) => {
@@ -18,8 +17,7 @@ router.post('/', (request, response, next) => {
       if (res.rows[0].id) {
         // generate unique hash token
         const token = crypto.randomBytes(20).toString('hex');
-        const expiration = Date.now() + 360000
-        console.log(token);
+        const expiration = Date.now() + 3600000
         // store the token in the reset_password_token column of the users table
         // also store when it expires in the reset_password_expires column
         pool.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
@@ -28,41 +26,69 @@ router.post('/', (request, response, next) => {
           if (err) console.log(err)
           if (res) {
             // now create nodemailer transport, which is actually the account sending the password reset email link
-            const transporter = nodemailer.createTransport(smtpTransport({
-              service: 'gmail',
+            const transporter = nodemailer.createTransport({
+              host: "smtp-mail.outlook.com", // hostname
+              secureConnection: false, // TLS requires secureConnection to be false
+              port: 587, // port for secure SMTP
+              tls: {
+                 ciphers:'SSLv3'
+              },
               auth: {
                 user: `${process.env.EMAIL_ADDRESS}`,
                 pass: `${process.env.EMAIL_PASSWORD}`
               }
-            }));
+            });
             const mailOptions = {
-              from: 'bailey.pownell@gmail.com',
+              from: 'virtualcookbook@outlook.com',
               to: `${email}`,
               subject: 'Reset Password Link',
-              text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account. \n\n` + `Please click on the following link, or paste this into your browser to complete teh process within one hour of receiving it: \n\n` + `http://localhost:3001/reset/${token}\n\n` + `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+              text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account. \n\n` + `Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it: \n\n` + `${process.env.PROJECT_URL}/reset/${token}\n\n` + `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
             };
-            console.log(mailOptions)
             transporter.sendMail(mailOptions, (err, response) => {
               if (err) {
                 console.log('there was an error: ', err);
               } else {
-                console.log('the response', response);
-                res.status(200).json('recovery email sent');
-                transporter.close();
+                return response.status(200).json('recovery email sent');
               }
             })
             console.log(res);
-
           }
       })
-        // return response.json({res})
       } else {
         return response.json({success: false, message: 'could not update DB'})
       }
     });
-  } else {
-      response.status(400).send('email required');
+  });
+
+
+router.get('/:id/:token', (request, response, next) => {
+  let token = request.params.token;
+  let id = request.params.id;
+  console.log(id, token);
+  pool.query('SELECT * FROM users WHERE id=$1',
+  [id],
+   (err, res) => {
+    if (err) {
+      console.log(err)
+      return next(err);
+    } else {
+      let reset_password_token;
+      let reset_password_expires;
+      reset_password_token = res.rows[0].reset_password_token;
+      reset_password_expires = res.rows[0].reset_password_expires;
+      let now = Date.now();
+      console.log(now);
+      console.log(reset_password_expires)
+      //console.log(reset_password_expires, reset_password_token);
+      if ( ((now - reset_password_expires) < 3600000) && reset_password_token === token) {
+        response.status(200).send({
+          message: 'password reset link is valid'
+        })
+      } else {
+        response.json({ message: 'the link is invalid or expired'})
+      }
     }
   });
+})
 
 module.exports = router;

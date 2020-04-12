@@ -21,10 +21,7 @@
   }
   button {
     border: 2px solid white;
-    @include tablet {
-      width: 55%;
-      margin: 0 auto;
-    }
+    
     &:hover {
       color: $white;
       background-color: transparent;
