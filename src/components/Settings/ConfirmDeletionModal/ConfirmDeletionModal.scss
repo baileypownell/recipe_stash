@@ -1,0 +1,22 @@
+@import '../../../scss/mixins.scss';
+
+.deleteAccount {
+  h3 {
+    color: white;
+    font-family: 'Didact Gothic', sans-serif;
+    padding-bottom: 2vw;
+  }
+  input {
+    @include tablet {
+      width: 50%;
+      margin: 0 auto;
+    }
+  }
+  @include tablet {
+    width: 75%;
+    margin: 0 auto;
+  }
+  @include desktop {
+    width: 50%;
+  }
+}

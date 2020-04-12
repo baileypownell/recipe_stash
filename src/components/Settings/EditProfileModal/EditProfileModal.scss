@@ -4,6 +4,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  form.names {
+    @include tablet {
+      width:75%;
+      margin: 0 auto;
+    }
+    @include desktop {
+      width: 40%;
+    }
+  }
   input {
     border-radius: 15px;
     border: none;
@@ -15,13 +24,10 @@
     width: 100%;
     text-align: center;
     margin-bottom: 10px;
-    @include tablet {
-      width: 55%;
-    }
   }
   button {
     border: 2px solid white;
-    
+
     &:hover {
       color: $white;
       background-color: transparent;

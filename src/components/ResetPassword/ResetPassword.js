@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 const axios = require('axios');
-
+import ClipLoader from "react-spinners/ClipLoader";
+import bcrypt from 'bcryptjs';
 import './ResetPassword.scss';
 
 class ResetPassword extends React.Component {
@@ -10,7 +11,9 @@ class ResetPassword extends React.Component {
   state = {
     invalidLink: false,
     password: '',
-    passwordInvalid: true
+    passwordInvalid: true,
+    success: false,
+    loading: false
   }
 
   componentDidMount() {
@@ -49,8 +52,34 @@ class ResetPassword extends React.Component {
   }
 }
 
-  updatePassword = () => {
+  updatePassword = (e) => {
+    e.preventDefault();
+    this.setState({
+      loading: true
+    })
+    let hashedPassword = bcrypt.hashSync(this.state.password, 10);
+    axios.put(`${process.env.API_URL}/updateUserPassword`, {
+      id: this.props.id,
+      password: hashedPassword
+    })
+    .then(res => {
+      //console.log(res);
+      this.setState({
+        success: true,
+        loading: false
+      }, () => {
+        setTimeout(() => {
+          this.props.history.push('/dashboard');
+        }, 3000)
+      })
 
+    })
+    .catch((err) => {
+      console.log(res);
+      this.setState({
+        loading: false
+      })
+    })
   }
 
   render() {
@@ -68,8 +97,22 @@ class ResetPassword extends React.Component {
           <form onSubmit={this.updatePassword}>
           <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
           {this.state.passwordInvalid && this.state.password !== '' ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
-          <button className={this.state.passwordInvalid ? 'disabled' : 'enabled'}>Submit</button>
+          <button
+            disabled={this.state.passwordInvalid} className={this.state.passwordInvalid ? 'disabled' : 'enabled'}>
+
+            {this.state.loading?
+              <ClipLoader
+                css={`border-color: white;`}
+                size={30}
+                color={"#689943"}
+                loading={this.state.loading}
+              />
+          : 'Submit'}
+          </button>
           </form>
+          {this.state.success ?
+            <h4>Password updated successfully.</h4>
+          : null}
         </div>
       )
     }

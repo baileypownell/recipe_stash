@@ -4,7 +4,7 @@ import './Signup.scss';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actionCreators';
 const axios = require('axios');
-var bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 import ClipLoader from "react-spinners/ClipLoader";
 
 class Signup extends React.Component {

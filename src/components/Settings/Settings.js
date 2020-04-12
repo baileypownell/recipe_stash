@@ -2,18 +2,21 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actionCreators';
 import { withRouter } from "react-router-dom";
-const axios = require('axios');
+import ClipLoader from "react-spinners/ClipLoader";
+import axios from 'axios';
 import EditProfileModal from './EditProfileModal/EditProfileModal';
 import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
+import ConfirmDeletionModal from './ConfirmDeletionModal/ConfirmDeletionModal';
 import './Settings.scss';
 
 class Settings extends React.Component {
 
   state = {
     showModal: false,
-    property: null,
     showConfirmation: false,
-    showPasswordMessage: false
+    showPasswordMessage: false,
+    loading: false,
+    emailLoading: false
   }
 
   logout = () => {
@@ -23,8 +26,7 @@ class Settings extends React.Component {
 
   showModal = (e) => {
     this.setState({
-      showModal: true,
-      property: e.target.id
+      showModal: true
     })
   }
 
@@ -42,16 +44,31 @@ class Settings extends React.Component {
   }
 
   resetPassword = () => {
+    this.setState({
+      loading: true
+    })
     axios.post(`${process.env.API_URL}/resetPassword`, {
       email: this.props.email
     })
     .then(res => {
       console.log('the result is: ', res);
       this.setState({
-        showPasswordMessage: true
+        showPasswordMessage: true,
+        loading: false
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      console.log(err);
+      this.setState({
+        loading: false
+      })
+    })
+  }
+
+  sendEmailUpdateLink = () => {
+    this.setState({
+      emailLoading: true
+    })
   }
 
   deleteAccount = () => {
@@ -98,19 +115,38 @@ class Settings extends React.Component {
                 <p>Name</p>
                 <h3>{this.props.firstName} {this.props.lastName}</h3>
               </div>
-              <button onClick={this.showModal} id="name">Change</button>
+              <button onClick={this.showModal} >Change</button>
             </div>
             <div className="row">
               <div>
                 <p>Email</p>
                 <h3>{this.props.email}</h3>
               </div>
-              <button onClick={this.showModal} id="email">Change</button>
+              <button onClick={this.sendEmailUpdateLink} >
+                {this.state.emailLoading ?
+                  <ClipLoader
+                    css={`border-color: white`}
+                    size={30}
+                    color={"white"}
+                    loading={this.state.emailLoading}
+                  /> :
+                `Change`}
+              </button>
             </div>
           </div>
           <div className="buttonParent">
             <button onClick={this.toggleConfirmationModal}>Delete Account</button>
-            <button onClick={this.resetPassword}>Reset Password</button>
+            <button
+              onClick={this.resetPassword}>
+              {this.state.loading?
+                <ClipLoader
+                  css={`border-color: white;`}
+                  size={30}
+                  color={"white"}
+                  loading={this.state.loading}
+                />
+              : 'Reset Password'}
+            </button>
           </div>
           {this.state.showPasswordMessage ?
             <p class="passwordMessage">An email has been sent to your account with a link to reset your password.</p>
@@ -121,8 +157,6 @@ class Settings extends React.Component {
           this.state.showModal ?
             <EditProfileModal
               closeModal={this.closeModal}
-              property={this.state.property}
-              email={this.props.email}
               firstName={this.props.firstName}
               lastName={this.props.lastName}
             />
@@ -130,11 +164,9 @@ class Settings extends React.Component {
         }
         {
           this.state.showConfirmation ?
-            <ConfirmationModal
-              text={'Are you sure you want to delete your account? This action cannot be undone.'}
-              confirmAction={this.deleteAccount}
+            <ConfirmDeletionModal
+              deleteAccount={this.deleteAccount}
               closeModal={this.toggleConfirmationModal}
-              options={['Yes', 'No']}
               />
             : null
         }
