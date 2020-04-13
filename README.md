@@ -13,5 +13,6 @@ This is what this web app will do.
 
 ### (It's a work in progress).
 
-
+![desktop](src/images/desktop.PNG)
 ![homepage](src/images/mobileView2.PNG)
+![dashboard](src/images/mobileView3.PNG)

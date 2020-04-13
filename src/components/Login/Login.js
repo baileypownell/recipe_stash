@@ -61,16 +61,16 @@ class Login extends React.Component {
           email: this.state.email
         })
         .then(res => {
-          if (res) {
-            // update Redux
-            this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
-            // redirect to /dashboard
-            this.props.history.push('/dashboard');
-          } else {
+          if (res.data.success === false) {
             this.setState({
               signInError: 'The password you entered is incorrect.',
               loading: false
             })
+          } else {
+            // update Redux
+            this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
+            // redirect to /dashboard
+            this.props.history.push('/dashboard');
           }
         })
         .catch((err) => {
@@ -99,7 +99,7 @@ class Login extends React.Component {
             className={formValid ? 'enabled' : 'disabled'}>
             {loading?
               <ClipLoader
-                css={`border-color: #689943;`}
+                css={`border-color: white;`}
                 size={30}
                 color={"#689943"}
                 loading={loading}

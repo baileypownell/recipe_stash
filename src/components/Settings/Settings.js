@@ -16,7 +16,8 @@ class Settings extends React.Component {
     showConfirmation: false,
     showPasswordMessage: false,
     loading: false,
-    emailLoading: false
+    emailLoading: false,
+    showPasswordError: false
   }
 
   logout = () => {
@@ -52,10 +53,17 @@ class Settings extends React.Component {
     })
     .then(res => {
       console.log('the result is: ', res);
-      this.setState({
-        showPasswordMessage: true,
-        loading: false
-      })
+      if (res.data.success === false) {
+        this.setState({
+          showPasswordError: true,
+          loading: false
+        })
+      } else {
+        this.setState({
+          showPasswordMessage: true,
+          loading: false
+        })
+      }
     })
     .catch(err => {
       console.log(err);
@@ -69,22 +77,6 @@ class Settings extends React.Component {
     this.setState({
       emailLoading: true
     })
-  }
-
-  deleteAccount = () => {
-    axios.delete(`${process.env.API_URL}/deleteAccount/${this.props.id}`)
-    .then((res) => {
-      axios.delete(`${process.env.API_URL}/deleteAllUserRecipes/${this.props.id}`)
-      .then(res => {
-        // update redux
-        this.props.logout();
-        this.props.history.push('/home');
-      })
-    })
-    .then((res) => {
-      //
-    })
-    .catch(err => console.log(err))
   }
 
   componentDidMount() {
@@ -149,8 +141,12 @@ class Settings extends React.Component {
             </button>
           </div>
           {this.state.showPasswordMessage ?
-            <p class="passwordMessage">An email has been sent to your account with a link to reset your password.</p>
+            <p className="passwordMessage">An email has been sent to your account with a link to reset your password.</p>
             : null
+          }
+          {
+            this.state.showPasswordError ?
+            <p className="passwordMessage">The email could not be sent.</p> : null
           }
         </div>
         {
@@ -165,7 +161,6 @@ class Settings extends React.Component {
         {
           this.state.showConfirmation ?
             <ConfirmDeletionModal
-              deleteAccount={this.deleteAccount}
               closeModal={this.toggleConfirmationModal}
               />
             : null
