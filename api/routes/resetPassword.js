@@ -47,11 +47,10 @@ router.post('/', (request, response, next) => {
             transporter.sendMail(mailOptions, (err, response) => {
               if (err) {
                 console.log('there was an error: ', err);
-              } else {
-                return response.status(200).json('recovery email sent');
               }
             })
             console.log(res);
+            return response.status(200).json('recovery email sent');
           }
       })
       } else {
@@ -77,10 +76,7 @@ router.get('/:id/:token', (request, response, next) => {
       reset_password_token = res.rows[0].reset_password_token;
       reset_password_expires = res.rows[0].reset_password_expires;
       let now = Date.now();
-      console.log(now);
-      console.log(reset_password_expires)
-      //console.log(reset_password_expires, reset_password_token);
-      if ( ((now - reset_password_expires) < 3600000) && reset_password_token === token) {
+      if ( ((reset_password_expires - now) < 3600000) && reset_password_token.toString() === token.toString()) {
         response.status(200).send({
           message: 'password reset link is valid'
         })
