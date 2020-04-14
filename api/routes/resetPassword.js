@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const pool = require('../db');
 const nodemailer = require('nodemailer');
-var sgTransport = require('nodemailer-sendgrid-transport');
+const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 require('dotenv').config();
 const router = Router();

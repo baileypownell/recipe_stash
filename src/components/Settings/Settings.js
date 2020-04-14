@@ -7,6 +7,7 @@ import axios from 'axios';
 import EditProfileModal from './EditProfileModal/EditProfileModal';
 import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 import ConfirmDeletionModal from './ConfirmDeletionModal/ConfirmDeletionModal';
+import EditEmailModal from './EditEmailModal/EditEmailModal';
 import './Settings.scss';
 
 class Settings extends React.Component {
@@ -17,7 +18,8 @@ class Settings extends React.Component {
     showPasswordMessage: false,
     loading: false,
     emailLoading: false,
-    showPasswordError: false
+    showPasswordError: false,
+    editEmail: false
   }
 
   logout = () => {
@@ -25,15 +27,21 @@ class Settings extends React.Component {
     this.props.history.push('/home')
   }
 
-  showModal = (e) => {
+  showModal = () => {
     this.setState({
       showModal: true
     })
   }
 
-  closeModal = (e) => {
+  closeModal = () => {
     this.setState({
       showModal: false
+    })
+  }
+
+  closeEmailModal = () => {
+    this.setState({
+      editEmail: false
     })
   }
 
@@ -73,10 +81,10 @@ class Settings extends React.Component {
     })
   }
 
-  sendEmailUpdateLink = () => {
+  showEmailModal = () => {
     this.setState({
-      emailLoading: true
-    })
+      editEmail: true
+    });
   }
 
   componentDidMount() {
@@ -114,7 +122,7 @@ class Settings extends React.Component {
                 <p>Email</p>
                 <h3>{this.props.email}</h3>
               </div>
-              <button onClick={this.sendEmailUpdateLink} >
+              <button onClick={this.showEmailModal} >
                 {this.state.emailLoading ?
                   <ClipLoader
                     css={`border-color: white`}
@@ -164,6 +172,14 @@ class Settings extends React.Component {
               closeModal={this.toggleConfirmationModal}
               />
             : null
+        }
+        {
+          this.state.editEmail ?
+          <EditEmailModal
+            closeModal={this.closeEmailModal}
+            id={this.props.id}
+          />
+          : null
         }
       </>
     )

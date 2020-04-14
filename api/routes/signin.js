@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const { Router } = require('express');
 const pool = require('../db');
-var bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = Router();
 

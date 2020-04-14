@@ -1,0 +1,21 @@
+@import '../../../scss/mixins.scss';
+
+.modal {
+  input {
+    font-family: 'Didact Gothic', sans-serif;
+  }
+  p {
+    color: white;
+    font-family: 'Didact Gothic', sans-serif;
+    font-size: 18px;
+    @include tablet {
+      font-size: 24px;
+    }
+  }
+  label {
+    font-size: 16px;
+    @include tablet {
+      font-size: 20px;
+    }
+  }
+}
