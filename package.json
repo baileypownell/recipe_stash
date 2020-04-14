@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "concurrently \"webpack --env.ENVIRONMENT=production --config webpack.config.js\" \"npm run start --prefix api\"",
-    "dev": "concurrently \"webpack-dev-server --env.ENVIRONMENT=development --config webpack.config.js --mode development --open --hot\" \"npm run dev --prefix api\""
+    "dev": "concurrently \"webpack-dev-server --env.ENVIRONMENT=development --config webpack.config.js --mode development --open --hot\" \"npm run dev --prefix api\"",
+    "start": "concurrently \"webpack --env.ENVIRONMENT=production --config webpack.config.js\" \"npm run start --prefix api\""
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,9 @@
   ],
   "author": "Bailey Pownell",
   "license": "ISC",
+  "engines": {
+    "node": "10.x",
+  }
   "bugs": {
     "url": "https://github.com/baileypownell/Virtual-Cookbook/issues"
   },
