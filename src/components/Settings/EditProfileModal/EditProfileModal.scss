@@ -27,11 +27,12 @@
   }
   button {
     border: 2px solid white;
-
-    &:hover {
-      color: $white;
-      background-color: transparent;
-      border-color: white;
+    .enabled {
+      &:hover {
+        color: $white;
+        background-color: transparent;
+        border-color: white;
+      }
     }
   }
 }

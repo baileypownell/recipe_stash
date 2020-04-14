@@ -1,8 +1,15 @@
 @import '../../../scss/mixins.scss';
 
 .modal {
+  @include tablet {
+    form {
+      width: 50%;
+      margin: 0 auto;
+    }
+  }
   input {
     font-family: 'Didact Gothic', sans-serif;
+    text-align: center!important;
   }
   p {
     color: white;

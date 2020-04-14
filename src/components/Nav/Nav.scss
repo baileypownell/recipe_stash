@@ -20,8 +20,8 @@ nav {
       text-decoration: none;
       font-size: 20px;
       border-radius: 15px;
+      transition: background-color .3s;
       &:hover {
-        //color: $secondary;
         background-color: $green;
       }
     }

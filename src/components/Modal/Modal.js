@@ -10,14 +10,30 @@ class Modal extends React.Component {
     title: '',
     category: this.props.category,
     ingredients: '',
-    description: '',
-    loading: false
+    directions: '',
+    loading: false,
+    recipeValid: false
+  }
+
+  checkValidity = () => {
+    console.log('checking')
+    const { directions, ingredients, title } = this.state;
+    if (directions.length > 0 && ingredients.length > 0 && title.length > 0) {
+      console.log('here')
+      this.setState({
+        recipeValid: true
+      })
+    } else {
+      this.setState({
+        recipeValid: false
+      })
+    }
   }
 
   updateInput = (e) => {
     this.setState({
       [e.target.id]: e.target.value
-    });
+    }, () => this.checkValidity());
   }
 
   componentDidMount = () => {
@@ -137,10 +153,13 @@ class Modal extends React.Component {
               >
             </textarea>
           </label>
-          <button>{this.state.loading ?
+          <button
+            className={!this.state.recipeValid ? 'disabled' : 'enabled'}
+            disabled={!this.state.recipeValid}
+          >{this.state.loading ?
             <ClipLoader
               size={30}
-              color={"#689943"}
+              color={"white"}
               loading={this.state.loading}
             /> :
             `${this.props.edit ? 'Edit' : 'Create'} Recipe`}</button>

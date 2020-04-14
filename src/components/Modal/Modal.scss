@@ -51,6 +51,7 @@
       padding: 10px;
       color: $orange;
       font-weight: bold;
+      text-align: left;
       @include tablet {
         font-size: 18px;
       }
@@ -68,11 +69,15 @@
         width: 55%;
         margin: 1vw auto;
       }
-      &:hover {
-        color: $white;
-        background-color: transparent;
-        border-color: white;
-      }
     }
+  }
+}
+
+
+.enabled {
+  &:hover {
+    color: $white;
+    background-color: transparent;
+    border-color: $white;
   }
 }

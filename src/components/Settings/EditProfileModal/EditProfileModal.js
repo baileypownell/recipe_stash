@@ -40,7 +40,7 @@ class EditProfileModal extends React.Component {
     this.setState({
       loading: true
     });
-    payload = {
+    let payload = {
         first_name: firstName,
         last_name: lastName,
         id: id
