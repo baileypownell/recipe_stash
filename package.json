@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --env.ENVIRONMENT=production --mode production",
     "dev": "webpack-dev-server --env.ENVIRONMENT=development --mode development --open --hot",
-    "start": "webpack --env.ENVIRONMENT=production --mode production"
+    "start": "node ./server.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "bcryptjs": "^2.4.3",
     "concurrently": "^5.1.0",
     "express": "^4.17.1",
-    "node": "^13.12.0",
+    "node": "^13.13.0",
     "node-gyp": "^6.1.0",
     "nodemailer": "^6.4.6",
     "nodemailer-sendgrid-transport": "^0.2.0",
