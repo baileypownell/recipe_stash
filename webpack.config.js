@@ -60,7 +60,10 @@ return {
     ]
   },
   plugins: [
-    new webpack.DefinePlugin(envKeys)
+    //new webpack.DefinePlugin(envKeys)
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': process.env.NODE_ENV
+    })
   ],
   devServer: {
      contentBase: __dirname,
