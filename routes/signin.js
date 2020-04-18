@@ -1,6 +1,3 @@
-require('dotenv').config();
-// needed for generating JWT
-
 const { Router } = require('express');
 const pool = require('../db');
 const bcrypt = require('bcryptjs');
