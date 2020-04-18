@@ -3,8 +3,6 @@
 
 const { Router } = require('express');
 const pool = require('../db');
-
-const jwt = require('jsonwebtoken');
 const router = Router();
 
 router.post('/', (request, response, next) => {

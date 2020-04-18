@@ -7,7 +7,7 @@ const routes = require('./routes');
 
 
 // middleware
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json());
 app.use('/', routes);
 
