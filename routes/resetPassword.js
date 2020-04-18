@@ -38,7 +38,6 @@ router.post('/', (request, response, next) => {
               from: 'virtualcookbook@outlook.com',
               to: `${email}`,
               subject: 'Reset Password Link',
-              // text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account. \n\n` + `Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it: \n\n` + `${process.env.PROJECT_URL}/reset/${token}\n\n` + `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
               html: `<h1>Virtual Cookbook</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}/reset/${token}" ><button style="cursor: pointer; background-color: #689943; color: white; font-size: 22px; outline: none; border: none; border-radius: 30px; padding: 20px; text-transform: uppercase; cursor: pointer!important;">Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`
             };
             transporter.sendMail(mailOptions, (err, res) => {

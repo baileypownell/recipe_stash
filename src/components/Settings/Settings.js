@@ -56,7 +56,7 @@ class Settings extends React.Component {
     this.setState({
       loading: true
     })
-    axios.post(`${process.env.API_URL}/resetPassword`, {
+    axios.post(`/resetPassword`, {
       email: this.props.email
     })
     .then(res => {

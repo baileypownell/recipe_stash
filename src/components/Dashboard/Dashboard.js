@@ -27,7 +27,7 @@ class Dashboard extends React.Component {
       other: []
     }
     // API call to get all recipes
-    axios.get(`${process.env.API_URL}/recipes/${this.props.userId}`)
+    axios.get(`/recipes/${this.props.userId}`)
     .then(res => {
       if (res) {
         if (res.data.name === "error") {

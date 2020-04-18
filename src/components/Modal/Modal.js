@@ -59,7 +59,7 @@ class Modal extends React.Component {
     this.setState({
       loading: true
     })
-    axios.post(`${process.env.API_URL}/createRecipe`, {
+    axios.post(`/createRecipe`, {
       title: this.state.title,
       category: this.state.category,
       ingredients: this.state.ingredients,
@@ -87,7 +87,7 @@ class Modal extends React.Component {
     this.setState({
       loading: true
     });
-    axios.put(`${process.env.API_URL}/updateRecipe`, {
+    axios.put(`/updateRecipe`, {
       title: this.state.title,
       ingredients: this.state.ingredients,
       directions: this.state.directions,

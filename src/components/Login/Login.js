@@ -48,7 +48,7 @@ class Login extends React.Component {
       loading: true
     })
     // ensure user exists
-    axios.get(`${process.env.API_URL}/userByEmail/${this.state.email}`)
+    axios.get(`/userByEmail/${this.state.email}`)
     .then(res => {
       if (res.data.rowCount == 0) {
         this.setState({
@@ -56,7 +56,7 @@ class Login extends React.Component {
           loading: false
         })
       } else {
-        axios.post(`${process.env.API_URL}/signin`, {
+        axios.post(`/signin`, {
           password: this.state.password,
           email: this.state.email
         })

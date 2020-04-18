@@ -22,7 +22,7 @@ class ConfirmDeletionModal extends React.Component {
   deleteAccount = (e) => {
     e.preventDefault();
     // first validate that their email is correct...
-    axios.post(`${process.env.API_URL}/signin`, {
+    axios.post(`/signin`, {
       password: this.state.password,
       email: this.props.email
     })
@@ -34,9 +34,9 @@ class ConfirmDeletionModal extends React.Component {
           loading: false
         })
       } else {
-        axios.delete(`${process.env.API_URL}/deleteAccount/${this.props.id}`)
+        axios.delete(`/deleteAccount/${this.props.id}`)
         .then((res) => {
-          axios.delete(`${process.env.API_URL}/deleteAllUserRecipes/${this.props.id}`)
+          axios.delete(`/deleteAllUserRecipes/${this.props.id}`)
           .then(res => {
             console.log(res)
             // update redux

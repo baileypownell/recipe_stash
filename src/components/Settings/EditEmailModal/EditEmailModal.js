@@ -25,7 +25,7 @@ class EditEmailModal extends React.Component {
     this.setState({
       loading: true
     });
-    axios.post(`${process.env.API_URL}/resetEmail`, {
+    axios.post(`/resetEmail`, {
       new_email: this.state.email,
       password: this.state.password,
       id: this.props.id
@@ -61,7 +61,7 @@ class EditEmailModal extends React.Component {
         onClick={this.props.closeModal}
         className="fas fa-times-circle">
       </i>
-        <form onSubmit={this.updateEmail}>
+        <form className="editEmail" onSubmit={this.updateEmail}>
           <label>New Email</label>
           <input type="email" id="email" onChange={this.updateInput}></input>
           <label>New Password</label>

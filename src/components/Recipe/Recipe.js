@@ -25,7 +25,7 @@ class Recipe extends React.Component {
   }
 
   fetchData = () => {
-    axios.get(`${process.env.API_URL}/specificRecipe/${this.props.userId}/${this.state.recipeId}`)
+    axios.get(`/specificRecipe/${this.props.userId}/${this.state.recipeId}`)
     .then(res => {
       this.setState({
         title: res.data[0].title,
@@ -48,7 +48,7 @@ class Recipe extends React.Component {
   }
 
   deleteRecipe = () => {
-    axios.delete(`${process.env.API_URL}/deleteRecipe/${this.state.recipeId}`)
+    axios.delete(`/deleteRecipe/${this.state.recipeId}`)
     .then(res => {
       if (res) {
         this.setState({

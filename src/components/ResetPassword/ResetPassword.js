@@ -20,7 +20,7 @@ class ResetPassword extends React.Component {
     // verify token matches AND hasn't expired
     console.log(this.props.location.pathname.split('/')[2]);
     let token = this.props.location.pathname.split('/')[2];
-    axios.get(`${process.env.API_URL}/resetPassword/${this.props.id}/${token}`)
+    axios.get(`/resetPassword/${this.props.id}/${token}`)
     .then((res) => {
       console.log(res);
       if (res.data.message === 'the link is invalid or expired') {
@@ -58,7 +58,7 @@ class ResetPassword extends React.Component {
       loading: true
     })
     let hashedPassword = bcrypt.hashSync(this.state.password, 10);
-    axios.put(`${process.env.API_URL}/updateUserPassword`, {
+    axios.put(`/updateUserPassword`, {
       id: this.props.id,
       password: hashedPassword
     })

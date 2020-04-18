@@ -2,7 +2,7 @@
 
 .modal {
   @include tablet {
-    form {
+    .editEmail form {
       width: 50%;
       margin: 0 auto;
     }
