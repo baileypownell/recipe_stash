@@ -19,7 +19,8 @@ class Signup extends React.Component {
     insufficientPasswordMessage: false,
     formValid: false,
     loading: false,
-    submissionError: ''
+    submissionError: '',
+    error: false
   }
 
 
@@ -59,12 +60,17 @@ class Signup extends React.Component {
           email: email
         })
         .then(res => {
-          console.log(res)
-          // update Redux
-          let id=res.data.id;
-          this.props.login(id, email, firstName, lastName)
-          // redirect to /dashboard
-          this.props.history.push('/dashboard')
+          if (res.data) {
+            // update Redux
+            let id=res.data.id;
+            this.props.login(id, email, firstName, lastName)
+            // redirect to /dashboard
+            this.props.history.push('/dashboard')
+          } else {
+            this.setState({
+              error: true;
+            })
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -196,6 +202,9 @@ class Signup extends React.Component {
             <p className="error">{this.state.submissionError}</p>
               : null
           }
+          {this.state.error ?
+            <p className="error">There has been an error.</p>
+          : null}
         </form>
       </div>
     )
