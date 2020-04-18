@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const routes = require('api/routes');
+const routes = require('/api/routes');
 
 
 // middleware
