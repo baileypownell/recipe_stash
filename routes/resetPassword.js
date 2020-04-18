@@ -3,7 +3,7 @@ const pool = require('../db');
 const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
-require('dotenv').config();
+// require('dotenv').config();
 const router = Router();
 
 router.post('/', (request, response, next) => {
