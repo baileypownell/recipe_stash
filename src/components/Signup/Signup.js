@@ -68,7 +68,7 @@ class Signup extends React.Component {
             this.props.history.push('/dashboard')
           } else {
             this.setState({
-              error: true;
+              error: true
             })
           }
         })
