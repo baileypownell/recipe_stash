@@ -24,7 +24,6 @@ class Signup extends React.Component {
 
 
   componentDidMount() {
-    console.log(process.env)
     let faded = document.querySelectorAll('.fade');
 
     let Appear = () => {
@@ -42,7 +41,7 @@ class Signup extends React.Component {
       loading: true
     })
     // make sure user doesn't already exist in the DB
-    axios.get(`${process.env.API_URL}/userByEmail/${email}`)
+    axios.get(`/userByEmail/${email}`)
     .then(res => {
       if (res.data.rowCount > 0) {
         this.setState({
@@ -53,7 +52,7 @@ class Signup extends React.Component {
       } else {
         // hash password before sending
         let hashedPassword = bcrypt.hashSync(password, 10);
-        axios.post(`${process.env.API_URL}/signup`, {
+        axios.post(`/signup`, {
           firstName: firstName,
           lastName: lastName,
           password: hashedPassword,
