@@ -1,4 +1,4 @@
-require('dotenv').config();
+
 // needed for generating JWT
 
 const { Router } = require('express');
