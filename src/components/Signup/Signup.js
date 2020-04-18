@@ -59,6 +59,7 @@ class Signup extends React.Component {
           email: email
         })
         .then(res => {
+          console.log(res)
           // update Redux
           let id=res.data.id;
           this.props.login(id, email, firstName, lastName)
