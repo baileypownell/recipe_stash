@@ -23,15 +23,16 @@ class Signup extends React.Component {
   }
 
 
-    componentDidMount() {
-      let faded = document.querySelectorAll('.fade');
+  componentDidMount() {
+    console.log(process.env)
+    let faded = document.querySelectorAll('.fade');
 
-      let Appear = () => {
-        for (let i = 0; i <faded.length; i++) {
-        faded[i].classList.add('fade-in');
-        }
+    let Appear = () => {
+      for (let i = 0; i <faded.length; i++) {
+      faded[i].classList.add('fade-in');
       }
-      setTimeout(Appear, 500);
+    }
+    setTimeout(Appear, 500);
   }
 
   signup = (e) => {
