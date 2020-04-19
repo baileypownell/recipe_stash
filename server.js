@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// connecting to heroku db 
+// connecting to heroku db
 const { Client } = require("pg");
 
 const client = new Client({
@@ -35,7 +35,10 @@ const port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/dist'));
 
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  client.query("SELECT * FROM recipes", function(error, result) {
+    res.json(result)
+  })
+  //res.sendFile(__dirname + '/index.html');
 });
 
 app.listen(port, ()=>{
