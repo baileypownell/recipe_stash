@@ -2,6 +2,18 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+// connecting to heroku db 
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
+
+client.connect();
+
+
+
 const app = express();
 const routes = require('./routes');
 
