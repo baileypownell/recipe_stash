@@ -38,8 +38,9 @@ app.get('*', (req, res) => {
   client.query("SELECT * FROM users", function(error, result) {
     if (error) {
       res.json(error)
+    } else {
+      res.json(result)
     }
-    res.json(result)
   })
   //res.sendFile(__dirname + '/index.html');
 });
