@@ -191,9 +191,9 @@ class Signup extends React.Component {
             className={formValid ? 'enabled' : 'disabled'}>
             {loading?
               <ClipLoader
-                css={`border-color: #689943;`}
+                css={`border-color: white;`}
                 size={30}
-                color={"#689943"}
+                color={"white"}
                 loading={this.state.loading}
               />
           : 'Submit'}

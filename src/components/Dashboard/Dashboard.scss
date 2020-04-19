@@ -35,7 +35,7 @@
   .recipeBox {
     @include flexRow;
     justify-content: center;
-    #Breakfast {
+    #breakfast {
       background-image: url('../../images/french_toast.jpg');
     }
     #lunch {
@@ -57,7 +57,6 @@
       width: 120px;
       height: 120px;
       background-color: lighten($primary-transparent, 20%);
-      background-image: url('../../images/pizza.jpg');
       background-blend-mode: overlay;
       background-size: cover;
       background-position: center;
