@@ -35,7 +35,7 @@ const port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/dist'));
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.get('*', (req, res) => {
-  client.query("SELECT * FROM recipes", function(error, result) {
+  client.query("SELECT * FROM users", function(error, result) {
     if (error) {
       res.json(error)
     }
