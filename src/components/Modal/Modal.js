@@ -16,10 +16,8 @@ class Modal extends React.Component {
   }
 
   checkValidity = () => {
-    console.log('checking')
     const { directions, ingredients, title } = this.state;
     if (directions.length > 0 && ingredients.length > 0 && title.length > 0) {
-      console.log('here')
       this.setState({
         recipeValid: true
       })
