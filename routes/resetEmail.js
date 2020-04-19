@@ -1,21 +1,10 @@
 const { Router } = require('express');
-const pool = require('../db');
+const client = require('../db');
 const nodemailer = require('nodemailer');
 var sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
-// require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const router = Router();
-
-// connecting to heroku db
-const { Client } = require("pg");
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
 
 router.post('/', (request, response, next) => {
   // steps:

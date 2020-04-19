@@ -1,16 +1,6 @@
 const { Router } = require('express');
-const pool = require('../db');
+const client = require('../db');
 const router = Router();
-
-// connecting to heroku db
-const { Client } = require("pg");
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
 
 router.put('/', (request, response, next) => {
   const { recipeId, title, ingredients, directions } = request.body;

@@ -1,16 +1,5 @@
 const { Router } = require('express');
-const pool = require('../db');
-
-// connecting to heroku db
-const { Client } = require("pg");
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
-
+const client = require('../db');
 const router = Router();
 
 router.delete('/:recipe_id', (request, response, next) => {

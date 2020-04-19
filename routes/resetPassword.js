@@ -1,20 +1,8 @@
 const { Router } = require('express');
-const pool = require('../db');
+const client = require('../db');
 const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
-// require('dotenv').config();
-
-// connecting to heroku db
-const { Client } = require("pg");
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
-client.connect();
-
 const router = Router();
 
 router.post('/', (request, response, next) => {
@@ -53,7 +41,6 @@ router.post('/', (request, response, next) => {
             };
             transporter.sendMail(mailOptions, (err, res) => {
               if (err) {
-                console.log('there was an error: ', err);
                 response.json({ success: false, message: 'there was an error sending the email'})
               } else {
                 return response.status(200).json('recovery email sent');
