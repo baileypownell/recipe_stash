@@ -3,10 +3,20 @@ const pool = require('../db');
 
 const router = Router();
 
+// connecting to heroku db
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
+
+client.connect();
+
 router.put('/', (request, response, next) => {
   const { email, first_name, last_name, id } = request.body;
   if (email) {
-    pool.query('UPDATE users SET email=$1 WHERE id=$2',
+    client.query('UPDATE users SET email=$1 WHERE id=$2',
     [email, id],
      (err, res) => {
       if (err) {
@@ -19,7 +29,7 @@ router.put('/', (request, response, next) => {
       }
     });
   } else if (first_name && last_name) {
-    pool.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
+    client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
     [first_name, last_name, id],
      (err, res) => {
       if (err) {

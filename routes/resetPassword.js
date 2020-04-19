@@ -4,11 +4,22 @@ const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 // require('dotenv').config();
+
+// connecting to heroku db
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
+
+client.connect();
+
 const router = Router();
 
 router.post('/', (request, response, next) => {
   const { email } = request.body;
-    pool.query('SELECT * FROM users WHERE email=$1',
+    client.query('SELECT * FROM users WHERE email=$1',
     [email],
      (err, res) => {
       if (err) {
@@ -21,7 +32,7 @@ router.post('/', (request, response, next) => {
         const expiration = Date.now() + 3600000
         // store the token in the reset_password_token column of the users table
         // also store when it expires in the reset_password_expires column
-        pool.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
+        client.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
         [token, expiration, email],
         (err, res) => {
           if (err) console.log(err)
@@ -61,7 +72,7 @@ router.post('/', (request, response, next) => {
 router.get('/:id/:token', (request, response, next) => {
   let token = request.params.token;
   let id = request.params.id;
-  pool.query('SELECT * FROM users WHERE id=$1',
+  client.query('SELECT * FROM users WHERE id=$1',
   [id],
    (err, res) => {
     if (err) {

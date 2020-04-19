@@ -21,7 +21,10 @@ router.post('/', (request, response, next) => {
   client.query('SELECT * FROM users WHERE email=$1',
     [email],
     (err, res) => {
-      if (err) return next(err);
+      if (err)  {
+        response.json(err);
+        return next(err);
+      }
       let first_name, last_name, id;
       first_name = res.rows[0].first_name;
       last_name = res.rows[0].last_name;

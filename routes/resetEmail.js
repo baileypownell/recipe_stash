@@ -7,12 +7,22 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const router = Router();
 
+// connecting to heroku db
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
+
+client.connect();
+
 router.post('/', (request, response, next) => {
   // steps:
   // make sure password is correct, if not, reject
   const { new_email, id, password } = request.body;
   let hashedPassword;
-  pool.query('SELECT * FROM users WHERE id=$1',
+  client.query('SELECT * FROM users WHERE id=$1',
     [id],
     (err, res) => {
       if (err) return next(err);
@@ -24,7 +34,7 @@ router.post('/', (request, response, next) => {
         }
         if (res) {
           // update record in DB
-          pool.query('UPDATE users SET email=$1 WHERE id=$2',
+          client.query('UPDATE users SET email=$1 WHERE id=$2',
           [new_email, id],
           (err, res) => {
             if (err) return next(err);
