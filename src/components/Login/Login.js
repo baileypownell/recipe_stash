@@ -18,7 +18,7 @@ class Login extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-
+    //console.log(process.env)
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
       faded[i].classList.add('fade-in');
@@ -42,11 +42,6 @@ class Login extends React.Component {
       }
     });
   }
-
-  // for google authenticated users
-  // onSignIn = (googleUser) => {
-  //   console.log(JSON.stringify(googleUser.getBasicProfile()));
-  // }
 
   responseGoogle = (response) => {
     // get email so that if the email exists in the database, the user is automatically logged in
