@@ -16,6 +16,6 @@ This is what this web app will do.
 ### (It's a work in progress).
 
 ![desktop](src/images/desktop.PNG)
-![login](src/images/mobileView.jpg){width="400px"}
+![login](src/images/mobileView.jpg){:width="400px"}
 ![homepage](src/images/mobileView2.PNG)
 ![dashboard](src/images/mobileView3.PNG)
