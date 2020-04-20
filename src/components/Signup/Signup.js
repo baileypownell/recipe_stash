@@ -42,7 +42,7 @@ class Signup extends React.Component {
       loading: true
     })
     // make sure user doesn't already exist in the DB
-    axios.get(`/userByEmail/${email}`)
+    axios.get(`/users/${email}`)
     .then(res => {
       if (res.data.rowCount > 0) {
         this.setState({
@@ -53,7 +53,7 @@ class Signup extends React.Component {
       } else {
         // hash password before sending
         let hashedPassword = bcrypt.hashSync(password, 10);
-        axios.post(`/signup`, {
+        axios.post(`/users`, {
           firstName: firstName,
           lastName: lastName,
           password: hashedPassword,

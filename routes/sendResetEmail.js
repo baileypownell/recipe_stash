@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const router = Router();
+require('dotenv').config();
 
 router.post('/', (request, response, next) => {
   const { email } = request.body;
@@ -11,7 +12,7 @@ router.post('/', (request, response, next) => {
     [email],
      (err, res) => {
       if (err) {
-        console.log(err)
+        console.log(err);
         return next(err);
       }
       if (res.rows[0].id) {
@@ -23,7 +24,9 @@ router.post('/', (request, response, next) => {
         client.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
         [token, expiration, email],
         (err, res) => {
-          if (err) console.log(err)
+          if (err) {
+            return next(err)
+          }
           if (res) {
             // now create nodemailer transport, which is actually the account sending the password reset email link
             const transporter = nodemailer.createTransport(sgTransport({
@@ -41,16 +44,15 @@ router.post('/', (request, response, next) => {
             };
             transporter.sendMail(mailOptions, (err, res) => {
               if (err) {
-                response.json({ success: false, message: 'there was an error sending the email'})
+                response.status(500).json({ success: false, message: 'there was an error sending the email', error: err.message, name: err.name})
               } else {
                 return response.status(200).json('recovery email sent');
               }
             })
-            console.log(res);
           }
       })
       } else {
-        return response.json({success: false, message: 'could not update DB'})
+        return response.status(500).json({success: false, message: 'could not update DB'})
       }
     });
   });
@@ -63,7 +65,6 @@ router.get('/:id/:token', (request, response, next) => {
   [id],
    (err, res) => {
     if (err) {
-      console.log(err)
       return next(err);
     } else {
       let reset_password_token;

@@ -25,7 +25,7 @@ class EditEmailModal extends React.Component {
     this.setState({
       loading: true
     });
-    axios.post(`/resetEmail`, {
+    axios.post(`/users`, {
       new_email: this.state.email,
       password: this.state.password,
       id: this.props.id

@@ -47,7 +47,7 @@ class Login extends React.Component {
     // get email so that if the email exists in the database, the user is automatically logged in
     // may or may not be a security concern
     let email = response.profileObj.email;
-    axios.get(`/userByEmail/${email}`)
+    axios.get(`/users/${email}`)
     .then(res => {
       if (res.data.rowCount === 0 ) {
         this.setState({
@@ -80,8 +80,9 @@ class Login extends React.Component {
       loading: true
     })
     // ensure user exists
-    axios.get(`/userByEmail/${this.state.email}`)
+    axios.get(`/users/${this.state.email}`)
     .then(res => {
+      console.log('ther es', res)
       if (res.data.rowCount == 0) {
         this.setState({
           signInError: 'An account does not exist for this email.',
