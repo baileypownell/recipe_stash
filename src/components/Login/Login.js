@@ -49,11 +49,9 @@ class Login extends React.Component {
   // }
 
   responseGoogle = (response) => {
-    console.log(response);
     // get email so that if the email exists in the database, the user is automatically logged in
     // may or may not be a security concern
     let email = response.profileObj.email;
-    console.log(email);
     axios.get(`/userByEmail/${email}`)
     .then(res => {
       if (res.data.rowCount === 0 ) {
