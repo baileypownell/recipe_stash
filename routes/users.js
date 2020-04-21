@@ -66,14 +66,15 @@ router.put('/', (request, response, next) => {
         return response.status(500).json({success: false, message: 'could not update DB'})
       }
     });
-  } else if (email) {
+  } else if (new_email) {
     // make sure password is correct, if not, reject
-  //  const { new_email } = request.body;
     let hashedPassword;
     client.query('SELECT * FROM users WHERE id=$1',
       [id],
       (err, res) => {
-        if (err) return next(err);
+        if (err) {
+          return next(err);
+        }
         let hashedPassword = res.rows[0].password;
         let oldEmail = res.rows[0].email;
         bcrypt.compare(password, hashedPassword, (err, res) => {
