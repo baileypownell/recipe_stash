@@ -1,12 +1,14 @@
 @import '../../../scss/mixins.scss';
 
-.modal {
-  @include tablet {
-    .editEmail form {
-      width: 50%;
+.editEmail {
+    @include tablet {
+      width: 75%;
       margin: 0 auto;
     }
-  }
+    @include desktop {
+      width: 50%;
+    }
+
   input {
     font-family: 'Didact Gothic', sans-serif;
     text-align: center;
