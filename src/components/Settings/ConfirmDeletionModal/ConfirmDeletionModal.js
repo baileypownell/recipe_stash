@@ -34,9 +34,9 @@ class ConfirmDeletionModal extends React.Component {
           loading: false
         })
       } else {
-        axios.delete(`/deleteAccount/${this.props.id}`)
+        axios.delete(`/users/${this.props.id}`)
         .then((res) => {
-          axios.delete(`/deleteAllUserRecipes/${this.props.id}`)
+          axios.delete(`/recipes/all/${this.props.id}`)
           .then(res => {
             console.log(res)
             // update redux

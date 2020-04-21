@@ -45,7 +45,7 @@ class EditProfileModal extends React.Component {
         last_name: lastName,
         id: id
     }
-    axios.put(`/updateProfile`, payload)
+    axios.put(`/users`, payload)
     .then((res) => {
       this.setState({
         loading: false

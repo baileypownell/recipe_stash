@@ -56,11 +56,10 @@ class Settings extends React.Component {
     this.setState({
       loading: true
     })
-    axios.post(`/resetPassword`, {
+    axios.post(`/sendResetEmail`, {
       email: this.props.email
     })
     .then(res => {
-      console.log('the result is: ', res);
       if (res.data.success === false) {
         this.setState({
           showPasswordError: true,
@@ -74,7 +73,6 @@ class Settings extends React.Component {
       }
     })
     .catch(err => {
-      console.log(err);
       this.setState({
         loading: false
       })
@@ -89,7 +87,6 @@ class Settings extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
       faded[i].classList.add('fade-in');
