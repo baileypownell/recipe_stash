@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const router = Router();
-//require('dotenv').config();
+
 
 router.post('/', (request, response, next) => {
   const { email } = request.body;
