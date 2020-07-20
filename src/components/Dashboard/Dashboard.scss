@@ -18,6 +18,14 @@
   }
 }
 
+.searchbar {
+  display: flex;
+  flex-direction: column;
+  input {
+    border-radius: 5px;
+  }
+}
+
 .dashboard {
   .BounceLoader {
     @include flexColumn;

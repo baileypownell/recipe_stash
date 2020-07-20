@@ -88,7 +88,15 @@ class Dashboard extends React.Component {
 
     return (
       <>
-      <h1 className="Title">Recipe Box<i className="fas fa-utensils"></i></h1>
+      <div className="searchbar">
+        <div>
+          <h1 >Recipe Box<i className="fas fa-utensils"></i></h1>
+        </div>
+        <div>
+          <input type="text"></input><i class="fas fa-search"></i>
+        </div>
+      </div>
+      
       <div className="dashboard">
         {loading_recipes ?
           <div className="BounceLoader">
