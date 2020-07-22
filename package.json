@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./server.js NODE_ENV=development ",
+    "dev": "webpack-dev-server",
+    "dev-server": "nodemon ./server.js",
     "start": "node ./server.js",
     "build": "webpack -p --config ./webpack.config.js"
   },
@@ -62,6 +63,7 @@
     "css-loader": "^3.6.0",
     "dotenv": "^8.2.0",
     "file-loader": "^6.0.0",
+    "html-webpack-plugin": "^4.3.0",
     "http-proxy-middleware": "^1.0.5",
     "imagemin-webpack": "^5.1.1",
     "node-sass": "^4.14.1",

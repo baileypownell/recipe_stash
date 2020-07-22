@@ -82,7 +82,6 @@ class Login extends React.Component {
     // ensure user exists
     axios.get(`/users/${this.state.email}`)
     .then(res => {
-      console.log('ther es', res)
       if (res.data.rowCount == 0) {
         this.setState({
           signInError: 'An account does not exist for this email.',
@@ -110,6 +109,9 @@ class Login extends React.Component {
           console.log(err)
         })
       }
+    })
+    .catch((err) => {
+      console.log(err)
     })
   }
 

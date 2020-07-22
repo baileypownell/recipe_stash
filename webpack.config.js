@@ -49,13 +49,15 @@ return {
       pngquant: {
         quality: '95-100'
       }
-    })
+    }),
   ],
   devServer: {
-     contentBase: __dirname,
+     contentBase: path.join(__dirname, '/dist'),
      hot: true,
      historyApiFallback: true,
-     contentBase: './',
+     port: 3000,
+     compress: true,
+     //contentBase: './',
      open: true
   }
 }
