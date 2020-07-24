@@ -55,7 +55,7 @@ class Home extends React.Component {
               <div id="question">
                 <h2 className="fade">Or have you ever caught yourself wondering "What if my house burns down and I lose this?" as you take pen in hand to handwrite a recipe?</h2>
                   <h2 className="fade">Create an acount and start saving your recipes</h2>
-                  <h1 className="fade" id="forever">FOREVER</h1>
+                  <h1 className="fade" id="forever">FOREVER 7</h1>
                   <button className="button fade" onClick={this.start}>Start Cooking</button>
               </div>
             </div>

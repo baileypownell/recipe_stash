@@ -8,7 +8,7 @@ module.exports = (env) => {
 return {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: __dirname + '/dist',
     publicPath: '/',
     filename: 'bundle.js'
   },
@@ -52,13 +52,14 @@ return {
     }),
   ],
   devServer: {
-     contentBase: path.join(__dirname, '/dist'),
-     hot: true,
-     historyApiFallback: true,
-     port: 3000,
-     compress: true,
-     //contentBase: './',
-     open: true
+     contentBase: './dist',
+     proxy: {
+      '/**': {
+        target: 'http://localhost:3000',
+        secure: false,
+        changeOrigin: true,
+      }
+     }
   }
 }
 };
