@@ -53,6 +53,7 @@ return {
   ],
   devServer: {
      contentBase: './dist',
+     historyApiFallback: true,
      proxy: {
       '/**': {
         target: 'http://localhost:3000',
