@@ -54,13 +54,14 @@ return {
   devServer: {
      contentBase: './dist',
      historyApiFallback: true,
+     // historyApiFallback only works without the proxy...
      proxy: {
       '/**': {
         target: 'http://localhost:3000',
         secure: false,
         changeOrigin: true,
       }
-     }
+     },
   }
 }
 };

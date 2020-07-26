@@ -17,12 +17,12 @@ app.use((err, req, res, next) => {
 
 
 const port = process.env.PORT || 3000;
-console.log('port = ', port)
+
 
 app.use(express.static(__dirname + '/dist'));
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/dist/index.html');
 });
 
 app.listen(port, () => {
