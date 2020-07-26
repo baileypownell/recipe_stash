@@ -18,13 +18,30 @@
   }
 }
 
-.searchbar {
-  display: flex;
-  flex-direction: column;
-  input {
-    border-radius: 5px;
+
+.title {
+  background-color: $green;
+  color: white;
+  font-family: 'Didact Gothic', sans-serif;
+  padding: 10px;
+  .searchbar {
+    display: flex;
+    flex-direction: row;
+    input {
+      border-radius: 5px;
+      width: 100%;
+      border: 2px solid white;
+      outline: none;
+    }
+    i {
+      margin-left: 10px;
+      margin-right: 5px;
+      font-size: 25px;
+      cursor: pointer;
+    }
   }
 }
+
 
 .dashboard {
   .BounceLoader {

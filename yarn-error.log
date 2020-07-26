@@ -1,0 +1,113 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\HP\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add semantic-ui-react
+
+PATH: 
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Docker\Docker\Resources\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\xampp\php;C:\ProgramData\ComposerSetup\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\ProgramData\chocolatey\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\HP\AppData\Local\atom\bin;C:\Users\HP\Downloads\dart-sass-1.22.10-windows-x64;C:\Program Files (x86)\mitmproxy\bin;C:\Users\HP\AppData\Local\GitHubDesktop\bin;C:\Program Files\Docker;C:\Program Files\PostgreSQL\12\bin\;C:\HashiCorp\Vagrant\bin;C:\Users\HP\AppData\Roaming\npm;C:\Users\HP\AppData\Local\Programs\Microsoft VS Code;;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Users\HP\AppData\Local\Programs\Python\Python38-32\Scripts\;C:\Users\HP\AppData\Local\Programs\Python\Python38-32\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\HP\AppData\Local\atom\bin;C:\Users\HP\Downloads\dart-sass-1.22.10-windows-x64;C:\Program Files (x86)\mitmproxy\bin;C:\Users\HP\AppData\Local\GitHubDesktop\bin;C:\Program Files\heroku\bin;C:\Users\HP\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\HP\AppData\Local\Microsoft\WindowsApps;;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2020.1.2\bin;
+
+Yarn version: 
+  1.15.2
+
+Node version: 
+  10.15.3
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.0.tgz: ESOCKETTIMEDOUT
+      at ClientRequest.<anonymous> (C:\Users\HP\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:130168:19)
+      at Object.onceWrapper (events.js:277:13)
+      at ClientRequest.emit (events.js:189:13)
+      at TLSSocket.emitRequestTimeout (_http_client.js:662:40)
+      at Object.onceWrapper (events.js:277:13)
+      at TLSSocket.emit (events.js:189:13)
+      at TLSSocket.Socket._onTimeout (net.js:440:8)
+      at ontimeout (timers.js:436:11)
+      at tryOnTimeout (timers.js:300:5)
+      at listOnTimeout (timers.js:263:5)
+
+npm manifest: 
+  {
+    "name": "virtual-cookbook",
+    "version": "1.0.0",
+    "description": "It's a common problem for many internet chefs; you find a recipe you want to try, pin it on Pinterest.com, come back 6 months later and find that the domain for the recipe no longer exists. Or you try something you really love, write it down on a recipe card to put in your recipe box, and then think to yourself \"What if my house burned down? I wouldn't even have this anymore.\" Or maybe you got halfway through and thought \"This is too much work\".",
+    "main": "index.js",
+    "proxy": "http://localhost:3000",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "dev": "webpack-dev-server --config ./webpack.config.js --mode development",
+      "dev-server": "nodemon ./server.js",
+      "start": "node ./server.js",
+      "build": "webpack -p --config ./webpack.config.js"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/baileypownell/Virtual-Cookbook.git"
+    },
+    "keywords": [
+      "cooking"
+    ],
+    "author": "Bailey Pownell",
+    "license": "ISC",
+    "engines": {
+      "node": "10.x"
+    },
+    "bugs": {
+      "url": "https://github.com/baileypownell/Virtual-Cookbook/issues"
+    },
+    "homepage": "https://github.com/baileypownell/Virtual-Cookbook#readme",
+    "dependencies": {
+      "@babel/plugin-proposal-class-properties": "^7.10.4",
+      "@babel/plugin-transform-runtime": "^7.10.5",
+      "@babel/preset-react": "^7.10.4",
+      "axios": "^0.19.2",
+      "bcryptjs": "^2.4.3",
+      "body-parser": "^1.19.0",
+      "concurrently": "^5.2.0",
+      "express": "^4.17.1",
+      "imagemin-webpack-plugin": "^2.4.2",
+      "node": "^13.14.0",
+      "node-gyp": "^6.1.0",
+      "nodemailer": "^6.4.10",
+      "nodemailer-sendgrid-transport": "^0.2.0",
+      "nodemon": "^2.0.4",
+      "pg": "^8.3.0",
+      "react": "^16.13.1",
+      "react-dom": "^16.13.1",
+      "react-google-login": "^5.1.21",
+      "react-redux": "^7.2.0",
+      "react-router-redux": "^4.0.8",
+      "react-spinners": "^0.8.3",
+      "reactdom": "^2.0.0",
+      "redux": "^4.0.5",
+      "redux-devtools": "^3.5.0",
+      "redux-persist": "^6.0.0",
+      "source-map-explorer": "^2.4.2",
+      "webpack-cli": "^3.3.12"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.10.5",
+      "@babel/preset-env": "^7.10.4",
+      "babel-loader": "^8.1.0",
+      "cors": "^2.8.5",
+      "css-loader": "^3.6.0",
+      "dotenv": "^8.2.0",
+      "file-loader": "^6.0.0",
+      "html-webpack-plugin": "^4.3.0",
+      "http-proxy-middleware": "^1.0.5",
+      "imagemin-webpack": "^5.1.1",
+      "node-sass": "^4.14.1",
+      "react-router-dom": "^5.2.0",
+      "sass-loader": "^8.0.2",
+      "style-loader": "^1.2.1",
+      "url-loader": "^4.1.0",
+      "webpack": "^4.43.0",
+      "webpack-dev-server": "^3.11.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
+import { Search } from 'semantic-ui-react';
 
 import Category from './Category/Category';
 
@@ -12,7 +12,9 @@ class Dashboard extends React.Component {
 
   state = {
     recipes: null,
-    loading_recipes: true
+    loading_recipes: true,
+    results: [],
+    value: '',
   }
 
   fetchRecipes = () => {
@@ -82,18 +84,22 @@ class Dashboard extends React.Component {
     this.fetchRecipes();
   }
 
+  handleSearchChange = (e) => {
+    console.log(e.target.value)
+  }
+
   render() {
 
     const { recipes, loading_recipes } = this.state;
 
     return (
       <>
-      <div className="searchbar">
+      <div className="title">
         <div>
-          <h1 >Recipe Box<i className="fas fa-utensils"></i></h1>
+          <h1 >Recipe Box</h1>
         </div>
-        <div>
-          <input type="text"></input><i class="fas fa-search"></i>
+        <div className="searchbar">
+          <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i class="fas fa-search"></i>
         </div>
       </div>
       
