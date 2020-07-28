@@ -8,7 +8,10 @@ const bcrypt = require('bcryptjs');
 
 router.get('/', (request, response, next) => {
   client.query('SELECT * FROM users', (err, res) => {
-    if (err) return next(err);
+    if (err) {
+      console.log(err)
+      return next(err)
+    };
     response.status(200).json(res.rows);
   });
 });

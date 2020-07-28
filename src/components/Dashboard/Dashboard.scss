@@ -24,14 +24,27 @@
   color: white;
   font-family: 'Didact Gothic', sans-serif;
   padding: 10px;
+  @include tablet {
+    padding: 20px;
+  }
   .searchbar {
     display: flex;
     flex-direction: row;
+    @include tablet {
+      width: 30%;
+      margin: 0 0 0 auto;
+    }
     input {
       border-radius: 5px;
       width: 100%;
       border: 2px solid white;
       outline: none;
+      @include tablet {
+        padding: 10px;
+      }
+      &:focus {
+        border-color: $orange;
+      }
     }
     i {
       margin-left: 10px;

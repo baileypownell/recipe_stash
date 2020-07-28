@@ -11,23 +11,32 @@ import './Dashboard.scss';
 class Dashboard extends React.Component {
 
   state = {
-    recipes: null,
+    unfilteredRecipes: null,
     loading_recipes: true,
+    filteredRecipes: null,
     results: [],
     value: '',
   }
 
   fetchRecipes = () => {
-    let recipes = {
-      breakfast: [],
-      lunch: [],
-      dinner: [],
-      side_dishes: [],
-      desserts: [],
-      dessert: [],
-      drinks: [],
-      other: []
-    }
+    let recipes = [
+       []
+      ,
+       []
+      ,
+       []
+      ,
+      []
+      ,
+      
+      []
+      ,
+      []
+      ,
+      [],
+      []
+      ,
+    ]
     // API call to get all recipes
     axios.get(`/recipes/${this.props.userId}`)
     .then(res => {
@@ -38,25 +47,27 @@ class Dashboard extends React.Component {
           })
           return;
         }
+        console.log(recipes[0].breakfast)
         res.data.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
-            recipes.dinner.push(recipe)
+            recipes[2].push(recipe)
           } else if (recipe.category === 'Dessert') {
-            recipes.dessert.push(recipe)
+            recipes[4].push(recipe)
           } else if (recipe.category === 'Drinks') {
-            recipes.drinks.push(recipe)
+            recipes[6].push(recipe)
           } else if (recipe.category === 'Lunch') {
-            recipes.lunch.push(recipe)
+            recipes[1].push(recipe)
           } else if (recipe.category === 'Breakfast') {
-            recipes.breakfast.push(recipe)
+            recipes[0].push(recipe)
           } else if (recipe.category === 'Other') {
-            recipes.other.push(recipe)
+            recipes[7].push(recipe)
           } else if (recipe.category === 'Side Dish') {
-            recipes.side_dishes.push(recipe)
+            recipes[3].push(recipe)
           }
         });
         this.setState({
-          recipes: recipes,
+          unfilteredRecipes: recipes,
+          filteredRecipes: recipes,
           loading_recipes: false
         })
       }
@@ -85,12 +96,19 @@ class Dashboard extends React.Component {
   }
 
   handleSearchChange = (e) => {
-    console.log(e.target.value)
+    let input = e.target.value.toLowerCase().trim()
+    let recipesNarrowedByInput = this.state.unfilteredRecipes
+    recipesNarrowedByInput = recipesNarrowedByInput.map((el) => {
+      return el.filter(recipe => recipe.title.toLowerCase().includes(input))
+    })
+    this.setState({
+      filteredRecipes: recipesNarrowedByInput
+    })
   }
 
   render() {
 
-    const { recipes, loading_recipes } = this.state;
+    const { filteredRecipes, loading_recipes } = this.state;
 
     return (
       <>
@@ -116,43 +134,43 @@ class Dashboard extends React.Component {
           <Category
             title="Breakfast"
             id="breakfast"
-            recipes={recipes ? recipes.breakfast : []}
+            recipes={filteredRecipes ? filteredRecipes[0] : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Lunch"
             id="lunch"
-            recipes={recipes ? recipes.lunch : []}
+            recipes={filteredRecipes ? filteredRecipes[1] : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dinner"
             id="dinner"
-            recipes={recipes ? recipes.dinner : []}
+            recipes={filteredRecipes ? filteredRecipes[2] : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Side Dish"
             id="side"
-            recipes={recipes ? recipes.side_dishes : []}
+            recipes={filteredRecipes ? filteredRecipes[3] : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dessert"
             id="dessert"
-            recipes={recipes ? recipes.dessert : []}
+            recipes={filteredRecipes ? filteredRecipes[4] : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Drinks"
             id="drinks"
-            recipes={recipes ? recipes.drinks : []}
+            recipes={filteredRecipes ? filteredRecipes[5] : []}
             updateDashboard={this.updateDashboard}
             />
           <Category
             title="Other"
             id="other"
-            recipes={recipes ? recipes.other : []}
+            recipes={filteredRecipes ? filteredRecipes[6] : []}
             updateDashboard={this.updateDashboard}
             />
             </>

@@ -44,6 +44,7 @@ class Signup extends React.Component {
     // make sure user doesn't already exist in the DB
     axios.get(`/users/${email}`)
     .then(res => {
+      console.log(res)
       if (res.data.rowCount > 0) {
         this.setState({
           submissionError: 'An account already exists for this email.',
