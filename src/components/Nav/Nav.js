@@ -14,8 +14,12 @@ class Nav extends React.Component {
           <div>
             {this.props.userLoggedIn ?
               <>
+              <div>
               <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>
+              </div>
+              <div>
               <NavLink to="/settings" activeClassName="active"><i className="fas fa-user-cog"></i></NavLink> 
+              </div>
               </>  :
                 <>
               <NavLink to="/login" activeClassName="active">Login</NavLink>

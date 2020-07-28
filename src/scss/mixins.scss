@@ -27,12 +27,16 @@
 }
 
 @mixin button {
-  
+  font-size: 18px;
+  background-color: $green;
   cursor: pointer;
   outline: none;
   text-transform: uppercase;
   font-family: 'Didact Gothic', sans-serif;
   transition: all .3s;
+  &:hover {
+    background-color: darken($green, 5%);
+  }
 }
 
 @mixin auth {
@@ -65,7 +69,7 @@
       margin: 0 auto;
       background: rgba(0, 0, 0, 0.5);
       padding: 5vw;
-      border-radius: 30px;
+      border-radius: 10px;
       @include tablet {
         width: 50%;
         padding: 2vw;
