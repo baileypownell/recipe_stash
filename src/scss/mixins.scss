@@ -27,15 +27,11 @@
 }
 
 @mixin button {
-  margin-top: 20px;
-  padding: 15px 25px;
-  border: none;
-  border-radius: 20px;
+  
   cursor: pointer;
   outline: none;
   text-transform: uppercase;
   font-family: 'Didact Gothic', sans-serif;
-  font-size: 22px;
   transition: all .3s;
 }
 
@@ -110,13 +106,10 @@
       }
       button {
         @include button;
-        width: 50%;
-        margin: 10px auto;
+        
         background-color: $green;
         color: $white;
-        transition: all .4s;
-        width: 100%;
-        border: 2px solid $green;
+        
       }
     }
 }

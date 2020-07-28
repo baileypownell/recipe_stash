@@ -5,6 +5,7 @@ const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
 import GoogleLogin from 'react-google-login';
 import './Login.scss';
+import M from 'materialize-css';
 
 class Login extends React.Component {
 
@@ -131,7 +132,9 @@ class Login extends React.Component {
           </label>
           <button
             disabled={!formValid}
-            className={formValid ? 'enabled' : 'disabled'}>
+            className={formValid ? 'enabled' : 'disabled'}
+            className="waves-effect waves-light btn"
+            >
             {loading?
               <ClipLoader
                 css={`border-color: white;`}
@@ -141,7 +144,7 @@ class Login extends React.Component {
               />
           : 'Submit'}
           </button>
-          <p>Or, log in with Google</p>
+          
             <GoogleLogin
                className="googleButton"
                clientId="448227348202-97da7vci3t474ch3ah6goms41nlghb1l.apps.googleusercontent.com"
@@ -150,7 +153,14 @@ class Login extends React.Component {
                onFailure={this.responseGoogle}
                cookiePolicy={'single_host_origin'}
              />
-          {signInError.length > 0 ? <p className="error">{signInError}</p> : null}
+          {
+          signInError.length > 0 ? 
+            <>
+              <p className="error">{signInError}</p> 
+              <button class="waves-effect waves-light btn">Reset Password</button>
+            </>
+          : null
+          }
         </form>
       </div>
     )
