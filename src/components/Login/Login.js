@@ -22,6 +22,7 @@ class Login extends React.Component {
     //console.log(process.env)
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
+        console.log('here')
       faded[i].classList.add('fade-in');
       }
     }

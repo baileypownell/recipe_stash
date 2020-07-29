@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import Nav from './components/Nav/Nav';
+
 import {
   BrowserRouter,
   Route,
@@ -26,6 +27,7 @@ import {
   ResetPassword
 } from './components/index';
 
+import 'materialize-css/dist/css/materialize.min.css';
 import './scss/main.scss';
 
 const persistConfig = {

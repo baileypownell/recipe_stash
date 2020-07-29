@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { NavLink, Link, withRouter } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 
 import icon from '../../images/apple-touch-icon.png';

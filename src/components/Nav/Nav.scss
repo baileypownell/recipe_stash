@@ -2,8 +2,9 @@
 @import '../../scss/variables.scss';
 
 nav {
+  display: flex!important;
   @include flexRow;
-  background-color: $secondary;
+  background-color: $secondary!important;
   justify-content: space-between;
   align-items: center;
   height: auto!important;
