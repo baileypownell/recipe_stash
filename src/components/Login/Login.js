@@ -23,7 +23,7 @@ class Login extends React.Component {
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
         console.log('here')
-      faded[i].classList.add('fade-in');
+        faded[i].classList.add('fade-in');
       }
     }
     setTimeout(Appear, 500);
@@ -131,6 +131,7 @@ class Login extends React.Component {
             Password
             <input onChange={this.updateInput} id="password" type="password" name="password" />
           </label>
+          <div className="buttons">
           <button
             disabled={!formValid}
             className={formValid ? 'enabled' : 'disabled'}
@@ -154,6 +155,8 @@ class Login extends React.Component {
                onFailure={this.responseGoogle}
                cookiePolicy={'single_host_origin'}
              />
+          </div>
+          
           {
           signInError.length > 0 ? 
             <>

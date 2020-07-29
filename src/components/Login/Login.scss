@@ -4,6 +4,12 @@
   @include auth;
 }
 
+.buttons {
+  button {
+    margin-bottom: 10px;
+    width: 225px;
+  }
+}
 
 .abcRioButton {
   margin: 0 auto;
