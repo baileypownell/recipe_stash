@@ -19,7 +19,7 @@ class Square extends React.Component {
         data={data}
         onClick={this.viewRecipe}
       >
-        <h3>{title}</h3>
+        <h4>{title}</h4>
       </div>
     )
   }

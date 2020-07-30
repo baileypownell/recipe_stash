@@ -22,7 +22,6 @@ class Login extends React.Component {
     //console.log(process.env)
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
-        console.log('here')
         faded[i].classList.add('fade-in');
       }
     }
@@ -56,6 +55,7 @@ class Login extends React.Component {
           signInError: 'An account does not exist for this email.',
           loading: false
         })
+        M.toast({html: 'An account does not exist for this email.'})
       } else {
         axios.post(`/signinWithGoogle`, {
           email: email
@@ -89,6 +89,7 @@ class Login extends React.Component {
           signInError: 'An account does not exist for this email.',
           loading: false
         })
+        M.toast({html: 'An account does not exist for this email.'})
       } else {
         axios.post(`/signin`, {
           password: this.state.password,
@@ -100,6 +101,7 @@ class Login extends React.Component {
               signInError: 'The password you entered is incorrect.',
               loading: false
             })
+            M.toast({html: 'The password you entered is incorrect.'})
           } else {
             // update Redux
             this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
@@ -109,11 +111,13 @@ class Login extends React.Component {
         })
         .catch((err) => {
           console.log(err)
+          M.toast({html: 'There was an error.'})
         })
       }
     })
     .catch((err) => {
       console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -155,16 +159,14 @@ class Login extends React.Component {
                onFailure={this.responseGoogle}
                cookiePolicy={'single_host_origin'}
              />
+
+          {
+              signInError.length > 0 ? 
+                  <button class="waves-effect waves-light btn">Reset Password</button>
+              : null
+          }
           </div>
           
-          {
-          signInError.length > 0 ? 
-            <>
-              <p className="error">{signInError}</p> 
-              <button class="waves-effect waves-light btn">Reset Password</button>
-            </>
-          : null
-          }
         </form>
       </div>
     )

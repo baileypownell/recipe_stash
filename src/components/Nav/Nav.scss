@@ -24,7 +24,7 @@ nav {
     height: 75px;
     > div {
       height: 100%;
-    /* text-align: center; */
+    overflow: hidden;
     display: flex;
     }
     a {

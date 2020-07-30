@@ -16,6 +16,10 @@
   }
 }
 
+button {
+  @include button;
+}
+
 .settings {
   width: 90%;
   margin: 0 auto;
@@ -55,30 +59,25 @@
     }
     border-bottom: 1px solid $secondary;
     padding: 8px 0;
-    button {
-      background-color: $secondary;
-      font-size: 16px;
-      padding: 10px;
-      font-weight: normal;
-      border: 2px solid $secondary;
-      min-width: 82px;
-      &:hover {
-        color: $secondary;
-        background-color: white;
-      }
-    }
+    // button {
+    //   background-color: $secondary;
+    //   font-size: 16px;
+    //   padding: 10px;
+    //   font-weight: normal;
+    //   border: 2px solid $secondary;
+    //   min-width: 82px;
+    //   &:hover {
+    //     color: $secondary;
+    //     background-color: white;
+    //   }
+    // }
   }
-  button {
-    margin: 0;
-    color: white;
-    background-color: $primary;
-    border: 2px solid $primary;
-    &:hover {
-      color: $primary;
-      background-color: white;
-      borer-color: $primary;
-    }
-  }
+  // button {
+  //   margin: 0;
+  //   color: white;
+  //   background-color: $primary;
+  //   border: 2px solid $primary;
+  // }
   .buttonParent {
     margin: 0 auto;
     width: 100%;
@@ -86,11 +85,11 @@
     @include flexRow;
     flex-wrap:wrap;
     justify-content: space-between;
-    button {
-      width: 48%;
-      font-size: 16px;
-      padding: 15px;
-    }
+    // button {
+    //   width: 48%;
+    //   font-size: 16px;
+    //   padding: 15px;
+    // }
   }
   .passwordMessage {
     text-align: center;

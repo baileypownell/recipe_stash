@@ -1,7 +1,30 @@
 
+@import './mixins.scss';
+
 h1, h2, h3, h4, h5, h6 {
     padding: 8px 0;
     margin: 0;
+}
+
+h1 {
+  font-size: 30px;
+  @include desktop {
+    font-size: 40px;
+  }
+}
+
+h3 {
+  font-size: 22px;
+  @include desktop {
+    font-size: 30px;
+  }
+}
+
+h4 {
+  font-size: 16px;
+  @include tablet {
+    font-size: 18px;
+  }
 }
 
 body {

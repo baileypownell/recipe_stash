@@ -42,15 +42,6 @@
   }
   button {
     @include button;
-
-    // @include tablet {
-    //   width: 40%;
-    //   margin: 0 5vw;
-    // }
-    // @include desktop {
-    //   width: 30%;
-    //   margin: 0 2vw;
-    // }
   }
   #skew {
     min-height: 65vh;

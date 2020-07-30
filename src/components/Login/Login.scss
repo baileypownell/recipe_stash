@@ -5,6 +5,9 @@
 }
 
 .buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   button {
     margin-bottom: 10px;
     width: 225px;
@@ -19,5 +22,14 @@
   width: 225px!important;
 }
 
+#toast-container {
+  top: auto !important;
+    right: auto !important;
+    bottom: 10%;
+    left: 10%;
+}
 
+.toast {
+  background-color:$primary!important;
+}
 

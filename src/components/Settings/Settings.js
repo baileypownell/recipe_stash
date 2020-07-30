@@ -104,7 +104,7 @@ class Settings extends React.Component {
             <div id="profile">
               <i className="fas fa-user-circle"></i><h2>{this.props.firstName}</h2>
             </div>
-            <button onClick={this.logout}>Log out</button>
+            <button className="waves-effect waves-light btn" onClick={this.logout}>Log out</button>
           </div>
           <div id="table">
             <div className="row">
@@ -112,14 +112,14 @@ class Settings extends React.Component {
                 <p>Name</p>
                 <h3>{this.props.firstName} {this.props.lastName}</h3>
               </div>
-              <button onClick={this.showModal} >Change</button>
+              <button className="waves-effect waves-light btn" onClick={this.showModal} >Change</button>
             </div>
             <div className="row">
               <div>
                 <p>Email</p>
                 <h3>{this.props.email}</h3>
               </div>
-              <button onClick={this.showEmailModal} >
+              <button className="waves-effect waves-light btn" onClick={this.showEmailModal} >
                 {this.state.emailLoading ?
                   <ClipLoader
                     css={`border-color: white`}
@@ -132,8 +132,9 @@ class Settings extends React.Component {
             </div>
           </div>
           <div className="buttonParent">
-            <button onClick={this.toggleConfirmationModal}>Delete Account</button>
+            <button className="waves-effect waves-light btn" onClick={this.toggleConfirmationModal}>Delete Account</button>
             <button
+              className="waves-effect waves-light btn"
               onClick={this.resetPassword}>
               {this.state.loading?
                 <ClipLoader

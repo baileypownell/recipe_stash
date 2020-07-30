@@ -27,30 +27,36 @@
   @include tablet {
     padding: 20px;
   }
+  > div {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    @include tablet {
+      flex-direction: row;
+    }
+  }
   .searchbar {
     display: flex;
     flex-direction: row;
+    align-items: center;
     @include tablet {
       width: 30%;
       margin: 0 0 0 auto;
     }
     input {
       border-radius: 5px;
+      color: white;
       width: 100%;
-      border: 2px solid white;
+      border-bottom: 2px solid white!important;
       outline: none;
       @include tablet {
         padding: 10px;
-      }
-      &:focus {
-        border-color: $orange;
       }
     }
     i {
       margin-left: 10px;
       margin-right: 5px;
-      font-size: 25px;
-      cursor: pointer;
+      font-size: 20px;
     }
   }
 }

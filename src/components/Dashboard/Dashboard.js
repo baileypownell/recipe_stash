@@ -115,9 +115,9 @@ class Dashboard extends React.Component {
       <div className="title">
         <div>
           <h1 >Recipe Box</h1>
-        </div>
-        <div className="searchbar">
+          <div className="searchbar">
           <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i class="fas fa-search"></i>
+        </div>
         </div>
       </div>
       
