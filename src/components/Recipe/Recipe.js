@@ -124,16 +124,16 @@ class Recipe extends React.Component {
 
           </div>
           <div className="bottom">
-            <button onClick={this.showConfirmationModal}>Delete Recipe</button>
+            <button className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe</button>
           </div>
         </div>
-        {showConfirmation ?
+        {/* {showConfirmation ?
           <ConfirmationModal
             text={'Are you sure you want to delete this recipe?'}
             confirmAction={this.deleteRecipe}
             closeModal={this.hideConfirmationModal}
             options={['Yes', 'No']} />
-        : null}
+        : null} */}
         {showEditModal ?
           <Modal
             edit={true}

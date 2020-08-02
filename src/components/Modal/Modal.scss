@@ -1,13 +1,14 @@
  @import '../../scss/mixins.scss';
 
-.modal {
+.modalCustom {
   background: linear-gradient(290deg, $primary, $orange);
-  position: fixed;
+  position: fixed!important;
   top: 0;
   height: 100%;
-  overflow-y: hidden;
-  width: 100%;
-  padding: 10vw;
+  overflow-y: hidden!important;
+  width: 100%!important;
+  padding: 10vw!important;
+  z-index: 1;
   i {
     position: absolute;
     top: 20px;
@@ -20,7 +21,7 @@
       transform: scale(1.08)
     }
   }
-  h2, label {
+  h3, label {
     color: $white;
     font-family: 'Didact Gothic', sans-serif;
   }
@@ -39,6 +40,7 @@
         margin: 0;
         padding: 5px;
         font-size: 18px;
+        color: white;
         @include tablet {
           font-size: 22px;
         }
@@ -49,9 +51,11 @@
       border: none;
       outline: none;
       padding: 10px;
-      color: $orange;
+      background-color: white;
+      color: $orange!important;
       font-weight: bold;
       text-align: left;
+      color: white;
       @include tablet {
         font-size: 18px;
       }
@@ -62,13 +66,8 @@
     button {
       @include button;
       color: $orange;
-      background-color: white;
+      background-color: white!important;
       font-weight: 800;
-      border: 2px solid $primary;
-      @include tablet {
-        width: 55%;
-        margin: 1vw auto;
-      }
     }
   }
 }

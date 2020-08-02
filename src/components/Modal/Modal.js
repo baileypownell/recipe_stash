@@ -111,12 +111,12 @@ class Modal extends React.Component {
   render() {
     const { recipeId, title, ingredients, directions, edit } = this.props;
     return (
-      <div className="modal">
+      <div className="modalCustom">
       <i
         onClick={this.props.closeModal}
         className="fas fa-times-circle">
       </i>
-        <h2>{this.props.edit ? 'Edit' : 'Add'} Recipe</h2>
+        <h3>{this.props.edit ? 'Edit' : 'Add'} Recipe</h3>
         <div>
           <form onSubmit={edit ? this.updateRecipe : this.createRecipe}>
           <label>
@@ -152,7 +152,7 @@ class Modal extends React.Component {
             </textarea>
           </label>
           <button
-            className={!this.state.recipeValid ? 'disabled' : 'enabled'}
+            className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
             disabled={!this.state.recipeValid}
           >{this.state.loading ?
             <ClipLoader

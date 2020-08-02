@@ -47,7 +47,6 @@ class Dashboard extends React.Component {
           })
           return;
         }
-        console.log(recipes[0].breakfast)
         res.data.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
             recipes[2].push(recipe)
@@ -116,7 +115,7 @@ class Dashboard extends React.Component {
         <div>
           <h1 >Recipe Box</h1>
           <div className="searchbar">
-          <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i class="fas fa-search"></i>
+          <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
         </div>
         </div>
       </div>

@@ -49,15 +49,6 @@
   text-align: center;
     button {
       @include button;
-      background-color: $primary;
-      color: $white;
-      border: 2px solid $primary;
-      .enabled {
-        &:hover {
-          color: $primary;
-          background-color: $white;
-        }
-      }
       @include desktop {
         margin: 0 auto;
       }

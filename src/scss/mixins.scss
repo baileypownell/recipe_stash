@@ -35,7 +35,7 @@
   font-family: 'Didact Gothic', sans-serif;
   transition: all .3s;
   &:hover {
-    background-color: darken($green, 5%);
+    background-color: darken($green, 5%)!important;
   }
 }
 
@@ -110,10 +110,15 @@
       }
       button {
         @include button;
-        
         background-color: $green;
         color: $white;
-        
+      }
+      .googleButton {
+        width: 225px!important;
+        background-color: white!important;
+        &:hover {
+          background-color: darken(white, 15%)!important;
+        }
       }
     }
 }

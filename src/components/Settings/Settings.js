@@ -4,10 +4,7 @@ import * as actions from '../../store/actionCreators';
 import { withRouter } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import axios from 'axios';
-import EditProfileModal from './EditProfileModal/EditProfileModal';
-import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
-import ConfirmDeletionModal from './ConfirmDeletionModal/ConfirmDeletionModal';
-import EditEmailModal from './EditEmailModal/EditEmailModal';
+import M from 'materialize-css';
 import './Settings.scss';
 
 class Settings extends React.Component {
@@ -93,6 +90,108 @@ class Settings extends React.Component {
       }
     }
     setTimeout(Appear, 500);
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.collapsible');
+      var instances = M.Collapsible.init(elems, {});
+    });
+}
+
+updateInput = (e) => {
+  this.setState({
+    [e.target.id]: e.target.value
+  })
+}
+
+updateProfile = (e) => {
+  const { firstName, lastName } = this.state;
+  const { id } = this.props;
+  e.preventDefault();
+  this.setState({
+    loading: true
+  });
+  let payload = {
+      first_name: firstName,
+      last_name: lastName,
+      id: id
+  }
+  axios.put(`/users`, payload)
+  .then((res) => {
+    this.setState({
+      loading: false
+    });
+    this.props.closeModal();
+    // then update the page by updating redux
+    this.props.updateName(firstName, lastName)
+  })
+  .catch(err => {console.log(err)})
+}
+
+updateEmail = (e) => {
+  e.preventDefault();
+  this.setState({
+    loading: true
+  });
+  axios.put(`/users`, {
+    new_email: this.state.email,
+    password: this.state.password,
+    id: this.props.id
+  })
+  .then(res => {
+    this.setState({
+      loading: false
+    });
+    if (res.data.success === false) {
+      this.setState({
+        authenticationError: true
+      })
+    } else if (res.data.success === true) {
+      this.setState({
+        authenticationSuccess: true
+      });
+      // update Redux
+      this.props.updateEmail(this.state.email);
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    this.setState({
+      loading: false
+    });
+  })
+}
+
+deleteAccount = (e) => {
+  e.preventDefault();
+  // first validate that their email is correct...
+  axios.post(`/signin`, {
+    password: this.state.password,
+    email: this.props.email
+  })
+  .then(res => {
+    console.log(res)
+    if (res.data.success === false) {
+      this.setState({
+        authenticationError: 'The password you entered is incorrect.',
+        loading: false
+      })
+    } else {
+      axios.delete(`/users/${this.props.id}`)
+      .then((res) => {
+        axios.delete(`/recipes/all/${this.props.id}`)
+        .then(res => {
+          console.log(res)
+          // update redux
+          this.props.logout();
+          this.props.history.push('/home');
+        })
+      })
+      .catch(err => console.log(err))
+    }
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 }
 
   render() {
@@ -112,40 +211,54 @@ class Settings extends React.Component {
                 <p>Name</p>
                 <h3>{this.props.firstName} {this.props.lastName}</h3>
               </div>
-              <button className="waves-effect waves-light btn" onClick={this.showModal} >Change</button>
             </div>
             <div className="row">
               <div>
                 <p>Email</p>
                 <h3>{this.props.email}</h3>
               </div>
-              <button className="waves-effect waves-light btn" onClick={this.showEmailModal} >
-                {this.state.emailLoading ?
-                  <ClipLoader
-                    css={`border-color: white`}
-                    size={30}
-                    color={"white"}
-                    loading={this.state.emailLoading}
-                  /> :
-                `Change`}
-              </button>
             </div>
           </div>
-          <div className="buttonParent">
-            <button className="waves-effect waves-light btn" onClick={this.toggleConfirmationModal}>Delete Account</button>
-            <button
-              className="waves-effect waves-light btn"
-              onClick={this.resetPassword}>
-              {this.state.loading?
-                <ClipLoader
-                  css={`border-color: white;`}
-                  size={30}
-                  color={"white"}
-                  loading={this.state.loading}
-                />
-              : 'Reset Password'}
-            </button>
-          </div>
+          <ul className="collapsible">
+            <li>
+              <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
+              <div className="collapsible-body">
+                <div className="input-field ">
+                    <input id="email" type="email"></input>
+                    <label htmlFor="email">Email</label>
+                  </div>
+                </div>
+            </li>
+            <li>
+              <div className="collapsible-header"><i className="material-icons">person</i>Update Name</div>
+              <div className="collapsible-body">
+                <div className="input-field ">
+                    <input id="name" type="text" ></input>
+                    <label htmlFor="name">Name</label>
+                  </div>
+              </div>
+            </li>
+            <li>
+              <div className="collapsible-header"><i className="material-icons">security</i>Update Password</div>
+              <div className="collapsible-body">
+              <div className="input-field ">
+                    <input id="password" type="password"></input>
+                    <label htmlFor="password">Password</label>
+                  </div>
+              </div>
+            </li>
+            <li>
+              <div className="collapsible-header"><i className="material-icons">delete</i>Delete Account</div>
+              <div className="collapsible-body">
+              <p>If you are sure you want to delete your account, enter your password below. (This action cannot be undone).</p>
+                <div className="input-field ">
+                      <input id="confirmpassword" type="password"></input>
+                      <label htmlFor="confirmpassword">Enter your password</label>
+                </div>
+                <button className="waves-effect waves-light btn" onClick={this.deleteAccount}>Delete Account</button>
+                </div>
+            </li>
+          </ul>
           {this.state.showPasswordMessage ?
             <p className="passwordMessage">An email has been sent to your account with a link to reset your password.</p>
             : null
@@ -155,30 +268,6 @@ class Settings extends React.Component {
             <p className="passwordMessage">The email could not be sent.</p> : null
           }
         </div>
-        {
-          this.state.showModal ?
-            <EditProfileModal
-              closeModal={this.closeModal}
-              firstName={this.props.firstName}
-              lastName={this.props.lastName}
-            />
-          : null
-        }
-        {
-          this.state.showConfirmation ?
-            <ConfirmDeletionModal
-              closeModal={this.toggleConfirmationModal}
-              />
-            : null
-        }
-        {
-          this.state.editEmail ?
-          <EditEmailModal
-            closeModal={this.closeEmailModal}
-            id={this.props.id}
-          />
-          : null
-        }
       </>
     )
   }

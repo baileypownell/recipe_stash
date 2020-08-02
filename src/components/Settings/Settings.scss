@@ -1,4 +1,5 @@
 @import '../../scss/mixins.scss';
+@import '../../scss/variables.scss';
 
 .Title {
   background-color: $green;
@@ -15,6 +16,8 @@
     }
   }
 }
+
+
 
 button {
   @include button;
@@ -33,18 +36,19 @@ button {
   > #profileParent {
     @include flexRow;
     justify-content: space-between;
+    align-items: center;
     #profile {
       @include flexRow;
       align-items: center;
       i {
-        color: $green;
+        color: $secondary;
         font-size: 60px;
         padding-right: 15px;
       }
     }
   }
   h2, h3, p {
-    color: $green;
+    color: $secondary;
     font-family: 'Didact Gothic', sans-serif;
   }
   #table {
@@ -53,43 +57,17 @@ button {
   .row {
     @include flexRow;
     justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    > div {
+      flex-grow: 1;
+    }
     p {
       margin: 0;
       color: $secondary;
     }
     border-bottom: 1px solid $secondary;
     padding: 8px 0;
-    // button {
-    //   background-color: $secondary;
-    //   font-size: 16px;
-    //   padding: 10px;
-    //   font-weight: normal;
-    //   border: 2px solid $secondary;
-    //   min-width: 82px;
-    //   &:hover {
-    //     color: $secondary;
-    //     background-color: white;
-    //   }
-    // }
-  }
-  // button {
-  //   margin: 0;
-  //   color: white;
-  //   background-color: $primary;
-  //   border: 2px solid $primary;
-  // }
-  .buttonParent {
-    margin: 0 auto;
-    width: 100%;
-    text-align: center;
-    @include flexRow;
-    flex-wrap:wrap;
-    justify-content: space-between;
-    // button {
-    //   width: 48%;
-    //   font-size: 16px;
-    //   padding: 15px;
-    // }
   }
   .passwordMessage {
     text-align: center;
