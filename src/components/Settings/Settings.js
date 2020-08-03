@@ -209,13 +209,13 @@ deleteAccount = (e) => {
             <div className="row">
               <div>
                 <p>Name</p>
-                <h3>{this.props.firstName} {this.props.lastName}</h3>
+                <h4>{this.props.firstName} {this.props.lastName}</h4>
               </div>
             </div>
             <div className="row">
               <div>
                 <p>Email</p>
-                <h3>{this.props.email}</h3>
+                <h4>{this.props.email}</h4>
               </div>
             </div>
           </div>
@@ -226,7 +226,8 @@ deleteAccount = (e) => {
                 <div className="input-field ">
                     <input id="email" type="email"></input>
                     <label htmlFor="email">Email</label>
-                  </div>
+                </div>
+                <button className="waves-effect waves-light btn" >Save</button>
                 </div>
             </li>
             <li>
@@ -236,6 +237,7 @@ deleteAccount = (e) => {
                     <input id="name" type="text" ></input>
                     <label htmlFor="name">Name</label>
                   </div>
+                  <button className="waves-effect waves-light btn" >Save</button>
               </div>
             </li>
             <li>
@@ -245,6 +247,7 @@ deleteAccount = (e) => {
                     <input id="password" type="password"></input>
                     <label htmlFor="password">Password</label>
                   </div>
+                  <button className="waves-effect waves-light btn" >Save</button>
               </div>
             </li>
             <li>
