@@ -55,6 +55,7 @@ class Recipe extends React.Component {
           loading: false,
           showConfirmation: false
         });
+        M.toast({html: 'Recipe deleted.'})
         this.props.history.push('/dashboard')
       }
     })
@@ -108,14 +109,14 @@ class Recipe extends React.Component {
         <div className="recipe">
           <div>
             <div className="ingredients">
-              <h2>Ingredients <i
+              <h3>Ingredients <i
                 className="fas fa-edit"
                 onClick={this.showEditModal}>
-              </i></h2>
+              </i></h3>
               {ingredients}
             </div>
             <div className="directions">
-              <h2>Directions </h2>
+              <h3>Directions </h3>
               {directions}
             </div>
             <div id="pot">

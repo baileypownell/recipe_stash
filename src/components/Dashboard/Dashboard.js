@@ -163,13 +163,13 @@ class Dashboard extends React.Component {
           <Category
             title="Drinks"
             id="drinks"
-            recipes={filteredRecipes ? filteredRecipes[5] : []}
+            recipes={filteredRecipes ? filteredRecipes[6] : []}
             updateDashboard={this.updateDashboard}
             />
           <Category
             title="Other"
             id="other"
-            recipes={filteredRecipes ? filteredRecipes[6] : []}
+            recipes={filteredRecipes ? filteredRecipes[7] : []}
             updateDashboard={this.updateDashboard}
             />
             </>

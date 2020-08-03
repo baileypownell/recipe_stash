@@ -65,6 +65,7 @@ class Signup extends React.Component {
         .then(res => {
           if (res.data) {
             // update Redux
+            M.toast({html: 'Success! Logging you in now...'})
             let id=res.data.id;
             this.props.login(id, email, firstName, lastName)
             // redirect to /dashboard

@@ -22,7 +22,7 @@
   .ingredients {
     white-space: pre-line;
   }
-  h2 {
+  h3 {
     @include flexRow;
     justify-content: space-between;
   }

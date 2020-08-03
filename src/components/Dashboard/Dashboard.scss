@@ -54,9 +54,10 @@
       }
     }
     i {
-      margin-left: 10px;
-      margin-right: 5px;
       font-size: 20px;
+      background-color: $green;
+      transform: translateX(-20px);
+      padding: 5px;
     }
   }
 }

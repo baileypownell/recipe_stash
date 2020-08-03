@@ -26,7 +26,7 @@ button {
 .settings {
   width: 90%;
   margin: 0 auto;
-  padding: 5vw 0;
+  padding: 4vh 0;
   @include tablet {
     width: 50%;
   }
@@ -52,7 +52,7 @@ button {
     font-family: 'Didact Gothic', sans-serif;
   }
   #table {
-    padding: 5vw 0;
+    padding: 2vw 0;
   }
   .row {
     @include flexRow;
