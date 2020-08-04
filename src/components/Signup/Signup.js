@@ -33,6 +33,7 @@ class Signup extends React.Component {
       }
     }
     setTimeout(Appear, 500);
+    
   }
 
   signup = (e) => {
@@ -50,6 +51,7 @@ class Signup extends React.Component {
           submissionError: 'An account already exists for this email.',
           loading: false
         })
+        M.toast({html: 'An account already exists for this email.'})
         return;
       } else {
         // hash password before sending
@@ -63,6 +65,7 @@ class Signup extends React.Component {
         .then(res => {
           if (res.data) {
             // update Redux
+            M.toast({html: 'Success! Logging you in now...'})
             let id=res.data.id;
             this.props.login(id, email, firstName, lastName)
             // redirect to /dashboard
@@ -71,6 +74,7 @@ class Signup extends React.Component {
             this.setState({
               error: true
             })
+            M.toast({html: 'There was an error.'})
           }
         })
         .catch((err) => {
@@ -178,8 +182,11 @@ class Signup extends React.Component {
           </label>
           <label>
             Password
-            <input onChange={this.validatePassword} id="password" type="password" name="password" />
-            {insufficientPasswordMessage ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
+            <input onChange={this.validatePassword} id="password" type="password" name="password"  />
+            {
+              insufficientPasswordMessage ? 
+                <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+            : null}
           </label>
           <label>
             Confirm Password
@@ -189,7 +196,7 @@ class Signup extends React.Component {
           <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
           <button
             disabled={!formValid}
-            className={formValid ? 'enabled' : 'disabled'}>
+            className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
             {loading?
               <ClipLoader
                 css={`border-color: white;`}
@@ -199,13 +206,6 @@ class Signup extends React.Component {
               />
           : 'Submit'}
           </button>
-          {submissionError.length > 0 ?
-            <p className="error">{this.state.submissionError}</p>
-              : null
-          }
-          {this.state.error ?
-            <p className="error">There has been an error.</p>
-          : null}
         </form>
       </div>
     )

@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { NavLink, Link, withRouter } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 
 import icon from '../../images/apple-touch-icon.png';
@@ -14,8 +13,12 @@ class Nav extends React.Component {
           <div>
             {this.props.userLoggedIn ?
               <>
+              <div>
               <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>
+              </div>
+              <div>
               <NavLink to="/settings" activeClassName="active"><i className="fas fa-user-cog"></i></NavLink> 
+              </div>
               </>  :
                 <>
               <NavLink to="/login" activeClassName="active">Login</NavLink>

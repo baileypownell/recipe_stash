@@ -42,24 +42,6 @@
   }
   button {
     @include button;
-    background-color: $green;
-    color: $white;
-    border: 2px solid $white;
-    width: 80%;
-    margin: 0 5vw;
-    @include tablet {
-      width: 40%;
-      margin: 0 5vw;
-    }
-    @include desktop {
-      width: 30%;
-      margin: 0 2vw;
-    }
-    &:hover {
-      color:  $green;
-      background-color: transparent;
-      border-color: $green;
-    }
   }
   #skew {
     min-height: 65vh;
@@ -186,7 +168,7 @@
 }
 
 .fade-in {
-  opacity: 1;
+  opacity: 1!important;
   transform: translateY(0px);
 }
 

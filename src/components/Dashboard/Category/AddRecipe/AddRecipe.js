@@ -24,7 +24,7 @@ class AddRecipe extends React.Component {
     return (
       <>
         <div
-          className="addRecipe"
+          className="addRecipe z-depth-4"
           id={id}
           onClick={this.addRecipe} >
           <i className="fas fa-plus-circle"></i>

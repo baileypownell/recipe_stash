@@ -2,6 +2,9 @@
 
 .auth {
   @include auth;
+  label {
+    color: white!important;
+  }
 }
 
 .disabled {
@@ -10,9 +13,3 @@
   transition: none!important;
 }
 
-// .enabled {
-//   &:hover {
-//     color: $green;
-//     background-color: transparent;
-//   }
-// }

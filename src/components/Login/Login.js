@@ -5,6 +5,7 @@ const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
 import GoogleLogin from 'react-google-login';
 import './Login.scss';
+import M from 'materialize-css';
 
 class Login extends React.Component {
 
@@ -21,7 +22,7 @@ class Login extends React.Component {
     //console.log(process.env)
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
-      faded[i].classList.add('fade-in');
+        faded[i].classList.add('fade-in');
       }
     }
     setTimeout(Appear, 500);
@@ -54,6 +55,7 @@ class Login extends React.Component {
           signInError: 'An account does not exist for this email.',
           loading: false
         })
+        M.toast({html: 'An account does not exist for this email.'})
       } else {
         axios.post(`/signinWithGoogle`, {
           email: email
@@ -87,6 +89,7 @@ class Login extends React.Component {
           signInError: 'An account does not exist for this email.',
           loading: false
         })
+        M.toast({html: 'An account does not exist for this email.'})
       } else {
         axios.post(`/signin`, {
           password: this.state.password,
@@ -98,6 +101,7 @@ class Login extends React.Component {
               signInError: 'The password you entered is incorrect.',
               loading: false
             })
+            M.toast({html: 'The password you entered is incorrect.'})
           } else {
             // update Redux
             this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
@@ -107,11 +111,13 @@ class Login extends React.Component {
         })
         .catch((err) => {
           console.log(err)
+          M.toast({html: 'There was an error.'})
         })
       }
     })
     .catch((err) => {
       console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -129,9 +135,12 @@ class Login extends React.Component {
             Password
             <input onChange={this.updateInput} id="password" type="password" name="password" />
           </label>
+          <div className="buttons">
           <button
             disabled={!formValid}
-            className={formValid ? 'enabled' : 'disabled'}>
+            className={formValid ? 'enabled' : 'disabled'}
+            className="waves-effect waves-light btn"
+            >
             {loading?
               <ClipLoader
                 css={`border-color: white;`}
@@ -141,7 +150,7 @@ class Login extends React.Component {
               />
           : 'Submit'}
           </button>
-          <p>Or, log in with Google</p>
+          
             <GoogleLogin
                className="googleButton"
                clientId="448227348202-97da7vci3t474ch3ah6goms41nlghb1l.apps.googleusercontent.com"
@@ -150,7 +159,14 @@ class Login extends React.Component {
                onFailure={this.responseGoogle}
                cookiePolicy={'single_host_origin'}
              />
-          {signInError.length > 0 ? <p className="error">{signInError}</p> : null}
+
+          {
+              signInError.length > 0 ? 
+                  <button class="waves-effect waves-light btn">Reset Password</button>
+              : null
+          }
+          </div>
+          
         </form>
       </div>
     )

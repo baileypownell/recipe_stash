@@ -5,8 +5,6 @@ const axios = require('axios');
 import './Recipe.scss';
 import BounceLoader from "react-spinners/BounceLoader";
 import pot from '../../images/pot.svg';
-import Modal from '../Modal/Modal';
-import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 
 class Recipe extends React.Component {
 
@@ -51,29 +49,13 @@ class Recipe extends React.Component {
     axios.delete(`/recipes/${this.state.recipeId}`)
     .then(res => {
       if (res) {
-        this.setState({
-          loading: false,
-          showConfirmation: false
-        });
+        M.toast({html: 'Recipe deleted.'})
         this.props.history.push('/dashboard')
       }
     })
     .catch((err) => {
-      this.setState({
-        loading: false
-      })
-    })
-  }
-
-  showConfirmationModal = () => {
-    this.setState({
-      showConfirmation: true
-    })
-  }
-
-  hideConfirmationModal  = () => {
-    this.setState({
-      showConfirmation: false
+      console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -108,14 +90,14 @@ class Recipe extends React.Component {
         <div className="recipe">
           <div>
             <div className="ingredients">
-              <h2>Ingredients <i
+              <h3>Ingredients <i
                 className="fas fa-edit"
                 onClick={this.showEditModal}>
-              </i></h2>
+              </i></h3>
               {ingredients}
             </div>
             <div className="directions">
-              <h2>Directions </h2>
+              <h3>Directions </h3>
               {directions}
             </div>
             <div id="pot">
@@ -124,16 +106,9 @@ class Recipe extends React.Component {
 
           </div>
           <div className="bottom">
-            <button onClick={this.showConfirmationModal}>Delete Recipe</button>
+            <button className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe</button>
           </div>
         </div>
-        {showConfirmation ?
-          <ConfirmationModal
-            text={'Are you sure you want to delete this recipe?'}
-            confirmAction={this.deleteRecipe}
-            closeModal={this.hideConfirmationModal}
-            options={['Yes', 'No']} />
-        : null}
         {showEditModal ?
           <Modal
             edit={true}

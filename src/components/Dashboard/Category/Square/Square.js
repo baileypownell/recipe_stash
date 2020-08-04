@@ -14,12 +14,12 @@ class Square extends React.Component {
     const { data, key, title } = this.props;
     return (
       <div
-        className="recipeCard"
+        className="recipeCard z-depth-4"
         key={key}
         data={data}
         onClick={this.viewRecipe}
       >
-        <h3>{title}</h3>
+        <h4>{title}</h4>
       </div>
     )
   }

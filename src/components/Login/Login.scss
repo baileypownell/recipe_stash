@@ -4,6 +4,15 @@
   @include auth;
 }
 
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  button {
+    margin-bottom: 10px;
+    width: 225px;
+  }
+}
 
 .abcRioButton {
   margin: 0 auto;
@@ -11,4 +20,5 @@
 
 .googleButton {
   width: 225px!important;
+  background-color: white!important;
 }

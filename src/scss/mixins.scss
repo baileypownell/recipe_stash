@@ -3,7 +3,7 @@
 // media query mixins
 
 @mixin tablet {
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 600px) {
     @content;
   }
 }
@@ -27,16 +27,16 @@
 }
 
 @mixin button {
-  margin-top: 20px;
-  padding: 15px 25px;
-  border: none;
-  border-radius: 20px;
+  font-size: 18px;
+  background-color: $green!important;
   cursor: pointer;
   outline: none;
   text-transform: uppercase;
   font-family: 'Didact Gothic', sans-serif;
-  font-size: 22px;
   transition: all .3s;
+  &:hover {
+    background-color: darken($green, 5%)!important;
+  }
 }
 
 @mixin auth {
@@ -50,13 +50,13 @@
       font-family: 'Didact Gothic', sans-serif;
       background-color: $primary;
       padding: 10px;
-      border-radius: 10px;
+      border-radius: 5px;
       margin: 5px auto;
       font-size: 16px;
       color: $white;
       @include tablet {
         margin-top: 10px;
-        width: 70%;
+        width: 100%;
       }
     }
     h1 {
@@ -69,15 +69,12 @@
       margin: 0 auto;
       background: rgba(0, 0, 0, 0.5);
       padding: 5vw;
-      border-radius: 30px;
+      border-radius: 10px;
       @include tablet {
         width: 50%;
         padding: 2vw;
         label {
           font-size: 20px;
-        }
-        button {
-          width: 50%;
         }
       }
       @include desktop {
@@ -101,22 +98,27 @@
       }
       input {
         //margin-left: 10px;
-        margin-top: 10px;
-        border-radius: 10px;
-        border: none;
-        padding: 10px;
-        outline: none;
+        margin-top: 10px!important;
+        border-radius: 5px!important;
+        border: none!important;
+        padding: 10px!important;
+        outline: none!important;
         text-align: left!important;
+        width: auto!important;
+        height: auto!important;
+        background-color: #FFF!important;
       }
       button {
         @include button;
-        width: 50%;
-        margin: 10px auto;
         background-color: $green;
         color: $white;
-        transition: all .4s;
-        width: 100%;
-        border: 2px solid $green;
+      }
+      .googleButton {
+        width: 225px!important;
+        background-color: white!important;
+        &:hover {
+          background-color: darken(white, 15%)!important;
+        }
       }
     }
 }

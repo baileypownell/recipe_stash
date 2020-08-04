@@ -16,10 +16,11 @@ router.get('/', (request, response, next) => {
   });
 });
 
-router.get('/:email', (request, response, next) => {
-  const {email } = request.params;
-  client.query('SELECT * FROM users WHERE email=$1',
-  [email],
+router.get('/:id', (request, response, next) => {
+  const { id } = request.params;
+  console.log(id)
+  client.query('SELECT * FROM users WHERE id=$1',
+  [id],
   (err, res) => {
     if (err) return next(err);
     response.status(200).send(res);
@@ -61,6 +62,7 @@ router.put('/', (request, response, next) => {
     [first_name, last_name, id],
      (err, res) => {
       if (err) {
+        console.log(err)
         return next(err);
       }
       if (res) {
@@ -71,7 +73,6 @@ router.put('/', (request, response, next) => {
     });
   } else if (new_email) {
     // make sure password is correct, if not, reject
-    let hashedPassword;
     client.query('SELECT * FROM users WHERE id=$1',
       [id],
       (err, res) => {
@@ -148,6 +149,7 @@ router.delete('/:id', (request, response, next) => {
     [id],
      (err, res) => {
       if (err) {
+        console.log(err)
         return next(err);
       }
       if (res) {
