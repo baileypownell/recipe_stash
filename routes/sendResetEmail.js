@@ -15,7 +15,7 @@ router.post('/', (request, response, next) => {
         console.log(err);
         return next(err);
       }
-      if (res.rows[0].id) {
+      if (res.rows[0] && res.rows[0].id) {
         // generate unique hash token
         const token = crypto.randomBytes(20).toString('hex');
         const expiration = Date.now() + 3600000
@@ -25,17 +25,20 @@ router.post('/', (request, response, next) => {
         [token, expiration, email],
         (err, res) => {
           if (err) {
+            console.log(err)
             return next(err)
           }
           if (res) {
+            console.log(process.env.SENDGRID_PASSWORD, process.env.SENDGRID_USERNAME)
+
             // now create nodemailer transport, which is actually the account sending the password reset email link
-            const transporter = nodemailer.createTransport(sgTransport({
-              service: 'SendGrid',
-              auth: {
-               api_user: `${process.env.SENDGRID_USERNAME}`,
-               api_key: `${process.env.SENDGRID_PASSWORD}`
-             }
-           }));
+              const transporter = nodemailer.createTransport(sgTransport({
+                service: 'SendGrid',
+                auth: {
+                api_user: `${process.env.SENDGRID_USERNAME}`,
+                api_key: `${process.env.SENDGRID_PASSWORD}`
+              }
+            }));
             const mailOptions = {
               from: 'virtualcookbook@outlook.com',
               to: `${email}`,
@@ -44,6 +47,7 @@ router.post('/', (request, response, next) => {
             };
             transporter.sendMail(mailOptions, (err, res) => {
               if (err) {
+                console.log('error = ', err)
                 response.status(500).json({ success: false, message: 'there was an error sending the email', error: err.message, name: err.name})
               } else {
                 return response.status(200).json('recovery email sent');
@@ -52,6 +56,7 @@ router.post('/', (request, response, next) => {
           }
       })
       } else {
+        console.log('error', email)
         return response.status(500).json({success: false, message: 'could not update DB'})
       }
     });

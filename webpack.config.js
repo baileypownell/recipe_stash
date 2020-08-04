@@ -5,6 +5,11 @@ const path = require('path'); // to get the current path
 var ImageminPlugin = require('imagemin-webpack-plugin').default
 
 module.exports = (env) => {
+  const env = dotenv.config().parsed;
+  const envKeys = Object.keys(env).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(env[next]);
+    return prev;
+  }, {});
 return {
   entry: './src/index.js',
   output: {

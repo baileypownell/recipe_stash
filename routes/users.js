@@ -61,6 +61,7 @@ router.put('/', (request, response, next) => {
     [first_name, last_name, id],
      (err, res) => {
       if (err) {
+        console.log(err)
         return next(err);
       }
       if (res) {
@@ -148,6 +149,7 @@ router.delete('/:id', (request, response, next) => {
     [id],
      (err, res) => {
       if (err) {
+        console.log(err)
         return next(err);
       }
       if (res) {

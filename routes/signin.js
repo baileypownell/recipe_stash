@@ -22,6 +22,7 @@ router.post('/', (request, response, next) => {
       let hashedPassword = res.rows[0].password;
       bcrypt.compare(password, hashedPassword, (err, res) => {
         if (err) {
+          console.log(err)
           return next(err);
         }
         if (res) {
