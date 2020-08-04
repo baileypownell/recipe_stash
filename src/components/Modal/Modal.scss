@@ -49,7 +49,7 @@
         }
       }
     }
-    input, select, textarea {
+    input, select, textarea, #title {
       border-radius: 5px;
       border: none;
       outline: none;
@@ -58,6 +58,7 @@
       color: $orange!important;
       font-weight: bold;
       text-align: left;
+      font-family: 'Didact Gothic', sans-serif;
       @include tablet {
         font-size: 18px;
       }
@@ -73,6 +74,7 @@
       color: $orange;
       background-color: white!important;
       font-weight: 800;
+      margin-top: 15px;
       &:hover {
         background-color: darken(white, 10%)!important;
         color: $orange!important;
@@ -93,6 +95,7 @@
 #title {
   color: white!important;
   border-bottom: 2px solid white;
+  width: auto;
   &:focus {
     border-bottom: 2px solid white!important;
   }

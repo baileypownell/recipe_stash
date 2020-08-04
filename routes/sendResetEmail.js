@@ -5,9 +5,8 @@ const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const router = Router();
 if (process.env.NODE_ENV !== 'production') {
-  console.log('dev')
   require('dotenv').config();
-
+  console.log('process.env.project_url = ', process.env.PROJECT_URL)
 }
 
 

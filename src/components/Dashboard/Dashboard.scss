@@ -114,7 +114,7 @@
       @include flexColumn;
       justify-content: center;
       align-items: center;
-      border-radius: 20px;
+      border-radius: 5px;
       border: 2px solid $primary;
       cursor: pointer;
       flex-grow: 1;
@@ -146,7 +146,7 @@
       @include flexColumn;
       justify-content: center;
       align-items: center;
-      border-radius: 20px;
+      border-radius: 5px;
       flex-grow: 1;
       cursor: pointer;
       transition: all .3s;

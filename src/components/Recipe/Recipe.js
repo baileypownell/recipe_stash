@@ -5,8 +5,6 @@ const axios = require('axios');
 import './Recipe.scss';
 import BounceLoader from "react-spinners/BounceLoader";
 import pot from '../../images/pot.svg';
-import Modal from '../Modal/Modal';
-import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 
 class Recipe extends React.Component {
 
