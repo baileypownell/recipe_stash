@@ -9,11 +9,9 @@ Well that's because it is.
 
 And the answer isn't pinning recipes on a website that may not even exist in 20 years (Pinterest). What you need is a single place for all of your recipes that isn't subject to the forces of the physical world; and the best part is no more handwriting---you can just copy and paste.
 
-This is what this web app will do.
+### Built with React, MaterializeCSS, Node, & PostgreSQL.
 
 [Visit the web app](https://glacial-savannah-05736.herokuapp.com/login)
-
-### (It's a work in progress).
 
 ![desktop](src/images/desktop.PNG)
 ![homepage](src/images/mobileView2.PNG)
