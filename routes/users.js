@@ -72,7 +72,6 @@ router.put('/', (request, response, next) => {
     });
   } else if (new_email) {
     // make sure password is correct, if not, reject
-    let hashedPassword;
     client.query('SELECT * FROM users WHERE id=$1',
       [id],
       (err, res) => {

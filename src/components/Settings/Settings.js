@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actionCreators';
 import { withRouter } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader";
 import axios from 'axios';
 import M from 'materialize-css';
 import './Settings.scss';
@@ -11,13 +10,15 @@ class Settings extends React.Component {
 
   state = {
     showModal: false,
-    showConfirmation: false,
     showPasswordMessage: false,
     loading: false,
     emailLoading: false,
     showPasswordError: false,
     editEmail: false,
-    password: ''
+    password: '',
+    firstName: '',
+    lastName: '',
+    new_email: ''
   }
 
   logout = () => {
@@ -55,35 +56,36 @@ class Settings extends React.Component {
       var instances = M.Collapsible.init(elems, {});
     });
 
-    this.setState({
-      firstName: this.props.firstName, 
-      lastName: this.props.lastName,
-      email: this.props.email
-    })
-}
-
-updateInput = (e) => {
-  this.setState({
-    [e.target.id]: e.target.value
-  })
-}
-
-updateProfile = (e) => {
-  const { firstName, lastName } = this.state;
-  const { id } = this.props;
-  e.preventDefault();
-  let payload = {
-      first_name: firstName,
-      last_name: lastName,
-      id: id
-  }
-  axios.put(`/users`, payload)
-  .then((res) => {
-    M.toast({html: 'Profile updated successfully.'})
+    // this.setState({
+    //   firstName: this.props.firstName, 
+    //   lastName: this.props.lastName,
+    //   email: this.props.email
+    // })
     this.updateView()
-  })
-  .catch(err => {console.log(err)})
 }
+
+  updateInput = (e) => {
+    this.setState({
+      [e.target.id]: e.target.value
+    })
+  }
+
+  updateProfile = (e) => {
+      const { firstName, lastName } = this.state;
+      const { id } = this.props;
+      e.preventDefault();
+      let payload = {
+          first_name: firstName,
+          last_name: lastName,
+          id: id
+      }
+      axios.put(`/users`, payload)
+      .then((res) => {
+        M.toast({html: 'Profile updated successfully.'})
+        this.updateView()
+      })
+      .catch(err => {console.log(err)})
+  }
 
 updateEmail = (e) => {
   e.preventDefault();
@@ -93,7 +95,6 @@ updateEmail = (e) => {
     id: this.props.id
   })
   .then(res => {
-    console.log(res)
     if (res.data.success === false) {
       M.toast({html: 'Whoops, email could not be updated.'})
     } else if (res.data.success === true) {
@@ -107,82 +108,63 @@ updateEmail = (e) => {
   })
 }
 
-deleteAccount = (e) => {
-  e.preventDefault();
-  // first validate that their email is correct...
-  axios.post(`/signin`, {
-    password: this.state.password,
-    email: this.props.email
-  })
-  .then(res => {
-    if (res.data.success === false) {
-      M.toast({html: 'The password you entered is incorrect.'})
-    } else {
-      axios.delete(`/users/${this.props.id}`)
-      .then((res) => {
-        axios.delete(`/recipes/all/${this.props.id}`)
-        .then(res => {
-          M.toast({html: 'Account deleted.'})
-          // update redux
-          this.props.logout();
-          this.props.history.push('/home');
+  deleteAccount = (e) => {
+    e.preventDefault();
+    // first validate that their email is correct...
+    axios.post(`/signin`, {
+      password: this.state.password,
+      email: this.props.email
+    })
+    .then(res => {
+      if (res.data.success === false) {
+        M.toast({html: 'The password you entered is incorrect.'})
+      } else {
+        axios.delete(`/users/${this.props.id}`)
+        .then((res) => {
+          axios.delete(`/recipes/all/${this.props.id}`)
+          .then(res => {
+            M.toast({html: 'Account deleted.'})
+            // update redux
+            this.props.logout();
+            this.props.history.push('/home');
+          })
         })
-      })
-      .catch(err => console.log(err))
-    }
-  })
-  .catch((err) => {
-    console.log(err)
-    M.toast({html: 'There was an error.'})
-  })
-}
-
-updatePassword = (e) => {
-  e.preventDefault();
-  console.log(this.props.email)
-  axios.post('/sendResetEmail', {
-    email: this.props.email
-  })
-  .then(() => {
-    M.toast({html: 'Password email sent.'})
-  })
-  .catch((err) => {
-    console.log(err)
-    M.toast({html: 'There was an error.'})
-  })
-}
-
-
-  handleUpdateEmail = (e) => {
-    this.setState({
-      new_email: e.target.value
+        .catch(err => console.log(err))
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
-  handleUpdatePassword = (e) => {
-    this.setState({
-      password: e.target.value
+  updatePassword = (e) => {
+    e.preventDefault();
+    axios.post('/sendResetEmail', {
+      email: this.props.email
     })
-  }
-
-  handleUpdateFirstName = (e) => {
-    this.setState({
-      firstName: e.target.value
+    .then(() => {
+      M.toast({html: 'Password email sent.'})
     })
-  }
-
-  handleUpdateLastName = (e) => {
-    this.setState({
-      lastName: e.target.value
+    .catch((err) => {
+      console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
   updateView() {
-    axios.get(`/users/${this.state.email}`)
+    axios.get(`/users/${this.props.email}`)
     .then((res) => {
-      console.log(res)
+      let user = res.data.rows[0]
+      this.setState({
+        firstName: user.first_name, 
+        lastName: user.last_name,
+        email: user.email
+      })
+      M.updateTextFields()
     })
     .catch((err) => console.log(err))
+    
   }
 
   render() {
@@ -215,12 +197,12 @@ updatePassword = (e) => {
               <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
               <div className="collapsible-body">
                 <div className="input-field ">
-                    <input id="email" type="email" onChange={this.handleUpdateEmail} value={this.state.new_email}></input>
+                    <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
                     <label htmlFor="email">New Email</label>
                 </div>
                 <div className="input-field">
                   <label htmlFor="password">Password</label>
-                  <input type="password" onChange={this.handleUpdatePassword} ></input>
+                  <input id="password" type="password" value={this.state.password} onChange={this.updateInput} ></input>
                 </div>
                 <button className="waves-effect waves-light btn" onClick={this.updateEmail} >Save</button>
                 </div>
@@ -229,11 +211,11 @@ updatePassword = (e) => {
               <div className="collapsible-header"><i className="material-icons">person</i>Update Name</div>
               <div className="collapsible-body">
                   <div className="input-field ">
-                      <input type="text" value={this.state.firstName} onChange={this.handleUpdateFirstName}></input>
-                      <label htmlFor="firstName">New First Name</label>
+                      <input id="firstName" type="text" value={this.state.firstName} onChange={this.updateInput}></input>
+                      <label htmlFor="firstName" >New First Name</label>
                   </div>
                   <div className="input-field ">
-                      <input type="text" value={this.state.lastName} onChange={this.handleUpdateLastName}></input>
+                      <input id="lastName" type="text" value={this.state.lastName} onChange={this.updateInput}></input>
                       <label htmlFor="lastName">New Last Name</label>
                   </div>
                   <button className="waves-effect waves-light btn" onClick={this.updateProfile}>Save</button>
@@ -251,21 +233,13 @@ updatePassword = (e) => {
               <div className="collapsible-body">
               <p>If you are sure you want to delete your account, enter your password below. (This action cannot be undone).</p>
                 <div className="input-field ">
-                      <input id="confirmpassword" type="password" onChange={this.handleUpdatePassword}></input>
+                      <input id="password" type="password" value={this.state.password} onChange={this.updateInput}></input>
                       <label htmlFor="confirmpassword">Enter your password</label>
                 </div>
                 <button className="waves-effect waves-light btn" onClick={this.deleteAccount}>Delete Account</button>
                 </div>
             </li>
           </ul>
-          {this.state.showPasswordMessage ?
-            <p className="passwordMessage">An email has been sent to your account with a link to reset your password.</p>
-            : null
-          }
-          {
-            this.state.showPasswordError ?
-            <p className="passwordMessage">The email could not be sent.</p> : null
-          }
         </div>
       </>
     )

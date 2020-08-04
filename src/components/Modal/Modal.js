@@ -71,12 +71,14 @@ class Modal extends React.Component {
         });
         this.props.closeModal();
         this.props.updateDashboard();
+        M.toast({html: 'Recipe added.'})
       }
     })
     .catch((err) => {
       this.setState({
         loading: false
       })
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -99,17 +101,19 @@ class Modal extends React.Component {
         this.props.closeModal();
         // Update recipe details to reflect the change
         this.props.fetchData();
+        M.toast({html: 'Recipe updated.'})
       }
     })
     .catch((err) => {
       this.setState({
         loading: false
       })
+      M.toast({html: 'There was an error updating the recipe.'})
     })
   }
 
   render() {
-    const { recipeId, title, ingredients, directions, edit } = this.props;
+    const { edit } = this.props;
     return (
       <div className="modalCustom">
       <i

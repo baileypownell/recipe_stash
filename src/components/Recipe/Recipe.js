@@ -51,30 +51,13 @@ class Recipe extends React.Component {
     axios.delete(`/recipes/${this.state.recipeId}`)
     .then(res => {
       if (res) {
-        this.setState({
-          loading: false,
-          showConfirmation: false
-        });
         M.toast({html: 'Recipe deleted.'})
         this.props.history.push('/dashboard')
       }
     })
     .catch((err) => {
-      this.setState({
-        loading: false
-      })
-    })
-  }
-
-  showConfirmationModal = () => {
-    this.setState({
-      showConfirmation: true
-    })
-  }
-
-  hideConfirmationModal  = () => {
-    this.setState({
-      showConfirmation: false
+      console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -128,13 +111,6 @@ class Recipe extends React.Component {
             <button className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe</button>
           </div>
         </div>
-        {/* {showConfirmation ?
-          <ConfirmationModal
-            text={'Are you sure you want to delete this recipe?'}
-            confirmAction={this.deleteRecipe}
-            closeModal={this.hideConfirmationModal}
-            options={['Yes', 'No']} />
-        : null} */}
         {showEditModal ?
           <Modal
             edit={true}
