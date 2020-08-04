@@ -28,7 +28,7 @@ class Settings extends React.Component {
 
   resetPassword = () => {
     axios.post(`/sendResetEmail`, {
-      email: this.props.email
+      email: this.state.email
     })
     .then(res => {
       if (res.data.success === false) {
@@ -55,12 +55,6 @@ class Settings extends React.Component {
       var elems = document.querySelectorAll('.collapsible');
       var instances = M.Collapsible.init(elems, {});
     });
-
-    // this.setState({
-    //   firstName: this.props.firstName, 
-    //   lastName: this.props.lastName,
-    //   email: this.props.email
-    // })
     this.updateView()
 }
 
@@ -113,7 +107,7 @@ updateEmail = (e) => {
     // first validate that their email is correct...
     axios.post(`/signin`, {
       password: this.state.password,
-      email: this.props.email
+      email: this.state.email
     })
     .then(res => {
       if (res.data.success === false) {
@@ -141,7 +135,7 @@ updateEmail = (e) => {
   updatePassword = (e) => {
     e.preventDefault();
     axios.post('/sendResetEmail', {
-      email: this.props.email
+      email: this.state.email
     })
     .then(() => {
       M.toast({html: 'Password email sent.'})
@@ -153,8 +147,9 @@ updateEmail = (e) => {
   }
 
   updateView() {
-    axios.get(`/users/${this.props.email}`)
+    axios.get(`/users/${this.props.id}`)
     .then((res) => {
+      console.log(res)
       let user = res.data.rows[0]
       this.setState({
         firstName: user.first_name, 
@@ -197,7 +192,7 @@ updateEmail = (e) => {
               <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
               <div className="collapsible-body">
                 <div className="input-field ">
-                    <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
+                    <input id="email" type="email" onChange={this.updateInput} value={this.state.email}></input>
                     <label htmlFor="email">New Email</label>
                 </div>
                 <div className="input-field">
@@ -248,9 +243,6 @@ updateEmail = (e) => {
 
 const mapStateToProps = state => {
   return {
-    firstName: state.user.firstName,
-    lastName: state.user.lastName,
-    email: state.user.email,
     id: state.user.id
   }
 }

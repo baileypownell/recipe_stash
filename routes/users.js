@@ -16,10 +16,11 @@ router.get('/', (request, response, next) => {
   });
 });
 
-router.get('/:email', (request, response, next) => {
-  const {email } = request.params;
-  client.query('SELECT * FROM users WHERE email=$1',
-  [email],
+router.get('/:id', (request, response, next) => {
+  const { id } = request.params;
+  console.log(id)
+  client.query('SELECT * FROM users WHERE id=$1',
+  [id],
   (err, res) => {
     if (err) return next(err);
     response.status(200).send(res);
