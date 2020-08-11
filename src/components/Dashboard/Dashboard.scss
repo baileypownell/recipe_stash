@@ -1,22 +1,22 @@
 
 @import '../../scss/mixins.scss';
 
-.Title {
-  background-color: $green;
-  color: $white;
-  font-family: 'Didact Gothic', sans-serif;
-  padding: 3vw;
-  font-size: 28px;
-  @include tablet {
-    padding: 2vw;
-  }
-  i {
-    padding-left: 10px;
-    @include tablet {
-      padding-left: 20px;
-    }
-  }
-}
+// .Title {
+//   background-color: $green;
+//   color: $white;
+//   font-family: 'Didact Gothic', sans-serif;
+//   padding: 3vw;
+//   font-size: 28px;
+//   @include tablet {
+//     padding: 2vw;
+//   }
+//   i {
+//     padding-left: 10px;
+//     @include tablet {
+//       padding-left: 20px;
+//     }
+//   }
+// }
 
 
 .title {
@@ -71,7 +71,7 @@
     justify-content: center;
 
   }
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   padding: 5vw 0;
   @include desktop {

@@ -32,9 +32,9 @@ class Settings extends React.Component {
     })
     .then(res => {
       if (res.data.success === false) {
-
+        M.toast({html: 'There was an error.'})
       } else {
-
+        M.toast({html: 'Check your email for a link to reset your password.'})
       }
     })
     .catch(err => {
@@ -149,7 +149,6 @@ updateEmail = (e) => {
   updateView() {
     axios.get(`/users/${this.props.id}`)
     .then((res) => {
-      console.log(res)
       let user = res.data.rows[0]
       this.setState({
         firstName: user.first_name, 
@@ -227,9 +226,10 @@ updateEmail = (e) => {
               <div className="collapsible-header"><i className="material-icons">delete</i>Delete Account</div>
               <div className="collapsible-body">
               <p>If you are sure you want to delete your account, enter your password below. (This action cannot be undone).</p>
-                <div className="input-field ">
+                <div style={{textAlign: "left"}}>
+                    <label htmlFor="password">Enter your password</label>
                       <input id="password" type="password" value={this.state.password} onChange={this.updateInput}></input>
-                      <label htmlFor="confirmpassword">Enter your password</label>
+                      
                 </div>
                 <button className="waves-effect waves-light btn" onClick={this.deleteAccount}>Delete Account</button>
                 </div>

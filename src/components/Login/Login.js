@@ -26,6 +26,7 @@ class Login extends React.Component {
       }
     }
     setTimeout(Appear, 500);
+    M.updateTextFields()
 }
 
   updateInput = (e) => {
@@ -42,6 +43,23 @@ class Login extends React.Component {
         })
       }
     });
+  }
+
+  sendPasswordResetLink = () => {
+    axios.post(`/sendResetEmail`, {
+      email: this.state.email
+    })
+    .then(res => {
+      if (res.data.success === false) {
+        M.toast({html: 'There was an error.'})
+      } else {
+        M.toast({html: 'Check your email for a link to reset your password.'})
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      M.toast({html: 'Whoops! Password could not be reset.'})
+    })
   }
 
   responseGoogle = (response) => {
@@ -162,7 +180,7 @@ class Login extends React.Component {
 
           {
               signInError.length > 0 ? 
-                  <button class="waves-effect waves-light btn">Reset Password</button>
+                  <button className="waves-effect waves-light btn" onClick={this.sendPasswordResetLink}>Reset Password</button>
               : null
           }
           </div>
