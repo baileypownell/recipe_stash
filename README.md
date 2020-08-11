@@ -1,6 +1,5 @@
 # Virtual-Cookbook
 
-
 ## A Web App to store all of your recipes
 
 It's a common problem for many internet chefs; you find a recipe you want to try, pin it on Pinterest.com, come back 6 months later and find that the domain for the recipe no longer exists. Or you try something you really love, write it down on a recipe card to put in your recipe box, and then think to yourself "What if my house burned down? I wouldn't even have this anymore." Or maybe you got halfway through and thought "This is too much work".
@@ -13,6 +12,7 @@ And the answer isn't pinning recipes on a website that may not even exist in 20 
 
 [Visit the web app](https://glacial-savannah-05736.herokuapp.com/login)
 
-![desktop](src/images/desktop.PNG)
-![homepage](src/images/mobileView2.PNG)
-![dashboard](src/images/mobileView3.PNG)
+![mobile](src/images/mobile.png)
+![mobile2](src/images/dashboard-mobile.png)
+![desktop](src/images/dashboard-desktop.png)
+![homepage](src/images/recipe-desktop.png)
