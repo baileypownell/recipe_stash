@@ -3,7 +3,9 @@ const client = require('../db');
 const bcrypt = require('bcryptjs');
 const router = Router();
 
+
 router.post('/', (request, response, next) => {
+  console.log(request)
   const { password, email } = request.body;
   // if user gets this far they are already verified to exist in the DB
   // compare plain text password to the hashed password in the DB

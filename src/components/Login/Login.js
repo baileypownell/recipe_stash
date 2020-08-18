@@ -120,7 +120,7 @@ class Login extends React.Component {
               loading: false
             })
             M.toast({html: 'The password you entered is incorrect.'})
-          } else {
+          } else if (res.data.success === true) {
             // update Redux
             this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
             // redirect to /dashboard
