@@ -65,10 +65,5 @@ class Home extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.userLoggedIn
-  }
-}
 
-export default withRouter(connect(mapStateToProps)(Home));
+export default Home;

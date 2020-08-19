@@ -3,6 +3,8 @@ const client = require('../db');
 const bcrypt = require('bcryptjs');
 const router = Router();
 
+const app = require('../server');
+
 
 router.post('/', (request, response, next) => {
   //console.log('Session = ', request.session)
@@ -10,10 +12,12 @@ router.post('/', (request, response, next) => {
   // if user gets this far they are already verified to exist in the DB
   // compare plain text password to the hashed password in the DB
   let hashedPassword;
+  console.log('here')
   client.query('SELECT * FROM users WHERE email=$1',
     [email],
     (err, res) => {
       if (err)  {
+        console.log(err)
         response.json(err);
         return next(err);
       }
@@ -31,6 +35,10 @@ router.post('/', (request, response, next) => {
           // send back email, first name, last name, and user id by using information in above query;
           // update session cookie 
           request.session.userId = id
+          console.log(request.session.userId)
+          // let's generate a sessionID for this user and store in the database? 
+          let sessionid = app.use.session.genid
+          console.log(sessionid)
           return response.json({
             id: id,
             first_name: first_name,
@@ -38,7 +46,7 @@ router.post('/', (request, response, next) => {
             email: email
           })
         } else {
-          return response.json({success: false, message: 'passwords do not match'})
+          return response.json({success: false, message: 'Passwords do not match'})
         }
       })
     })

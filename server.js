@@ -33,6 +33,9 @@ app.use((err, req, res, next) => {
 
 // CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
+const genuuid = () => {
+  return 'genuuid'
+}
 
 app.use(session({
   //store: new (require('connect-pg-simple')(session))(),
@@ -40,14 +43,14 @@ app.use(session({
     pool: client, 
     tableName: 'session'
   }),
+  genid: (() => genuuid()),
   secret: '343ji43j4n3jn4jk3n', // put in environment variable in production
-  genid: function(req) {
-    return genuuid() // use UUIDs for session IDs
-  },
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: { maxAge: 24 * 60 * 60 * 1000, secure: false } // 1 day
 }));
+
+
 
 // must come last?
 app.use('/', routes);

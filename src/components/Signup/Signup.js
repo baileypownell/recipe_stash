@@ -67,7 +67,7 @@ class Signup extends React.Component {
             // update Redux
             M.toast({html: 'Success! Logging you in now...'})
             let id=res.data.id;
-            this.props.login(id, email, firstName, lastName)
+            //this.props.login(id, email, firstName, lastName)
             // redirect to /dashboard
             this.props.history.push('/dashboard')
           } else {
@@ -212,10 +212,10 @@ class Signup extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
-  }
-}
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
+//   }
+// }
 
-export default connect(null, mapDispatchToProps)(Signup);
+export default Signup;

@@ -181,10 +181,6 @@ class Dashboard extends React.Component {
 }
 
 
-const mapStateToProps = state => {
-  return {
-    userId: state.user.id
-  }
-}
 
-export default connect(mapStateToProps)(Dashboard);
+
+export default Dashboard;

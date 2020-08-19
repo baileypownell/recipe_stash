@@ -123,7 +123,7 @@ class Login extends React.Component {
             M.toast({html: 'The password you entered is incorrect.'})
           } else if (res.data) {
             // update Redux
-            this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
+            //this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
             // redirect to /dashboard
             this.props.history.push('/dashboard');
           }
@@ -192,16 +192,16 @@ class Login extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    userLoggedIn: state.userLoggedIn
-  }
-}
+// const mapStateToProps = state => {
+//   return {
+//     userLoggedIn: state.userLoggedIn
+//   }
+// }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
-  }
-}
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;
