@@ -12,7 +12,7 @@ var pg = require('pg')
 
 // middleware
 app.use(bodyParser.json());
-app.use('/', routes);
+
 
 app.use(express.json())
 
@@ -33,6 +33,7 @@ app.use((err, req, res, next) => {
 
 // CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
+
 app.use(session({
   //store: new (require('connect-pg-simple')(session))(),
   store: new pgSession({
@@ -40,10 +41,16 @@ app.use(session({
     tableName: 'session'
   }),
   secret: '343ji43j4n3jn4jk3n', // put in environment variable in production
+  genid: function(req) {
+    return genuuid() // use UUIDs for session IDs
+  },
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
-}))
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: false } // 30 days cookie: { secure: !true }
+}));
+
+// must come last?
+app.use('/', routes);
 
 
 const port = process.env.PORT || 3000;

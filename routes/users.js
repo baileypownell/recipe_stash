@@ -16,11 +16,11 @@ router.get('/', (request, response, next) => {
   });
 });
 
-router.get('/:id', (request, response, next) => {
-  const { id } = request.params;
-  console.log(id)
-  client.query('SELECT * FROM users WHERE id=$1',
-  [id],
+router.get('/:email', (request, response, next) => {
+  const { email } = request.params;
+  console.log('email = ', email)
+  client.query('SELECT * FROM users WHERE email=$1',
+  [email],
   (err, res) => {
     if (err) return next(err);
     response.status(200).send(res);
@@ -57,6 +57,7 @@ router.post('/', (request, response, next) => {
 
 router.put('/', (request, response, next) => {
   const { email, first_name, last_name, id, password, new_email } = request.body;
+  console.log(request.session.userId)
   if ( first_name && last_name ) {
     client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
     [first_name, last_name, id],

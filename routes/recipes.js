@@ -47,7 +47,6 @@ router.delete('/all/:id', (request, response, next) => {
         return next(err);
       }
       if (res) {
-        console.log(res)
         return response.status(200).json({success: "true"})
       } else {
         return response.status(500).json({success: false, message: 'could not delete'})

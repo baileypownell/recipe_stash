@@ -99,6 +99,7 @@ class Login extends React.Component {
     this.setState({
       loading: true
     })
+    console.log(this.state)
     // ensure user exists
     axios.get(`/users/${this.state.email}`)
     .then(res => {
@@ -120,7 +121,7 @@ class Login extends React.Component {
               loading: false
             })
             M.toast({html: 'The password you entered is incorrect.'})
-          } else if (res.data.success === true) {
+          } else if (res.data) {
             // update Redux
             this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
             // redirect to /dashboard

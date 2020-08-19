@@ -5,7 +5,7 @@ const router = Router();
 
 
 router.post('/', (request, response, next) => {
-  console.log(request)
+  //console.log('Session = ', request.session)
   const { password, email } = request.body;
   // if user gets this far they are already verified to exist in the DB
   // compare plain text password to the hashed password in the DB
@@ -29,6 +29,8 @@ router.post('/', (request, response, next) => {
         }
         if (res) {
           // send back email, first name, last name, and user id by using information in above query;
+          // update session cookie 
+          request.session.userId = id
           return response.json({
             id: id,
             first_name: first_name,
