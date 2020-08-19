@@ -6,24 +6,28 @@ import axios from 'axios';
 import M from 'materialize-css';
 import './Settings.scss';
 
+
 class Settings extends React.Component {
 
   state = {
-    showModal: false,
-    showPasswordMessage: false,
-    loading: false,
-    emailLoading: false,
-    showPasswordError: false,
-    editEmail: false,
     password: '',
     firstName: '',
+    firstNameReceived: '',
     lastName: '',
+    lastNameReceived: '',
     new_email: ''
   }
 
   logout = () => {
-    this.props.logout();
-    this.props.history.push('/home')
+    axios.get('/logout')
+    .then((res) => {
+      console.log(res);
+      this.props.logout();
+      this.props.history.push('/home');
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   resetPassword = () => {
@@ -84,7 +88,7 @@ class Settings extends React.Component {
 updateEmail = (e) => {
   e.preventDefault();
   axios.put(`/users`, {
-    new_email: this.state.email,
+    new_email: this.state.new_email,
     password: this.state.password,
     id: this.props.id
   })
@@ -153,7 +157,9 @@ updateEmail = (e) => {
       console.log(res)
       this.setState({
         firstName: user.first_name, 
+        firstNameReceived: user.first_name, 
         lastName: user.last_name,
+        lastNameReceived: user.last_name,
         email: user.email
       })
       M.updateTextFields()
@@ -169,7 +175,7 @@ updateEmail = (e) => {
         <div className="fade settings">
           <div id="profileParent">
             <div id="profile">
-              <i className="fas fa-user-circle"></i><h3>{this.state.firstName}</h3>
+              <i className="fas fa-user-circle"></i><h3>{this.state.firstNameReceived}</h3>
             </div>
             <button className="waves-effect waves-light btn" onClick={this.logout}>Log out</button>
           </div>
@@ -177,7 +183,7 @@ updateEmail = (e) => {
             <div className="row">
               <div>
                 <p>Name</p>
-                <h4>{this.state.firstName} {this.state.lastName}</h4>
+                <h4>{this.state.firstNameReceived} {this.state.lastNameReceived}</h4>
               </div>
             </div>
             <div className="row">
@@ -192,7 +198,7 @@ updateEmail = (e) => {
               <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
               <div className="collapsible-body">
                 <div className="input-field ">
-                    <input id="email" type="email" onChange={this.updateInput} value={this.state.email}></input>
+                    <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
                     <label htmlFor="email">New Email</label>
                 </div>
                 <div className="input-field">

@@ -46,7 +46,7 @@ app.use(session({
   },
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: false } // 30 days cookie: { secure: !true }
+  cookie: { maxAge: 24 * 60 * 60 * 1000, secure: false } // 1 day
 }));
 
 // must come last?
