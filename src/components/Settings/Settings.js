@@ -147,9 +147,10 @@ updateEmail = (e) => {
   }
 
   updateView() {
-    axios.get(`/users/${this.props.id}`)
+    axios.get(`/users/${this.props.email}`)
     .then((res) => {
       let user = res.data.rows[0]
+      console.log(res)
       this.setState({
         firstName: user.first_name, 
         lastName: user.last_name,
@@ -243,7 +244,8 @@ updateEmail = (e) => {
 
 const mapStateToProps = state => {
   return {
-    id: state.user.id
+    id: state.user.id,
+    email: state.user.email
   }
 }
 
