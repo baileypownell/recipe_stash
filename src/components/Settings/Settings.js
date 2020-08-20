@@ -1,6 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
 import { withRouter } from "react-router-dom";
 import axios from 'axios';
 import M from 'materialize-css';

@@ -1,8 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
 import './Signup.scss';
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 import ClipLoader from "react-spinners/ClipLoader";
@@ -211,11 +208,5 @@ class Signup extends React.Component {
     )
   }
 }
-
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
-//   }
-// }
 
 export default Signup;

@@ -1,9 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import icon from '../../images/apple-touch-icon.png';
 import whisk from '../../images/cooking.svg';
-import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
 
 
 import './Home.scss';

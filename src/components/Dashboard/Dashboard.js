@@ -1,8 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
 const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
-import { Search } from 'semantic-ui-react';
 
 import Category from './Category/Category';
 
