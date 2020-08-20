@@ -46,7 +46,7 @@ app.use(session({
   secret: '343ji43j4n3jn4jk3n', // put in environment variable in production
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, secure: false } // 1 day
+  cookie: { maxAge: 3600000, secure: false } // 1 hour
 }));
 
 

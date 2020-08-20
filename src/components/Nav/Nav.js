@@ -27,7 +27,7 @@ class Nav extends React.Component {
         <nav>
           <Link to="/"><img src={icon} alt="logo" /></Link>
           <div>
-
+            {/* I'm user the Auth HOC in addition to the ternary rendering below to prevent user's accessing routes that they aren't authenticated for. */}
             <RequireAuthComponent>
               < div>
                    <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>
