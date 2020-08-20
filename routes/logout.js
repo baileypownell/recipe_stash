@@ -5,7 +5,6 @@ const router = Router();
 
 router.get('/', (request, response, next) => {
     request.session = null;
-    console.log(request.session)
     return response.json({success: true })
 });
 

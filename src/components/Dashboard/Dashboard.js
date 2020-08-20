@@ -20,28 +20,31 @@ class Dashboard extends React.Component {
 
   fetchRecipes = () => {
     let recipes = [
-       []
-      ,
-       []
-      ,
-       []
-      ,
       []
-      ,
-      
+     ,
       []
-      ,
+     ,
       []
-      ,
-      [],
-      []
-      ,
-    ]
+     ,
+     []
+     ,
+     
+     []
+     ,
+     []
+     ,
+     [],
+     []
+     ,
+   ]
+    // get id of user first (based on the session)
+    axios.get(`/getUserId`)
+    .then((res) =>  {
     // API call to get all recipes
-    axios.get(`/recipes/${this.props.userId}`)
-    .then(res => {
-      if (res) {
-        if (res.data.name === "error") {
+    console.log(res)
+      axios.get(`/recipes/${res.data.userId}`)
+      .then(res => {
+          if (res.data.name === "error") {
           this.setState({
             loading_recipes: false
           })
@@ -69,7 +72,6 @@ class Dashboard extends React.Component {
           filteredRecipes: recipes,
           loading_recipes: false
         })
-      }
     })
     .catch((err) => {
       console.log(err);
@@ -77,6 +79,14 @@ class Dashboard extends React.Component {
         loading_recipes: false
       })
     })
+    })
+    .catch(err => {
+      console.log(err)
+      this.setState({
+        loading_recipes: false
+      })
+    })
+    
   }
 
   componentDidMount() {
@@ -113,7 +123,7 @@ class Dashboard extends React.Component {
       <>
       <div className="title">
         <div>
-          <h1 >Recipe Box</h1>
+          <h1>Recipe Box</h1>
           <div className="searchbar">
           <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
         </div>

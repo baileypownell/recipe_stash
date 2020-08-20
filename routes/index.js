@@ -6,6 +6,7 @@ const signin = require('./signin');
 const sendResetEmail = require('./sendResetEmail');
 const signinWithGoogle = require('./signinWithGoogle');
 const logout = require('./logout');
+const getUserId = require('./getUserId');
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use('/recipes', recipes);
 router.use('/signin', signin);
 router.use('/sendResetEmail', sendResetEmail);
 router.use('/signinWithGoogle', signinWithGoogle);
-router.use('/logout', logout)
+router.use('/logout', logout);
+router.use('/getUserId', getUserId);
 
 module.exports = router;

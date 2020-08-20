@@ -17,7 +17,6 @@ router.post('/', (request, response, next) => {
       first_name = res.rows[0].first_name;
       last_name = res.rows[0].last_name;
       id = res.rows[0].id;
-      request.session.userId = id;
       return response.json({
         id: id,
         first_name: first_name,

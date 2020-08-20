@@ -15,14 +15,13 @@ class Settings extends React.Component {
     firstNameReceived: '',
     lastName: '',
     lastNameReceived: '',
-    new_email: ''
+    new_email: '',
+    emailReceived: ''
   }
 
   logout = () => {
     axios.get('/logout')
     .then((res) => {
-      console.log(res);
-      this.props.logout();
       this.props.history.push('/home');
     })
     .catch((err) => {
@@ -31,6 +30,7 @@ class Settings extends React.Component {
   }
 
   resetPassword = () => {
+    
     axios.post(`/sendResetEmail`, {
       email: this.state.email
     })
@@ -47,6 +47,28 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
+    axios.get(`/getUserId`)
+    .then((res) =>  {
+    // API call to get all recipes
+      console.log('res = ', res)
+      axios.get(`/users/id/${res.data.userId}`)
+      .then((res) => { 
+        console.log(res)
+        let user = res.data.rows[0]
+        console.log(user)
+        this.setState({
+          firstNameReceived: user.first_name, 
+          lastNameReceived: user.last_name,
+          emailReceived: user.email
+        })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    })
+    .catch(err => console.log(err))
+
+
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
@@ -189,7 +211,7 @@ updateEmail = (e) => {
             <div className="row">
               <div>
                 <p>Email</p>
-                <h4>{this.state.email}</h4>
+                <h4>{this.state.emailReceived}</h4>
               </div>
             </div>
           </div>
@@ -248,18 +270,5 @@ updateEmail = (e) => {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    id: state.user.id,
-    email: state.user.email
-  }
-}
 
-const mapDispatchToProps = dispatch => {
-  return {
-    logout: () => dispatch(actions.logout())
-  }
-}
-
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings));
+export default withRouter(Settings);

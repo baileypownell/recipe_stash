@@ -33,12 +33,10 @@ router.post('/', (request, response, next) => {
         }
         if (res) {
           // send back email, first name, last name, and user id by using information in above query;
-          // update session cookie 
-          request.session.userId = id
-          console.log(request.session.userId)
-          // let's generate a sessionID for this user and store in the database? 
-          let sessionid = app.use.session.genid
-          console.log(sessionid)
+          console.log(request.session)
+          request.session.userId = id;
+          console.log(request.sessionID)
+          console.log(request.session.id)
           return response.json({
             id: id,
             first_name: first_name,

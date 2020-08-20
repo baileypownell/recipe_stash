@@ -18,9 +18,19 @@ router.get('/', (request, response, next) => {
 
 router.get('/:email', (request, response, next) => {
   const { email } = request.params;
-  console.log('email = ', email);
   client.query('SELECT * FROM users WHERE email=$1',
   [email],
+  (err, res) => {
+    if (err) return next(err);
+    response.status(200).send(res);
+  });
+});
+
+router.get('/id/:id', (request, response, next) => {
+  console.log('here')
+  const { id } = request.params;
+  client.query('SELECT * FROM users WHERE id=$1',
+  [id],
   (err, res) => {
     if (err) return next(err);
     response.status(200).send(res);
