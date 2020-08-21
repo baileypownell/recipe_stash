@@ -13,10 +13,13 @@ class Nav extends React.Component {
 
   componentDidMount() {
     axios.get('/getUserId')
-    .then((res) => 
+    .then((res) => {
+      // updates behind
+        console.log(res.data.userId);
         this.setState({
             userAuthenticated: !!res.data.userId
         })
+      }
     )
     .catch((err) => console.log(err))
   }
@@ -27,7 +30,7 @@ class Nav extends React.Component {
         <nav>
           <Link to="/"><img src={icon} alt="logo" /></Link>
           <div>
-            {/* I'm user the Auth HOC in addition to the ternary rendering below to prevent user's accessing routes that they aren't authenticated for. */}
+            {/* I'm using the Auth HOC in addition to the ternary rendering below to prevent user's accessing routes that they aren't authenticated for. */}
             <RequireAuthComponent>
               < div>
                    <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>

@@ -9,16 +9,9 @@ class Home extends React.Component {
 
   state = {
     message: 'All of your recipes.',
-    messageNum: 0
+    messageNum: 0,
   }
 
-  start = () => {
-    if (this.props.loggedIn) {
-      this.props.history.push('/dashboard');
-    } else {
-      this.props.history.push('/signup');
-    }
-  }
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
 

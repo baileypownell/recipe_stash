@@ -1,6 +1,5 @@
 import React from 'react';
 import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
 const axios = require('axios');
 import './Recipe.scss';
 import BounceLoader from "react-spinners/BounceLoader";
@@ -127,11 +126,5 @@ class Recipe extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    userId: state.user.id
-  }
-}
 
-
-export default withRouter(connect(mapStateToProps)(Recipe));
+export default withRouter(Recipe);
