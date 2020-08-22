@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import Nav from './components/Nav/Nav';
 
 import {
@@ -19,10 +21,27 @@ import {
   ResetPassword
 } from './components/index';
 
+// for presisting redux store through page refreshes
+import { persistStore, persistReducer } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import storage from 'redux-persist/lib/storage';
+import reducer from './store/reducer';
+
+const persistConfig = {
+  key: 'root',
+  storage,
+}
+const persistedReducer = persistReducer(persistConfig, reducer)
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(persistedReducer, composeEnhancers());
+let persistor = persistStore(store);
+
 import 'materialize-css/dist/css/materialize.min.css';
 import './scss/main.scss';
 
 ReactDOM.render(
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
         <Nav />
         <Switch>
@@ -35,6 +54,8 @@ ReactDOM.render(
           <Route path="/reset" component={ResetPassword}/>
           <Redirect to="/" />
         </Switch>
-      </BrowserRouter>,
+      </BrowserRouter>
+    </PersistGate>
+</Provider>,
   document.getElementById('app')
 );

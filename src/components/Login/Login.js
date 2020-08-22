@@ -1,6 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
+import * as actions from '../../store/actionCreators';
 import GoogleLogin from 'react-google-login';
 import './Login.scss';
 import M from 'materialize-css';
@@ -70,7 +72,8 @@ class Login extends React.Component {
         axios.post(`/signinWithGoogle`, {
           email: email
         })
-        .then(res => {
+        .then(() => {
+          this.props.login();
           this.props.history.push('/dashboard');
         })
         .catch(err => {
@@ -111,6 +114,7 @@ class Login extends React.Component {
             })
             M.toast({html: 'The password you entered is incorrect.'})
           } else if (res.data) {
+            this.props.login();
             this.props.history.push(`/dashboard`);
           }
         })
@@ -178,4 +182,10 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+const mapDispatchToProps = dispatch => {
+  return {
+    login: () => dispatch(actions.login())
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Login);

@@ -1,5 +1,7 @@
 import React from 'react';
 import { withRouter } from "react-router-dom";
+import { connect } from 'react-redux';
+import * as actions from '../../store/actionCreators';
 import axios from 'axios';
 import M from 'materialize-css';
 import './Settings.scss';
@@ -20,6 +22,7 @@ class Settings extends React.Component {
   logout = () => {
     axios.get('/logout')
     .then((res) => {
+      this.props.logout();
       this.props.history.push('/home');
     })
     .catch((err) => {
@@ -268,5 +271,11 @@ updateEmail = (e) => {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(actions.logout())
+  }
+}
 
-export default withRouter(Settings);
+
+export default withRouter(connect(null, mapDispatchToProps)(Settings));
