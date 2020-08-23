@@ -27,7 +27,6 @@ router.get('/:email', (request, response, next) => {
 });
 
 router.get('/id/:id', (request, response, next) => {
-  console.log('here')
   const { id } = request.params;
   client.query('SELECT * FROM users WHERE id=$1',
   [id],
@@ -66,26 +65,56 @@ router.post('/', (request, response, next) => {
 });
 
 router.put('/', (request, response, next) => {
-  const { email, first_name, last_name, id, password, new_email } = request.body;
-  console.log('session.userId ', request.session.userId)
+  const { email, first_name, last_name, password, new_email } = request.body;
+  let userId = request.session.userId;
   if ( first_name && last_name ) {
-    client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
-    [first_name, last_name, id],
-     (err, res) => {
-      if (err) {
-        console.log(err)
-        return next(err);
-      }
-      if (res) {
-        return response.status(200).json({res})
-      } else {
-        return response.status(500).json({success: false, message: 'could not update DB'})
-      }
-    });
+    if (first_name) {
+      client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
+      [first_name, last_name, userId],
+      (err, res) => {
+        if (err) {
+          console.log(err)
+          return next(err);
+        }
+        if (res) {
+          return response.status(200).json({res})
+        } else {
+          return response.status(500).json({success: false, message: 'could not update first name'})
+        }
+      });
+    }
+  } else if (last_name) {
+      client.query('UPDATE users SET last_name=$1 WHERE id=$2',
+      [ last_name, userId],
+        (err, res) => {
+        if (err) {
+          console.log(err)
+          return next(err);
+        }
+        if (res) {
+          return response.status(200).json({res})
+        } else {
+          return response.status(500).json({success: false, message: 'could not update last name'})
+        }
+      });
+  } else if (first_name) {
+    client.query('UPDATE users SET first_name=$1 WHERE id=$2',
+      [ first_name, userId],
+        (err, res) => {
+        if (err) {
+          console.log(err)
+          return next(err);
+        }
+        if (res) {
+          return response.status(200).json({res})
+        } else {
+          return response.status(500).json({success: false, message: 'could not update last name'})
+        }
+      });
   } else if (new_email) {
     // make sure password is correct, if not, reject
     client.query('SELECT * FROM users WHERE id=$1',
-      [id],
+      [userId],
       (err, res) => {
         if (err) {
           return next(err);
@@ -99,7 +128,7 @@ router.put('/', (request, response, next) => {
           if (res) {
             // update record in DB
             client.query('UPDATE users SET email=$1 WHERE id=$2',
-            [new_email, id],
+            [new_email, userId],
             (err, res) => {
               if (err) return next(err);
               if (res) {
@@ -140,7 +169,7 @@ router.put('/', (request, response, next) => {
       })
   } else if (password) {
       client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE id=$4',
-        [password, null, null, id],
+        [password, null, null, userId],
          (err, res) => {
           if (err) {
             return next(err);
@@ -154,8 +183,8 @@ router.put('/', (request, response, next) => {
   }
 });
 
-router.delete('/:id', (request, response, next) => {
-  const { id } = request.params;
+router.delete('/', (request, response, next) => {
+  let id = request.session.userId;
     client.query('DELETE FROM users WHERE id=$1',
     [id],
      (err, res) => {
@@ -164,9 +193,21 @@ router.delete('/:id', (request, response, next) => {
         return next(err);
       }
       if (res) {
-        return response.status(200).json({success: "true"})
+        client.query('DELETE FROM recipes WHERE user_id=$1',
+        [id],
+        (err, res) => {
+          if (err) {
+            return next(err);
+          }
+          if (res) {
+            request.session.destroy();
+            return response.status(200).json({success: "true"});
+          } else {
+            return response.status(500).json({success: false, message: 'Could not delete user.'})
+          }
+        });
       } else {
-        return response.status(500).json({success: false, message: 'could not update DB'})
+        return response.status(500).json({success: false, message: 'Could not delete user.'})
       }
     });
 });

@@ -1,6 +1,8 @@
 import React from 'react';
 import icon from '../../images/apple-touch-icon.png';
 import whisk from '../../images/cooking.svg';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actionCreators';
 
 
 import './Home.scss';
@@ -55,5 +57,10 @@ class Home extends React.Component {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(actions.logout())
+  }
+}
 
-export default Home;
+export default connect(null, mapDispatchToProps)(Home);

@@ -19,7 +19,6 @@ class Login extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    //console.log(process.env)
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
         faded[i].classList.add('fade-in');
@@ -64,7 +63,7 @@ class Login extends React.Component {
     .then(res => {
       if (res.data.rowCount === 0 ) {
         this.setState({
-          signInError: 'An account does not exist for this email.',
+          signInError: true,
           loading: false
         })
         M.toast({html: 'An account does not exist for this email.'})
@@ -99,7 +98,8 @@ class Login extends React.Component {
     .then(res => {
       if (res.data.rowCount == 0) {
         this.setState({
-          loading: false
+          loading: false, 
+          signInError: true
         })
         M.toast({html: 'An account does not exist for this email.'})
       } else {

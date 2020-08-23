@@ -48,27 +48,20 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    axios.get(`/getUserId`)
-    .then((res) =>  {
-    // API call to get all recipes
-      console.log('res = ', res)
-      axios.get(`/users/id/${res.data.userId}`)
-      .then((res) => { 
-        console.log(res)
-        let user = res.data.rows[0]
-        console.log(user)
-        this.setState({
-          firstNameReceived: user.first_name, 
-          lastNameReceived: user.last_name,
-          emailReceived: user.email
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-    })
-    .catch(err => console.log(err))
-
+    !this.props.loggedIn ? this.props.history.push('/home') : null
+    // // API call to get all recipes
+    // axios.get(`/user`)
+    // .then((res) => { 
+    //   let user = res.data.rows[0]
+    //   this.setState({
+    //     firstNameReceived: user.first_name, 
+    //     lastNameReceived: user.last_name,
+    //     emailReceived: user.email
+    //   })
+    // })
+    // .catch((err) => {
+    //   console.log(err)
+    // })
 
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
@@ -108,26 +101,25 @@ class Settings extends React.Component {
       .catch(err => {console.log(err)})
   }
 
-updateEmail = (e) => {
-  e.preventDefault();
-  axios.put(`/users`, {
-    new_email: this.state.new_email,
-    password: this.state.password,
-    id: this.props.id
-  })
-  .then(res => {
-    if (res.data.success === false) {
-      M.toast({html: 'Whoops, email could not be updated.'})
-    } else if (res.data.success === true) {
-      M.toast({html: 'Email updated successfully.'})
-      this.updateView()
-    }
-  })
-  .catch(err => {
-    console.log(err);
-    M.toast({html: 'There was an error.'})
-  })
-}
+  updateEmail = (e) => {
+    e.preventDefault();
+    axios.put(`/users`, {
+      new_email: this.state.new_email,
+      password: this.state.password,
+    })
+    .then(res => {
+      if (res.data.success === false) {
+        M.toast({html: 'Whoops, email could not be updated.'})
+      } else if (res.data.success === true) {
+        M.toast({html: 'Email updated successfully.'})
+        this.updateView()
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      M.toast({html: 'There was an error.'})
+    })
+  }
 
   deleteAccount = (e) => {
     e.preventDefault();
@@ -140,16 +132,12 @@ updateEmail = (e) => {
       if (res.data.success === false) {
         M.toast({html: 'The password you entered is incorrect.'})
       } else {
-        axios.delete(`/users/${this.props.id}`)
+        axios.delete(`/users`)
         .then((res) => {
-          axios.delete(`/recipes/all/${this.props.id}`)
-          .then(res => {
-            M.toast({html: 'Account deleted.'})
-            // update redux
+          M.toast({html: 'Account deleted.'})
             this.props.logout();
             this.props.history.push('/home');
           })
-        })
         .catch(err => console.log(err))
       }
     })
@@ -174,16 +162,16 @@ updateEmail = (e) => {
   }
 
   updateView() {
-    axios.get(`/users/${this.props.email}`)
+    axios.get(`/user`)
     .then((res) => {
       let user = res.data.rows[0]
-      console.log(res)
       this.setState({
         firstName: user.first_name, 
         firstNameReceived: user.first_name, 
         lastName: user.last_name,
         lastNameReceived: user.last_name,
-        email: user.email
+        email: user.email,
+        emailReceived: user.email
       })
       M.updateTextFields()
     })
@@ -271,6 +259,12 @@ updateEmail = (e) => {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    loggedIn: state.loggedIn
+  }
+}
+
 const mapDispatchToProps = dispatch => {
   return {
     logout: () => dispatch(actions.logout())
@@ -278,4 +272,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default withRouter(connect(null, mapDispatchToProps)(Settings));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings));

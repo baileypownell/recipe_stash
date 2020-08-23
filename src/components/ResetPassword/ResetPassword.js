@@ -12,7 +12,6 @@ class ResetPassword extends React.Component {
     invalidLink: false,
     password: '',
     passwordInvalid: true,
-    success: false,
     loading: false
   }
 
@@ -61,19 +60,13 @@ class ResetPassword extends React.Component {
       password: hashedPassword
     })
     .then(res => {
-      //console.log(res);
       this.setState({
-        success: true,
         loading: false
-      }, () => {
-        setTimeout(() => {
-          this.props.history.push('/dashboard');
-        }, 3000)
-      })
-
+      });
+      M.toast({html: 'Password updated!'})
+      this.props.history.push('/dashboard');
     })
     .catch((err) => {
-      console.log(res);
       this.setState({
         loading: false
       })
@@ -96,8 +89,9 @@ class ResetPassword extends React.Component {
           <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
           {this.state.passwordInvalid && this.state.password !== '' ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
           <button
-            disabled={this.state.passwordInvalid} className={this.state.passwordInvalid ? 'disabled' : 'enabled'}>
-
+            disabled={this.state.passwordInvalid} 
+            className={this.state.passwordInvalid ? 'disabled waves-effect waves-light btn fade' : 'enabled waves-effect waves-light btn fade'}
+            >
             {this.state.loading?
               <ClipLoader
                 css={`border-color: white;`}
@@ -117,11 +111,5 @@ class ResetPassword extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    id: state.user.id
-  }
-}
 
-
-export default withRouter(connect(mapStateToProps)(ResetPassword));
+export default withRouter(ResetPassword);

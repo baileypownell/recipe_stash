@@ -1,7 +1,7 @@
 import React from 'react';
 const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
-
+import { connect } from 'react-redux';
 import Category from './Category/Category';
 
 import './Dashboard.scss';
@@ -17,77 +17,30 @@ class Dashboard extends React.Component {
   }
 
   fetchRecipes = () => {
-    let recipes = [
-      []
-     ,
-      []
-     ,
-      []
-     ,
-     []
-     ,
-     
-     []
-     ,
-     []
-     ,
-     [],
-     []
-     ,
-   ]
-    // get id of user first (based on the session)
-    axios.get(`/getUserId`)
-    .then((res) =>  {
-    // API call to get all recipes
-    console.log(res)
-      axios.get(`/recipes/${res.data.userId}`)
-      .then(res => {
-          if (res.data.name === "error") {
-          this.setState({
-            loading_recipes: false
-          })
-          return;
-        }
-        res.data.forEach((recipe) => {
-          if (recipe.category === 'Dinner') {
-            recipes[2].push(recipe)
-          } else if (recipe.category === 'Dessert') {
-            recipes[4].push(recipe)
-          } else if (recipe.category === 'Drinks') {
-            recipes[6].push(recipe)
-          } else if (recipe.category === 'Lunch') {
-            recipes[1].push(recipe)
-          } else if (recipe.category === 'Breakfast') {
-            recipes[0].push(recipe)
-          } else if (recipe.category === 'Other') {
-            recipes[7].push(recipe)
-          } else if (recipe.category === 'Side Dish') {
-            recipes[3].push(recipe)
-          }
-        });
+    axios.get(`/recipes`)
+    .then(res => {
+        if (res.data.name === "error") {
         this.setState({
-          unfilteredRecipes: recipes,
-          filteredRecipes: recipes,
           loading_recipes: false
         })
+        return;
+      }
+      this.setState({
+        unfilteredRecipes: res.data,
+        filteredRecipes: res.data,
+        loading_recipes: false
+      })
     })
     .catch((err) => {
       console.log(err);
       this.setState({
         loading_recipes: false
       })
-    })
-    })
-    .catch(err => {
-      console.log(err)
-      this.setState({
-        loading_recipes: false
-      })
-    })
-    
+    })    
   }
 
   componentDidMount() {
+    !this.props.loggedIn ? this.props.history.push('/home') : null
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
@@ -105,9 +58,13 @@ class Dashboard extends React.Component {
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
     let recipesNarrowedByInput = this.state.unfilteredRecipes
-    recipesNarrowedByInput = recipesNarrowedByInput.map((el) => {
-      return el.filter(recipe => recipe.title.toLowerCase().includes(input))
+    recipesNarrowedByInput = Object.values(recipesNarrowedByInput).forEach(category => {
+      console.log(category)
+      return category.map(el => el.filter(recipe => recipe.title.toLowerCase().includes(input)))
     })
+    // recipesNarrowedByInput = recipesNarrowedByInput.map((el) => {
+    //   return el.filter(recipe => recipe.title.toLowerCase().includes(input))
+    // })
     this.setState({
       filteredRecipes: recipesNarrowedByInput
     })
@@ -141,43 +98,43 @@ class Dashboard extends React.Component {
           <Category
             title="Breakfast"
             id="breakfast"
-            recipes={filteredRecipes ? filteredRecipes[0] : []}
+            recipes={filteredRecipes ? filteredRecipes.breakfast : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Lunch"
             id="lunch"
-            recipes={filteredRecipes ? filteredRecipes[1] : []}
+            recipes={filteredRecipes ? filteredRecipes.lunch : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dinner"
             id="dinner"
-            recipes={filteredRecipes ? filteredRecipes[2] : []}
+            recipes={filteredRecipes ? filteredRecipes.dinner : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Side Dish"
             id="side"
-            recipes={filteredRecipes ? filteredRecipes[3] : []}
+            recipes={filteredRecipes ? filteredRecipes.side_dish : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dessert"
             id="dessert"
-            recipes={filteredRecipes ? filteredRecipes[4] : []}
+            recipes={filteredRecipes ? filteredRecipes.dessert : []}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Drinks"
             id="drinks"
-            recipes={filteredRecipes ? filteredRecipes[6] : []}
+            recipes={filteredRecipes ? filteredRecipes.drinks : []}
             updateDashboard={this.updateDashboard}
             />
           <Category
             title="Other"
             id="other"
-            recipes={filteredRecipes ? filteredRecipes[7] : []}
+            recipes={filteredRecipes ? filteredRecipes.other : []}
             updateDashboard={this.updateDashboard}
             />
             </>
@@ -188,4 +145,10 @@ class Dashboard extends React.Component {
   }
 }
 
-export default Dashboard;
+const mapStateToProps = state => {
+  return {
+    loggedIn: state.loggedIn
+  }
+}
+
+export default connect(mapStateToProps)(Dashboard);

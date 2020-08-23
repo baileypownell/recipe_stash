@@ -2,62 +2,47 @@ const { Router } = require('express');
 const client = require('../db');
 const router = Router();
 
-router.get('/:id', (request, response, next) => {
-  const { id } = request.params;
+router.get('/', (request, response, next) => {
+  let id = request.session.userId;
   client.query('SELECT * FROM recipes WHERE user_id=$1',
   [id],
    (err, res) => {
     if (err) return next(err);
-    response.json(res.rows)
-  });
-});
-
-// /specificRecipe/${this.props.userId}/${this.state.recipeId}
-
-router.get('/:userId/:recipeId', (request, response, next) => {
-  const { userId, recipeId } = request.params;
-  client.query('SELECT * FROM recipes WHERE user_id=$1 AND id=$2',
-  [userId, recipeId],
-   (err, res) => {
-    if (err) return next(err);
-    response.status(200).json(res.rows)
-  });
-});
-
-router.delete('/:recipeId', (request, response, next) => {
-  const { recipeId } = request.params;
-  client.query('DELETE FROM recipes WHERE id=$1',
-  [recipeId],
-   (err, res) => {
-    if (err) return next(err);
-    if (res) {
-      return response.status(200).json({success: true})
-    } else {
-      return response.status(500).json({success: false, message: 'could not delete from DB'})
+    let responseObject = {
+      breakfast: [], 
+      lunch: [],
+      dinner: [], 
+      dessert: [],
+      other: [], 
+      side_dish: [],
+      drinks: []
     }
-  });
-});
-
-router.delete('/all/:id', (request, response, next) => {
-  const { id } = request.params;
-    client.query('DELETE FROM recipes WHERE user_id=$1',
-    [id],
-     (err, res) => {
-      if (err) {
-        return next(err);
-      }
-      if (res) {
-        return response.status(200).json({success: "true"})
-      } else {
-        return response.status(500).json({success: false, message: 'could not delete'})
+    res.rows.forEach((recipe) => {
+      if (recipe.category === 'Dinner') {
+        responseObject.dinner.push(recipe)
+      } else if (recipe.category === 'Dessert') {
+        responseObject.dessert.push(recipe)
+      } else if (recipe.category === 'Drinks') {
+        responseObject.drinks.push(recipe)
+      } else if (recipe.category === 'Lunch') {
+        responseObject.lunch.push(recipe)
+      } else if (recipe.category === 'Breakfast') {
+        responseObject.breakfast.push(recipe)
+      } else if (recipe.category === 'Other') {
+        responseObject.other.push(recipe)
+      } else if (recipe.category === 'Side Dish') {
+        responseObject.side_dish.push(recipe)
       }
     });
-})
+    response.json(responseObject);
+  });
+});
 
 router.post('/', (request, response, next) => {
-  const { title, category, ingredients, directions, user_id } = request.body;
+  const { title, category, ingredients, directions } = request.body;
+  let userId = request.session.userId;
   client.query('INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES($1, $2, $3, $4, $5)',
-  [title, category, user_id, ingredients, directions],
+  [title, category, userId, ingredients, directions],
    (err, res) => {
     if (err) {
       return next(err);

@@ -4,6 +4,7 @@ const axios = require('axios');
 import './Recipe.scss';
 import BounceLoader from "react-spinners/BounceLoader";
 import pot from '../../images/pot.svg';
+import Modal from '../Modal/Modal';
 
 class Recipe extends React.Component {
 
@@ -11,7 +12,7 @@ class Recipe extends React.Component {
     title: null,
     ingredients: null,
     directions: null,
-    recipeId: parseInt(this.props.location.pathname.split('/')[2]),
+    recipeId: parseInt(this.props.location.pathname.split('/')[3]),
     loading: null,
     showConfirmation: false,
     showEditModal: false
@@ -22,7 +23,7 @@ class Recipe extends React.Component {
   }
 
   fetchData = () => {
-    axios.get(`/recipes/${this.props.userId}/${this.state.recipeId}`)
+    axios.get(`/recipe/${this.props.location.pathname.split('/')[3]}`)
     .then(res => {
       this.setState({
         title: res.data[0].title,
@@ -45,7 +46,7 @@ class Recipe extends React.Component {
   }
 
   deleteRecipe = () => {
-    axios.delete(`/recipes/${this.state.recipeId}`)
+    axios.delete(`/recipe/${this.state.recipeId}`)
     .then(res => {
       if (res) {
         M.toast({html: 'Recipe deleted.'})

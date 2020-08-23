@@ -61,7 +61,6 @@ class Modal extends React.Component {
       category: this.state.category,
       ingredients: this.state.ingredients,
       directions: this.state.directions,
-      user_id: this.props.user_id
     })
     .then(res => {
       if (res) {

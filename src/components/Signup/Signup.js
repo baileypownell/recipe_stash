@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actionCreators';
 import './Signup.scss';
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
@@ -42,7 +44,6 @@ class Signup extends React.Component {
     // make sure user doesn't already exist in the DB
     axios.get(`/users/${email}`)
     .then(res => {
-      console.log(res)
       if (res.data.rowCount > 0) {
         this.setState({
           submissionError: 'An account already exists for this email.',
@@ -61,11 +62,8 @@ class Signup extends React.Component {
         })
         .then(res => {
           if (res.data) {
-            // update Redux
             M.toast({html: 'Success! Logging you in now...'})
-            let id=res.data.id;
-            //this.props.login(id, email, firstName, lastName)
-            // redirect to /dashboard
+            this.props.login();
             this.props.history.push('/dashboard')
           } else {
             this.setState({
@@ -209,4 +207,11 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+const mapDispatchToProps = dispatch => {
+  return {
+    login: () => dispatch(actions.login())
+  }
+}
+
+
+export default connect(null, mapDispatchToProps)(Signup);
