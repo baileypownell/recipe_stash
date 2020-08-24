@@ -31,8 +31,8 @@ router.post('/', (request, response, next) => {
         }
         if (res) {
           // send back email, first name, last name, and user id by using information in above query;
-          request.session.regenerate()
           request.session.userId = id;
+          request.session.save();
           return response.json({
             id: id,
             first_name: first_name,

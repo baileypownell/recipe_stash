@@ -4,7 +4,7 @@ const client = require('../db');
 const router = Router();
 
 router.get('/', (request, response, next) => {
-    request.session.regenerate()
+    request.session.userId = null;
     return response.json({success: true })
 });
 

@@ -58,10 +58,18 @@ class Dashboard extends React.Component {
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
     let recipesNarrowedByInput = this.state.unfilteredRecipes
-    recipesNarrowedByInput = Object.values(recipesNarrowedByInput).forEach(category => {
-      console.log(category)
-      return category.map(el => el.filter(recipe => recipe.title.toLowerCase().includes(input)))
+    console.log(recipesNarrowedByInput)
+    // recipesNarrowedByInput = Object.values(recipesNarrowedByInput).forEach(category => {
+    //   console.log(category)
+    //   return category.map(el => el.filter(recipe => recipe.title.toLowerCase().includes(input)))
+    // })
+    console.log(input)
+    recipesNarrowedByInput.breakfast.filter(recipe => {
+      console.log(recipe.title.toLowerCase().includes(input))
+      return recipe.title.toLowerCase().includes(input)
     })
+    console.log(recipesNarrowedByInput.breakfast)
+  
     // recipesNarrowedByInput = recipesNarrowedByInput.map((el) => {
     //   return el.filter(recipe => recipe.title.toLowerCase().includes(input))
     // })

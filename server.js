@@ -32,10 +32,15 @@ app.use((err, req, res, next) => {
 // ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 // CREATE INDEX "IDX_session_expire" ON "session" ("expire");
+var environment = process.env.NODE_ENV || 'development';
 
-const genuuid = () => {
-  return 'genuuid'
+if (environment !== 'production') {
+  require('dotenv').config({
+    path: './.env.development'
+  });
 }
+
+console.log(process.env.NODE_ENV, environment)
 
 app.use(session({
   //store: new (require('connect-pg-simple')(session))(),
@@ -43,7 +48,7 @@ app.use(session({
     pool: client, 
     tableName: 'session'
   }),
-  secret: '343ji43j4n3jn4jk3n', // put in environment variable in production
+  secret: process.env.SESSION_SECRET, 
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 3600000, secure: false } // 1 hour

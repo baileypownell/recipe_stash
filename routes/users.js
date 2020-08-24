@@ -55,6 +55,8 @@ router.post('/', (request, response, next) => {
           let email=res.rows[0].email;
           let firstName=res.rows[0].first_name;
           let lastName=res.rows[0].last_name;
+          request.session.userId = id;
+          request.session.save();
           return response.json({id: id, email: email, firstName: firstName, lastName: lastName})
         }
       })

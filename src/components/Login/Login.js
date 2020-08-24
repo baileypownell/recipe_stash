@@ -122,7 +122,8 @@ class Login extends React.Component {
           console.log(err)
           M.toast({html: 'There was an error.'})
           this.setState({
-            signInError: true
+            signInError: true,
+            loading: false
           })
         })
       }
