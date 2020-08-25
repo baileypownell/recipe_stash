@@ -1,10 +1,8 @@
 const path = require('path');
 const express = require('express');
-//const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const routes = require('./routes');
-//import * as client from './db/index';
 const client = require('./db/index');
 var pg = require('pg')
   , session = require('express-session')
@@ -59,7 +57,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/dist'));
 
-//process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+// because I'm too cheap to pay $7/month for TLS (never do this for legit app)
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/dist/index.html');
