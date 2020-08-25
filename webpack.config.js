@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const dotenv = require('dotenv');
 const fs = require('fs'); // to check if the file exists
 const path = require('path'); // to get the current path
 var ImageminPlugin = require('imagemin-webpack-plugin').default

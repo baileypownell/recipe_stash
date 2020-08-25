@@ -34,12 +34,6 @@ app.use((err, req, res, next) => {
 // CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 var environment = process.env.NODE_ENV || 'development';
 
-// if (environment !== 'production') {
-//   require('dotenv').config({
-//     path: './.env.development'
-//   });
-// }
-
 console.log(process.env.NODE_ENV, environment)
 
 app.use(session({
