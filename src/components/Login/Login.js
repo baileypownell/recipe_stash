@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
 const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
+import * as actions from '../../store/actionCreators';
 import GoogleLogin from 'react-google-login';
 import './Login.scss';
 import M from 'materialize-css';
@@ -14,12 +14,11 @@ class Login extends React.Component {
     password: null,
     formValid: false,
     loading: false,
-    signInError: ''
+    signInError: false
   }
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    //console.log(process.env)
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
         faded[i].classList.add('fade-in');
@@ -50,11 +49,7 @@ class Login extends React.Component {
       email: this.state.email
     })
     .then(res => {
-      if (res.data.success === false) {
-        M.toast({html: 'There was an error.'})
-      } else {
-        M.toast({html: 'Check your email for a link to reset your password.'})
-      }
+      res.data.success === false ? M.toast({html: 'There was an error.'}) : M.toast({html: 'Check your email for a link to reset your password.'})
     })
     .catch(err => {
       console.log(err);
@@ -63,14 +58,12 @@ class Login extends React.Component {
   }
 
   responseGoogle = (response) => {
-    // get email so that if the email exists in the database, the user is automatically logged in
-    // may or may not be a security concern
     let email = response.profileObj.email;
     axios.get(`/users/${email}`)
     .then(res => {
       if (res.data.rowCount === 0 ) {
         this.setState({
-          signInError: 'An account does not exist for this email.',
+          signInError: true,
           loading: false
         })
         M.toast({html: 'An account does not exist for this email.'})
@@ -78,14 +71,15 @@ class Login extends React.Component {
         axios.post(`/signinWithGoogle`, {
           email: email
         })
-        .then(res => {
-          // update Redux
-          this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
-          // redirect to /dashboard
+        .then(() => {
+          this.props.login();
           this.props.history.push('/dashboard');
         })
         .catch(err => {
           console.log(err)
+          this.setState({
+            signInError: true
+          })
         })
       }
     })
@@ -104,8 +98,8 @@ class Login extends React.Component {
     .then(res => {
       if (res.data.rowCount == 0) {
         this.setState({
-          signInError: 'An account does not exist for this email.',
-          loading: false
+          loading: false, 
+          signInError: true
         })
         M.toast({html: 'An account does not exist for this email.'})
       } else {
@@ -116,20 +110,21 @@ class Login extends React.Component {
         .then(res => {
           if (res.data.success === false) {
             this.setState({
-              signInError: 'The password you entered is incorrect.',
               loading: false
             })
             M.toast({html: 'The password you entered is incorrect.'})
-          } else {
-            // update Redux
-            this.props.login(res.data.id, res.data.email, res.data.first_name, res.data.last_name);
-            // redirect to /dashboard
-            this.props.history.push('/dashboard');
+          } else if (res.data) {
+            this.props.login();
+            this.props.history.push(`/dashboard`);
           }
         })
         .catch((err) => {
           console.log(err)
           M.toast({html: 'There was an error.'})
+          this.setState({
+            signInError: true,
+            loading: false
+          })
         })
       }
     })
@@ -178,29 +173,20 @@ class Login extends React.Component {
                cookiePolicy={'single_host_origin'}
              />
 
-          {
-              signInError.length > 0 ? 
-                  <button className="waves-effect waves-light btn" onClick={this.sendPasswordResetLink}>Reset Password</button>
-              : null
-          }
+          {signInError ? 
+                <button className="waves-effect waves-light btn" onClick={this.sendPasswordResetLink}>Reset Password</button>
+          : null}
           </div>
-          
         </form>
       </div>
     )
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    userLoggedIn: state.userLoggedIn
-  }
-}
-
 const mapDispatchToProps = dispatch => {
   return {
-    login: (id, email, firstName, lastName) => dispatch(actions.login(id, email, firstName, lastName))
+    login: () => dispatch(actions.login())
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

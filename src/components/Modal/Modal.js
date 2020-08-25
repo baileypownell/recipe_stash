@@ -1,7 +1,6 @@
 import React from 'react';
 const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
-import { connect } from 'react-redux';
 import './Modal.scss';
 
 class Modal extends React.Component {
@@ -62,7 +61,6 @@ class Modal extends React.Component {
       category: this.state.category,
       ingredients: this.state.ingredients,
       directions: this.state.directions,
-      user_id: this.props.user_id
     })
     .then(res => {
       if (res) {
@@ -172,10 +170,5 @@ class Modal extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    user_id: state.user.id
-  }
-}
 
-export default connect(mapStateToProps)(Modal);
+export default Modal;

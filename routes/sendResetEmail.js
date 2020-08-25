@@ -5,8 +5,9 @@ const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const router = Router();
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-  console.log('process.env.project_url = ', process.env.PROJECT_URL)
+  require('dotenv').config({
+    path: '../.env.development'
+  });
 }
 
 
@@ -33,8 +34,6 @@ router.post('/', (request, response, next) => {
             return next(err)
           }
           if (res) {
-            console.log(process.env.SENDGRID_PASSWORD, process.env.SENDGRID_USERNAME)
-
             // now create nodemailer transport, which is actually the account sending the password reset email link
               const transporter = nodemailer.createTransport(sgTransport({
                 service: 'SendGrid',
@@ -54,14 +53,14 @@ router.post('/', (request, response, next) => {
                 console.log('error = ', err)
                 response.status(500).json({ success: false, message: 'there was an error sending the email', error: err.message, name: err.name})
               } else {
-                return response.status(200).json('recovery email sent');
+                request.session.destroy();
+                return response.status(200).json('Recovery email sent');
               }
             })
           }
       })
       } else {
-        console.log('error', email)
-        return response.status(500).json({success: false, message: 'could not update DB'})
+        return response.status(500).json({success: false, message: 'There was an error reaching the database.'})
       }
     });
   });

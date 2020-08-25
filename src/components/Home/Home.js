@@ -1,9 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import icon from '../../images/apple-touch-icon.png';
 import whisk from '../../images/cooking.svg';
-import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
+import * as actions from '../../store/actionCreators';
 
 
 import './Home.scss';
@@ -12,16 +11,9 @@ class Home extends React.Component {
 
   state = {
     message: 'All of your recipes.',
-    messageNum: 0
+    messageNum: 0,
   }
 
-  start = () => {
-    if (this.props.loggedIn) {
-      this.props.history.push('/dashboard');
-    } else {
-      this.props.history.push('/signup');
-    }
-  }
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
 
@@ -65,10 +57,10 @@ class Home extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapDispatchToProps = dispatch => {
   return {
-    loggedIn: state.userLoggedIn
+    logout: () => dispatch(actions.logout())
   }
 }
 
-export default withRouter(connect(mapStateToProps)(Home));
+export default connect(null, mapDispatchToProps)(Home);

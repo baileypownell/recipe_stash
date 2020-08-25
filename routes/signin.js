@@ -3,6 +3,9 @@ const client = require('../db');
 const bcrypt = require('bcryptjs');
 const router = Router();
 
+const app = require('../server');
+
+
 router.post('/', (request, response, next) => {
   const { password, email } = request.body;
   // if user gets this far they are already verified to exist in the DB
@@ -12,6 +15,7 @@ router.post('/', (request, response, next) => {
     [email],
     (err, res) => {
       if (err)  {
+        console.log(err)
         response.json(err);
         return next(err);
       }
@@ -27,6 +31,8 @@ router.post('/', (request, response, next) => {
         }
         if (res) {
           // send back email, first name, last name, and user id by using information in above query;
+          request.session.userId = id;
+          request.session.save();
           return response.json({
             id: id,
             first_name: first_name,
@@ -34,7 +40,7 @@ router.post('/', (request, response, next) => {
             email: email
           })
         } else {
-          return response.json({success: false, message: 'passwords do not match'})
+          return response.json({success: false, message: 'Passwords do not match'})
         }
       })
     })

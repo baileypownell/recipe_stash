@@ -1,32 +1,37 @@
 import React from 'react';
+import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import * as actions from '../../store/actionCreators';
-import { withRouter } from "react-router-dom";
 import axios from 'axios';
 import M from 'materialize-css';
 import './Settings.scss';
 
+
 class Settings extends React.Component {
 
   state = {
-    showModal: false,
-    showPasswordMessage: false,
-    loading: false,
-    emailLoading: false,
-    showPasswordError: false,
-    editEmail: false,
     password: '',
     firstName: '',
+    firstNameReceived: '',
     lastName: '',
-    new_email: ''
+    lastNameReceived: '',
+    new_email: '',
+    emailReceived: ''
   }
 
   logout = () => {
-    this.props.logout();
-    this.props.history.push('/home')
+    axios.get('/logout')
+    .then((res) => {
+      this.props.logout();
+      this.props.history.push('/home');
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   resetPassword = () => {
+    
     axios.post(`/sendResetEmail`, {
       email: this.state.email
     })
@@ -43,6 +48,21 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
+    !this.props.loggedIn ? this.props.history.push('/home') : null
+    // // API call to get all recipes
+    // axios.get(`/user`)
+    // .then((res) => { 
+    //   let user = res.data.rows[0]
+    //   this.setState({
+    //     firstNameReceived: user.first_name, 
+    //     lastNameReceived: user.last_name,
+    //     emailReceived: user.email
+    //   })
+    // })
+    // .catch((err) => {
+    //   console.log(err)
+    // })
+
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
@@ -81,26 +101,25 @@ class Settings extends React.Component {
       .catch(err => {console.log(err)})
   }
 
-updateEmail = (e) => {
-  e.preventDefault();
-  axios.put(`/users`, {
-    new_email: this.state.email,
-    password: this.state.password,
-    id: this.props.id
-  })
-  .then(res => {
-    if (res.data.success === false) {
-      M.toast({html: 'Whoops, email could not be updated.'})
-    } else if (res.data.success === true) {
-      M.toast({html: 'Email updated successfully.'})
-      this.updateView()
-    }
-  })
-  .catch(err => {
-    console.log(err);
-    M.toast({html: 'There was an error.'})
-  })
-}
+  updateEmail = (e) => {
+    e.preventDefault();
+    axios.put(`/users`, {
+      new_email: this.state.new_email,
+      password: this.state.password,
+    })
+    .then(res => {
+      if (res.data.success === false) {
+        M.toast({html: 'Whoops, email could not be updated.'})
+      } else if (res.data.success === true) {
+        M.toast({html: 'Email updated successfully.'})
+        this.updateView()
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      M.toast({html: 'There was an error.'})
+    })
+  }
 
   deleteAccount = (e) => {
     e.preventDefault();
@@ -113,16 +132,12 @@ updateEmail = (e) => {
       if (res.data.success === false) {
         M.toast({html: 'The password you entered is incorrect.'})
       } else {
-        axios.delete(`/users/${this.props.id}`)
+        axios.delete(`/users`)
         .then((res) => {
-          axios.delete(`/recipes/all/${this.props.id}`)
-          .then(res => {
-            M.toast({html: 'Account deleted.'})
-            // update redux
+          M.toast({html: 'Account deleted.'})
             this.props.logout();
             this.props.history.push('/home');
           })
-        })
         .catch(err => console.log(err))
       }
     })
@@ -147,13 +162,16 @@ updateEmail = (e) => {
   }
 
   updateView() {
-    axios.get(`/users/${this.props.id}`)
+    axios.get(`/user`)
     .then((res) => {
       let user = res.data.rows[0]
       this.setState({
         firstName: user.first_name, 
+        firstNameReceived: user.first_name, 
         lastName: user.last_name,
-        email: user.email
+        lastNameReceived: user.last_name,
+        email: user.email,
+        emailReceived: user.email
       })
       M.updateTextFields()
     })
@@ -168,7 +186,7 @@ updateEmail = (e) => {
         <div className="fade settings">
           <div id="profileParent">
             <div id="profile">
-              <i className="fas fa-user-circle"></i><h3>{this.state.firstName}</h3>
+              <i className="fas fa-user-circle"></i><h3>{this.state.firstNameReceived}</h3>
             </div>
             <button className="waves-effect waves-light btn" onClick={this.logout}>Log out</button>
           </div>
@@ -176,13 +194,13 @@ updateEmail = (e) => {
             <div className="row">
               <div>
                 <p>Name</p>
-                <h4>{this.state.firstName} {this.state.lastName}</h4>
+                <h4>{this.state.firstNameReceived} {this.state.lastNameReceived}</h4>
               </div>
             </div>
             <div className="row">
               <div>
                 <p>Email</p>
-                <h4>{this.state.email}</h4>
+                <h4>{this.state.emailReceived}</h4>
               </div>
             </div>
           </div>
@@ -191,7 +209,7 @@ updateEmail = (e) => {
               <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
               <div className="collapsible-body">
                 <div className="input-field ">
-                    <input id="email" type="email" onChange={this.updateInput} value={this.state.email}></input>
+                    <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
                     <label htmlFor="email">New Email</label>
                 </div>
                 <div className="input-field">
@@ -243,7 +261,7 @@ updateEmail = (e) => {
 
 const mapStateToProps = state => {
   return {
-    id: state.user.id
+    loggedIn: state.loggedIn
   }
 }
 
