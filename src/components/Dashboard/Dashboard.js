@@ -25,6 +25,13 @@ class Dashboard extends React.Component {
         })
         return;
       }
+      res.data.breakfast.sort(this.sortByTitle)
+      res.data.lunch.sort(this.sortByTitle)
+      res.data.dinner.sort(this.sortByTitle)
+      res.data.side_dish.sort(this.sortByTitle)
+      res.data.dessert.sort(this.sortByTitle)
+      res.data.drinks.sort(this.sortByTitle)
+      res.data.other.sort(this.sortByTitle)
       this.setState({
         unfilteredRecipes: res.data,
         filteredRecipes: res.data,
@@ -37,6 +44,15 @@ class Dashboard extends React.Component {
         loading_recipes: false
       })
     })    
+  }
+
+  sortByTitle(a, b) {
+    if (a.title > b.title) {
+      return 1
+    } else if (a.title < b.title ) {
+      return -1
+    }
+    return 0 
   }
 
   componentDidMount() {
@@ -65,6 +81,14 @@ class Dashboard extends React.Component {
       dessert: [], 
       other: [], 
       side_dish: []
+    }
+    let sortByTitle = (a, b) => {
+      if (a.title > b.title) {
+        return 1
+      } else if (a.title < b.title ) {
+        return -1
+      }
+      return 0 
     }
     if (input.length > 0) {
       recipesNarrowedByInput.breakfast = this.state.unfilteredRecipes.breakfast.filter(recipe => {
