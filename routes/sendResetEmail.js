@@ -34,7 +34,6 @@ router.post('/', (request, response, next) => {
             return next(err)
           }
           if (res) {
-            console.log(process.env.SENDGRID_PASSWORD)
             // now create nodemailer transport, which is actually the account sending the password reset email link
               const transporter = nodemailer.createTransport(sgTransport({
                 service: 'SendGrid',

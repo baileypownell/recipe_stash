@@ -57,22 +57,41 @@ class Dashboard extends React.Component {
 
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
-    let recipesNarrowedByInput = this.state.unfilteredRecipes
-    console.log(recipesNarrowedByInput)
-    // recipesNarrowedByInput = Object.values(recipesNarrowedByInput).forEach(category => {
-    //   console.log(category)
-    //   return category.map(el => el.filter(recipe => recipe.title.toLowerCase().includes(input)))
-    // })
-    console.log(input)
-    recipesNarrowedByInput.breakfast.filter(recipe => {
-      console.log(recipe.title.toLowerCase().includes(input))
-      return recipe.title.toLowerCase().includes(input)
-    })
-    console.log(recipesNarrowedByInput.breakfast)
-  
-    // recipesNarrowedByInput = recipesNarrowedByInput.map((el) => {
-    //   return el.filter(recipe => recipe.title.toLowerCase().includes(input))
-    // })
+    let recipesNarrowedByInput = {
+      breakfast: [], 
+      lunch: [], 
+      dinner: [],
+      other: [], 
+      dessert: [], 
+      other: [], 
+      side_dish: []
+    }
+    if (input.length > 0) {
+      recipesNarrowedByInput.breakfast = this.state.unfilteredRecipes.breakfast.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+      recipesNarrowedByInput.lunch = this.state.unfilteredRecipes.lunch.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+      recipesNarrowedByInput.dinner = this.state.unfilteredRecipes.dinner.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+      recipesNarrowedByInput.dessert = this.state.unfilteredRecipes.dessert.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+      recipesNarrowedByInput.other = this.state.unfilteredRecipes.other.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+      recipesNarrowedByInput.side_dish = this.state.unfilteredRecipes.side_dish.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+      recipesNarrowedByInput.drinks = this.state.unfilteredRecipes.drinks.filter(recipe => {
+        return recipe.title.toLowerCase().includes(input)
+      })
+    } else {
+      recipesNarrowedByInput = this.state.unfilteredRecipes
+    }
+
     this.setState({
       filteredRecipes: recipesNarrowedByInput
     })
@@ -106,43 +125,43 @@ class Dashboard extends React.Component {
           <Category
             title="Breakfast"
             id="breakfast"
-            recipes={filteredRecipes ? filteredRecipes.breakfast : []}
+            recipes={filteredRecipes.breakfast}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Lunch"
             id="lunch"
-            recipes={filteredRecipes ? filteredRecipes.lunch : []}
+            recipes={filteredRecipes.lunch}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dinner"
             id="dinner"
-            recipes={filteredRecipes ? filteredRecipes.dinner : []}
+            recipes={filteredRecipes.dinner}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Side Dish"
             id="side"
-            recipes={filteredRecipes ? filteredRecipes.side_dish : []}
+            recipes={filteredRecipes.side_dish}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Dessert"
             id="dessert"
-            recipes={filteredRecipes ? filteredRecipes.dessert : []}
+            recipes={filteredRecipes.dessert}
             updateDashboard={this.updateDashboard}
           />
           <Category
             title="Drinks"
             id="drinks"
-            recipes={filteredRecipes ? filteredRecipes.drinks : []}
+            recipes={filteredRecipes.drinks}
             updateDashboard={this.updateDashboard}
             />
           <Category
             title="Other"
             id="other"
-            recipes={filteredRecipes ? filteredRecipes.other : []}
+            recipes={filteredRecipes.other}
             updateDashboard={this.updateDashboard}
             />
             </>

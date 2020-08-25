@@ -6,8 +6,8 @@
   "proxy": "http://localhost:3000",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "set NODE_ENV=development && webpack-dev-server --config ./webpack.config.js --mode development",
-    "dev-server": "set NODE_ENV=development && nodemon ./server.js node --trace-warnings",
+    "dev": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "dev-server": "nodemon ./server.js node --trace-warnings",
     "start": "NODE_ENV=production && node ./server.js",
     "build": "webpack -p --config ./webpack.config.js"
   },
