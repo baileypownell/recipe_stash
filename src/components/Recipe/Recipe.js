@@ -5,6 +5,7 @@ import './Recipe.scss';
 import BounceLoader from "react-spinners/BounceLoader";
 import pot from '../../images/pot.svg';
 import Modal from '../Modal/Modal';
+import M from 'materialize-css';
 
 class Recipe extends React.Component {
 
@@ -43,6 +44,17 @@ class Recipe extends React.Component {
     })
     // get data
     this.fetchData();
+    // initialize select 
+    //var elems = Array.from(document.querySelectorAll('select'))[0];
+    //console.log(elems);
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('select');
+      elems.material_select();
+    });
+
+     //M.FormSelect.init(elems, {dropdownOptions: {yes, no}});
+    //M.AutoInit();
   }
 
   deleteRecipe = () => {
@@ -99,6 +111,14 @@ class Recipe extends React.Component {
             <div className="directions">
               <h3>Directions </h3>
               {directions}
+            </div>
+            <div >
+              <select >
+                <option value="" disabled >Choose your option</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+              </select>
             </div>
             <div id="pot">
               <img src={pot} alt="cooking pot with lid cracked open" />
