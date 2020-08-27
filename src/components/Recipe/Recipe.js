@@ -32,6 +32,7 @@ class Recipe extends React.Component {
         title: res.data[0].title,
         ingredients: res.data[0].ingredients,
         directions: res.data[0].directions,
+        category: res.data[0].category,
         loading: false
       })
     })
@@ -63,7 +64,6 @@ class Recipe extends React.Component {
   }
 
   updateCategoryState = (e) => {
-    //console.log('here', e.value)
     this.setState({
       category: e.label
     })
@@ -91,7 +91,7 @@ class Recipe extends React.Component {
 
 
   render() {
-    const { ingredients, directions, title, recipeId, loading, showConfirmation, showEditModal } = this.state;
+    const { ingredients, directions, title, recipeId, loading, showEditModal } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -141,6 +141,7 @@ class Recipe extends React.Component {
               <h3>Category</h3>
               <div className="select">
                   <Select 
+                    defaultValue={{ label: this.state.category, value: this.state.category }}
                     onChange={this.updateCategoryState}
                     styles={customStyles} 
                     theme={theme => ({
