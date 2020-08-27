@@ -6,6 +6,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import pot from '../../images/pot.svg';
 import Modal from '../Modal/Modal';
 import M from 'materialize-css';
+import Select from 'react-select';
 
 class Recipe extends React.Component {
 
@@ -16,7 +17,8 @@ class Recipe extends React.Component {
     recipeId: parseInt(this.props.location.pathname.split('/')[3]),
     loading: null,
     showConfirmation: false,
-    showEditModal: false
+    showEditModal: false,
+    category: ''
   }
 
   goBack = () => {
@@ -44,17 +46,6 @@ class Recipe extends React.Component {
     })
     // get data
     this.fetchData();
-    // initialize select 
-    //var elems = Array.from(document.querySelectorAll('select'))[0];
-    //console.log(elems);
-
-    document.addEventListener('DOMContentLoaded', function() {
-      var elems = document.querySelectorAll('select');
-      elems.material_select();
-    });
-
-     //M.FormSelect.init(elems, {dropdownOptions: {yes, no}});
-    //M.AutoInit();
   }
 
   deleteRecipe = () => {
@@ -69,6 +60,21 @@ class Recipe extends React.Component {
       console.log(err)
       M.toast({html: 'There was an error.'})
     })
+  }
+
+  updateCategoryState = (e) => {
+    //console.log('here', e.value)
+    this.setState({
+      category: e.label
+    })
+  }
+
+  updateCategory = () => {
+    axios.put(`/recipe/${this.state.recipeId}`, {
+      category: this.state.category
+    })
+    .then((res) => M.toast({html: 'Recipe category update.'}))
+    .catch((err) => console.log(err))
   }
 
   showEditModal = () => {
@@ -86,6 +92,25 @@ class Recipe extends React.Component {
 
   render() {
     const { ingredients, directions, title, recipeId, loading, showConfirmation, showEditModal } = this.state;
+    const options = [
+      { value: 'breakfast', label: 'Breakfast' },
+      { value: 'lunch', label: 'Lunch' },
+      { value: 'dinner', label: 'Dinner' },
+      { value: 'dessert', label: 'Dessert' },
+      { value: 'side_dish', label: 'Side Dish' },
+      { value: 'drinks', label: 'Drinks' },
+      { value: 'other', label: 'Other' }
+    ]
+    const customStyles = {
+      option: (provided, state) => ({
+        ...provided,
+        padding: 10,
+        '&:hover': {
+          backgroundColor: '#e66c6c',
+          color: 'white'
+        }
+      }),
+    }
 
     return (
       <>
@@ -113,12 +138,31 @@ class Recipe extends React.Component {
               {directions}
             </div>
             <div >
-              <select >
-                <option value="" disabled >Choose your option</option>
-                <option value="1">Option 1</option>
-                <option value="2">Option 2</option>
-                <option value="3">Option 3</option>
-              </select>
+              <h3>Category</h3>
+              <div className="select">
+                  <Select 
+                    onChange={this.updateCategoryState}
+                    styles={customStyles} 
+                    theme={theme => ({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        primary: 'dangerLight!important',
+                      },
+                      control: base => ({
+                        ...base,
+                        border: state.isFocused ? 0 : 0,
+                        // This line disable the blue border
+                        boxShadow: state.isFocused ? 0 : 0,
+                        '&:hover': {
+                          border: state.isFocused ? 0 : 0
+                        }
+                    })
+                    })}
+                    className="basic-single" 
+                    options={options} />
+                    <button className="waves-effect waves-light btn" onClick={this.updateCategory}>Save</button>
+                </div>
             </div>
             <div id="pot">
               <img src={pot} alt="cooking pot with lid cracked open" />

@@ -6,6 +6,10 @@
   cursor: pointer;
 }
 
+.directions {
+  padding-bottom: 20px;
+}
+
 .recipe {
   @include flexColumn;
   justify-content: space-between;
@@ -60,6 +64,16 @@
   }
 }
 
+.select {
+  .basic-single {
+    z-index: 2;
+    margin-top: 10px;
+  }
+  button {
+    margin: 20px 0px;
+  }
+}
+
 .BounceLoader {
   @include flexColumn;
   align-items: center;
@@ -67,3 +81,4 @@
   justify-content: center;
 
 }
+
