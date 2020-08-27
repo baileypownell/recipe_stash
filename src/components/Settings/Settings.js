@@ -49,20 +49,6 @@ class Settings extends React.Component {
 
   componentDidMount() {
     !this.props.loggedIn ? this.props.history.push('/home') : null
-    // // API call to get all recipes
-    // axios.get(`/user`)
-    // .then((res) => { 
-    //   let user = res.data.rows[0]
-    //   this.setState({
-    //     firstNameReceived: user.first_name, 
-    //     lastNameReceived: user.last_name,
-    //     emailReceived: user.email
-    //   })
-    // })
-    // .catch((err) => {
-    //   console.log(err)
-    // })
-
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
@@ -70,11 +56,8 @@ class Settings extends React.Component {
       }
     }
     setTimeout(Appear, 500);
-
-    document.addEventListener('DOMContentLoaded', function() {
-      var elems = document.querySelectorAll('.collapsible');
-      var instances = M.Collapsible.init(elems, {});
-    });
+    var elems = document.querySelectorAll('.collapsible');
+    M.Collapsible.init(elems, {});
     this.updateView()
 }
 
