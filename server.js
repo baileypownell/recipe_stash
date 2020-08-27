@@ -35,9 +35,9 @@ var environment = process.env.NODE_ENV || 'development';
 console.log(process.env.NODE_ENV, environment)
 
 if (environment === 'development') {
-  // require('dotenv').config({
-  //   path: './.env.development'
-  // })
+  require('dotenv').config({
+    path: './.env.development'
+  })
 }
 
 app.use(session({
