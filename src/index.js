@@ -48,8 +48,8 @@ ReactDOM.render(
           <Route exact={true} path="/" component={Home}/>
           <Route path="/login" component={Login}/>
           <Route path="/signup" component={Signup}/>
-          <Route path="/dashboard" exact={true} component={Dashboard}/>
-          <Route path="/dashboard/:id" component={Recipe}/>
+          <Route path="/view-recipe/:id" component={Recipe}/>
+          <Route path="/dashboard" exact={true} component={Dashboard}/>          
           <Route path="/settings" component={Settings}/>
           <Route path="/reset" component={ResetPassword}/>
           <Redirect to="/" />

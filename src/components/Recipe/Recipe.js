@@ -26,7 +26,7 @@ class Recipe extends React.Component {
   }
 
   fetchData = () => {
-    axios.get(`/recipe/${this.props.location.pathname.split('/')[3]}`)
+    axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
     .then(res => {
       this.setState({
         title: res.data[0].title,
