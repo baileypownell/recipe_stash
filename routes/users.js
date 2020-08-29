@@ -67,7 +67,7 @@ router.post('/', (request, response, next) => {
 });
 
 router.put('/', (request, response, next) => {
-  const { email, first_name, last_name, password, new_email } = request.body;
+  const { email, reset_password_token, first_name, last_name, password, new_email } = request.body;
   let userId = request.session.userId;
   if ( first_name && last_name ) {
     if (first_name) {
@@ -170,18 +170,31 @@ router.put('/', (request, response, next) => {
         })
       })
   } else if (password) {
-      client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE id=$4',
-        [password, null, null, userId],
-         (err, res) => {
-          if (err) {
-            return next(err);
-          }
-          if (res) {
-            return response.status(200).json({success: true})
-          } else {
-            return response.status(500).json({success: false, message: 'could not update DB'})
-          }
-        });
+      client.query('SELECT * FROM users where reset_password_token=$1',
+      [reset_password_token],
+      (err, res) => {
+        if (err) {
+          return next(err);
+        }
+        if (res) {
+          let userId = res.rows[0].id;
+          client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
+          [password, null, null, reset_password_token],
+          (err, res) => {
+            if (err) {
+              return next(err);
+            }
+            if (res) {
+              //then login the user, set session
+              request.session.userId = userId;
+              request.session.save();
+              return response.status(200).json({success: true, message: 'Password updated.'});
+            } else {
+              return response.status(500).json({success: false, message: 'Could not update password.'})
+            }
+          });
+        }
+      })
   }
 });
 

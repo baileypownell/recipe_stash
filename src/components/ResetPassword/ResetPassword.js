@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
 import bcrypt from 'bcryptjs';
+import M from 'materialize-css';
 import './ResetPassword.scss';
 
 class ResetPassword extends React.Component {
@@ -56,20 +57,21 @@ class ResetPassword extends React.Component {
     })
     let hashedPassword = bcrypt.hashSync(this.state.password, 10);
     axios.put(`/users`, {
-      id: this.props.id,
-      password: hashedPassword
+      password: hashedPassword,
+      reset_password_token: this.props.location.pathname.split('/')[2]
     })
     .then(res => {
       this.setState({
         loading: false
       });
-      M.toast({html: 'Password updated!'})
+      M.toast({html: 'Password updated!'});
       this.props.history.push('/dashboard');
     })
     .catch((err) => {
       this.setState({
         loading: false
       })
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -84,13 +86,13 @@ class ResetPassword extends React.Component {
     } else {
       return (
         <div className="resetPassword">
-          <h2>New Password</h2>
+          <h4>New Password</h4>
           <form onSubmit={this.updatePassword}>
           <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
           {this.state.passwordInvalid && this.state.password !== '' ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
           <button
             disabled={this.state.passwordInvalid} 
-            className={this.state.passwordInvalid ? 'disabled waves-effect waves-light btn fade' : 'enabled waves-effect waves-light btn fade'}
+            className="waves-effect waves-light btn"
             >
             {this.state.loading?
               <ClipLoader
@@ -102,9 +104,6 @@ class ResetPassword extends React.Component {
           : 'Submit'}
           </button>
           </form>
-          {this.state.success ?
-            <h4>Password updated successfully.</h4>
-          : null}
         </div>
       )
     }
