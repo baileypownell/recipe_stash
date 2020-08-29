@@ -1,13 +1,11 @@
 import React from 'react';
 import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
-import * as actions from '../../../../store/actionCreators';
 
 class Square extends React.Component {
 
 
   viewRecipe = () => {
-    this.props.history.push(`/dashboard/recipe/${this.props.data.id}`);
+    this.props.history.push(`/view-recipe/${this.props.data.id}`);
   }
 
   render() {

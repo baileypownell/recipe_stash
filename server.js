@@ -17,44 +17,29 @@ app.use(express.json())
 app.use((err, req, res, next) => {
   res.json(err);
 });
-// session cookies 
-// do not store in memory
-// store instead with connect-pg-simple
-// CREATE TABLE "session" (
-//   "sid" varchar NOT NULL COLLATE "default",
-// 	"sess" json NOT NULL,
-// 	"expire" timestamp(6) NOT NULL
-// )
-// WITH (OIDS=FALSE);
 
-// ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
-// CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 var environment = process.env.NODE_ENV || 'development';
 
 console.log(process.env.NODE_ENV, environment)
-
+let secret;
 if (environment === 'development') {
   require('dotenv').config({
     path: './.env.development'
   })
+  secret = 'skls2dk343lsdj43fl97865xkdk'
 }
 
 app.use(session({
-  //store: new (require('connect-pg-simple')(session))(),
   store: new pgSession({
     pool: client, 
     tableName: 'session'
   }),
-  secret: process.env.SESSION_SECRET, 
+  secret: process.env.SESSION_SECRET || secret, 
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 3600000, secure: false } // 1 hour
 }));
 
-
-
-// must come last?
 app.use('/', routes);
 
 

@@ -82,14 +82,7 @@ class Dashboard extends React.Component {
       other: [], 
       side_dish: []
     }
-    let sortByTitle = (a, b) => {
-      if (a.title > b.title) {
-        return 1
-      } else if (a.title < b.title ) {
-        return -1
-      }
-      return 0 
-    }
+
     if (input.length > 0) {
       recipesNarrowedByInput.breakfast = this.state.unfilteredRecipes.breakfast.filter(recipe => {
         return recipe.title.toLowerCase().includes(input)
