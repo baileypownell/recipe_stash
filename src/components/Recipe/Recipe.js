@@ -14,7 +14,7 @@ class Recipe extends React.Component {
     title: null,
     ingredients: null,
     directions: null,
-    recipeId: parseInt(this.props.location.pathname.split('/')[3]),
+    recipeId: parseInt(this.props.location.pathname.split('/')[2]),
     loading: null,
     showConfirmation: false,
     showEditModal: false,

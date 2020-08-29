@@ -21,11 +21,12 @@ app.use((err, req, res, next) => {
 var environment = process.env.NODE_ENV || 'development';
 
 console.log(process.env.NODE_ENV, environment)
-
+let secret;
 if (environment === 'development') {
   require('dotenv').config({
     path: './.env.development'
   })
+  secret = 'skls2dk343lsdj43fl97865xkdk'
 }
 
 app.use(session({
@@ -33,7 +34,7 @@ app.use(session({
     pool: client, 
     tableName: 'session'
   }),
-  secret: process.env.SESSION_SECRET, 
+  secret: process.env.SESSION_SECRET || secret, 
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 3600000, secure: false } // 1 hour
@@ -51,7 +52,6 @@ app.use(express.static(__dirname + '/dist'));
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 app.get('*', (req, res) => {
-  console.log(res)
   res.sendFile(__dirname + '/dist/index.html');
 });
 
