@@ -1,9 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { withRouter } from "react-router-dom";
 const axios = require('axios');
 import ClipLoader from "react-spinners/ClipLoader";
-import bcrypt from 'bcryptjs';
 import M from 'materialize-css';
 import './ResetPassword.scss';
 
@@ -55,9 +53,8 @@ class ResetPassword extends React.Component {
     this.setState({
       loading: true
     })
-    let hashedPassword = bcrypt.hashSync(this.state.password, 10);
     axios.put(`/users`, {
-      password: hashedPassword,
+      password: this.state.password,
       reset_password_token: this.props.location.pathname.split('/')[2]
     })
     .then(res => {

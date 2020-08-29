@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import * as actions from '../../store/actionCreators';
 import './Signup.scss';
 const axios = require('axios');
-const bcrypt = require('bcryptjs');
 import ClipLoader from "react-spinners/ClipLoader";
 
 class Signup extends React.Component {
@@ -52,12 +51,10 @@ class Signup extends React.Component {
         M.toast({html: 'An account already exists for this email.'})
         return;
       } else {
-        // hash password before sending
-        let hashedPassword = bcrypt.hashSync(password, 10);
         axios.post(`/users`, {
           firstName: firstName,
           lastName: lastName,
-          password: hashedPassword,
+          password: password,
           email: email
         })
         .then(res => {

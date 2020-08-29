@@ -38,8 +38,9 @@ router.get('/id/:id', (request, response, next) => {
 
 router.post('/', (request, response, next) => {
   const { firstName, lastName, password, email } = request.body;
+  let hashedPassword = bcrypt.hashSync(password, 10);
   client.query('INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
-  [firstName, lastName, password, email],
+  [firstName, lastName, hashedPassword, email],
    (err, res) => {
     if (err) return next(err);
     if (res) {
@@ -178,8 +179,10 @@ router.put('/', (request, response, next) => {
         }
         if (res) {
           let userId = res.rows[0].id;
+          // hash new password 
+          let hashedPassword = bcrypt.hashSync(password, 10);
           client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
-          [password, null, null, reset_password_token],
+          [hashedPassword, null, null, reset_password_token],
           (err, res) => {
             if (err) {
               return next(err);
