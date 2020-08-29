@@ -20,7 +20,6 @@ app.use((err, req, res, next) => {
 
 var environment = process.env.NODE_ENV || 'development';
 
-console.log(process.env.NODE_ENV, environment)
 let secret;
 if (environment === 'development') {
   require('dotenv').config({
