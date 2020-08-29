@@ -51,7 +51,7 @@ ReactDOM.render(
           <Route path="/view-recipe/:id" component={Recipe}/>
           <Route path="/dashboard" exact={true} component={Dashboard}/>          
           <Route path="/settings" component={Settings}/>
-          <Route path="/reset/:token" component={ResetPassword}/>
+          <Route path="/reset" component={ResetPassword}/>
           <Redirect to="/" />
         </Switch>
       </BrowserRouter>
