@@ -189,9 +189,11 @@ router.put('/', (request, response, next) => {
             }
             if (res) {
               //then login the user, set session
-              request.session.userId = userId;
-              request.session.save();
-              return response.status(200).json({success: true, message: 'Password updated.'});
+              request.session.regenerate(() => {
+                request.session.userId = userId;
+                request.session.save();
+                return response.status(200).json({success: true, message: 'Password updated.'});
+              })
             } else {
               return response.status(500).json({success: false, message: 'Could not update password.'})
             }
@@ -218,8 +220,9 @@ router.delete('/', (request, response, next) => {
             return next(err);
           }
           if (res) {
-            request.session.destroy();
-            return response.status(200).json({success: "true"});
+            request.session.regenerate(() => {
+              return response.status(200).json({success: true});
+            });
           } else {
             return response.status(500).json({success: false, message: 'Could not delete user.'})
           }
