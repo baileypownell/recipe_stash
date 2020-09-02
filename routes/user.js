@@ -11,7 +11,11 @@ router.get('/', (request, response, next) => {
       console.log(err);
       return next(err);
     }
-   response.status(200).json(res)
+    if (res.rows.length === 0) {
+      response.status(403).send('No session found.')
+    } else if (res.rows.length === 1) {
+      response.status(200).json(res)
+    }
   });
 });
 
