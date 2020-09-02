@@ -3,9 +3,6 @@ const client = require('../db');
 const bcrypt = require('bcryptjs');
 const router = Router();
 
-const app = require('../server');
-
-
 router.post('/', (request, response, next) => {
   const { password, email } = request.body;
   client.query('SELECT * FROM users WHERE email=$1',

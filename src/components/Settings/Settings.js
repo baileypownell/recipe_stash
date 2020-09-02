@@ -31,7 +31,6 @@ class Settings extends React.Component {
   }
 
   resetPassword = () => {
-    
     axios.post(`/sendResetEmail`, {
       email: this.state.email
     })
@@ -81,7 +80,10 @@ class Settings extends React.Component {
         M.toast({html: 'Profile updated successfully.'})
         this.updateView()
       })
-      .catch(err => {console.log(err)})
+      .catch(err => {
+        this.props.logout();
+        this.props.history.push('/login');
+      })
   }
 
   updateEmail = (e) => {
@@ -100,7 +102,7 @@ class Settings extends React.Component {
     })
     .catch(err => {
       console.log(err);
-      M.toast({html: 'There was an error.'})
+      M.toast({html: 'Passwords do not match.'})
     })
   }
 
@@ -115,7 +117,7 @@ class Settings extends React.Component {
       if (res.data.success === false) {
         M.toast({html: 'The password you entered is incorrect.'})
       } else {
-        axios.delete(`/users`)
+        axios.delete(`/user`)
         .then((res) => {
           M.toast({html: 'Account deleted.'})
             this.props.logout();

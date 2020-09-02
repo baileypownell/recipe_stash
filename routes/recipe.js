@@ -13,7 +13,7 @@ router.get('/:recipeId', (request, response, next) => {
     });
   });
 
-  router.put('/:recipeId', (request, response, next) => {
+router.put('/:recipeId', (request, response, next) => {
     const { recipeId } = request.params;
     const { category } = request.body;
     let id = request.session.userId;
@@ -50,4 +50,4 @@ router.delete('/:recipeId', (request, response, next) => {
     });
 });
 
-  module.exports = router;
+module.exports = router;

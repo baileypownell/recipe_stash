@@ -4,42 +4,44 @@ const router = Router();
 
 router.get('/', (request, response, next) => {
   let id = request.session.userId;
-  client.query('SELECT * FROM recipes WHERE user_id=$1',
+  if (id) {
+    client.query('SELECT * FROM recipes WHERE user_id=$1',
   [id],
    (err, res) => {
     if (err) return next(err);
-    if (res.rows.length === 0) {
-      response.status(403).send('No session on the server.')
-    } else if (res.rows.length > 0) {
-      let responseObject = {
-        breakfast: [], 
-        lunch: [],
-        dinner: [], 
-        dessert: [],
-        other: [], 
-        side_dish: [],
-        drinks: []
-      }
-      res.rows.forEach((recipe) => {
-        if (recipe.category === 'Dinner') {
-          responseObject.dinner.push(recipe)
-        } else if (recipe.category === 'Dessert') {
-          responseObject.dessert.push(recipe)
-        } else if (recipe.category === 'Drinks') {
-          responseObject.drinks.push(recipe)
-        } else if (recipe.category === 'Lunch') {
-          responseObject.lunch.push(recipe)
-        } else if (recipe.category === 'Breakfast') {
-          responseObject.breakfast.push(recipe)
-        } else if (recipe.category === 'Other') {
-          responseObject.other.push(recipe)
-        } else if (recipe.category === 'Side Dish') {
-          responseObject.side_dish.push(recipe)
+    if (res.rows.length >= 0) {
+        let responseObject = {
+          breakfast: [], 
+          lunch: [],
+          dinner: [], 
+          dessert: [],
+          other: [], 
+          side_dish: [],
+          drinks: []
         }
-      });
-      response.json(responseObject);
-    } 
-  });
+        res.rows.forEach((recipe) => {
+          if (recipe.category === 'Dinner') {
+            responseObject.dinner.push(recipe)
+          } else if (recipe.category === 'Dessert') {
+            responseObject.dessert.push(recipe)
+          } else if (recipe.category === 'Drinks') {
+            responseObject.drinks.push(recipe)
+          } else if (recipe.category === 'Lunch') {
+            responseObject.lunch.push(recipe)
+          } else if (recipe.category === 'Breakfast') {
+            responseObject.breakfast.push(recipe)
+          } else if (recipe.category === 'Other') {
+            responseObject.other.push(recipe)
+          } else if (recipe.category === 'Side Dish') {
+            responseObject.side_dish.push(recipe)
+          }
+        });
+        response.json(responseObject);
+      } 
+    });
+  } else {
+    return response.status(403).send('No session on the server.')
+  }
 });
 
 router.post('/', (request, response, next) => {
