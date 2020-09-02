@@ -10,7 +10,7 @@ class Dashboard extends React.Component {
 
   state = {
     unfilteredRecipes: null,
-    loading_recipes: true,
+    recipes_loaded: false,
     filteredRecipes: null,
     results: [],
     value: '',
@@ -19,12 +19,6 @@ class Dashboard extends React.Component {
   fetchRecipes = () => {
     axios.get(`/recipes`)
     .then(res => {
-        if (res.data.name === "error") {
-        this.setState({
-          loading_recipes: false
-        })
-        return;
-      }
       res.data.breakfast.sort(this.sortByTitle)
       res.data.lunch.sort(this.sortByTitle)
       res.data.dinner.sort(this.sortByTitle)
@@ -35,14 +29,15 @@ class Dashboard extends React.Component {
       this.setState({
         unfilteredRecipes: res.data,
         filteredRecipes: res.data,
-        loading_recipes: false
+        recipes_loaded: true
       })
     })
     .catch((err) => {
       console.log(err);
       this.setState({
-        loading_recipes: false
+        recipes_loaded: false
       })
+      this.props.history.push('/login')
     })    
   }
 
@@ -116,7 +111,7 @@ class Dashboard extends React.Component {
 
   render() {
 
-    const { filteredRecipes, loading_recipes } = this.state;
+    const { filteredRecipes, recipes_loaded } = this.state;
 
     return (
       <>
@@ -130,7 +125,7 @@ class Dashboard extends React.Component {
       </div>
       
       <div className="dashboard">
-        {loading_recipes ?
+        {!recipes_loaded ?
           <div className="BounceLoader">
             <BounceLoader
               size={100}

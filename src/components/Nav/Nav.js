@@ -2,11 +2,23 @@ import React from 'react';
 import { NavLink, Link } from "react-router-dom";
 import icon from '../../images/apple-touch-icon.png';
 import './Nav.scss';
-import RequireAuthComponent from '../RequireAuthComponent';
 import { connect } from 'react-redux';
+import * as actions from '../../store/actionCreators';
 const axios = require('axios');
 
 class Nav extends React.Component {
+
+  componentDidMount() {
+    // check if the state we received from Redux is in fact still accurate 
+    axios.get(`/user`)
+    .then((res) => {
+      this.props.login()
+    })
+    .catch((err) => { 
+      console.log(err)
+      this.props.logout()
+    })
+  }
 
   render() {
     return (
@@ -36,4 +48,11 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Nav);
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(actions.logout()),
+    login: () => dispatch(actions.login())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Nav);

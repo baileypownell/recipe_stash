@@ -158,8 +158,10 @@ class Settings extends React.Component {
       })
       M.updateTextFields()
     })
-    .catch((err) => console.log(err))
-    
+    .catch((err) => { 
+      console.log(err)
+      this.props.history.push('/login')
+    })
   }
 
   render() {
