@@ -68,27 +68,24 @@ router.post('/', (request, response, next) => {
   });
 
 
-router.get('/:id/:token', (request, response, next) => {
+router.get('/:token', (request, response, next) => {
   let token = request.params.token;
-  let id = request.params.id;
-  client.query('SELECT * FROM users WHERE id=$1',
-  [id],
+  client.query('SELECT * FROM users WHERE reset_password_token=$1',
+  [token],
    (err, res) => {
     if (err) {
       return next(err);
-    } else {
-      let reset_password_token;
-      let reset_password_expires;
-      reset_password_token = res.rows[0].reset_password_token;
-      reset_password_expires = res.rows[0].reset_password_expires;
+    } else if (res.rows[0] && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
       let now = Date.now();
-      if ( ((reset_password_expires - now) < 3600000) && reset_password_token.toString() === token.toString()) {
+      if ( ((res.rows[0].reset_password_expires - now) < 3600000)) {
         response.status(200).send({
-          message: 'password reset link is valid'
+          message: 'Password reset link is valid.'
         })
       } else {
-        response.json({ message: 'the link is invalid or expired'})
+        response.status(403).send({ message: 'The token is expired.'})
       }
+    } else {
+      response.status(403).send({message: 'No user could be found with that token.'})
     }
   });
 })

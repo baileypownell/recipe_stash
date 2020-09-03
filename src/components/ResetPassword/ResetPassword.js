@@ -17,15 +17,21 @@ class ResetPassword extends React.Component {
   componentDidMount() {
     // verify token matches AND hasn't expired
     let token = this.props.location.pathname.split('/')[2];
-    axios.get(`/sendResetEmail/${this.props.id}/${token}`)
+    axios.get(`/sendResetEmail/${token}`)
     .then((res) => {
+      console.log(res)
       if (res.data.message === 'the link is invalid or expired') {
         this.setState({
           invalidLink: true
         })
       }
     })
-    .catch()
+    .catch(err => {
+      this.setState({
+        invalidLink: true
+      })
+      console.log(err)
+    })
   }
 
   goHome = () => {
@@ -77,7 +83,7 @@ class ResetPassword extends React.Component {
       return (
         <div className="invalidLink">
           <h3>The link is invalid or expired.</h3>
-          <button onClick={this.goHome}>Home</button>
+          <button className="waves-effect waves-light btn" onClick={this.goHome}>Home</button>
         </div>
       )
     } else {
