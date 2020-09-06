@@ -16,7 +16,7 @@ if (environment === 'development') {
 router.post('/', (request, response, next) => {
   const { email } = request.body;
     client.query('SELECT * FROM users WHERE email=$1',
-    [email],
+    [email], 
      (err, res) => {
       if (err) {
         console.log(err);
@@ -77,7 +77,7 @@ router.get('/:token', (request, response, next) => {
       return next(err);
     } else if (res.rows[0] && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
       let now = Date.now();
-      if ( ((res.rows[0].reset_password_expires - now) < 3600000)) {
+      if ( res.rows[0].reset_password_expires > now ) {
         response.status(200).send({
           message: 'Password reset link is valid.'
         })
