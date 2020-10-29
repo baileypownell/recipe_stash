@@ -32,7 +32,7 @@
   cursor: pointer;
   outline: none;
   text-transform: uppercase;
-  font-family: 'Didact Gothic', sans-serif;
+  font-family: 'Roboto', sans-serif;
   transition: all .3s;
   &:hover {
     background-color: darken($green, 5%)!important;
@@ -47,7 +47,7 @@
     text-align: center;
     padding-top: 5vh;
     .error {
-      font-family: 'Didact Gothic', sans-serif;
+      font-family: 'Roboto', sans-serif;
       background-color: $primary;
       padding: 10px;
       border-radius: 5px;
@@ -83,7 +83,7 @@
       label, p {
         @include flexColumn;
         padding: 5px 0;
-        font-family: 'Didact Gothic', sans-serif;
+        font-family: 'Roboto', sans-serif;
         color: $white;
         font-size: 16px;
         @include desktop {

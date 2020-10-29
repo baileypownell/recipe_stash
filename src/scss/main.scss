@@ -7,16 +7,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 25px;
+  font-size: 20px;
   @include desktop {
-    font-size: 30px;
+    font-size: 22px;
   }
 }
 
 h3 {
-  font-size: 22px;
+  font-size: 18px;
   @include desktop {
-    font-size: 30px;
+    font-size: 22px;
   }
 }
 

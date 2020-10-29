@@ -1,35 +1,16 @@
 
 @import '../../scss/mixins.scss';
 
-// .Title {
-//   background-color: $green;
-//   color: $white;
-//   font-family: 'Didact Gothic', sans-serif;
-//   padding: 3vw;
-//   font-size: 28px;
-//   @include tablet {
-//     padding: 2vw;
-//   }
-//   i {
-//     padding-left: 10px;
-//     @include tablet {
-//       padding-left: 20px;
-//     }
-//   }
-// }
-
 
 .title {
   background-color: $green;
   color: white;
-  font-family: 'Didact Gothic', sans-serif;
+  font-family: 'Roboto', sans-serif;
   padding: 10px;
-  @include tablet {
-    padding: 20px;
-  }
   > div {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex-direction: column;
     @include tablet {
       flex-direction: row;
@@ -141,7 +122,7 @@
       background-color: $primary;
       margin-right: 10px;
       margin-bottom: 10px;
-      font-family: 'Didact Gothic', sans-serif;
+      font-family: 'Roboto', sans-serif;
       color: $white;
       @include flexColumn;
       justify-content: center;
@@ -166,6 +147,6 @@
     }
   }
   h1, h2, h3 {
-    font-family: 'Didact Gothic', sans-serif;
+    font-family: 'Roboto', sans-serif;
   }
 }
