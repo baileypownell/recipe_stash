@@ -1,11 +1,20 @@
 import React from 'react';
 import M from 'materialize-css';
-import Select from 'react-select';
 
 class AddRecipe extends React.Component {
 
   state = {
     showModal: false
+  }
+
+  componentDidMount() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems, {
+      opacity: 0.5
+    });
+
+    var select = document.querySelectorAll('select');
+    M.FormSelect.init(select, {});
   }
 
   closeModal = () => {
@@ -30,72 +39,58 @@ class AddRecipe extends React.Component {
       { value: 'drinks', label: 'Drinks' },
       { value: 'other', label: 'Other' }
     ]
-    const customStyles = {
-      option: (provided, state) => ({
-        ...provided,
-        padding: 10,
-        '&:hover': {
-          backgroundColor: '#e66c6c',
-          color: 'white'
-        }
-      }),
-    }
+
     return (
       <>
         <div
-            className="addRecipe z-depth-4"
+            data-target="modal1"
+            className="addRecipe z-depth-4 modal-trigger"
             id={id}
             onClick={this.addRecipe} >
             <i className="fas fa-plus-circle"></i>
         </div>
-        {this.state.showModal ? 
-            <div>
-            <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>Add Recipe</h1>
-            <div className="recipe">
-            <div>
-                <div className="ingredients">
-                  <h3>Ingredients <i
-                    className="fas fa-edit"
-                    onClick={this.showEditModal}>
-                  </i></h3>
-                  ingredients
-                </div>
-                <div className="directions">
-                  <h3>Directions </h3>
-                  directions
-                </div>
-                <div >
-                  <h3>Category</h3>
-                  <div className="select">
-                      <Select 
-                        defaultValue={{ label: this.state.category, value: this.state.category }}
-                        onChange={this.updateCategoryState}
-                        styles={customStyles} 
-                        theme={theme => ({
-                          ...theme,
-                          colors: {
-                            ...theme.colors,
-                            primary: 'dangerLight!important',
-                          },
-                          control: base => ({
-                            ...base,
-                            border: state.isFocused ? 0 : 0,
-                            // This line disable the blue border
-                            boxShadow: state.isFocused ? 0 : 0,
-                            '&:hover': {
-                              border: state.isFocused ? 0 : 0
-                            }
-                        })
-                        })}
-                        className="basic-single" 
-                        options={options} />
-                        <button className="waves-effect waves-light btn" onClick={this.updateCategory}>Save</button>
+
+            <div id="modal1" className="modal">
+              
+              <h1 className="Title">New Recipe</h1>
+              <div className="recipe">
+              <div>
+                  <div className="input-field">
+                      <textarea id="title" className="materialize-textarea"></textarea>
+                      <label htmlFor="title">Title</label>
+                  </div>
+                  <div className="input-field">
+                      <textarea id="ingredients" className="materialize-textarea"></textarea>
+                      <label htmlFor="ingredients">Ingredients</label>
+                  </div>
+
+                  <div className="input-field">
+                    <textarea id="directions" className="materialize-textarea"></textarea>
+                    <label htmlFor="directions">Directions</label>
+                  </div>
+              
+                  <div >
+                    <h3>Category</h3>
+                    <div className="select">
+                      <select>
+                        {
+                          options.map((val, index) => {
+                            return <option key={index}>{val.label}</option>
+                          })
+                        }
+                      </select>
+                        
                     </div>
                 </div>
+                <label>
+                  <input type="checkbox" class="filled-in" />
+                  <span>No baking required</span>
+                </label>
+                
               </div>
+              <button className="waves-effect waves-light btn" onClick={this.updateCategory}>Save</button>
             </div>
-          </div> : null
-      }
+          </div> 
       </>
       
     )
