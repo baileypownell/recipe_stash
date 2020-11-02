@@ -39,13 +39,18 @@ body {
   box-sizing: border-box;
 }
 
-input:focus {
+input:focus,
+textarea:focus {
   border-bottom: 1px solid $primary!important;
   -webkit-box-shadow: 0 1px 0 0 $primary!important;
   box-shadow: 0 1px 0 0 $primary!important;
 }
 
 label {
+  color: $secondary!important;
+}
+
+.dropdown-content li > a, .dropdown-content li > span {
   color: $secondary!important;
 }
 

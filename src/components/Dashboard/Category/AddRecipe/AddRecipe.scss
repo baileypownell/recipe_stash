@@ -1,0 +1,22 @@
+@import '../../../../scss/mixins.scss';
+@import '../../../../scss/variables.scss';
+
+.select {
+    width: 200px;
+}
+
+.minHeight {
+    min-height: 100px!important;
+}
+
+.modal-close-buttons {
+    display: flex;
+    justify-content: flex-end;
+    button {
+        margin: 5px;
+    }
+    .grayBtn {
+        background-color: $gray!important;
+        color: $secondary;
+    }
+}
