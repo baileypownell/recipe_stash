@@ -1,6 +1,7 @@
 import React from 'react';
 import M from 'materialize-css';
 import './AddRecipe.scss';
+const axios = require('axios');
 
 class AddRecipe extends React.Component {
 
@@ -10,12 +11,13 @@ class AddRecipe extends React.Component {
     directions: null,
     loading: null,
     category: this.props.category,
-    recipeValid: false
+    recipeValid: false,
+    modal: null
   }
 
   componentDidMount() {
-    var elems = document.querySelectorAll('.modal');
-    M.Modal.init(elems, {
+    let modal = document.querySelectorAll('.modal');
+    this.state.modal = M.Modal.init(modal, {
       opacity: 0.5
     });
 
@@ -26,12 +28,10 @@ class AddRecipe extends React.Component {
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state;
     if (directions && ingredients && recipe_title) {
-      console.log('valid')
       this.setState({
         recipeValid: true
       })
     } else {
-      console.log('invalid')
       this.setState({
         recipeValid: false
       })
@@ -54,12 +54,13 @@ class AddRecipe extends React.Component {
         this.setState({
           loading: false
         });
-        this.props.closeModal();
+        this.state.modal.forEach(m => m.close())
         this.props.updateDashboard();
         M.toast({html: 'Recipe added.'})
       }
     })
     .catch((err) => {
+      console.log(err)
       this.setState({
         loading: false
       })
@@ -75,7 +76,7 @@ class AddRecipe extends React.Component {
 
   
   render() {
-    const { id, category } = this.props;
+    const { id } = this.props;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -89,14 +90,14 @@ class AddRecipe extends React.Component {
     return (
       <>
         <div
-            data-target="modal1"
+            data-target={`${this.state.category}_modal`}
             className="addRecipe z-depth-4 modal-trigger"
             id={id}
              >
             <i className="fas fa-plus-circle"></i>
         </div>
 
-            <div id="modal1" className="modal">
+            <div id={`${this.state.category}_modal`} className="modal">
               
               <h1 className="Title">New Recipe</h1>
               <div className="recipe">
@@ -118,7 +119,7 @@ class AddRecipe extends React.Component {
                   <div >
                     <h3>Category</h3>
                     <div className="select">
-                      <select onChange={this.updateInput} id="category" value={this.state.category}>
+                      <select onChange={this.updateInput} id="category" value={this.state.category} >
                         {
                           options.map((val, index) => {
                             return <option key={index}>{val.label}</option>
