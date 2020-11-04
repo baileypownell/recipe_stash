@@ -13,14 +13,13 @@
 .recipe {
   @include flexColumn;
   justify-content: space-between;
-  min-height: 75vh;
-  padding: 5vw 5vw 0 5vw;
   font-family: 'Roboto', sans-serif;
-  @include tablet {
-    padding: 5vw 10vw;
+  padding: 30px;
+  align-items: flex-end;
+  > div {
+    width: 100%;
   }
   @include desktop {
-    width: 60%;
     margin: 0 auto;
   }
   .ingredients {
@@ -65,6 +64,7 @@
 }
 
 .select {
+  text-align: end;
   .basic-single {
     z-index: 2;
     margin-top: 10px;
@@ -82,3 +82,14 @@
 
 }
 
+.viewRecipe {
+  @include tablet {
+    > div {
+      width: 75%;
+      margin: 0 auto;
+    }
+  }
+  @include desktop {
+    width: 60%;
+  }
+}

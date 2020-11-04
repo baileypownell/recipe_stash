@@ -124,7 +124,7 @@ class Recipe extends React.Component {
       :
         <>
         <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{title}</h1>
-        <div className="recipe">
+        <div className="recipe viewRecipe" >
           <div>
             <div className="ingredients">
               <h3>Ingredients <i
