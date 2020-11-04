@@ -9,7 +9,6 @@ class AddRecipe extends React.Component {
     recipe_title: null,
     ingredients: null,
     directions: null,
-    loading: null,
     category: this.props.category,
     recipeValid: false,
     modal: null
@@ -38,11 +37,16 @@ class AddRecipe extends React.Component {
     }
   }
 
+  clearState = () => {
+    this.setState({
+      recipe_title: null,
+      ingredients: null,
+      directions: null,
+    })
+  }
+
   createRecipe = (e) => {
     e.preventDefault();
-    this.setState({
-      loading: true
-    })
     axios.post(`/recipes`, {
       title: this.state.recipe_title,
       category: this.state.category,
@@ -51,19 +55,20 @@ class AddRecipe extends React.Component {
     })
     .then(res => {
       if (res) {
-        this.setState({
-          loading: false
-        });
-        this.state.modal.forEach(m => m.close())
+        var singleModalElem = document.querySelector(`#${this.state.category}_modal`);
+        var instance = M.Modal.getInstance(singleModalElem); 
+        // close modal
+        instance.close();
+
+        // clear modal state 
+        this.clearState();
+
         this.props.updateDashboard();
         M.toast({html: 'Recipe added.'})
       }
     })
     .catch((err) => {
       console.log(err)
-      this.setState({
-        loading: false
-      })
       M.toast({html: 'There was an error.'})
     })
   }
