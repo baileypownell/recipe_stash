@@ -112,21 +112,14 @@ class Recipe extends React.Component {
     }, () => this.checkValidity());
   }
 
-  updateCategory = () => {
-    axios.put(`/recipe/${this.state.recipeId}`, {
-      category: this.state.category
-    })
-    .then((res) => M.toast({html: 'Recipe category update.'}))
-    .catch((err) => console.log(err))
-  }
-
   updateRecipe = (e) => {
       e.preventDefault();
       axios.put(`/recipes`, {
         title: this.state.recipe_title,
         ingredients: this.state.ingredients,
         directions: this.state.directions,
-        recipeId: this.state.recipeId
+        recipeId: this.state.recipeId,
+        category: this.state.category,
       })
       .then(res => {
         if (res) {
@@ -178,7 +171,14 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   <h3>Directions </h3>
-                  <h2>{directions}</h2>
+                  {(this.state.directions || '').split('\n').map(function(item, key) {
+                      return (
+                        <h2 key={key}>
+                          {item}
+                          <br/>
+                        </h2>
+                      )
+                    })}
                 </div>
                 <div className="section">
                   <h3>Category</h3>
