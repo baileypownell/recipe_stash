@@ -118,7 +118,7 @@ class Recipe extends React.Component {
         title: this.state.recipe_title,
         ingredients: this.state.ingredients,
         directions: this.state.directions,
-        recipeId: this.props.recipeId
+        recipeId: this.state.recipeId
       })
       .then(res => {
         if (res) {
