@@ -83,7 +83,13 @@
 }
 
 .viewRecipe {
+  button {
+    margin: 20px 0;
+  }
   @include tablet {
+    h2 {
+      font-size: 20px;
+    }
     > div {
       width: 75%;
       margin: 0 auto;
@@ -92,4 +98,8 @@
   @include desktop {
     width: 60%;
   }
+}
+
+#delete {
+  background-color: $orange!important;
 }

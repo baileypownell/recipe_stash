@@ -11,12 +11,11 @@ class AddRecipe extends React.Component {
     directions: null,
     category: this.props.category,
     recipeValid: false,
-    modal: null
   }
 
   componentDidMount() {
     let modal = document.querySelectorAll('.modal');
-    this.state.modal = M.Modal.init(modal, {
+    M.Modal.init(modal, {
       opacity: 0.5
     });
 

@@ -74,7 +74,7 @@ router.put('/', (request, response, next) => {
     if (res) {
       return response.status(200).json({success: true})
     } else {
-      return response.status(500).json({success: false, message: 'could not update DB'})
+      return response.status(500).json({success: false, message: 'Could not update recipe.'})
     }
   });
 });
