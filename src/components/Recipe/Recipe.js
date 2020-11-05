@@ -92,6 +92,14 @@ class Recipe extends React.Component {
 
   }
 
+  clearState = () => {
+    this.setState({
+      recipe_title: null,
+      ingredients: null,
+      directions: null,
+    })
+  }
+
   updateCategoryState = (e) => {
     this.setState({
       category: e.label
@@ -153,14 +161,30 @@ class Recipe extends React.Component {
           <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{recipe_title}</h1>
             <div className="recipe viewRecipe" >
               <div>
+                <div className="section">
                   <h3>Title</h3>
                   <h2>{recipe_title}</h2>
+                </div>
+                <div className="section">
                   <h3>Ingredients</h3>
-                  <h2>{ingredients}</h2>
+                  {(this.state.ingredients || '').split('\n').map(function(item, key) {
+                      return (
+                        <h2 key={key}>
+                          {item}
+                          <br/>
+                        </h2>
+                      )
+                    })}
+                </div>
+                <div className="section">
                   <h3>Directions </h3>
                   <h2>{directions}</h2>
+                </div>
+                <div className="section">
                   <h3>Category</h3>
                   <h2>{category}</h2>
+                </div>
+                  
                 <button onClick={this.openModal} className="btn modal-trigger">Edit <i className="fas fa-pen"></i></button>
               </div>
           </div>
@@ -204,7 +228,7 @@ class Recipe extends React.Component {
             <div className="modal-close-buttons">
               <button id="delete" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe</button>
               <div>
-                <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
+                <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
