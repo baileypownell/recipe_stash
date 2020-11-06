@@ -64,9 +64,9 @@ router.post('/', (request, response, next) => {
 });
 
 router.put('/', (request, response, next) => {
-  const { recipeId, title, ingredients, directions } = request.body;
-  client.query('UPDATE recipes SET title=$1, ingredients=$2, directions=$3 WHERE id=$4',
-  [title, ingredients, directions, recipeId],
+  const { recipeId, title, ingredients, directions, category } = request.body;
+  client.query('UPDATE recipes SET title=$1, ingredients=$2, directions=$3, category=$4 WHERE id=$5',
+  [title, ingredients, directions, category, recipeId],
    (err, res) => {
     if (err) {
       return next(err);
