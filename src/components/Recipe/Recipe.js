@@ -2,7 +2,6 @@ import React from 'react';
 import { withRouter } from "react-router-dom";
 const axios = require('axios');
 import './Recipe.scss';
-import BounceLoader from "react-spinners/BounceLoader";
 import M from 'materialize-css';
 
 class Recipe extends React.Component {
@@ -11,9 +10,13 @@ class Recipe extends React.Component {
     recipe_title: null,
     ingredients: null,
     directions: null,
+    recipe_title_edit: null, 
+    ingredients_edit: null, 
+    directions_edit: null,
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
     showConfirmation: false,
-    category: ''
+    category: '',
+    category_edit: ''
   }
 
   goBack = () => {
@@ -25,9 +28,13 @@ class Recipe extends React.Component {
     .then(res => {
       this.setState({
         recipe_title: res.data[0].title,
+        recipe_title_edit: res.data[0].title,
         ingredients: res.data[0].ingredients,
+        ingredients_edit: res.data[0].ingredients,
         directions: res.data[0].directions,
+        directions_edit: res.data[0].directions,
         category: res.data[0].category,
+        category_edit: res.data[0].category
       })
     })
     .catch((err) => {
@@ -62,8 +69,8 @@ class Recipe extends React.Component {
   }
 
   checkValidity = () => {
-    const { directions, ingredients, recipe_title } = this.state;
-    if (directions && ingredients && recipe_title) {
+    const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
+    if (directions_edit && ingredients_edit && recipe_title_edit, category_edit) {
       this.setState({
         recipeValid: true
       })
@@ -92,20 +99,6 @@ class Recipe extends React.Component {
 
   }
 
-  clearState = () => {
-    this.setState({
-      recipe_title: null,
-      ingredients: null,
-      directions: null,
-    })
-  }
-
-  updateCategoryState = (e) => {
-    this.setState({
-      category: e.label
-    })
-  }
-
   updateInput = (e) => {
     this.setState({
       [e.target.id]: e.target.value
@@ -115,15 +108,14 @@ class Recipe extends React.Component {
   updateRecipe = (e) => {
       e.preventDefault();
       axios.put(`/recipes`, {
-        title: this.state.recipe_title,
-        ingredients: this.state.ingredients,
-        directions: this.state.directions,
+        title: this.state.recipe_title_edit,
+        ingredients: this.state.ingredients_edit,
+        directions: this.state.directions_edit,
         recipeId: this.state.recipeId,
-        category: this.state.category,
+        category: this.state.category_edit,
       })
       .then(res => {
         if (res) {
-          
           // close modal 
           this.closeModal();
           // Update recipe details to reflect the change
@@ -160,7 +152,7 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   <h3>Ingredients</h3>
-                  {(this.state.ingredients || '').split('\n').map(function(item, key) {
+                  {(ingredients || '').split('\n').map(function(item, key) {
                       return (
                         <h2 key={key}>
                           {item}
@@ -171,7 +163,7 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   <h3>Directions </h3>
-                  {(this.state.directions || '').split('\n').map(function(item, key) {
+                  {(directions || '').split('\n').map(function(item, key) {
                       return (
                         <h2 key={key}>
                           {item}
@@ -189,27 +181,27 @@ class Recipe extends React.Component {
               </div>
           </div>
           <div id={`${recipeId}_modal`} className="modal">
-            <h1 className="Title">New Recipe</h1>
+            <h1 className="Title">Edit Recipe</h1>
             <div className="recipe">
             <div>
                 <div className="input-field">
-                    <textarea onChange={this.updateInput} id="recipe_title" value={this.state.recipe_title || ''} className="materialize-textarea"></textarea>
+                    <textarea onChange={this.updateInput} id="recipe_title_edit" value={this.state.recipe_title_edit || ''} className="materialize-textarea"></textarea>
                     <label className="active" htmlFor="recipe_title">Title</label>
                 </div>
                 <div className="input-field">
-                    <textarea onChange={this.updateInput} id="ingredients" value={this.state.ingredients || ''} className="materialize-textarea minHeight"></textarea>
+                    <textarea onChange={this.updateInput} id="ingredients_edit" value={this.state.ingredients_edit || ''} className="materialize-textarea minHeight"></textarea>
                     <label className="active" htmlFor="ingredients">Ingredients</label>
                 </div>
 
                 <div className="input-field">
-                  <textarea onChange={this.updateInput} id="directions" value={this.state.directions || ''} className="materialize-textarea minHeight"></textarea>
+                  <textarea onChange={this.updateInput} id="directions_edit" value={this.state.directions_edit || ''} className="materialize-textarea minHeight"></textarea>
                   <label className="active" htmlFor="directions">Directions</label>
                 </div>
                   
                 <div >
                   <h3>Category</h3>
                   <div className="select">
-                    <select onChange={this.updateInput} id="category" value={this.state.category} >
+                    <select onChange={this.updateInput} id="category_edit" value={this.state.category_edit} >
                       {
                         options.map((val, index) => {
                           return <option key={index}>{val.label}</option>
@@ -226,7 +218,7 @@ class Recipe extends React.Component {
                     
             </div>
             <div className="modal-close-buttons">
-              <button id="delete" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe</button>
+              <button id="delete" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
               <div>
                 <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
