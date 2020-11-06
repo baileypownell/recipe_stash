@@ -11,6 +11,17 @@ class AddRecipe extends React.Component {
     directions: null,
     category: this.props.category,
     recipeValid: false,
+    tags: {
+      noBake: false, 
+      easy: false, 
+      healthy: false, 
+      gluten_free: false, 
+      dairy_free: false, 
+      sugar_free: false, 
+      vegetarian: false, 
+      vegan: false, 
+      keto: false
+    }
   }
 
   componentDidMount() {
@@ -139,60 +150,40 @@ class AddRecipe extends React.Component {
                     </div>
                 </div>
 
-
-
-
-
                 <ul class="collapsible">
                   <li>
                     <div class="collapsible-header"><p>Recipe Tags</p></div>
                     <div class="collapsible-body">
-                      <label>
-                        <input type="checkbox"  />
-                        <span>No baking required</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Healthy</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Easy</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Gluten-free</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Sugar-free</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Dairy-free</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Vegetarian</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Vegan</span>
-                      </label>
-                      <label>
-                        <input type="checkbox"  />
-                        <span>Keto</span>
-                      </label>
-                      </div>
+
+                    <div class="chip" id="noBake" >
+                      No Bake
+                    </div>
+                    <div class="chip">
+                      Healthy
+                    </div>
+                    <div class="chip">
+                      Easy
+                    </div>
+                    <div class="chip">
+                      Gluten-Free
+                    </div>
+                    <div class="chip">
+                      Sugar-Free
+                    </div>
+                    <div class="chip">
+                      Dairy-Free
+                    </div>
+                    <div class="chip">
+                      Vegetarian
+                    </div>
+                    <div class="chip">
+                      Vegan
+                    </div>
+                    <div class="chip">
+                      Keto
+                    </div>
+                    </div>
                   </li>
-                  {/* <li>
-                    <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
-                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                  </li>
-                  <li>
-                    <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
-                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-                  </li> */}
                 </ul>
     
                 
