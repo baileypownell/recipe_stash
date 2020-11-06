@@ -21,6 +21,11 @@ class AddRecipe extends React.Component {
 
     var select = document.querySelectorAll('select');
     M.FormSelect.init(select, {});
+
+    // category selector 
+
+    var categorySelector = document.querySelectorAll('.collapsible');
+    M.Collapsible.init(categorySelector, {});
   }
 
   checkValidity = () => {
@@ -133,10 +138,64 @@ class AddRecipe extends React.Component {
                         
                     </div>
                 </div>
-                {/* <label>
-                  <input type="checkbox" class="filled-in" />
-                  <span>No baking required</span>
-                </label> */}
+
+
+
+
+
+                <ul class="collapsible">
+                  <li>
+                    <div class="collapsible-header"><p>Recipe Tags</p></div>
+                    <div class="collapsible-body">
+                      <label>
+                        <input type="checkbox"  />
+                        <span>No baking required</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Healthy</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Easy</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Gluten-free</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Sugar-free</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Dairy-free</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Vegetarian</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Vegan</span>
+                      </label>
+                      <label>
+                        <input type="checkbox"  />
+                        <span>Keto</span>
+                      </label>
+                      </div>
+                  </li>
+                  {/* <li>
+                    <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                  </li>
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                  </li> */}
+                </ul>
+    
+                
                 
               </div>
               <div className="modal-close-buttons">
