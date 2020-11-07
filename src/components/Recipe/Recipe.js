@@ -16,7 +16,9 @@ class Recipe extends React.Component {
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
     showConfirmation: false,
     category: '',
-    category_edit: ''
+    category_edit: '', 
+    tags: [],
+    recipe: null
   }
 
   goBack = () => {
@@ -26,15 +28,47 @@ class Recipe extends React.Component {
   fetchData = () => {
     axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
     .then(res => {
+      console.log(res.data)
+      let recipe = res.data[0]
       this.setState({
-        recipe_title: res.data[0].title,
-        recipe_title_edit: res.data[0].title,
-        ingredients: res.data[0].ingredients,
-        ingredients_edit: res.data[0].ingredients,
-        directions: res.data[0].directions,
-        directions_edit: res.data[0].directions,
-        category: res.data[0].category,
-        category_edit: res.data[0].category
+        recipe: recipe,
+        recipe_title: recipe.title,
+        recipe_title_edit: recipe.title,
+        ingredients: recipe.ingredients,
+        ingredients_edit: recipe.ingredients,
+        directions: recipe.directions,
+        directions_edit: recipe.directions,
+        category: recipe.category,
+        category_edit: recipe.category,
+        tags: [
+          {
+            dairy_free: recipe.dairy_free,
+           },
+          {
+            easy: recipe.easy,
+          },
+          {
+            gulten_free: recipe.gulten_free
+          }, 
+          {
+            healthy: recipe.healthy,
+          },
+          {
+            keto: recipe.keto
+          },
+          {
+            sugar_free: recipe.sugar_free
+          },
+          {
+            vegan: recipe.vegan
+          },
+          {
+            vegetarian: recipe.vegetarian
+          },
+          {
+            no_bake: recipe.no_bake
+          }
+        ]
       })
     })
     .catch((err) => {
@@ -130,7 +164,7 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { ingredients, directions, recipe_title, recipeId, category } = this.state;
+    const { ingredients, directions, recipe_title, recipeId, category, recipe } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -175,6 +209,35 @@ class Recipe extends React.Component {
                 <div className="section">
                   <h3>Category</h3>
                   <h2>{category}</h2>
+                </div>
+                <div className="section">
+                  {
+                   recipe && recipe.easy ? <div className="chip z-depth-2 ">Easy</div> : null
+                  }
+                  {
+                    recipe &&recipe.dairy_free ? <div className="chip z-depth-2 ">Dairy Free</div> : null
+                  }
+                  {
+                    recipe && recipe.gulten_free ? <div className="chip z-depth-2 ">Gluten Free</div> : null
+                  }
+                  {
+                    recipe && recipe.healthy ? <div className="chip z-depth-2 ">Healthy</div> : null
+                  }
+                  {
+                    recipe && recipe.keto ? <div className="chip z-depth-2 ">Keto</div> : null
+                  }
+                  {
+                    recipe && recipe.no_bake ? <div className="chip z-depth-2 ">No Bake</div> : null
+                  }
+                  {
+                    recipe && recipe.sugar_free ? <div className="chip z-depth-2 ">Sugar Free</div> : null
+                  }
+                  {
+                    recipe &&recipe.vegan ? <div className="chip z-depth-2 ">Vegan</div> : null
+                  }
+                  {
+                    recipe && recipe.vegetarian ?<div className="chip z-depth-2 ">Vegetarian</div> : null
+                  }
                 </div>
                   
                 <button onClick={this.openModal} className="btn modal-trigger">Edit <i className="fas fa-pen"></i></button>

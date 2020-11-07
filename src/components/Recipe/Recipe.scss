@@ -107,6 +107,14 @@
       border-left: 1px solid $secondary; 
       padding-left: 15px;
     }
+    .chip {
+      &:hover {
+        background-color: white!important;
+        color: $green!important;
+        transform: none;
+        cursor: inherit!important;
+      }
+    }
   }
   h3 {
     font-weight:800;
