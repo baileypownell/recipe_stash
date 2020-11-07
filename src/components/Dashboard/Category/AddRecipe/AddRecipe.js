@@ -11,32 +11,62 @@ class AddRecipe extends React.Component {
     directions: null,
     category: this.props.category,
     recipeValid: false,
-    tags: {
-      noBake: false, 
-      easy: false, 
-      healthy: false, 
-      gluten_free: false, 
-      dairy_free: false, 
-      sugar_free: false, 
-      vegetarian: false, 
-      vegan: false, 
-      keto: false
-    }
+    tags: [
+      {
+        selected: false, 
+        label: 'No Bake',
+      }, 
+      {
+        selected: false,
+        label: 'Easy',
+      }, 
+      {
+        selected: false,
+        label: 'Healthy',
+      }, 
+      {
+        selected: false,
+        label: 'Gluten-Free',
+      }, 
+      {
+        selected: false,
+        label: 'Dairy-Free',
+      }, 
+      {
+        selected: false,
+        label: 'Sugar-Free', 
+      }, 
+      {
+        selected: false,
+        label: 'Vegetarian', 
+      }, 
+      {
+        selected: false, 
+        label: 'Vegan',
+      },
+      {
+        selected: false,
+        label: 'Keto',
+      }
+    ]
   }
 
   componentDidMount() {
-    let modal = document.querySelectorAll('.modal');
+    const modal = document.querySelectorAll('.modal');
     M.Modal.init(modal, {
       opacity: 0.5
     });
 
-    var select = document.querySelectorAll('select');
+    const select = document.querySelectorAll('select');
     M.FormSelect.init(select, {});
 
     // category selector 
-
-    var categorySelector = document.querySelectorAll('.collapsible');
+    const categorySelector = document.querySelectorAll('.collapsible');
     M.Collapsible.init(categorySelector, {});
+
+    // recipe category chip tags 
+    const chips = document.querySelectorAll('.chips');
+    M.Chips.init(chips, {});
   }
 
   checkValidity = () => {
@@ -92,6 +122,23 @@ class AddRecipe extends React.Component {
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkValidity());
+  }
+
+  toggleTagSelectionStatus = (e) => {
+    let index = e.target.id 
+
+
+    // 1. Make a shallow copy of the items
+    let tags = [...this.state.tags];
+    // 2. Make a shallow copy of the item you want to mutate
+    let item = {...tags[index]};
+    // 3. Replace the property you're intested in
+    let priorSelectedValue = item.selected
+    item.selected = !priorSelectedValue;
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    tags[index] = item;
+    // 5. Set the state to our new copy
+    this.setState({tags});
   }
 
   
@@ -150,38 +197,21 @@ class AddRecipe extends React.Component {
                     </div>
                 </div>
 
-                <ul class="collapsible">
+                <ul className="collapsible">
                   <li>
-                    <div class="collapsible-header"><p>Recipe Tags</p></div>
-                    <div class="collapsible-body">
-
-                    <div class="chip" id="noBake" >
-                      No Bake
-                    </div>
-                    <div class="chip">
-                      Healthy
-                    </div>
-                    <div class="chip">
-                      Easy
-                    </div>
-                    <div class="chip">
-                      Gluten-Free
-                    </div>
-                    <div class="chip">
-                      Sugar-Free
-                    </div>
-                    <div class="chip">
-                      Dairy-Free
-                    </div>
-                    <div class="chip">
-                      Vegetarian
-                    </div>
-                    <div class="chip">
-                      Vegan
-                    </div>
-                    <div class="chip">
-                      Keto
-                    </div>
+                    <div className="collapsible-header"><p>Recipe Tags</p></div>
+                    <div className="collapsible-body">
+                        {
+                          this.state.tags.map((tag, index) => {
+                            return <div 
+                              onClick={this.toggleTagSelectionStatus} 
+                              id={index} 
+                              className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
+                              key={index}>
+                                {tag.label}
+                              </div>
+                          })
+                        }
                     </div>
                   </li>
                 </ul>

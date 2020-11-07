@@ -48,6 +48,18 @@
     background-color: white!important;
     border: 1px solid $green;
     color: $green!important;
+    cursor: pointer!important;
+    transition: all .4s;
+    &:hover {
+        background-color: $green!important;
+        color: white!important;
+        transform: translateY(-5px);
+    }
+}
+
+.selectedTag {
+    background-color: $green!important;
+    color: white!important;
 }
 
 .collapsible-body {
