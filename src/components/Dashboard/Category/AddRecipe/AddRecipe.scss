@@ -8,6 +8,16 @@
 .modal-close-buttons {
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
+    > div {
+        display: flex; 
+        > button {
+            flex-grow: 1;
+        }
+    }
+    @media screen and (min-width: 530px) {
+        flex-direction: row;
+    }
     button {
         margin: 5px;
     }
@@ -23,4 +33,23 @@
 
 .collapsible-header p {
     margin: 0;
+}
+
+.modal {
+    width: 90%!important;
+    max-height: 85%!important;
+    @include tablet {
+        width: 80%!important;
+        max-height: 70%!important;
+    }
+}
+
+.chip {
+    background-color: white!important;
+    border: 1px solid $green;
+    color: $green!important;
+}
+
+.collapsible-body {
+    text-align: left!important;
 }
