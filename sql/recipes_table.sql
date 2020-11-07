@@ -7,6 +7,19 @@ CREATE TABLE recipes(
   directions text
 );
 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS no_bake boolean;
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS easy boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS healthy boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS sugar_free boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS gluten_free boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS dairy_free boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS vegetarian boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS vegan boolean; 
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS keto boolean;
+
+
+
+
 INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES('Ice Cream', 'Dessert', 1, 'vanilla, salt, sugar, milk, half-and-half', 'you know what to do');
 
 INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES('Hot Chocolate', 'Drinks', 1, 'chocolate, milk, sugar', 'boil');

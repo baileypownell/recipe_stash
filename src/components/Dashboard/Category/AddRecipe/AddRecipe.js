@@ -92,11 +92,21 @@ class AddRecipe extends React.Component {
 
   createRecipe = (e) => {
     e.preventDefault();
+    let tags = this.state.tags
     axios.post(`/recipes`, {
       title: this.state.recipe_title,
       category: this.state.category,
       ingredients: this.state.ingredients,
       directions: this.state.directions,
+      isNoBake: tags[0].selected,
+      isEasy: tags[1].selected,
+      isHealthy: tags[2].selected,
+      isGlutenFree: tags[3].selected, 
+      isDairyFree: tags[4].selected,
+      isSugarFree: tags[5].selected, 
+      isVegetarian: tags[6].selected, 
+      isVegan: tags[7].selected,
+      isKeto: tags[8].selected
     })
     .then(res => {
       if (res) {
@@ -126,8 +136,6 @@ class AddRecipe extends React.Component {
 
   toggleTagSelectionStatus = (e) => {
     let index = e.target.id 
-
-
     // 1. Make a shallow copy of the items
     let tags = [...this.state.tags];
     // 2. Make a shallow copy of the item you want to mutate
