@@ -92,7 +92,7 @@ class AddRecipe extends React.Component {
 
   createRecipe = (e) => {
     e.preventDefault();
-    let tags = this.state.tags
+    let tags = this.state.tags;
     axios.post(`/recipes`, {
       title: this.state.recipe_title,
       category: this.state.category,

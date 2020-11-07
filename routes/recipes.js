@@ -65,9 +65,9 @@ router.post('/', (request, response, next) => {
 });
 
 router.put('/', (request, response, next) => {
-  const { recipeId, title, ingredients, directions, category } = request.body;
-  client.query('UPDATE recipes SET title=$1, ingredients=$2, directions=$3, category=$4 WHERE id=$5',
-  [title, ingredients, directions, category, recipeId],
+  const { recipeId, title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
+  client.query('UPDATE recipes SET title=$1, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14',
+  [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId],
    (err, res) => {
     if (err) {
       return next(err);

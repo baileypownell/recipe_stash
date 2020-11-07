@@ -9,7 +9,32 @@ router.get('/:recipeId', (request, response, next) => {
     [id, recipeId],
      (err, res) => {
       if (err) return next(err);
-      response.status(200).json(res.rows)
+      let recipe = res.rows[0]
+
+      if (recipe) {
+        let recipe_response = {
+          id: recipe.id, 
+          title: recipe.title, 
+          category: recipe.category, 
+          user_id: recipe.user_id, 
+          ingredients: recipe.ingredients, 
+          directions: recipe.directions, 
+          tags: {
+            no_bake: recipe.no_bake, 
+            easy: recipe.easy, 
+            healthy: recipe.healthy, 
+            gluten_free: recipe.gluten_free, 
+            dairy_free: recipe.dairy_free, 
+            vegetarian: recipe.vegetarian, 
+            vegan: recipe.vegan, 
+            keto: recipe.keto, 
+            sugar_free: recipe.sugar_free
+          }
+        }
+        response.status(200).json(recipe_response)
+      } else {
+        response.status(500).json(res)
+      }
     });
   });
 

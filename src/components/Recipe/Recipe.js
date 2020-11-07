@@ -17,8 +17,54 @@ class Recipe extends React.Component {
     showConfirmation: false,
     category: '',
     category_edit: '', 
-    tags: [],
-    recipe: null
+    recipe: null,
+    tags: [
+      {
+        selected: false, 
+        recipeTagPropertyName: 'no_bake',
+        label: 'No Bake',
+      }, 
+      {
+        selected: false,
+        recipeTagPropertyName: 'easy',
+        label: 'Easy',
+      }, 
+      {
+        selected: false,
+        recipeTagPropertyName: 'healthy',
+        label: 'Healthy',
+      }, 
+      {
+        selected: false,
+        recipeTagPropertyName: 'gluten_free',
+        label: 'Gluten-Free',
+      }, 
+      {
+        selected: false,
+        recipeTagPropertyName: 'dairy_free',
+        label: 'Dairy-Free',
+      }, 
+      {
+        selected: false,
+        recipeTagPropertyName: 'sugar_free',
+        label: 'Sugar-Free', 
+      }, 
+      {
+        selected: false,
+        recipeTagPropertyName: 'vegetarian',
+        label: 'Vegetarian', 
+      }, 
+      {
+        selected: false, 
+        recipeTagPropertyName: 'vegan',
+        label: 'Vegan',
+      },
+      {
+        selected: false,
+        recipeTagPropertyName: 'keto',
+        label: 'Keto',
+      }
+    ]
   }
 
   goBack = () => {
@@ -28,8 +74,7 @@ class Recipe extends React.Component {
   fetchData = () => {
     axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
     .then(res => {
-      console.log(res.data)
-      let recipe = res.data[0]
+      let recipe = res.data
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
@@ -40,35 +85,23 @@ class Recipe extends React.Component {
         directions_edit: recipe.directions,
         category: recipe.category,
         category_edit: recipe.category,
-        tags: [
-          {
-            dairy_free: recipe.dairy_free,
-           },
-          {
-            easy: recipe.easy,
-          },
-          {
-            gulten_free: recipe.gulten_free
-          }, 
-          {
-            healthy: recipe.healthy,
-          },
-          {
-            keto: recipe.keto
-          },
-          {
-            sugar_free: recipe.sugar_free
-          },
-          {
-            vegan: recipe.vegan
-          },
-          {
-            vegetarian: recipe.vegetarian
-          },
-          {
-            no_bake: recipe.no_bake
-          }
-        ]
+      })
+
+
+      this.state.tags.forEach((tag, index) => {
+        if (recipe.tags[tag.recipeTagPropertyName]) {
+            // 1. Make a shallow copy of the items
+            let tags = [...this.state.tags];
+            // 2. Make a shallow copy of the item you want to mutate
+            let item = {...tags[index]};
+            // 3. Replace the property you're intested in
+            let priorSelectedValue = item.selected
+            item.selected = !priorSelectedValue;
+            // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+            tags[index] = item;
+            // 5. Set the state to our new copy
+            this.setState({tags});
+        }
       })
     })
     .catch((err) => {
@@ -139,14 +172,39 @@ class Recipe extends React.Component {
     }, () => this.checkValidity());
   }
 
+  toggleTagSelectionStatus = (e) => {
+    let index = e.target.id 
+    // 1. Make a shallow copy of the items
+    let tags = [...this.state.tags];
+    // 2. Make a shallow copy of the item you want to mutate
+    let item = {...tags[index]};
+    // 3. Replace the property you're intested in
+    let priorSelectedValue = item.selected
+    item.selected = !priorSelectedValue;
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    tags[index] = item;
+    // 5. Set the state to our new copy
+    this.setState({tags});
+  }
+
   updateRecipe = (e) => {
       e.preventDefault();
+      let tags = this.state.tags;
       axios.put(`/recipes`, {
         title: this.state.recipe_title_edit,
         ingredients: this.state.ingredients_edit,
         directions: this.state.directions_edit,
         recipeId: this.state.recipeId,
         category: this.state.category_edit,
+        isNoBake: tags[0].selected,
+        isEasy: tags[1].selected,
+        isHealthy: tags[2].selected,
+        isGlutenFree: tags[3].selected, 
+        isDairyFree: tags[4].selected,
+        isSugarFree: tags[5].selected, 
+        isVegetarian: tags[6].selected, 
+        isVegan: tags[7].selected,
+        isKeto: tags[8].selected
       })
       .then(res => {
         if (res) {
@@ -212,31 +270,31 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   {
-                   recipe && recipe.easy ? <div className="chip z-depth-2 ">Easy</div> : null
+                   recipe && recipe.tags.easy ? <div className="chip z-depth-2 ">Easy</div> : null
                   }
                   {
-                    recipe &&recipe.dairy_free ? <div className="chip z-depth-2 ">Dairy Free</div> : null
+                    recipe &&recipe.tags.dairy_free ? <div className="chip z-depth-2 ">Dairy Free</div> : null
                   }
                   {
-                    recipe && recipe.gulten_free ? <div className="chip z-depth-2 ">Gluten Free</div> : null
+                    recipe && recipe.tags.gulten_free ? <div className="chip z-depth-2 ">Gluten Free</div> : null
                   }
                   {
-                    recipe && recipe.healthy ? <div className="chip z-depth-2 ">Healthy</div> : null
+                    recipe && recipe.tags.healthy ? <div className="chip z-depth-2 ">Healthy</div> : null
                   }
                   {
-                    recipe && recipe.keto ? <div className="chip z-depth-2 ">Keto</div> : null
+                    recipe && recipe.tags.keto ? <div className="chip z-depth-2 ">Keto</div> : null
                   }
                   {
-                    recipe && recipe.no_bake ? <div className="chip z-depth-2 ">No Bake</div> : null
+                    recipe && recipe.tags.no_bake ? <div className="chip z-depth-2 ">No Bake</div> : null
                   }
                   {
-                    recipe && recipe.sugar_free ? <div className="chip z-depth-2 ">Sugar Free</div> : null
+                    recipe && recipe.tags.sugar_free ? <div className="chip z-depth-2 ">Sugar Free</div> : null
                   }
                   {
-                    recipe &&recipe.vegan ? <div className="chip z-depth-2 ">Vegan</div> : null
+                    recipe &&recipe.tags.vegan ? <div className="chip z-depth-2 ">Vegan</div> : null
                   }
                   {
-                    recipe && recipe.vegetarian ?<div className="chip z-depth-2 ">Vegetarian</div> : null
+                    recipe && recipe.tags.vegetarian ?<div className="chip z-depth-2 ">Vegetarian</div> : null
                   }
                 </div>
                   
@@ -271,13 +329,25 @@ class Recipe extends React.Component {
                         })
                       }
                     </select>
-                      
                   </div>
               </div>
-              {/* <label>
-                <input type="checkbox" class="filled-in" />
-                <span>No baking required</span>
-              </label> */}
+
+      
+
+              <div className="recipeTags">
+                <h3>Recipe Tags</h3>
+                {
+                  this.state.tags.map((tag, index) => {
+                    return <div 
+                      onClick={this.toggleTagSelectionStatus} 
+                      id={index} 
+                      className={`chip z-depth-2 ${this.state.recipe && this.state.tags[index].selected  ? "selectedTag" : "null"}`}
+                      key={index}>
+                        {tag.label}
+                      </div>
+                  })
+                }
+              </div>
                     
             </div>
             <div className="modal-close-buttons">
