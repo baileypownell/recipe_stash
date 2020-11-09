@@ -60,6 +60,17 @@ class Dashboard extends React.Component {
       }
     }
     setTimeout(Appear, 300);
+
+
+    // filter dropdown
+    const dropdown = document.querySelector('.dropdown-trigger');
+    M.Dropdown.init(dropdown, {
+      onCloseStart: (e) => {
+        console.log(e)
+        e.stopPropagation()
+      }
+    });
+
   }
 
   updateDashboard = () => {
@@ -120,6 +131,69 @@ class Dashboard extends React.Component {
           <h1>Recipe Box</h1>
           <div className="searchbar">
           <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
+
+          <button className='dropdown-trigger btn' href='#' data-target='dropdown1' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
+
+          <ul id='dropdown1' className='dropdown-content'>
+            <li>
+              <label>
+                <input type="checkbox" />
+                <span>Dairy-Free</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Easy</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Gluten-Free</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Healthy</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Keto</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>No Bake</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Sugar-Free</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Vegan</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox"  />
+                <span>Vegetarian</span>
+              </label>
+            </li>
+            {/* <li class="divider" tabindex="-1"></li>
+            <li><a href="#!">three</a></li>
+            <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+            <li><a href="#!"><i class="material-icons">cloud</i>five</a></li> */}
+          </ul>
         </div>
         </div>
       </div>
