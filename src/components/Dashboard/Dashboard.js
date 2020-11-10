@@ -14,6 +14,17 @@ class Dashboard extends React.Component {
     filteredRecipes: null,
     results: [],
     value: '',
+    filter: {
+      dairyFree: false, 
+      easy: false, 
+      glutenFree: false, 
+      healthy: false, 
+      keto: false, 
+      noBake: false, 
+      sugarFree: false, 
+      vegan: false, 
+      vegetarian: false, 
+    }
   }
 
   fetchRecipes = () => {
@@ -66,11 +77,27 @@ class Dashboard extends React.Component {
     const dropdown = document.querySelector('.dropdown-trigger');
     M.Dropdown.init(dropdown, {
       onCloseStart: (e) => {
-        console.log(e)
         e.stopPropagation()
       }
     });
 
+  }
+
+  filter = (e) => {
+    let currentState = this.state.filter[e.target.id]
+    let filter = {
+      ...this.state.filter,
+      [e.target.id]: !currentState,
+    }
+    this.setState({
+      ...this.state, 
+      filter: filter
+    })
+  }
+
+  componentWillUpdate(a, newState, b) {
+    console.log(newState)
+    // filter recipes based on tags 
   }
 
   updateDashboard = () => {
@@ -135,57 +162,57 @@ class Dashboard extends React.Component {
           <button className='dropdown-trigger btn' href='#' data-target='dropdown1' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
 
           <ul id='dropdown1' className='dropdown-content'>
-            <li>
+            <li >
               <label>
-                <input type="checkbox" />
+                <input  id="dairyFree" onClick={this.filter} type="checkbox" />
                 <span>Dairy-Free</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="easy" onClick={this.filter}  type="checkbox"  />
                 <span>Easy</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="glutenFree" onClick={this.filter}  type="checkbox"  />
                 <span>Gluten-Free</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="healthy" onClick={this.filter}  type="checkbox"  />
                 <span>Healthy</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="keto" onClick={this.filter}  type="checkbox"  />
                 <span>Keto</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="noBake" onClick={this.filter}  type="checkbox"  />
                 <span>No Bake</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="sugarFree" onClick={this.filter}  type="checkbox"  />
                 <span>Sugar-Free</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="vegan" onClick={this.filter}  type="checkbox"  />
                 <span>Vegan</span>
               </label>
             </li>
             <li>
               <label>
-                <input type="checkbox"  />
+                <input id="vegetarian" onClick={this.filter}  type="checkbox"  />
                 <span>Vegetarian</span>
               </label>
             </li>

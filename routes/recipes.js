@@ -19,6 +19,7 @@ router.get('/', (request, response, next) => {
           side_dish: [],
           drinks: []
         }
+        // categorize tags like in 'recipe' get endpoint
         res.rows.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
             responseObject.dinner.push(recipe)
