@@ -85,7 +85,6 @@ class Dashboard extends React.Component {
   }
 
   filter = (e) => {
-    console.log('filter running')
     let currentState = this.state.filter[e.target.id]
     let filter = {
       ...this.state.filter,
@@ -98,32 +97,37 @@ class Dashboard extends React.Component {
       const filter$ = of(this.state.filter)
 
     filter$
-    // .pipe(
-    //   skip(1)
-    // )
     .subscribe(res => {
       let selectedTags = []
       for (const tag in res) {
-        console.log(res[tag])
         if (res[tag]) {
           selectedTags.push(tag)
         }
       }
-      console.log(selectedTags)
       if (selectedTags.length) {
         let newFilteredRecipesState = {
-          ...this.state.filteredRecipes
+          ...this.state.unfilteredRecipes
         }
         // limit to only those recipes whose tags include each checked result from res (true) 
-        for (const category in this.state.filteredRecipes) {
-          let filteredCategory = this.state.filteredRecipes[category]
+        for (const category in this.state.unfilteredRecipes) {
+          let filteredCategory = this.state.unfilteredRecipes[category]
           .filter(recipe => recipe.tags.length >= 1)
-          .filter(recipe => recipe.tags.some((tag) => selectedTags.includes(tag)))
+          .filter(recipe => {
+            // console.log('recipe tags = ', recipe.tags)
+            // console.log('selected tags = ', selectedTags)
+            // console.log(selectedTags.every(tag => recipe.tags.includes(tag)))
+          
+            return selectedTags.every(tag => recipe.tags.includes(tag))
+          })
           newFilteredRecipesState[category] = filteredCategory
         }
-        console.log('newFilteredRecipesState = ', newFilteredRecipesState)
+
         this.setState({
           filteredRecipes: newFilteredRecipesState
+        })
+      } else {
+        this.setState({
+          filteredRecipes: this.state.unfilteredRecipes
         })
       }
 
