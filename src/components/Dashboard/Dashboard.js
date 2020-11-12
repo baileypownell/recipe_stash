@@ -80,11 +80,12 @@ class Dashboard extends React.Component {
       onCloseStart: (e) => {
         e.stopPropagation()
       }
-    });
+    })
 
   }
 
   filter = (e) => {
+    console.log('filter running')
     let currentState = this.state.filter[e.target.id]
     let filter = {
       ...this.state.filter,
@@ -93,7 +94,43 @@ class Dashboard extends React.Component {
     this.setState({
       ...this.state, 
       filter: filter
+    }, () => {
+      const filter$ = of(this.state.filter)
+
+    filter$
+    // .pipe(
+    //   skip(1)
+    // )
+    .subscribe(res => {
+      let selectedTags = []
+      for (const tag in res) {
+        console.log(res[tag])
+        if (res[tag]) {
+          selectedTags.push(tag)
+        }
+      }
+      console.log(selectedTags)
+      if (selectedTags.length) {
+        let newFilteredRecipesState = {
+          ...this.state.filteredRecipes
+        }
+        // limit to only those recipes whose tags include each checked result from res (true) 
+        for (const category in this.state.filteredRecipes) {
+          let filteredCategory = this.state.filteredRecipes[category]
+          .filter(recipe => recipe.tags.length >= 1)
+          .filter(recipe => recipe.tags.some((tag) => selectedTags.includes(tag)))
+          newFilteredRecipesState[category] = filteredCategory
+        }
+        console.log('newFilteredRecipesState = ', newFilteredRecipesState)
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
+      }
+
     })
+    })
+
+    
   }
 
   updateDashboard = () => {
@@ -147,37 +184,7 @@ class Dashboard extends React.Component {
 
     const { filteredRecipes, recipes_loaded } = this.state;
 
-    const filter$ = of(this.state.filter)
-
-    filter$
-    // .pipe(
-    //   skip(1)
-    // )
-    .subscribe(res => {
-
-      let selectedTags = []
-      for (const tag in res) {
-        if (res[tag]) {
-          selectedTags.push(tag)
-        }
-      }
-      if (selectedTags.length) {
-        let newFilteredRecipesState = {
-          ...filteredRecipes
-        }
-        // limit to only those recipes whose tags include each checked result from res (true) 
-        for (const category in this.state.filteredRecipes) {
-          console.log(selectedTags)
-          //console.log()
-          let filteredCategory = this.state.filteredRecipes[category].filter(recipe => recipe.tags.every((tag) => selectedTags.includes(tag)))
-          newFilteredRecipesState[category] = filteredCategory
-        }
-        this.setState({
-          filteredRecipes: newFilteredRecipesState
-        })
-      }
-
-    })
+    
 
     return (
       <>
