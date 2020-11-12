@@ -77,9 +77,10 @@ class Dashboard extends React.Component {
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger');
     M.Dropdown.init(dropdown, {
-      onCloseStart: (e) => {
-        e.stopPropagation()
-      }
+      closeOnClick: false,
+      // onCloseStart: (e) => {
+      //   e.stopPropagation()
+      // }
     })
 
   }
@@ -96,42 +97,36 @@ class Dashboard extends React.Component {
     }, () => {
       const filter$ = of(this.state.filter)
 
-    filter$
-    .subscribe(res => {
-      let selectedTags = []
-      for (const tag in res) {
-        if (res[tag]) {
-          selectedTags.push(tag)
+      filter$
+      .subscribe(res => {
+        let selectedTags = []
+        for (const tag in res) {
+          if (res[tag]) {
+            selectedTags.push(tag)
+          }
         }
-      }
-      if (selectedTags.length) {
-        let newFilteredRecipesState = {
-          ...this.state.unfilteredRecipes
-        }
-        // limit to only those recipes whose tags include each checked result from res (true) 
-        for (const category in this.state.unfilteredRecipes) {
-          let filteredCategory = this.state.unfilteredRecipes[category]
-          .filter(recipe => recipe.tags.length >= 1)
-          .filter(recipe => {
-            // console.log('recipe tags = ', recipe.tags)
-            // console.log('selected tags = ', selectedTags)
-            // console.log(selectedTags.every(tag => recipe.tags.includes(tag)))
-          
-            return selectedTags.every(tag => recipe.tags.includes(tag))
+        if (selectedTags.length) {
+          let newFilteredRecipesState = {
+            ...this.state.unfilteredRecipes
+          }
+          // limit to only those recipes whose tags include each checked result from res (true) 
+          for (const category in this.state.unfilteredRecipes) {
+            let filteredCategory = this.state.unfilteredRecipes[category]
+            .filter(recipe => recipe.tags.length >= 1)
+            .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag)))
+            newFilteredRecipesState[category] = filteredCategory
+          }
+
+          this.setState({
+            filteredRecipes: newFilteredRecipesState
           })
-          newFilteredRecipesState[category] = filteredCategory
+        } else {
+          this.setState({
+            filteredRecipes: this.state.unfilteredRecipes
+          })
         }
 
-        this.setState({
-          filteredRecipes: newFilteredRecipesState
-        })
-      } else {
-        this.setState({
-          filteredRecipes: this.state.unfilteredRecipes
-        })
-      }
-
-    })
+      })
     })
 
     
@@ -198,9 +193,9 @@ class Dashboard extends React.Component {
           <div className="searchbar">
           <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
 
-          <button className='dropdown-trigger btn' href='#' data-target='dropdown1' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
+          <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
 
-          <ul id='dropdown1' className='dropdown-content'>
+          <ul id='dropdown' className='dropdown-content'>
             <li >
               <label>
                 <input  id="dairy_free" onClick={this.filter} type="checkbox" />
