@@ -3,7 +3,8 @@ const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
 import { connect } from 'react-redux';
 import Category from './Category/Category';
-
+import { of, subscribe, merge, pipe } from "rxjs";
+import {skip} from "rxjs/operators";
 import './Dashboard.scss';
 
 class Dashboard extends React.Component {
@@ -15,13 +16,13 @@ class Dashboard extends React.Component {
     results: [],
     value: '',
     filter: {
-      dairyFree: false, 
+      dairy_free: false, 
       easy: false, 
-      glutenFree: false, 
+      gluten_free: false, 
       healthy: false, 
       keto: false, 
-      noBake: false, 
-      sugarFree: false, 
+      no_bake: false, 
+      sugar_free: false, 
       vegan: false, 
       vegetarian: false, 
     }
@@ -95,11 +96,6 @@ class Dashboard extends React.Component {
     })
   }
 
-  componentWillUpdate(a, newState, b) {
-    console.log(newState)
-    // filter recipes based on tags 
-  }
-
   updateDashboard = () => {
     this.fetchRecipes();
   }
@@ -151,6 +147,38 @@ class Dashboard extends React.Component {
 
     const { filteredRecipes, recipes_loaded } = this.state;
 
+    const filter$ = of(this.state.filter)
+
+    filter$
+    // .pipe(
+    //   skip(1)
+    // )
+    .subscribe(res => {
+
+      let selectedTags = []
+      for (const tag in res) {
+        if (res[tag]) {
+          selectedTags.push(tag)
+        }
+      }
+      if (selectedTags.length) {
+        let newFilteredRecipesState = {
+          ...filteredRecipes
+        }
+        // limit to only those recipes whose tags include each checked result from res (true) 
+        for (const category in this.state.filteredRecipes) {
+          console.log(selectedTags)
+          //console.log()
+          let filteredCategory = this.state.filteredRecipes[category].filter(recipe => recipe.tags.every((tag) => selectedTags.includes(tag)))
+          newFilteredRecipesState[category] = filteredCategory
+        }
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
+      }
+
+    })
+
     return (
       <>
       <div className="title">
@@ -164,7 +192,7 @@ class Dashboard extends React.Component {
           <ul id='dropdown1' className='dropdown-content'>
             <li >
               <label>
-                <input  id="dairyFree" onClick={this.filter} type="checkbox" />
+                <input  id="dairy_free" onClick={this.filter} type="checkbox" />
                 <span>Dairy-Free</span>
               </label>
             </li>
@@ -176,7 +204,7 @@ class Dashboard extends React.Component {
             </li>
             <li>
               <label>
-                <input id="glutenFree" onClick={this.filter}  type="checkbox"  />
+                <input id="gluten_free" onClick={this.filter}  type="checkbox"  />
                 <span>Gluten-Free</span>
               </label>
             </li>
@@ -194,13 +222,13 @@ class Dashboard extends React.Component {
             </li>
             <li>
               <label>
-                <input id="noBake" onClick={this.filter}  type="checkbox"  />
+                <input id="no_bake" onClick={this.filter}  type="checkbox"  />
                 <span>No Bake</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="sugarFree" onClick={this.filter}  type="checkbox"  />
+                <input id="sugar_free" onClick={this.filter}  type="checkbox"  />
                 <span>Sugar-Free</span>
               </label>
             </li>
@@ -216,10 +244,6 @@ class Dashboard extends React.Component {
                 <span>Vegetarian</span>
               </label>
             </li>
-            {/* <li class="divider" tabindex="-1"></li>
-            <li><a href="#!">three</a></li>
-            <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-            <li><a href="#!"><i class="material-icons">cloud</i>five</a></li> */}
           </ul>
         </div>
         </div>
