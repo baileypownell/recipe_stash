@@ -138,52 +138,26 @@ class Dashboard extends React.Component {
 
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
-    let recipesNarrowedByInput = {
-      breakfast: [], 
-      lunch: [], 
-      dinner: [],
-      other: [], 
-      dessert: [], 
-      other: [], 
-      side_dish: []
-    }
-
+    let recipes;
     if (input.length > 0) {
-      recipesNarrowedByInput.breakfast = this.state.unfilteredRecipes.breakfast.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.lunch = this.state.unfilteredRecipes.lunch.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.dinner = this.state.unfilteredRecipes.dinner.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.dessert = this.state.unfilteredRecipes.dessert.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.other = this.state.unfilteredRecipes.other.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.side_dish = this.state.unfilteredRecipes.side_dish.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.drinks = this.state.unfilteredRecipes.drinks.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
+      recipes = {
+        ...this.state.filteredRecipes
+      }
+      for (const category in recipes) {
+        let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+        recipes[category] = filteredCategory
+      }
     } else {
-      recipesNarrowedByInput = this.state.unfilteredRecipes
+        recipes = this.state.unfilteredRecipes
     }
 
     this.setState({
-      filteredRecipes: recipesNarrowedByInput
+      filteredRecipes: recipes
     })
   }
 
   render() {
-
     const { filteredRecipes, recipes_loaded } = this.state;
-
-    
 
     return (
       <>
