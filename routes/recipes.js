@@ -3,47 +3,6 @@ const client = require('../db');
 const router = Router()
 
 const constructTags = (recipe) => {
-  let tagObject = {} 
-  // {
-  //   no_bake: recipe.no_bake, 
-  //   easy: recipe.easy, 
-  //   healthy: recipe.healthy, 
-  //   gluten_free: recipe.gluten_free, 
-  //   dairy_free: recipe.dairy_free, 
-  //   vegetarian: recipe.vegetarian, 
-  //   vegan: recipe.vegan, 
-  //   keto: recipe.keto, 
-  //   sugar_free: recipe.sugar_free
-  // }
-  // if (recipe.no_bake) {
-  //   tagObject.no_bake = true
-  // }
-  // if (recipe.easy) {
-  //   tagObject.easy = true
-  // }
-  // if (recipe.healthy) {
-  //   tagObject.healthy = true
-  // }
-  // if (recipe.gluten_free) {
-  //   tagObject.gluten_free = true
-  // }
-  // if (recipe.dairy_free) {
-  //   tagObject.dairy_free = true 
-  // }
-  // if (recipe.vegetarian) {
-  //   tagObject.vegetarian = true
-  // }
-  // if (recipe.vegan) {
-  //   tagObject.vegan = true
-  // }
-  // if (recipe.keto) {
-  //   tagObject.keto = true 
-  // }
-  // if (recipe.sugar_free) {
-  //   tagObject.sugar_free = true
-  // }
-  // return tagObject
-
   let tagArray = []
     if (recipe.no_bake) {
       tagArray.push("no_bake")
