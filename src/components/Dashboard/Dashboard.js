@@ -3,8 +3,15 @@ const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
 import { connect } from 'react-redux';
 import Category from './Category/Category';
-
+import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
+import {skip} from "rxjs/operators";
 import './Dashboard.scss';
+
+let userInputSubject = new BehaviorSubject('')
+let userInput$ = userInputSubject.asObservable()
+
+const appliedFiltersSubject = new BehaviorSubject(null)
+let appliedFilters$ = appliedFiltersSubject.asObservable()
 
 class Dashboard extends React.Component {
 
@@ -14,6 +21,17 @@ class Dashboard extends React.Component {
     filteredRecipes: null,
     results: [],
     value: '',
+    filter: {
+      dairy_free: false, 
+      easy: false, 
+      gluten_free: false, 
+      healthy: false, 
+      keto: false, 
+      no_bake: false, 
+      sugar_free: false, 
+      vegan: false, 
+      vegetarian: false, 
+    }
   }
 
   fetchRecipes = () => {
@@ -60,6 +78,64 @@ class Dashboard extends React.Component {
       }
     }
     setTimeout(Appear, 300);
+
+
+    // filter dropdown
+    const dropdown = document.querySelector('.dropdown-trigger');
+    M.Dropdown.init(dropdown, {
+      closeOnClick: false,
+    })
+
+    combineLatest([
+      appliedFilters$,
+      userInput$
+    ]).subscribe(([filters, input]) => {
+      let newFilteredRecipesState = {
+        ...this.state.unfilteredRecipes
+      }
+      for (const category in this.state.unfilteredRecipes) {
+        let filteredCategory = this.state.unfilteredRecipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+        newFilteredRecipesState[category] = filteredCategory
+      }
+
+      let selectedTags = []
+      for (const tag in filters) {
+        if (filters[tag]) {
+          selectedTags.push(tag)
+        }
+      }
+      if (selectedTags.length) {
+        // limit to only those recipes whose tags include each checked result from res (true) 
+        for (const category in newFilteredRecipesState) {
+          let filteredCategory = newFilteredRecipesState[category]
+          .filter(recipe => recipe.tags.length >= 1)
+          .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag)))
+          newFilteredRecipesState[category] = filteredCategory
+        }
+
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
+      } else {
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
+      }
+    })
+  }
+
+  filter = (e) => {
+    let currentState = this.state.filter[e.target.id]
+    let filter = {
+      ...this.state.filter,
+      [e.target.id]: !currentState,
+    }
+    this.setState({
+      ...this.state, 
+      filter: filter
+    }, () => {
+      appliedFiltersSubject.next(this.state.filter)
+     })
   }
 
   updateDashboard = () => {
@@ -68,49 +144,10 @@ class Dashboard extends React.Component {
 
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
-    let recipesNarrowedByInput = {
-      breakfast: [], 
-      lunch: [], 
-      dinner: [],
-      other: [], 
-      dessert: [], 
-      other: [], 
-      side_dish: []
-    }
-
-    if (input.length > 0) {
-      recipesNarrowedByInput.breakfast = this.state.unfilteredRecipes.breakfast.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.lunch = this.state.unfilteredRecipes.lunch.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.dinner = this.state.unfilteredRecipes.dinner.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.dessert = this.state.unfilteredRecipes.dessert.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.other = this.state.unfilteredRecipes.other.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.side_dish = this.state.unfilteredRecipes.side_dish.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-      recipesNarrowedByInput.drinks = this.state.unfilteredRecipes.drinks.filter(recipe => {
-        return recipe.title.toLowerCase().includes(input)
-      })
-    } else {
-      recipesNarrowedByInput = this.state.unfilteredRecipes
-    }
-
-    this.setState({
-      filteredRecipes: recipesNarrowedByInput
-    })
+    userInputSubject.next(input)
   }
 
   render() {
-
     const { filteredRecipes, recipes_loaded } = this.state;
 
     return (
@@ -120,6 +157,65 @@ class Dashboard extends React.Component {
           <h1>Recipe Box</h1>
           <div className="searchbar">
           <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
+
+          <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
+
+          <ul id='dropdown' className='dropdown-content'>
+            <li >
+              <label>
+                <input  id="dairy_free" onClick={this.filter} type="checkbox" />
+                <span>Dairy-Free</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="easy" onClick={this.filter}  type="checkbox"  />
+                <span>Easy</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="gluten_free" onClick={this.filter}  type="checkbox"  />
+                <span>Gluten-Free</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="healthy" onClick={this.filter}  type="checkbox"  />
+                <span>Healthy</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="keto" onClick={this.filter}  type="checkbox"  />
+                <span>Keto</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="no_bake" onClick={this.filter}  type="checkbox"  />
+                <span>No Bake</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="sugar_free" onClick={this.filter}  type="checkbox"  />
+                <span>Sugar-Free</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="vegan" onClick={this.filter}  type="checkbox"  />
+                <span>Vegan</span>
+              </label>
+            </li>
+            <li>
+              <label>
+                <input id="vegetarian" onClick={this.filter}  type="checkbox"  />
+                <span>Vegetarian</span>
+              </label>
+            </li>
+          </ul>
         </div>
         </div>
       </div>

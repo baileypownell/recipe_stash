@@ -89,14 +89,13 @@ class Recipe extends React.Component {
 
 
       this.state.tags.forEach((tag, index) => {
-        if (recipe.tags[tag.recipeTagPropertyName]) {
+        if (recipe.tags.includes(tag.recipeTagPropertyName)) {
             // 1. Make a shallow copy of the items
             let tags = [...this.state.tags];
             // 2. Make a shallow copy of the item you want to mutate
             let item = {...tags[index]};
             // 3. Replace the property you're intested in
-            let priorSelectedValue = item.selected
-            item.selected = !priorSelectedValue;
+            item.selected = true;
             // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
             tags[index] = item;
             // 5. Set the state to our new copy
@@ -184,7 +183,7 @@ class Recipe extends React.Component {
     // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
     tags[index] = item;
     // 5. Set the state to our new copy
-    this.setState({tags});
+    this.setState({tags}, () => this.checkValidity());
   }
 
   updateRecipe = (e) => {
@@ -222,7 +221,7 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { ingredients, directions, recipe_title, recipeId, category, recipe } = this.state;
+    const { ingredients, directions, recipe_title, recipeId, category, recipe, tags } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -270,31 +269,9 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   {
-                   recipe && recipe.tags.easy ? <div className="chip z-depth-2 ">Easy</div> : null
-                  }
-                  {
-                    recipe &&recipe.tags.dairy_free ? <div className="chip z-depth-2 ">Dairy Free</div> : null
-                  }
-                  {
-                    recipe && recipe.tags.gulten_free ? <div className="chip z-depth-2 ">Gluten Free</div> : null
-                  }
-                  {
-                    recipe && recipe.tags.healthy ? <div className="chip z-depth-2 ">Healthy</div> : null
-                  }
-                  {
-                    recipe && recipe.tags.keto ? <div className="chip z-depth-2 ">Keto</div> : null
-                  }
-                  {
-                    recipe && recipe.tags.no_bake ? <div className="chip z-depth-2 ">No Bake</div> : null
-                  }
-                  {
-                    recipe && recipe.tags.sugar_free ? <div className="chip z-depth-2 ">Sugar Free</div> : null
-                  }
-                  {
-                    recipe &&recipe.tags.vegan ? <div className="chip z-depth-2 ">Vegan</div> : null
-                  }
-                  {
-                    recipe && recipe.tags.vegetarian ?<div className="chip z-depth-2 ">Vegetarian</div> : null
+                    this.state.tags.map((tag) => {
+                        return ( tag.selected ? <div className="chip z-depth-2">{ tag.label }</div> : null )
+                    }) 
                   }
                 </div>
                   

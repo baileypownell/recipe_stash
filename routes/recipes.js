@@ -1,6 +1,50 @@
 const { Router } = require('express');
 const client = require('../db');
-const router = Router();
+const router = Router()
+
+const constructTags = (recipe) => {
+  let tagArray = []
+    if (recipe.no_bake) {
+      tagArray.push("no_bake")
+    }
+    if (recipe.easy) {
+      tagArray.push("easy")
+    }
+    if (recipe.healthy) {
+      tagArray.push('healthy')
+    }
+    if (recipe.gluten_free) {
+      tagArray.push('gluten_free')
+    }
+    if (recipe.dairy_free) {
+      tagArray.push('dairy_free')
+    }
+    if (recipe.vegetarian) {
+      tagArray.push('vegetarian')
+    }
+    if (recipe.vegan) {
+      tagArray.push('vegan')
+    }
+    if (recipe.keto) {
+      tagArray.push('keto')
+    }
+    if (recipe.sugar_free) {
+      tagArray.push('sugar_free')
+    }
+    return tagArray
+}
+
+const formatRecipeResponse = (recipe) => {
+  return {
+    id: recipe.id, 
+    title: recipe.title, 
+    category: recipe.category, 
+    user_id: recipe.user_id, 
+    ingredients: recipe.ingredients, 
+    directions: recipe.directions, 
+    tags: constructTags(recipe)
+  }
+}
 
 router.get('/', (request, response, next) => {
   let id = request.session.userId;
@@ -21,19 +65,19 @@ router.get('/', (request, response, next) => {
         }
         res.rows.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
-            responseObject.dinner.push(recipe)
+            responseObject.dinner.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Dessert') {
-            responseObject.dessert.push(recipe)
+            responseObject.dessert.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Drinks') {
-            responseObject.drinks.push(recipe)
+            responseObject.drinks.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Lunch') {
-            responseObject.lunch.push(recipe)
+            responseObject.lunch.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Breakfast') {
-            responseObject.breakfast.push(recipe)
+            responseObject.breakfast.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Other') {
-            responseObject.other.push(recipe)
+            responseObject.other.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Side Dish') {
-            responseObject.side_dish.push(recipe)
+            responseObject.side_dish.push(formatRecipeResponse(recipe))
           }
         });
         response.json(responseObject);

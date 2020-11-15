@@ -2,6 +2,38 @@ const { Router } = require('express');
 const client = require('../db');
 const router = Router();
 
+const constructTags = (recipe) => {
+  let tagArray = []
+    if (recipe.no_bake) {
+      tagArray.push("no_bake")
+    }
+    if (recipe.easy) {
+      tagArray.push("easy")
+    }
+    if (recipe.healthy) {
+      tagArray.push('healthy')
+    }
+    if (recipe.gluten_free) {
+      tagArray.push('gluten_free')
+    }
+    if (recipe.dairy_free) {
+      tagArray.push('dairy_free')
+    }
+    if (recipe.vegetarian) {
+      tagArray.push('vegetarian')
+    }
+    if (recipe.vegan) {
+      tagArray.push('vegan')
+    }
+    if (recipe.keto) {
+      tagArray.push('keto')
+    }
+    if (recipe.sugar_free) {
+      tagArray.push('sugar_free')
+    }
+    return tagArray
+}
+
 router.get('/:recipeId', (request, response, next) => {
     const { recipeId } = request.params;
     let id = request.session.userId;
@@ -19,17 +51,7 @@ router.get('/:recipeId', (request, response, next) => {
           user_id: recipe.user_id, 
           ingredients: recipe.ingredients, 
           directions: recipe.directions, 
-          tags: {
-            no_bake: recipe.no_bake, 
-            easy: recipe.easy, 
-            healthy: recipe.healthy, 
-            gluten_free: recipe.gluten_free, 
-            dairy_free: recipe.dairy_free, 
-            vegetarian: recipe.vegetarian, 
-            vegan: recipe.vegan, 
-            keto: recipe.keto, 
-            sugar_free: recipe.sugar_free
-          }
+          tags: constructTags(recipe)
         }
         response.status(200).json(recipe_response)
       } else {
