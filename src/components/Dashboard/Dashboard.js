@@ -3,9 +3,15 @@ const axios = require('axios');
 import BounceLoader from "react-spinners/BounceLoader";
 import { connect } from 'react-redux';
 import Category from './Category/Category';
-import { of, subscribe, merge, pipe } from "rxjs";
+import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
 import {skip} from "rxjs/operators";
 import './Dashboard.scss';
+
+let userInputSubject = new BehaviorSubject('')
+let userInput$ = userInputSubject.asObservable()
+
+const appliedFiltersSubject = new BehaviorSubject(null)
+let appliedFilters$ = appliedFiltersSubject.asObservable()
 
 class Dashboard extends React.Component {
 
@@ -78,11 +84,44 @@ class Dashboard extends React.Component {
     const dropdown = document.querySelector('.dropdown-trigger');
     M.Dropdown.init(dropdown, {
       closeOnClick: false,
-      // onCloseStart: (e) => {
-      //   e.stopPropagation()
-      // }
     })
 
+    combineLatest([
+      appliedFilters$,
+      userInput$
+    ]).subscribe(([filters, input]) => {
+      let newFilteredRecipesState = {
+        ...this.state.unfilteredRecipes
+      }
+      for (const category in this.state.unfilteredRecipes) {
+        let filteredCategory = this.state.unfilteredRecipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+        newFilteredRecipesState[category] = filteredCategory
+      }
+
+      let selectedTags = []
+      for (const tag in filters) {
+        if (filters[tag]) {
+          selectedTags.push(tag)
+        }
+      }
+      if (selectedTags.length) {
+        // limit to only those recipes whose tags include each checked result from res (true) 
+        for (const category in newFilteredRecipesState) {
+          let filteredCategory = newFilteredRecipesState[category]
+          .filter(recipe => recipe.tags.length >= 1)
+          .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag)))
+          newFilteredRecipesState[category] = filteredCategory
+        }
+
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
+      } else {
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
+      }
+    })
   }
 
   filter = (e) => {
@@ -95,41 +134,8 @@ class Dashboard extends React.Component {
       ...this.state, 
       filter: filter
     }, () => {
-      const filter$ = of(this.state.filter)
-
-      filter$
-      .subscribe(res => {
-        let selectedTags = []
-        for (const tag in res) {
-          if (res[tag]) {
-            selectedTags.push(tag)
-          }
-        }
-        if (selectedTags.length) {
-          let newFilteredRecipesState = {
-            ...this.state.unfilteredRecipes
-          }
-          // limit to only those recipes whose tags include each checked result from res (true) 
-          for (const category in this.state.unfilteredRecipes) {
-            let filteredCategory = this.state.unfilteredRecipes[category]
-            .filter(recipe => recipe.tags.length >= 1)
-            .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag)))
-            newFilteredRecipesState[category] = filteredCategory
-          }
-
-          this.setState({
-            filteredRecipes: newFilteredRecipesState
-          })
-        } else {
-          this.setState({
-            filteredRecipes: this.state.unfilteredRecipes
-          })
-        }
-
-      })
-    })
-
-    
+      appliedFiltersSubject.next(this.state.filter)
+     })
   }
 
   updateDashboard = () => {
@@ -138,22 +144,7 @@ class Dashboard extends React.Component {
 
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
-    let recipes;
-    if (input.length > 0) {
-      recipes = {
-        ...this.state.filteredRecipes
-      }
-      for (const category in recipes) {
-        let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
-        recipes[category] = filteredCategory
-      }
-    } else {
-        recipes = this.state.unfilteredRecipes
-    }
-
-    this.setState({
-      filteredRecipes: recipes
-    })
+    userInputSubject.next(input)
   }
 
   render() {
