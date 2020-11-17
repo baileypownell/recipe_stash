@@ -1,7 +1,7 @@
 import React from 'react';
 import icon from '../../images/apple-touch-icon.png';
 import whisk from '../../images/cooking.svg';
-import { connect } from 'react-redux';
+import { connect, compose } from 'react-redux';
 import * as actions from '../../store/actionCreators';
 import { withRouter } from 'react-router'
 
@@ -14,8 +14,8 @@ class Home extends React.Component {
     messageNum: 0,
   }
 
-  start() {
-    this.history.push('/dashboard')
+  start = () => {
+    this.props.history.push('/dashboard')
   }
 
   componentDidMount() {
@@ -67,4 +67,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(withRouter(Home));
+export default withRouter(connect(null, mapDispatchToProps)(Home));
