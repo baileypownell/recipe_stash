@@ -1,9 +1,9 @@
 import React from 'react';
 import icon from '../../images/apple-touch-icon.png';
 import whisk from '../../images/cooking.svg';
-import { connect } from 'react-redux';
+import { connect, compose } from 'react-redux';
 import * as actions from '../../store/actionCreators';
-
+import { withRouter } from 'react-router'
 
 import './Home.scss';
 
@@ -12,6 +12,10 @@ class Home extends React.Component {
   state = {
     message: 'All of your recipes.',
     messageNum: 0,
+  }
+
+  start = () => {
+    this.props.history.push('/dashboard')
   }
 
   componentDidMount() {
@@ -47,7 +51,7 @@ class Home extends React.Component {
               <div id="question">
                 <h2 className="fade">Or have you ever caught yourself wondering "What if my house burns down and I lose this?" as you take pen in hand to handwrite a recipe?</h2>
                   <h2 className="fade">Create an acount and start saving your recipes</h2>
-                  <h1 className="fade" id="forever">FOREVER 7</h1>
+                  <h1 className="fade" id="forever">FOREVER</h1>
                   <button className="waves-effect waves-light btn fade" onClick={this.start}>Start Cooking</button>
               </div>
             </div>
@@ -63,4 +67,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Home);
+export default withRouter(connect(null, mapDispatchToProps)(Home));
