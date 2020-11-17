@@ -130,7 +130,7 @@
       justify-content: center;
       align-items: center;
       border-radius: 5px;
-      // flex-grow: 1;
+      flex-grow: 1;
       cursor: pointer;
       transition: all .3s;
       border: 2px solid $primary;
@@ -145,6 +145,9 @@
       @include tablet {
         width: 175px;
         height: 100px;
+      }
+      @include desktop {
+        flex-grow: unset;
       }
     }
   }
