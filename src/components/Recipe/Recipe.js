@@ -122,7 +122,6 @@ class Recipe extends React.Component {
   openModal = () => {
     let singleModalElem = document.querySelector(`.modal`);
     let instance = M.Modal.getInstance(singleModalElem); 
-    // close modal
     instance.open();
     M.updateTextFields();
   }
@@ -130,9 +129,8 @@ class Recipe extends React.Component {
   closeModal = () => {
     let singleModalElem = document.querySelector(`.modal`);
     let instance = M.Modal.getInstance(singleModalElem); 
-    // close modal
     instance.close();
-  }
+  } 
 
   checkValidity = () => {
     const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
@@ -275,7 +273,7 @@ class Recipe extends React.Component {
                   }
                 </div>
                   
-                <button onClick={this.openModal} className="btn modal-trigger">Edit <i className="fas fa-pen"></i></button>
+                <button onClick={this.openModal} className="btn">Edit <i className="fas fa-pen"></i></button>
               </div>
           </div>
           <div id={`${recipeId}_modal`} className="modal">
@@ -340,7 +338,7 @@ class Recipe extends React.Component {
             </div>
           </div> 
         </div>
-    </>
+        </>
     )
   }
 }

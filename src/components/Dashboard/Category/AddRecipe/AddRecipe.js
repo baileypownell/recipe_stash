@@ -110,25 +110,31 @@ class AddRecipe extends React.Component {
     })
     .then(res => {
       if (res) {
-        // var singleModalElem = document.querySelector(`#${this.state.category}_modal`);
-        // var instance = M.Modal.getInstance(singleModalElem); 
-
-        let singleModalElem = document.querySelector(`.modal`);
-        let instance = M.Modal.getInstance(singleModalElem); 
-        // close modal
-        instance.close();
-
+        M.toast({html: 'Recipe added.'})
         // clear modal state 
         this.clearState();
-
+        // close modal 
+        this.closeModal();
         this.props.updateDashboard();
-        M.toast({html: 'Recipe added.'})
+        
       }
     })
     .catch((err) => {
       console.log(err)
       M.toast({html: 'There was an error.'})
     })
+  }
+
+  closeModal = () => {
+    let singleModalElem = document.querySelector(`.modal`);
+    let instance = M.Modal.getInstance(singleModalElem); 
+    instance.close();
+  } 
+
+  openModal = () => {
+    let singleModalElem = document.querySelector(`.modal`);
+    let instance = M.Modal.getInstance(singleModalElem); 
+    instance.open();
   }
 
   updateInput = (e) => {
@@ -168,8 +174,8 @@ class AddRecipe extends React.Component {
     return (
       <>
         <div
-            data-target={`${this.state.category}_modal`}
-            className="addRecipe z-depth-4 modal-trigger"
+            onClick={this.openModal}
+            className="addRecipe z-depth-4"
             id={id}
              >
             <i className="fas fa-plus-circle"></i>
