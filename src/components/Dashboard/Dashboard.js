@@ -13,14 +13,13 @@ let userInput$ = userInputSubject.asObservable()
 const appliedFiltersSubject = new BehaviorSubject(null)
 let appliedFilters$ = appliedFiltersSubject.asObservable()
 
+
 class Dashboard extends React.Component {
 
   state = {
     unfilteredRecipes: null,
     recipes_loaded: false,
     filteredRecipes: null,
-    results: [],
-    value: '',
     filter: {
       dairy_free: false, 
       easy: false, 
@@ -86,10 +85,69 @@ class Dashboard extends React.Component {
       closeOnClick: false,
     })
 
-    combineLatest([
-      appliedFilters$,
-      userInput$
-    ]).subscribe(([filters, input]) => {
+    // combineLatest([
+    //   appliedFilters$,
+    //   userInput$
+    // ]).subscribe(([filters, input]) => {
+    //   console.log(filters, input)
+    //   let newFilteredRecipesState = {
+    //     ...this.state.unfilteredRecipes
+    //   }
+    //   for (const category in this.state.unfilteredRecipes) {
+    //     let filteredCategory = this.state.unfilteredRecipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+    //     newFilteredRecipesState[category] = filteredCategory
+    //   }
+
+    //   let selectedTags = []
+    //   for (const tag in filters) {
+    //     if (filters[tag]) {
+    //       selectedTags.push(tag)
+    //     }
+    //   }
+    //   if (selectedTags.length) {
+    //     // limit to only those recipes whose tags include each checked result from res (true) 
+    //     for (const category in newFilteredRecipesState) {
+    //       let filteredCategory = newFilteredRecipesState[category]
+    //       .filter(recipe => recipe.tags.length >= 1)
+    //       .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag)))
+    //       newFilteredRecipesState[category] = filteredCategory
+    //     }
+
+    //     this.setState({
+    //       filteredRecipes: newFilteredRecipesState
+    //     })
+    //   } else {
+    //     this.setState({
+    //       filteredRecipes: newFilteredRecipesState
+    //     })
+    //   }
+    // })
+  }
+
+  filter = (e) => {
+    let currentState = this.state.filter[e.target.id]
+    let filter = {
+      ...this.state.filter,
+      [e.target.id]: !currentState,
+    }
+    this.setState({
+      ...this.state, 
+      filter: filter
+    }, () => {
+      appliedFiltersSubject.next(this.state.filter)
+      this.applyBothFilters()
+     })
+  }
+
+  updateDashboard = () => {
+    this.fetchRecipes();
+  }
+
+
+  applyBothFilters = () => {
+    let filters = appliedFiltersSubject.getValue()
+    let input = userInputSubject.getValue()
+      console.log(filters, input, 'right here')
       let newFilteredRecipesState = {
         ...this.state.unfilteredRecipes
       }
@@ -104,6 +162,7 @@ class Dashboard extends React.Component {
           selectedTags.push(tag)
         }
       }
+      console.log('selectedTags = ', selectedTags)
       if (selectedTags.length) {
         // limit to only those recipes whose tags include each checked result from res (true) 
         for (const category in newFilteredRecipesState) {
@@ -113,38 +172,22 @@ class Dashboard extends React.Component {
           newFilteredRecipesState[category] = filteredCategory
         }
 
+        console.log('new filtered recipes = ', newFilteredRecipesState)
         this.setState({
           filteredRecipes: newFilteredRecipesState
         })
       } else {
+        console.log('new filtered recipes = ', newFilteredRecipesState)
         this.setState({
           filteredRecipes: newFilteredRecipesState
         })
       }
-    })
-  }
-
-  filter = (e) => {
-    let currentState = this.state.filter[e.target.id]
-    let filter = {
-      ...this.state.filter,
-      [e.target.id]: !currentState,
-    }
-    this.setState({
-      ...this.state, 
-      filter: filter
-    }, () => {
-      appliedFiltersSubject.next(this.state.filter)
-     })
-  }
-
-  updateDashboard = () => {
-    this.fetchRecipes();
   }
 
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
     userInputSubject.next(input)
+    this.applyBothFilters()
   }
 
   render() {
