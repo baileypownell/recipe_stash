@@ -15,7 +15,6 @@ if (environment === 'development') {
 
 router.post('/', (request, response, next) => {
   const { email } = request.body;
-  console.log(email)
     client.query('SELECT * FROM users WHERE email=$1',
     [email], 
      (err, res) => {
