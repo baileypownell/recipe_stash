@@ -4,7 +4,6 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { connect } from 'react-redux';
 import Category from './Category/Category';
 import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
-import {skip} from "rxjs/operators";
 import './Dashboard.scss';
 
 let userInputSubject = new BehaviorSubject('')
@@ -13,14 +12,13 @@ let userInput$ = userInputSubject.asObservable()
 const appliedFiltersSubject = new BehaviorSubject(null)
 let appliedFilters$ = appliedFiltersSubject.asObservable()
 
+
 class Dashboard extends React.Component {
 
   state = {
     unfilteredRecipes: null,
     recipes_loaded: false,
     filteredRecipes: null,
-    results: [],
-    value: '',
     filter: {
       dairy_free: false, 
       easy: false, 
@@ -141,6 +139,7 @@ class Dashboard extends React.Component {
   updateDashboard = () => {
     this.fetchRecipes();
   }
+
 
   handleSearchChange = (e) => {
     let input = e.target.value.toLowerCase().trim()
