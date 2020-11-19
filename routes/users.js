@@ -5,6 +5,10 @@ const nodemailer = require('nodemailer');
 var sgTransport = require('nodemailer-sendgrid-transport');
 const bcrypt = require('bcryptjs');
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 router.get('/', (request, response, next) => {
   client.query('SELECT * FROM users', (err, res) => {
     if (err) {
@@ -59,7 +63,6 @@ router.post('/', (request, response, next) => {
 router.put('/', (request, response, next) => {
   const { email, reset_password_token, first_name, last_name, password, new_email } = request.body;
   let userId = request.session.userId;
-  console.log(userId)
   if (userId || request.session) {
     if ( first_name && last_name ) {
       if (first_name) {
@@ -121,7 +124,6 @@ router.put('/', (request, response, next) => {
               return next(err);
             }
             if (res) {
-              console.log(res)
               // update record in DB
               client.query('UPDATE users SET email=$1 WHERE id=$2',
               [new_email, userId],
@@ -129,35 +131,35 @@ router.put('/', (request, response, next) => {
                 if (err) return next(err);
                 if (res) {
                   // then send notification to the old email
-                  const transporter = nodemailer.createTransport(sgTransport({
-                    service: 'SendGrid',
+                  const options = {
                     auth: {
-                     api_user: `${process.env.SENDGRID_USERNAME}`,
-                     api_key: `${process.env.SENDGRID_PASSWORD}`
-                   }
-                 }));
-                  const mailOptions = {
+                      api_key: `${process.env.SENDGRID_API_KEY}`
+                    }
+                  }
+                  const mailer = nodemailer.createTransport(sgTransport(options))
+                  const email = {
                     from: 'virtualcookbook@outlook.com',
                     to: `${oldEmail}`,
                     subject: 'Your Email Address Has Been Changed',
                     html: `<h1>Virtual Cookbook</h1><p>The email address for your Virtual Cookbook account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
-                  };
-                  transporter.sendMail(mailOptions, (err, res) => {
+                  }
+                  mailer.sendMail(email, function(err, res) {
                     if (err) {
-                      response.status(500).json({ success: false, message: 'there was an error sending the email'})
+                      console.log(err)
+                      response.status(500).json({ success: false, message: 'There was an error sending the email.'})
                     } else {
-                      return response.status(200).json({
-                        success: true,
-                        message: 'Email successfully updated.'
-                      })
-                    }
-                  });
+                        return response.status(200).json({
+                          success: true,
+                          message: 'Email successfully updated.'
+                        })
+                      }
+                  })
                 };
               })
             } else {
               return response.status(403).json({
                 success: false,
-                message: 'Passwords do not match.'
+                message: 'There was an error.'
               })
             }
           })
