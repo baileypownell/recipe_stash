@@ -3,67 +3,75 @@
 @import '../../scss/mixins.scss';
 
 #home {
-  min-height: 100vh;
-  position:relative;
+  background-image: url("../../images/cutting_vegetables.jpg");
+  background-size:cover;
+  background-position: center;
+  height: calc(100vh - 75px);
   #picture {
-    background-image: url("../../images/cutting_vegetables.jpg");
-    background-color: $green-transparent;
-    background-blend-mode: overlay;
-    background-size:cover;
-    background-position: center;
-    min-height: 65vh;
+    height: 100%;
+    background: linear-gradient(120deg, $primary-transparent, $orange-transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   .flex {
     padding-top: 5vh;
     @include flexRow;
     justify-content: center;
+    @include desktop {
+      padding-top: 0px;
+    }
     img {
       height: 50px;
       margin-right: 10px;
     }
     h1 {
-      font-family: 'Lancelot', cursive;
-      font-size: 40px;
+      font-family: 'Shadows Into Light', cursive;
+      font-size: 50px;
+      color: white;
+      @include desktop {
+        font-size: 75px;
+      }
     }
   }
-  h2, p {
+  p {
     color: $white;
     font-family: 'Roboto', sans-serif;
   }
   .blurbs {
-    text-align: right;
-    padding: 3vw 10vw;
-    h2 {
-      font-size: 30px;
-      @include desktop {
-        font-size: 45px;
-      }
+    text-align: center;
+    h4 {
+      color: white;
     }
   }
   button {
     @include button;
   }
   #skew {
-    min-height: 65vh;
     width: 100vw;
-    background: linear-gradient(120deg, $primary, $orange);
-    padding: 10vw 0 0 0;
-    clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 100%);
-    position: absolute;
-    top: 35vh;
-    @include desktop {
-      padding-bottom: 0;
+    padding: 20px;
+    button {
+      position: absolute;
+      bottom: 100px;
+      right: 15px;
+      @include tablet {
+        position: unset;
+        margin: 10px;
+      }
     }
-    > div {
-      > h1, h2 {
-          font-size: 22px;
-          //padding-bottom: 10vw;
-          @include desktop {
-            margin: 0 10vw 0 auto;
-            width: 40%;
-            padding: 2vw;
-            font-size: 25px;
-          }
+    @include tablet {
+      padding: 0px;
+      width: 75%;
+      text-align: center;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+    }
+    img {
+      width: 125px;
+      @include tablet {
+        width: 250px;
       }
     }
     h1, h2, h3 {
@@ -74,81 +82,12 @@
       padding: 5vw;
       font-family: 'Roboto', sans-serif;
     }
-    .center {
-      text-align: center;
-      h1, h2 {
-        text-align: center;
-        width: 100%;
-      }
-    }
-    #forever {
-      margin: 0;
-      padding-top: 0;
-      text-align: right;
-      width: 100%;
-      color: $orange;
-      @include desktop {
-        text-align: left;
-        padding-left: 2vw;
-      }
-    }
-    #question {
-      text-align: right;
-      background-image: url('../../images/people_cooking.jpg');
-      clip-path: polygon(0 0, 100% 17%, 100% 100%, 0 100%);
-      background-color: $secondary;
-      background-blend-mode: overlay;
-      background-position: center;
-      background-size: cover;
-      padding: 25vw 10vw;
-      @include desktop {
-        padding: 5vw;
-        text-align: left;
-      }
-      h2 {
-        width: 100%;
-        color: $white;
-        margin: 0 0 0 auto;
-        text-align: right;
-        @include tablet {
-          width: 60%;
-          padding-bottom: 0;
-        }
-        @include desktop {
-          width: 40%;
-          margin: 0 auto 0 0;
-          text-align: left;
-        }
-      }
-    }
-  > #whisk {
-    width: 120px;
-    margin-left: 5vw;
-    animation-name: rotate;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    @include tablet {
-      width: 220px;
-      margin-left: 15vw;
-    }
-  }
     @include desktop {
-      position: absolute;
-      top: 40vh;
-
       > div {
         padding: 0;
         @include flexColumn;
         justify-content: flex-end;
       }
-      > #whisk {
-        position: absolute;
-      }
-    }
-    h1 {
-      color: $white;
-      font-family: 'Roboto', sans-serif;
-      font-size: 40px;
     }
   }
   @keyframes rotate {
@@ -178,6 +117,3 @@
   transition-duration: 1s;
 }
 
-.maxOpacity {
-  opacity: 1;
-}
