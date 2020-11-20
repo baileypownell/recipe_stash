@@ -126,7 +126,7 @@ class AddRecipe extends React.Component {
   }
 
   closeModal = () => {
-    let singleModalElem = document.querySelector(`.modal`);
+    let singleModalElem = document.querySelector(`#${this.state.category}_modal`); 
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.close();
   } 
