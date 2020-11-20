@@ -2,22 +2,22 @@ const { Router } = require('express');
 const client = require('../db');
 const router = Router();
 const nodemailer = require('nodemailer');
-var sgTransport = require('nodemailer-sendgrid-transport');
+const sgTransport = require('nodemailer-sendgrid-transport');
 const bcrypt = require('bcryptjs');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-router.get('/', (request, response, next) => {
-  client.query('SELECT * FROM users', (err, res) => {
-    if (err) {
-      console.log(err)
-      return next(err)
-    };
-    response.status(200).json(res.rows);
-  });
-});
+// router.get('/', (request, response, next) => {
+//   client.query('SELECT * FROM users', (err, res) => {
+//     if (err) {
+//       console.log(err)
+//       return next(err)
+//     };
+//     response.status(200).json(res.rows);
+//   });
+// });
 
 router.get('/:email', (request, response, next) => {
   const { email } = request.params;
