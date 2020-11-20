@@ -132,7 +132,7 @@ class AddRecipe extends React.Component {
   } 
 
   openModal = () => {
-    let singleModalElem = document.querySelector(`.modal`);
+    let singleModalElem = document.querySelector(`#${this.state.category}_modal`); 
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.open();
   }
@@ -182,7 +182,6 @@ class AddRecipe extends React.Component {
         </div>
 
             <div id={`${this.state.category}_modal`} className="modal">
-              
               <h1 className="Title">New Recipe</h1>
               <div className="recipe">
               <div>
@@ -232,9 +231,6 @@ class AddRecipe extends React.Component {
                     </div>
                   </li>
                 </ul>
-    
-                
-                
               </div>
               <div className="modal-close-buttons">
                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
