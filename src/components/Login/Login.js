@@ -59,80 +59,53 @@ class Login extends React.Component {
 
   responseGoogle = (response) => {
     let email = response.profileObj.email;
-    axios.get(`/users/${email}`)
-    .then(res => {
-      if (res.data.rowCount === 0 ) {
-        this.setState({
-          signInError: true,
-          loading: false
-        })
-        M.toast({html: 'An account does not exist for this email.'})
-      } else {
-        axios.post(`/signinWithGoogle`, {
-          email: email
-        })
-        .then(() => {
-          this.props.login();
-          this.props.history.push('/dashboard');
-        })
-        .catch(err => {
-          console.log(err)
-          this.setState({
-            signInError: true
-          })
-        })
-      }
+    axios.post(`/signinWithGoogle`, {
+        email: email
+    })
+    .then(() => {
+      this.props.login();
+      this.props.history.push('/dashboard');
     })
     .catch(err => {
       console.log(err)
+      this.setState({
+        signInError: true
+      })
     })
   }
+    
+
 
   signin = (event) => {
     event.preventDefault();
     this.setState({
       loading: true
     })
-    // ensure user exists
-    axios.get(`/users/${this.state.email}`)
+    axios.post(`/signin`, {
+        password: this.state.password,
+        email: this.state.email
+    })
     .then(res => {
-      if (res.data.rowCount == 0) {
-        this.setState({
-          loading: false, 
-          signInError: true
-        })
-        M.toast({html: 'An account does not exist for this email.'})
+      if (res.data.success) {
+        this.props.login();
+        this.props.history.push(`/dashboard`);
       } else {
-        axios.post(`/signin`, {
-          password: this.state.password,
-          email: this.state.email
+        this.setState({
+          loading: false
         })
-        .then(res => {
-          if (res.data.success === false) {
-            this.setState({
-              loading: false
-            })
-            M.toast({html: 'The password you entered is incorrect.'})
-          } else if (res.data) {
-            this.props.login();
-            this.props.history.push(`/dashboard`);
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-          M.toast({html: 'There was an error.'})
-          this.setState({
-            signInError: true,
-            loading: false
-          })
-        })
+        M.toast({html: res.data.message})
       }
     })
     .catch((err) => {
       console.log(err)
       M.toast({html: 'There was an error.'})
+      this.setState({
+        signInError: true,
+        loading: false
+      })
     })
   }
+  
 
   render() {
     const { formValid, loading, signInError } = this.state;

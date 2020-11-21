@@ -9,17 +9,11 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-// router.get('/', (request, response, next) => {
-//   client.query('SELECT * FROM users', (err, res) => {
-//     if (err) {
-//       console.log(err)
-//       return next(err)
-//     };
-//     response.status(200).json(res.rows);
-//   });
-// });
-
+// this endpoint not in use
 router.get('/:email', (request, response, next) => {
+  if (!request.session.userId) {
+    response.status(403).json({success: false, message: 'No session for the user.'})
+  }
   const { email } = request.params;
   client.query('SELECT * FROM users WHERE email=$1',
   [email],
@@ -29,35 +23,52 @@ router.get('/:email', (request, response, next) => {
   });
 });
 
+
 router.post('/', (request, response, next) => {
   const { firstName, lastName, password, email } = request.body;
   let hashedPassword = bcrypt.hashSync(password, 10);
-  client.query('INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
-  [firstName, lastName, hashedPassword, email],
-   (err, res) => {
-    if (err) return next(err);
-    if (res) {
-      client.query('SELECT * FROM users WHERE email=$1',
-      [email],
-      (err, res) => {
-        if (err) {
-          next(err);
-          return response.status(500).json({success: false, message: 'did not connect'})
-        }
-        if (res.rows[0]) {
-          let id=res.rows[0].id;
-          let email=res.rows[0].email;
-          let firstName=res.rows[0].first_name;
-          let lastName=res.rows[0].last_name;
-          request.session.userId = id;
-          request.session.save();
-          return response.json({id: id, email: email, firstName: firstName, lastName: lastName})
-        }
-      })
+  // make sure user doesn't already exist in the DB
+  client.query('SELECT * FROM users WHERE email=$1', [email], 
+  (err, res) => {
+    if (err) return next(err)
+    if (res.rows.length >= 1) {
+      return response.status(200).json({success: false, message: 'An account already exists for this email.'})
     } else {
-      return response.status(200).json({success: false, message: 'could not insert into DB'})
+      // if user doesn't exist already, create them:
+      client.query('INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
+      [firstName, lastName, hashedPassword, email],
+       (err, res) => {
+        if (err) return next(err);
+        if (res) {
+          client.query('SELECT * FROM users WHERE email=$1',
+          [email],
+          (err, res) => {
+            if (err) {
+              return next(err);
+            }
+            if (res.rows[0]) {
+              let id=res.rows[0].id;
+              let email=res.rows[0].email;
+              let firstName=res.rows[0].first_name;
+              let lastName=res.rows[0].last_name;
+              request.session.userId = id;
+              request.session.save();
+              return response.status(200).json({
+                success: true, 
+                message: 'User created', 
+                userData: {
+                  id: id, 
+                  email: email, 
+                  firstName: firstName, 
+                  lastName: lastName
+                }
+              })
+            }
+          })
+        } 
+      });
     }
-  });
+  })
 });
 
 router.put('/', (request, response, next) => {

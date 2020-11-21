@@ -40,44 +40,31 @@ class Signup extends React.Component {
     this.setState({
       loading: true
     })
-    // make sure user doesn't already exist in the DB
-    axios.get(`/users/${email}`)
+    axios.post(`/users`, {
+      firstName: firstName,
+      lastName: lastName,
+      password: password,
+      email: email
+    })
     .then(res => {
-      if (res.data.rowCount > 0) {
+      if (res.data.success) {
+        M.toast({html: 'Success! Logging you in now...'})
+        this.props.login();
+        this.props.history.push('/dashboard')
+      } else {
         this.setState({
-          submissionError: 'An account already exists for this email.',
+          error: true, 
           loading: false
         })
-        M.toast({html: 'An account already exists for this email.'})
-        return;
-      } else {
-        axios.post(`/users`, {
-          firstName: firstName,
-          lastName: lastName,
-          password: password,
-          email: email
-        })
-        .then(res => {
-          if (res.data) {
-            M.toast({html: 'Success! Logging you in now...'})
-            this.props.login();
-            this.props.history.push('/dashboard')
-          } else {
-            this.setState({
-              error: true
-            })
-            M.toast({html: 'There was an error.'})
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.setState({
-            loading: false
-          })
-        })
+        M.toast({html: res.data.message})
       }
     })
-    .catch(err => console.log(err))
+    .catch((err) => {
+      console.log(err);
+      this.setState({
+        loading: false
+      })
+    })
   }
 
   checkFormValidation = () => {
