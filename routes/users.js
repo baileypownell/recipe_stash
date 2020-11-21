@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== 'production') {
 // this endpoint not in use
 router.get('/:email', (request, response, next) => {
   if (!request.session.userId) {
-    response.status(403).json({success: false, message: 'No session for the user.'})
+    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
   }
   const { email } = request.params;
   client.query('SELECT * FROM users WHERE email=$1',
@@ -25,6 +25,9 @@ router.get('/:email', (request, response, next) => {
 
 
 router.post('/', (request, response, next) => {
+  if (!request.session.userId) {
+    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+  }
   const { firstName, lastName, password, email } = request.body;
   let hashedPassword = bcrypt.hashSync(password, 10);
   // make sure user doesn't already exist in the DB
@@ -74,52 +77,22 @@ router.post('/', (request, response, next) => {
 router.put('/', (request, response, next) => {
   const { email, reset_password_token, first_name, last_name, password, new_email } = request.body;
   let userId = request.session.userId;
-  if (userId || request.session) {
-    if ( first_name && last_name ) {
-      if (first_name) {
-        client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
-        [first_name, last_name, userId],
-        (err, res) => {
-          if (err) {
-            console.log(err)
-            return next(err);
-          }
-          if (res.rows) {
-            return response.status(200).json({res})
-          } else {
-            return response.status(500).json({success: false, message: 'could not update first name'})
-          }
-        });
-      }
-    } else if (last_name) {
-        client.query('UPDATE users SET last_name=$1 WHERE id=$2',
-        [ last_name, userId],
-          (err, res) => {
-          if (err) {
-            console.log(err)
-            return next(err);
-          }
-          if (res) {
-            return response.status(200).json({res})
-          } else {
-            return response.status(500).json({success: false, message: 'could not update last name'})
-          }
-        });
-    } else if (first_name) {
-      client.query('UPDATE users SET first_name=$1 WHERE id=$2',
-        [ first_name, userId],
-          (err, res) => {
-          if (err) {
-            console.log(err)
-            return next(err);
-          }
-          if (res) {
-            return response.status(200).json({res})
-          } else {
-            return response.status(500).json({success: false, message: 'could not update last name'})
-          }
-        });
-    } else if (new_email) {
+  if (!request.session.userId) {
+    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+  }
+  if ( first_name && last_name ) {
+      client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
+      [first_name, last_name, userId],
+      (err, res) => {
+        if (err) return next(err)
+        if (res.rows) {
+          return response.status(200).json({ success: true })
+        } else {
+          return response.status(500).json({success: false, message: 'User could not be updated.'})
+        }
+      })
+  } 
+  if (new_email) {
       // make sure password is correct, if not, reject
       client.query('SELECT * FROM users WHERE id=$1',
         [userId],
@@ -175,40 +148,37 @@ router.put('/', (request, response, next) => {
             }
           })
         })
-    } else if (password) {
-        client.query('SELECT * FROM users where reset_password_token=$1',
-        [reset_password_token],
-        (err, res) => {
-          if (err) {
-            return next(err);
-          }
-          if (res) {
-            let userId = res.rows[0].id;
-            // hash new password 
-            let hashedPassword = bcrypt.hashSync(password, 10);
-            client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
-            [hashedPassword, null, null, reset_password_token],
-            (err, res) => {
-              if (err) {
-                return next(err);
-              }
-              if (res) {
-                //then login the user, set session
-                request.session.regenerate(() => {
-                  request.session.userId = userId;
-                  request.session.save();
-                  return response.status(200).json({success: true, message: 'Password updated.'});
-                })
-              } else {
-                return response.status(500).json({success: false, message: 'Could not update password.'})
-              }
-            });
-          }
-        })
-    } 
-  } else {
-    return response.status(403).json({success: false, message: 'No session for the user.'})
-  }
+  } else if (password) {
+      client.query('SELECT * FROM users where reset_password_token=$1',
+      [reset_password_token],
+      (err, res) => {
+        if (err) {
+          return next(err);
+        }
+        if (res) {
+          let userId = res.rows[0].id;
+          // hash new password 
+          let hashedPassword = bcrypt.hashSync(password, 10);
+          client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
+          [hashedPassword, null, null, reset_password_token],
+          (err, res) => {
+            if (err) {
+              return next(err);
+            }
+            if (res) {
+              //then login the user, set session
+              request.session.regenerate(() => {
+                request.session.userId = userId;
+                request.session.save();
+                return response.status(200).json({success: true, message: 'Password updated.'});
+              })
+            } else {
+              return response.status(500).json({success: false, message: 'Could not update password.'})
+            }
+          });
+        }
+      })
+  } 
 });
 
 module.exports = router;
