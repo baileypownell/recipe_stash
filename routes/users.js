@@ -25,9 +25,6 @@ router.get('/:email', (request, response, next) => {
 
 
 router.post('/', (request, response, next) => {
-  if (!request.session.userId) {
-    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   const { firstName, lastName, password, email } = request.body;
   let hashedPassword = bcrypt.hashSync(password, 10);
   // make sure user doesn't already exist in the DB
@@ -109,36 +106,48 @@ router.put('/', (request, response, next) => {
             }
             if (res) {
               // update record in DB
-              client.query('UPDATE users SET email=$1 WHERE id=$2',
-              [new_email, userId],
+              // but first ensure it is unique!
+              client.query('SELECT * FROM users WHERE email=$1', 
+              [new_email], 
               (err, res) => {
-                if (err) return next(err);
-                if (res) {
-                  // then send notification to the old email
-                  const options = {
-                    auth: {
-                      api_key: `${process.env.SENDGRID_API_KEY}`
-                    }
-                  }
-                  const mailer = nodemailer.createTransport(sgTransport(options))
-                  const email = {
-                    from: 'virtualcookbook@outlook.com',
-                    to: `${oldEmail}`,
-                    subject: 'Your Email Address Has Been Changed',
-                    html: `<h1>Virtual Cookbook</h1><p>The email address for your Virtual Cookbook account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
-                  }
-                  mailer.sendMail(email, function(err, res) {
-                    if (err) {
-                      console.log(err)
-                      response.status(500).json({ success: false, message: 'There was an error sending the email.'})
-                    } else {
-                        return response.status(200).json({
-                          success: true,
-                          message: 'Email successfully updated.'
-                        })
-                      }
+                if (err) return next(err)
+                if (res.rows.length) {
+                  return response.status(200).json({
+                    success: false,
+                    message: 'Email is not unique.'
                   })
-                };
+                } else {
+                  client.query('UPDATE users SET email=$1 WHERE id=$2',
+                  [new_email, userId],
+                  (err, res) => {
+                    if (err) return next(err);
+                    if (res) {
+                      // then send notification to the old email
+                      const options = {
+                        auth: {
+                          api_key: `${process.env.SENDGRID_API_KEY}`
+                        }
+                      }
+                      const mailer = nodemailer.createTransport(sgTransport(options))
+                      const email = {
+                        from: 'virtualcookbook@outlook.com',
+                        to: `${oldEmail}`,
+                        subject: 'Your Email Address Has Been Changed',
+                        html: `<h1>Virtual Cookbook</h1><p>The email address for your Virtual Cookbook account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
+                      }
+                      mailer.sendMail(email, function(err, res) {
+                        if (err) {
+                          response.status(500).json({ success: false, message: 'There was an error sending the email.'})
+                        } else {
+                            return response.status(200).json({
+                              success: true,
+                              message: 'Email successfully updated.'
+                            })
+                          }
+                      })
+                    };
+                  })
+                }
               })
             } else {
               return response.status(403).json({

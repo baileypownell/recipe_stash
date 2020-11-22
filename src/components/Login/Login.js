@@ -67,7 +67,9 @@ class Login extends React.Component {
       this.props.history.push('/dashboard');
     })
     .catch(err => {
-      console.log(err)
+
+      console.log('Error: ', err)
+      M.toast({html: err.data.message})
       this.setState({
         signInError: true
       })

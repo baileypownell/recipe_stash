@@ -42,7 +42,7 @@ class Settings extends React.Component {
       }
     })
     .catch(err => {
-      M.toast({html: 'Whoops! Password could not be reset.'})
+      M.toast({html: 'Password could not be reset.'})
     })
   }
 
@@ -93,15 +93,15 @@ class Settings extends React.Component {
       password: this.state.password,
     })
     .then(res => {
-      if (res.data.success === false) {
-        M.toast({html: 'Whoops, email could not be updated.'})
-      } else if (res.data.success === true) {
+      if (!res.data.success) {
+        M.toast({html: res.data.message})
+      } else {
         M.toast({html: 'Email updated successfully.'})
         this.updateView()
       }
     })
     .catch(err => {
-      console.log(err);
+      console.log(err)
       M.toast({html: 'Passwords do not match.'})
     })
   }

@@ -10,6 +10,7 @@ router.post('/', (request, response, next) => {
     (err, res) => {
       if (err) return next(err)
       if (res.rows.length) {
+        console.log(res)
         let first_name, last_name, id;
         first_name = res.rows[0].first_name;
         last_name = res.rows[0].last_name;
