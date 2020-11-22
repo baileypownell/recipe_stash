@@ -93,10 +93,8 @@ class Settings extends React.Component {
       password: this.state.password,
     })
     .then(res => {
-      if (!res.data.success) {
-        M.toast({html: res.data.message})
-      } else {
-        M.toast({html: 'Email updated successfully.'})
+      M.toast({ html: res.data.message })
+      if (res.data.success) {
         this.updateView()
       }
     })

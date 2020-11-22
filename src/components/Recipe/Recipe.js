@@ -74,7 +74,7 @@ class Recipe extends React.Component {
   fetchData = () => {
     axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
     .then(res => {
-      let recipe = res.data
+      let recipe = res.data.recipe
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
@@ -147,13 +147,10 @@ class Recipe extends React.Component {
 
   deleteRecipe = () => {
     axios.delete(`/recipe/${this.state.recipeId}`)
-    .then(res => {
-      if (res) {
+    .then(() => {
         M.toast({html: 'Recipe deleted.'});
         this.closeModal();
         this.props.history.push('/dashboard')
-      }
-      
     })
     .catch((err) => {
       console.log(err)

@@ -14,6 +14,9 @@ if (environment === 'development') {
 }
 
 router.post('/', (request, response, next) => {
+  if (!request.session.userId) {
+    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+  }
   const { email } = request.body;
     client.query('SELECT * FROM users WHERE email=$1',
     [email], 
@@ -31,15 +34,12 @@ router.post('/', (request, response, next) => {
         client.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
         [token, expiration, email],
         (err, res) => {
-          if (err) {
-            console.log(err)
-            return next(err)
-          }
+          if (err) return next(err)
           if (res) {
             // now create  transport, which is actually the account sending the password reset email link
             const options = {
               auth: {
-                api_key: `${process.env.SENDGRID_API_KEY}`
+                api_key: `${process.env.SENDGRID_API_KEY}`,
               }
             }
             const mailer = nodemailer.createTransport(sgTransport(options))
@@ -47,15 +47,14 @@ router.post('/', (request, response, next) => {
               from: 'virtualcookbook@outlook.com',
               to: `${email}`,
               subject: 'Reset Password Link',
-              html: `<h1>Virtual Cookbook</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button style="cursor: pointer; background-color: #689943; color: white; font-size: 22px; outline: none; border: none; border-radius: 30px; padding: 20px; text-transform: uppercase; cursor: pointer!important;">Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`
+              html: `<h1>Virtual Cookbook</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button>Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`
             };
             mailer.sendMail(emailToSend, function(err, res) {
               if (err) {
-                console.log(err)
-                response.status(500).json({ success: false, message: 'There was an error sending the email.', error: err.message, name: err.name })
+                return response.status(500).json({ success: false, message: 'There was an error sending the email.', error: err.message, name: err.name })
               } else {
                 request.session.destroy();
-                return response.status(200).json('Recovery email sent');
+                return response.status(200).json({ success: true, message: 'Recovery email sent. You will now be logged out.' });
               }
             })
           }
@@ -68,13 +67,15 @@ router.post('/', (request, response, next) => {
 
 
 router.get('/:token', (request, response, next) => {
+  if (!request.session.userId) {
+    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+  }
   let token = request.params.token;
   client.query('SELECT * FROM users WHERE reset_password_token=$1',
   [token],
    (err, res) => {
-    if (err) {
-      return next(err);
-    } else if (res.rows[0] && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
+    if (err) return next(err)
+    if (res.rows.length && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
       let now = Date.now();
       if ( res.rows[0].reset_password_expires > now ) {
         response.status(200).send({
