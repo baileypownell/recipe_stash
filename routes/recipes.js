@@ -55,16 +55,16 @@ router.get('/', (request, response, next) => {
   [id],
    (err, res) => {
     if (err) return next(err);
+    let responseObject = {
+      breakfast: [], 
+      lunch: [],
+      dinner: [], 
+      dessert: [],
+      other: [], 
+      side_dish: [],
+      drinks: []
+    }
     if (res.rows.length) {
-        let responseObject = {
-          breakfast: [], 
-          lunch: [],
-          dinner: [], 
-          dessert: [],
-          other: [], 
-          side_dish: [],
-          drinks: []
-        }
         res.rows.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
             responseObject.dinner.push(formatRecipeResponse(recipe))
@@ -83,8 +83,10 @@ router.get('/', (request, response, next) => {
           }
         });
         response.json(responseObject);
-      } 
-    })
+    } else {
+      return response.json(responseObject)
+    } 
+  })
 })
 
 router.post('/', (request, response, next) => {

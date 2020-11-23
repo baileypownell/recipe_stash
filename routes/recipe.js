@@ -84,7 +84,7 @@ router.put('/:recipeId', (request, response, next) => {
   } else {
     return response.status(401).json({error: true, message: 'You are not authenticated.'})
   }  
-});
+})
 
 
 router.delete('/:recipeId', (request, response, next) => {
@@ -101,7 +101,7 @@ router.delete('/:recipeId', (request, response, next) => {
       } else {
         return response.status(500).json({success: false, message: 'Recipe not deleted.'})
       }
-  });
-});
+  })
+})
 
 module.exports = router;

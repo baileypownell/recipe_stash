@@ -20,8 +20,8 @@ router.get('/:email', (request, response, next) => {
   (err, res) => {
     if (err) return next(err);
     response.status(200).send(res);
-  });
-});
+  })
+})
 
 
 router.post('/', (request, response, next) => {
