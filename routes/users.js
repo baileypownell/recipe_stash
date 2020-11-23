@@ -9,21 +9,6 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-// this endpoint not in use
-router.get('/:email', (request, response, next) => {
-  if (!request.session.userId) {
-    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
-  }
-  const { email } = request.params;
-  client.query('SELECT * FROM users WHERE email=$1',
-  [email],
-  (err, res) => {
-    if (err) return next(err);
-    response.status(200).send(res);
-  })
-})
-
-
 router.post('/', (request, response, next) => {
   const { firstName, lastName, password, email } = request.body;
   let hashedPassword = bcrypt.hashSync(password, 10);
