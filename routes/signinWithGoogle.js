@@ -5,6 +5,7 @@ const router = Router();
 // this endpoint is vulnerable...
 router.post('/', (request, response, next) => {
   const { email } = request.body;
+  console.log('current session = ', request.session)
   if (!email) {
     return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
   }
