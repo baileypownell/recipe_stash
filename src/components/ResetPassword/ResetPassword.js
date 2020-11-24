@@ -59,7 +59,7 @@ class ResetPassword extends React.Component {
     this.setState({
       loading: true
     })
-    axios.put(`/users`, {
+    axios.put(`/user`, {
       password: this.state.password,
       reset_password_token: this.props.location.pathname.split('/')[2]
     })
