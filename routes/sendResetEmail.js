@@ -18,14 +18,14 @@ router.post('/', (request, response, next) => {
     return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
   }
   const { email } = request.body;
+  if (!email) {
+    return response.json({success: false, message: 'Invalid request send.'})
+  }
     client.query('SELECT * FROM users WHERE email=$1',
     [email], 
      (err, res) => {
-      if (err) {
-        console.log(err);
-        return next(err);
-      }
-      if (res.rows[0] && res.rows[0].id) {
+      if (err) return next(err)
+      if (res.rows) {
         // generate unique hash token
         const token = crypto.randomBytes(20).toString('hex');
         const expiration = Date.now() + 3600000
@@ -35,7 +35,7 @@ router.post('/', (request, response, next) => {
         [token, expiration, email],
         (err, res) => {
           if (err) return next(err)
-          if (res) {
+          if (res.rows.length) {
             // now create  transport, which is actually the account sending the password reset email link
             const options = {
               auth: {
@@ -57,13 +57,13 @@ router.post('/', (request, response, next) => {
                 return response.status(200).json({ success: true, message: 'Recovery email sent. You will now be logged out.' });
               }
             })
+          } else {
+            return response.status(200).json({ success: false, message: 'Recovery email could not be sent because no account exists for the provided email address.' });
           }
-      })
-      } else {
-        return response.status(500).json({success: false, message: 'There was an error reaching the database.'})
+        })
       }
-    });
-  });
+    })
+  })
 
 
 router.get('/:token', (request, response, next) => {
@@ -78,14 +78,15 @@ router.get('/:token', (request, response, next) => {
     if (res.rows.length && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
       let now = Date.now();
       if ( res.rows[0].reset_password_expires > now ) {
-        response.status(200).send({
+        return response.status(200).send({
+          success: true,
           message: 'Password reset link is valid.'
         })
       } else {
-        response.status(403).send({ message: 'The token is expired.'})
+        return response.status(403).send({ message: 'The token is expired.'})
       }
     } else {
-      response.status(403).send({message: 'No user could be found with that token.'})
+      return response.status(403).send({message: 'No user could be found with that token.'})
     }
   });
 })

@@ -11,6 +11,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 router.get('/', (request, response, next) => {
   let userId = request.session.userId;
+  if (!userId) {
+    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+  }
   client.query('SELECT * FROM users WHERE id=$1',
   [userId],
    (err, res) => {

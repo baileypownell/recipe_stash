@@ -2,8 +2,12 @@ const { Router } = require('express');
 const client = require('../db');
 const router = Router();
 
+// this endpoint is vulnerable...
 router.post('/', (request, response, next) => {
   const { email } = request.body;
+  if (!email) {
+    return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
+  }
   client.query('SELECT * FROM users WHERE email=$1',
     [email],
     (err, res) => {

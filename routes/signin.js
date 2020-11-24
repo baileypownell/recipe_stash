@@ -4,7 +4,10 @@ const bcrypt = require('bcryptjs');
 const router = Router();
 
 router.post('/', (request, response, next) => {
-  const { password, email } = request.body;
+  const { password, email } = request.body
+  if (!password || !email) {
+    return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
+  }
   client.query('SELECT * FROM users WHERE email=$1',
     [email],
     (err, res) => {
