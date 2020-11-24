@@ -99,7 +99,7 @@ router.post('/', (request, response, next) => {
   [title, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
    (err, res) => {
     if (err) return next(err)
-    if (res.rows.length) {
+    if (res.rowCount) {
       return response.status(200).json({ success: true, message: 'Recipe created.' })
     } else {
       return response.status(500).json({ success: false, message: 'Could not create recipe.' })
