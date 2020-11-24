@@ -33,7 +33,7 @@ class Dashboard extends React.Component {
   }
 
   fetchRecipes = () => {
-    axios.get(`/recipes`)
+    axios.get(`/recipe`)
     .then(res => {
       res.data.breakfast.sort(this.sortByTitle)
       res.data.lunch.sort(this.sortByTitle)

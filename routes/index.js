@@ -1,25 +1,21 @@
-const { Router } = require('express');
+const { Router } = require('express')
 
-const users = require('./users');
-const recipes = require('./recipes');
-const signin = require('./signin');
-const sendResetEmail = require('./sendResetEmail');
-const signinWithGoogle = require('./signinWithGoogle');
-const logout = require('./logout');
-const user = require('./user');
-const recipe = require('./recipe');
+const signin = require('./signin')
+const sendResetEmail = require('./sendResetEmail')
+const signinWithGoogle = require('./signinWithGoogle')
+const logout = require('./logout')
+const user = require('./user')
+const recipe = require('./recipe')
 
 const router = Router();
 
 // middleware 
 
-router.use('/users', users);
-router.use('/recipes', recipes);
-router.use('/signin', signin);
-router.use('/sendResetEmail', sendResetEmail);
-router.use('/signinWithGoogle', signinWithGoogle);
-router.use('/logout', logout);
-router.use('/user', user);
-router.use('/recipe', recipe);
+router.use('/signin', signin)
+router.use('/sendResetEmail', sendResetEmail)
+router.use('/signinWithGoogle', signinWithGoogle)
+router.use('/logout', logout)
+router.use('/user', user)
+router.use('/recipe', recipe)
 
-module.exports = router;
+module.exports = router

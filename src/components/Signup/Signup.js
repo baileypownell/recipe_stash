@@ -40,7 +40,7 @@ class Signup extends React.Component {
     this.setState({
       loading: true
     })
-    axios.post(`/users`, {
+    axios.post(`/user`, {
       firstName: firstName,
       lastName: lastName,
       password: password,

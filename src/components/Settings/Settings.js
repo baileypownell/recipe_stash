@@ -75,7 +75,7 @@ class Settings extends React.Component {
           last_name: lastName,
           id: id
       }
-      axios.put(`/users`, payload)
+      axios.put(`/user`, payload)
       .then((res) => {
         M.toast({html: 'Profile updated successfully.'})
         this.updateView()
@@ -88,7 +88,7 @@ class Settings extends React.Component {
 
   updateEmail = (e) => {
     e.preventDefault();
-    axios.put(`/users`, {
+    axios.put(`/user`, {
       new_email: this.state.new_email,
       password: this.state.password,
     })

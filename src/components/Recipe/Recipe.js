@@ -184,7 +184,7 @@ class Recipe extends React.Component {
   updateRecipe = (e) => {
       e.preventDefault();
       let tags = this.state.tags;
-      axios.put(`/recipes`, {
+      axios.put(`/recipe`, {
         title: this.state.recipe_title_edit,
         ingredients: this.state.ingredients_edit,
         directions: this.state.directions_edit,
