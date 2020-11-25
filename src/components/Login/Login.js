@@ -19,7 +19,6 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    console.log(process.env.GOOGLE_LOGIN_CLIENT_ID)
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
