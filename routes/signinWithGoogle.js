@@ -4,8 +4,6 @@ const router = Router();
 
 // this endpoint is vulnerable because using a tool like Postman or curl, you can authenticate a user with just their email address...
 router.post('/', (request, response, next) => {
-  console.log(response)
-  console.log(request)
   const { email } = request.body;
   if (!email) {
     return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
