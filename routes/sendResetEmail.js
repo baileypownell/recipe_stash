@@ -19,7 +19,7 @@ router.post('/', (request, response, next) => {
   }
   const { email } = request.body;
   if (!email) {
-    return response.json({success: false, message: 'Invalid request send.'})
+    return response.json({success: false, message: 'Invalid request sent.'})
   }
     client.query('SELECT * FROM users WHERE email=$1',
     [email], 

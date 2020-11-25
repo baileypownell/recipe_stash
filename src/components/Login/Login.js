@@ -5,7 +5,8 @@ import ClipLoader from "react-spinners/ClipLoader";
 import * as actions from '../../store/actionCreators';
 import GoogleLogin from 'react-google-login';
 import './Login.scss';
-import M from 'materialize-css';
+import M from 'materialize-css'
+
 
 class Login extends React.Component {
 
@@ -18,6 +19,7 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
+    console.log(process.env.GOOGLE_LOGIN_CLIENT_ID)
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
@@ -62,9 +64,13 @@ class Login extends React.Component {
     axios.post(`/signinWithGoogle`, {
         email: email
     })
-    .then(() => {
-      this.props.login();
-      this.props.history.push('/dashboard');
+    .then((res) => {
+      if (res.data.success) {
+        this.props.login()
+        this.props.history.push('/dashboard')
+      } else {
+        M.toast({ html: res.data.message })
+      }
     })
     .catch(err => {
       M.toast({html: err.data.message})
@@ -139,7 +145,7 @@ class Login extends React.Component {
           
             <GoogleLogin
                className="googleButton"
-               clientId="448227348202-97da7vci3t474ch3ah6goms41nlghb1l.apps.googleusercontent.com"
+               clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}
                buttonText="Login with Google"
                onSuccess={this.responseGoogle}
                onFailure={this.responseGoogle}

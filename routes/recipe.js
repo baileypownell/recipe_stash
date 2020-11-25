@@ -94,18 +94,52 @@ router.post('/', (request, response, next) => {
   if (!userId) {
     return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
   }
-  const { title, category, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
-  client.query('INSERT INTO recipes(title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
-  [title, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
-   (err, res) => {
-    if (err) return next(err)
-    if (res.rowCount) {
-      return response.status(200).json({ success: true, message: 'Recipe created.' })
+  const { 
+    title, 
+    category, 
+    ingredients, 
+    directions, 
+    isNoBake, 
+    isEasy, 
+    isHealthy, 
+    isGlutenFree, 
+    isDairyFree, 
+    isSugarFree, 
+    isVegetarian, 
+    isVegan, 
+    isKeto 
+  } = request.body;
+  if (title, 
+    category, 
+    ingredients, 
+    directions, 
+    isNoBake, 
+    isEasy, 
+    isHealthy, 
+    isGlutenFree, 
+    isDairyFree, 
+    isSugarFree, 
+    isVegetarian, 
+    isVegan, 
+    isKeto ) {
+      client.query('INSERT INTO recipes(title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
+        [title, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
+        (err, res) => {
+          if (err) return next(err)
+          console.log(res)
+          if (res.rowCount) {
+            return response.status(200).json({ success: true, message: 'Recipe created.' })
+          } else {
+            return response.status(500).json({ success: false, message: 'Could not create recipe.' })
+          }
+        })
     } else {
-      return response.status(500).json({ success: false, message: 'Could not create recipe.' })
+      return response.status(403).json({
+        success: false, 
+        message: 'Invalid request sent.'
+      })
     }
-  });
-});
+})
 
 router.put('/', (request, response, next) => {
   let userId = request.session.userId
@@ -123,7 +157,7 @@ router.put('/', (request, response, next) => {
       return response.status(500).json({success: false, message: 'Could not update recipe.'})
     }
   });
-});
+})
 
 router.get('/:recipeId', (request, response, next) => {
     const { recipeId } = request.params;
