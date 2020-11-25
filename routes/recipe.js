@@ -110,10 +110,10 @@ router.post('/', (request, response, next) => {
     isKeto 
   } = request.body;
   if (
-    title && 
-    category && 
-    ingredients && 
-    directions
+    !!title && 
+    !!category && 
+    !!ingredients && 
+    !!directions
    ) {
       client.query('INSERT INTO recipes(title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
         [title, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
