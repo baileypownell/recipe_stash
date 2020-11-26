@@ -2,10 +2,9 @@ const { Router } = require('express');
 const client = require('../db');
 const router = Router();
 
-// this endpoint is vulnerable because using a tool like Postman or curl, you can authenticate a user with just their email address...
 router.post('/', (request, response, next) => {
-  const { email } = request.body;
-  if (!email) {
+  const { email, tokenId, googleId } = request.body;
+  if (!email || !tokenId || !googleId) {
     return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
   }
   client.query('SELECT * FROM users WHERE email=$1',

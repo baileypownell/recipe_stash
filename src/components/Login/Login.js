@@ -61,7 +61,9 @@ class Login extends React.Component {
   responseGoogle = (response) => {
     let email = response.profileObj.email;
     axios.post(`/signinWithGoogle`, {
-        email: email
+        email: email, 
+        tokenId: response.profileObj.tokenId, 
+        googleId: response.profileObj.tokenId
     })
     .then((res) => {
       if (res.data.success) {
