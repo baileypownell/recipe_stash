@@ -1,14 +1,16 @@
-const { Router } = require('express');
-const client = require('../db');
-const router = Router();
+const { Router } = require('express')
+const client = require('../db')
+const router = Router()
+const jwt_decode = require('jwt-decode')
 
 router.post('/', (request, response, next) => {
-  const { email, tokenId, googleId } = request.body;
-  if (!email || !tokenId || !googleId) {
+  const { token } = request.body
+  if (!token) {
     return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
   }
+  let decodedToken = jwt_decode(token)
   client.query('SELECT * FROM users WHERE email=$1',
-    [email],
+    [decodedToken.email],
     (err, res) => {
       if (err) return next(err)
       if (res.rows.length) {
