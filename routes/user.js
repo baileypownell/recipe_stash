@@ -78,7 +78,37 @@ router.post('/', (request, response, next) => {
 
 router.put('/', (request, response, next) => {
   const { email, reset_password_token, first_name, last_name, password, new_email } = request.body;
-  let userId = request.session.userId;
+  let userId = request.session.userId
+  if (password && reset_password_token) {
+    client.query('SELECT * FROM users where reset_password_token=$1',
+    [reset_password_token],
+    (err, res) => {
+      if (err) return next(err)
+      if (res.rows.length) {
+        let userId = res.rows[0].id
+        // hash new password 
+        let hashedPassword = bcrypt.hashSync(password, 10);
+        client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
+        [hashedPassword, null, null, reset_password_token],
+        (err, res) => {
+          if (err) return next(err)
+          if (res) {
+            //then login the user, set session
+            request.session.regenerate(() => {
+              request.session.userId = userId;
+              request.session.save();
+              return response.status(200).json({success: true, message: 'Password updated.'});
+            })
+          } else {
+            return response.status(500).json({success: false, message: 'Could not update password.'})
+          }
+        })
+      } else {
+        return response.json({ success: false, message: 'Reset password token not found.' })
+      }
+    })
+    return
+  } 
   if (!userId) {
     return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
   }
@@ -162,38 +192,8 @@ router.put('/', (request, response, next) => {
             }
           })
         })
-  } else if (password) {
-      client.query('SELECT * FROM users where reset_password_token=$1',
-      [reset_password_token],
-      (err, res) => {
-        if (err) {
-          return next(err);
-        }
-        if (res) {
-          let userId = res.rows[0].id;
-          // hash new password 
-          let hashedPassword = bcrypt.hashSync(password, 10);
-          client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
-          [hashedPassword, null, null, reset_password_token],
-          (err, res) => {
-            if (err) {
-              return next(err);
-            }
-            if (res) {
-              //then login the user, set session
-              request.session.regenerate(() => {
-                request.session.userId = userId;
-                request.session.save();
-                return response.status(200).json({success: true, message: 'Password updated.'});
-              })
-            } else {
-              return response.status(500).json({success: false, message: 'Could not update password.'})
-            }
-          });
-        }
-      })
   } 
-});
+})
 
 router.delete('/', (request, response, next) => {
   if (!request.session.userId) {

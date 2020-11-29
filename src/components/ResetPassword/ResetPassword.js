@@ -19,10 +19,13 @@ class ResetPassword extends React.Component {
     let token = this.props.location.pathname.split('/')[2];
     axios.get(`/sendResetEmail/${token}`)
     .then((res) => {
-      console.log(res)
-      if (res.data.message === 'the link is invalid or expired') {
+      if (!res.data.success) {
         this.setState({
           invalidLink: true
+        })
+      } else {
+        this.setState({
+          invalidLink: false
         })
       }
     })
