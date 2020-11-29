@@ -35,7 +35,7 @@ router.post('/', (request, response, next) => {
         [token, expiration, email],
         (err, res) => {
           if (err) return next(err)
-          if (res.rows.length) {
+          if (res.rowCount) {
             // now create  transport, which is actually the account sending the password reset email link
             const options = {
               auth: {
@@ -67,9 +67,6 @@ router.post('/', (request, response, next) => {
 
 
 router.get('/:token', (request, response, next) => {
-  if (!request.session.userId) {
-    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   let token = request.params.token;
   client.query('SELECT * FROM users WHERE reset_password_token=$1',
   [token],
@@ -88,7 +85,7 @@ router.get('/:token', (request, response, next) => {
     } else {
       return response.status(403).send({message: 'No user could be found with that token.'})
     }
-  });
+  })
 })
 
 module.exports = router;

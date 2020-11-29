@@ -35,7 +35,7 @@ class Settings extends React.Component {
       email: this.state.email
     })
     .then(res => {
-      if (res.data.success === false) {
+      if (!res.data.success) {
         M.toast({html: 'There was an error.'})
       } else {
         M.toast({html: 'Check your email for a link to reset your password.'})
@@ -135,8 +135,8 @@ class Settings extends React.Component {
     axios.post('/sendResetEmail', {
       email: this.state.email
     })
-    .then(() => {
-      M.toast({html: 'Password email sent.'})
+    .then((res) => {
+      M.toast({html: res.data.message})
     })
     .catch((err) => {
       console.log(err)
