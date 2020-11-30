@@ -45,16 +45,17 @@ class Login extends React.Component {
     });
   }
 
-  sendPasswordResetLink = () => {
+  sendPasswordResetLink = (e) => {
+    e.preventDefault()
     axios.post(`/sendResetEmail`, {
       email: this.state.email
     })
     .then(res => {
-      res.data.success === false ? M.toast({html: 'There was an error.'}) : M.toast({html: 'Check your email for a link to reset your password.'})
+      res.data.success ? M.toast({html: 'Check your email for a link to reset your password.'}) : M.toast({html: 'There was an error.'}) 
     })
     .catch(err => {
-      console.log(err);
-      M.toast({html: 'Whoops! Password could not be reset.'})
+      console.log(err)
+      M.toast({html: 'There was an error.'})
     })
   }
 
@@ -68,6 +69,9 @@ class Login extends React.Component {
         this.props.history.push('/dashboard')
       } else {
         M.toast({ html: res.data.message })
+        this.setState({
+          signInError: true
+        })
       }
     })
     .catch(err => {
@@ -95,7 +99,8 @@ class Login extends React.Component {
         this.props.history.push(`/dashboard`);
       } else {
         this.setState({
-          loading: false
+          loading: false,
+          signInError: true
         })
         M.toast({html: res.data.message})
       }

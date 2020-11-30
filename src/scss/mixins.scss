@@ -40,7 +40,7 @@
 }
 
 @mixin auth {
-    min-height: 100vh;
+    height: calc(100vh - 75px);
     background-image: url('../../images/kitchen.jpg');
     background-size:cover;
     background-position: center;
@@ -79,6 +79,7 @@
       }
       @include desktop {
         width: 40%;
+        max-width: 400px;
       }
       label, p {
         @include flexColumn;

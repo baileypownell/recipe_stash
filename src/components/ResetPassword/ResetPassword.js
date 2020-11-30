@@ -70,8 +70,8 @@ class ResetPassword extends React.Component {
       this.setState({
         loading: false
       });
-      M.toast({html: 'Password updated!'});
-      this.props.history.push('/dashboard');
+      M.toast({html: 'Password updated!'})
+      this.props.history.push('/dashboard')
     })
     .catch((err) => {
       this.setState({
