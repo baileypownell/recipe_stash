@@ -137,6 +137,10 @@ class Settings extends React.Component {
     })
     .then((res) => {
       M.toast({html: res.data.message})
+      if (res.data.success) {
+        // log out 
+        this.logout()
+      }
     })
     .catch((err) => {
       console.log(err)
