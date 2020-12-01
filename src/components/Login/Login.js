@@ -120,16 +120,30 @@ class Login extends React.Component {
     const { formValid, loading, signInError } = this.state;
     return (
       <div className="auth">
-        <form className="fade" onSubmit={this.signin}>
+        <form className="fade z-depth-8" onSubmit={this.signin}>
           <h1>Login</h1>
-          <label>
-            Email
-            <input onChange={this.updateInput} id="email" type="email" name="email" />
-          </label>
-          <label>
+          <div className="input-field">
+            <input 
+              className="materialize-input" 
+              id="email" 
+              onChange={this.updateInput}
+              type="email" 
+              name="email" 
+              />
+            <label className="active" htmlFor="email">Email</label>
+          </div>
+          <div className="input-field">
+            <input 
+              onChange={this.updateInput} 
+              id="password" 
+              type="password" 
+              name="password" 
+            />
+          <label className="active" htmlFor="password">
             Password
-            <input onChange={this.updateInput} id="password" type="password" name="password" />
           </label>
+          </div>
+
           <div className="buttons">
           <button
             disabled={!formValid}
