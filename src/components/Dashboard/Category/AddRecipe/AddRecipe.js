@@ -126,13 +126,15 @@ class AddRecipe extends React.Component {
   }
 
   closeModal = () => {
-    let singleModalElem = document.querySelector(`#${this.state.category}_modal`); 
+    let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.close();
   } 
 
   openModal = () => {
-    let singleModalElem = document.querySelector(`#${this.state.category}_modal`); 
+    console.log(this.state.category)
+    let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 
+    console.log(singleModalElem)
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.open();
   }
@@ -181,7 +183,7 @@ class AddRecipe extends React.Component {
             <i className="fas fa-plus-circle"></i>
         </div>
 
-            <div id={`${this.state.category}_modal`} className="modal">
+            <div id={`${this.props.id}_modal`} className="modal">
               <h1 className="Title">New Recipe</h1>
               <div className="recipe">
               <div>

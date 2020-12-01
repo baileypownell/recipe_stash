@@ -249,7 +249,7 @@ class Dashboard extends React.Component {
           />
           <Category
             title="Side Dish"
-            id="side"
+            id="side_dish"
             recipes={filteredRecipes.side_dish}
             updateDashboard={this.updateDashboard}
           />

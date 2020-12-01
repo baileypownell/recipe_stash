@@ -120,7 +120,7 @@ class Recipe extends React.Component {
   }
 
   openModal = () => {
-    let singleModalElem = document.querySelector(`.modal`);
+    let singleModalElem = document.querySelector(`#modal_${this.state.recipeId}`);
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.open();
     M.updateTextFields();
@@ -273,7 +273,7 @@ class Recipe extends React.Component {
                 <button onClick={this.openModal} className="btn">Edit <i className="fas fa-pen"></i></button>
               </div>
           </div>
-          <div id={`${recipeId}_modal`} className="modal">
+          <div id={`modal_${recipeId}`} className="modal">
             <h1 className="Title">Edit Recipe</h1>
             <div className="recipe">
             <div>
@@ -294,7 +294,7 @@ class Recipe extends React.Component {
                 <div >
                   <h3>Category</h3>
                   <div className="select">
-                    <select onChange={this.updateInput} id="category_edit" value={this.state.category_edit} >
+                    <select onChange={this.updateInput} id="category" value={this.state.category} >
                       {
                         options.map((val, index) => {
                           return <option key={index}>{val.label}</option>
