@@ -147,31 +147,33 @@ class Signup extends React.Component {
 
         <form className="fade" onSubmit={this.signup}>
           <h1>Signup</h1>
-          <label>
-            First Name
+          <div className="input-field">
             <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
-          </label>
-          <label>
-            Last Name
+            <label htmlFor="firstName" className="active">
+              First Name
+            </label>
+          </div>
+          <div className="input-field">
             <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
-          </label>
-          <label>
-            Email
-            <input onChange={this.updateInput} id="email" type="email" name="email" />
-          </label>
-          <label>
-            Password
+          <label htmlFor="lastName" className="active">Last Name</label>
+          </div>
+          <div className="input-field">
+              <input onChange={this.updateInput} id="email" type="email" name="email" />
+            <label htmlFor="email" className="active">Email</label>
+          </div>
+          <div className="input-field">
             <input onChange={this.validatePassword} id="password" type="password" name="password"  />
+            <label htmlFor="password" className="active">Password</label>
             {
               insufficientPasswordMessage ? 
                 <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
             : null}
-          </label>
-          <label>
-            Confirm Password
+          </div>
+          <div className="input-field">
             <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
             {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
-          </label>
+          <label htmlFor="confirmPassword" className="active">Confirm Password</label>
+          </div>
           <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
           <button
             disabled={!formValid}

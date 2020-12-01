@@ -41,11 +41,13 @@
 
 @mixin auth {
     height: calc(100vh - 75px);
-    background-image: url('../../images/kitchen.jpg');
+    background-image: url('../../images/ingredients.jpg');
     background-size:cover;
     background-position: center;
     text-align: center;
-    padding-top: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     .error {
       font-family: 'Roboto', sans-serif;
       background-color: $primary;
@@ -59,59 +61,33 @@
         width: 100%;
       }
     }
-    h1 {
-      color: $white;
-    }
     form {
       @include flexColumn;
       width: 100%;
       margin: 0 auto;
-      background: rgba(0, 0, 0, 0.5);
+      background: white;
       padding: 5vw;
       border-radius: 0px;
+      label {
+        color: $darkgray!important;
+      }
       @include tablet {
         width: 50%;
         border-radius: 10px;
-        padding: 2vw;
-        label {
-          font-size: 20px;
-        }
+        padding: 40px;
       }
       @include desktop {
         width: 40%;
         max-width: 400px;
       }
-      label, p {
-        @include flexColumn;
-        padding: 5px 0;
-        font-family: 'Roboto', sans-serif;
-        color: $white;
-        font-size: 16px;
-        @include desktop {
-          font-size: 20px;
-        }
-      }
       p {
         font-size: 20px;
-        display: inline;
       }
       .link {
         color: $green;
         font-weight: bold;
         cursor: pointer;
         text-decoration: underline;
-      }
-      input {
-        //margin-left: 10px;
-        margin-top: 10px!important;
-        border-radius: 5px!important;
-        border: none!important;
-        padding: 10px!important;
-        outline: none!important;
-        text-align: left!important;
-        width: auto!important;
-        height: auto!important;
-        background-color: #FFF!important;
       }
       button {
         @include button;
