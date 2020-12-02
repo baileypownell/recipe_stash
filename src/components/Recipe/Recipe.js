@@ -1,12 +1,14 @@
-import React from 'react';
-import { withRouter } from "react-router-dom";
-const axios = require('axios');
-import './Recipe.scss';
-import M from 'materialize-css';
+import React from 'react'
+import { withRouter } from "react-router-dom"
+const axios = require('axios')
+import './Recipe.scss'
+import M from 'materialize-css'
+import BounceLoader from "react-spinners/BounceLoader"
 
 class Recipe extends React.Component {
 
   state = {
+    loaded: false,
     recipe_title: null,
     ingredients: null,
     directions: null,
@@ -102,6 +104,16 @@ class Recipe extends React.Component {
             this.setState({tags});
         }
       })
+      this.setState({
+        loaded: true
+      }, () => {
+        let modal = document.querySelectorAll('.modal')
+        M.Modal.init(modal, {
+          opacity: 0.5
+        })
+        var select = document.querySelectorAll('select')
+        M.FormSelect.init(select, {})
+      })
     })
     .catch((err) => {
       console.log(err)
@@ -109,19 +121,13 @@ class Recipe extends React.Component {
   }
 
   componentDidMount() {
-    let modal = document.querySelectorAll('.modal');
-    M.Modal.init(modal, {
-      opacity: 0.5
-    });
-    var select = document.querySelectorAll('select');
-    M.FormSelect.init(select, {});
     // get data
-    this.fetchData();
+    this.fetchData()
   }
 
   openModal = () => {
-    let singleModalElem = document.querySelector(`#modal_${this.state.recipeId}`);
-    let instance = M.Modal.getInstance(singleModalElem); 
+    let singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
+    let instance = M.Modal.getInstance(singleModalElem)
     instance.open();
     M.updateTextFields();
   }
@@ -189,7 +195,7 @@ class Recipe extends React.Component {
         ingredients: this.state.ingredients_edit,
         directions: this.state.directions_edit,
         recipeId: this.state.recipeId,
-        category: this.state.category_edit,
+        category: this.state.category,
         isNoBake: tags[0].selected,
         isEasy: tags[1].selected,
         isHealthy: tags[2].selected,
@@ -216,7 +222,7 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { ingredients, directions, recipe_title, recipeId, category, recipe, tags } = this.state;
+    const { ingredients, directions, recipe_title, recipeId, category, loaded } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -228,8 +234,11 @@ class Recipe extends React.Component {
     ]
 
     return (
-        <>
-          <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{recipe_title}</h1>
+      <>
+        {
+          loaded ? 
+          <>
+            <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{recipe_title}</h1>
             <div className="recipe viewRecipe" >
               <div>
                 <div className="section">
@@ -297,7 +306,7 @@ class Recipe extends React.Component {
                     <select onChange={this.updateInput} id="category" value={this.state.category} >
                       {
                         options.map((val, index) => {
-                          return <option key={index}>{val.label}</option>
+                          return <option val={val.label} key={index}>{val.label}</option>
                         })
                       }
                     </select>
@@ -335,6 +344,12 @@ class Recipe extends React.Component {
             </div>
           </div> 
         </div>
+          </> :  
+          <BounceLoader
+              size={100}
+              color={"#689943"}
+           />
+        }
         </>
     )
   }

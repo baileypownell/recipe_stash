@@ -1,6 +1,6 @@
 import React from 'react';
 const axios = require('axios');
-import BounceLoader from "react-spinners/BounceLoader";
+import BounceLoader from "react-spinners/BounceLoader"
 import { connect } from 'react-redux';
 import Category from './Category/Category';
 import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
