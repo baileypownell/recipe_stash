@@ -116,6 +116,7 @@ class Recipe extends React.Component {
       })
     })
     .catch((err) => {
+      this.props.history.push('/login')
       console.log(err)
     })
   }
@@ -345,15 +346,16 @@ class Recipe extends React.Component {
           </div> 
         </div>
           </> :  
-          <BounceLoader
-              size={100}
-              color={"#689943"}
-           />
+          <div className="BounceLoader">
+            <BounceLoader
+                size={100}
+                color={"#689943"}
+            />
+          </div>
         }
         </>
     )
   }
 }
-
 
 export default withRouter(Recipe);

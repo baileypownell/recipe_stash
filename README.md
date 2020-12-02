@@ -12,7 +12,8 @@ And the answer isn't pinning recipes on a website that may not even exist in 20 
 
 [Visit the web app](https://glacial-savannah-05736.herokuapp.com/login)
 
-![mobile](src/images/mobile.png)
-![mobile2](src/images/dashboard-mobile.png)
+
+
+<img src="src/images/dashboard-mobile.png" width="300">
 ![desktop](src/images/dashboard-desktop.png)
 ![homepage](src/images/recipe-desktop.png)
