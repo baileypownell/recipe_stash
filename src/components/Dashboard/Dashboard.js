@@ -21,7 +21,6 @@ class Dashboard extends React.Component {
   state = {
     recipes_loaded: false,
     filteredRecipes: null,
-    userInput: '',
     filter: {
       dairy_free: false, 
       easy: false, 
@@ -51,7 +50,7 @@ class Dashboard extends React.Component {
       })
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err)
       this.setState({
         recipes_loaded: false
       })
@@ -88,9 +87,7 @@ class Dashboard extends React.Component {
 
     let userInputSaved = window.sessionStorage.getItem('userInput')
     
-    this.setState({
-      userInput: userInputSaved
-    })
+
     let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters'))
     userInputSubject.next(userInputSaved || '')
     appliedFiltersSubject.next(userFiltersSaved || this.state.filter)    
@@ -156,9 +153,6 @@ class Dashboard extends React.Component {
 
 
   handleSearchChange = (e) => {
-    this.setState({
-      userInput: e.target.value
-    })
     let input = e.target.value.toLowerCase().trim()
     userInputSubject.next(input)
   }
@@ -172,7 +166,7 @@ class Dashboard extends React.Component {
         <div>
           <h1>Recipe Box</h1>
           <div className="searchbar">
-          <input onChange={this.handleSearchChange} value={this.state.userInput} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
+          <input onChange={this.handleSearchChange} value={userInputSubject.getValue()} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
 
           <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
 
