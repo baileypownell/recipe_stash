@@ -12,13 +12,16 @@ let userInput$ = userInputSubject.asObservable()
 const appliedFiltersSubject = new BehaviorSubject(null)
 let appliedFilters$ = appliedFiltersSubject.asObservable()
 
+let unfilteredRecipesSubject = new BehaviorSubject(null)
+let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
+
 
 class Dashboard extends React.Component {
 
   state = {
-    unfilteredRecipes: null,
     recipes_loaded: false,
     filteredRecipes: null,
+    userInput: '',
     filter: {
       dairy_free: false, 
       easy: false, 
@@ -42,9 +45,8 @@ class Dashboard extends React.Component {
       res.data.dessert.sort(this.sortByTitle)
       res.data.drinks.sort(this.sortByTitle)
       res.data.other.sort(this.sortByTitle)
+      unfilteredRecipesSubject.next(res.data)
       this.setState({
-        unfilteredRecipes: res.data,
-        filteredRecipes: res.data,
         recipes_loaded: true
       })
     })
@@ -69,32 +71,43 @@ class Dashboard extends React.Component {
   componentDidMount() {
     !this.props.loggedIn ? this.props.history.push('/home') : null
     this.fetchRecipes();
-    let faded = document.querySelectorAll('.fade');
+    let faded = document.querySelectorAll('.fade')
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
-      faded[i].classList.add('fade-in');
+      faded[i].classList.add('fade-in')
       }
     }
-    setTimeout(Appear, 300);
+    setTimeout(Appear, 300)
 
 
     // filter dropdown
-    const dropdown = document.querySelector('.dropdown-trigger');
+    const dropdown = document.querySelector('.dropdown-trigger')
     M.Dropdown.init(dropdown, {
       closeOnClick: false,
     })
 
+    let userInputSaved = window.sessionStorage.getItem('userInput')
+    userInputSubject.next(userInputSaved)
+    this.setState({
+      userInput: userInputSaved
+    })
+    appliedFiltersSubject.next(this.state.filter)
+
     combineLatest([
       appliedFilters$,
-      userInput$
-    ]).subscribe(([filters, input]) => {
-      let newFilteredRecipesState = {
-        ...this.state.unfilteredRecipes
-      }
-      for (const category in this.state.unfilteredRecipes) {
-        let filteredCategory = this.state.unfilteredRecipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+      userInput$,
+      unfilteredRecipes$
+    ]).subscribe(([filters, input, recipes]) => {
+      console.log(filters)
+      console.log(input)
+      //console.log(recipes)
+      window.sessionStorage.setItem('userInput', input)
+      let newFilteredRecipesState = {}
+      for (const category in recipes) {
+        let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
         newFilteredRecipesState[category] = filteredCategory
       }
+      console.log('newFilteredRecipesState', newFilteredRecipesState)
 
       let selectedTags = []
       for (const tag in filters) {
@@ -102,6 +115,7 @@ class Dashboard extends React.Component {
           selectedTags.push(tag)
         }
       }
+
       if (selectedTags.length) {
         // limit to only those recipes whose tags include each checked result from res (true) 
         for (const category in newFilteredRecipesState) {
@@ -113,11 +127,11 @@ class Dashboard extends React.Component {
 
         this.setState({
           filteredRecipes: newFilteredRecipesState
-        })
+        }, () => console.log('running with filter'))
       } else {
         this.setState({
           filteredRecipes: newFilteredRecipesState
-        })
+        }, () => console.log('running here'))
       }
     })
   }
@@ -142,6 +156,9 @@ class Dashboard extends React.Component {
 
 
   handleSearchChange = (e) => {
+    this.setState({
+      userInput: e.target.value
+    })
     let input = e.target.value.toLowerCase().trim()
     userInputSubject.next(input)
   }
@@ -155,7 +172,7 @@ class Dashboard extends React.Component {
         <div>
           <h1>Recipe Box</h1>
           <div className="searchbar">
-          <input onChange={this.handleSearchChange} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
+          <input onChange={this.handleSearchChange} value={this.state.userInput} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
 
           <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
 
