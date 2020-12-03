@@ -87,27 +87,27 @@ class Dashboard extends React.Component {
     })
 
     let userInputSaved = window.sessionStorage.getItem('userInput')
-    userInputSubject.next(userInputSaved)
+    
     this.setState({
       userInput: userInputSaved
     })
-    appliedFiltersSubject.next(this.state.filter)
+    let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters'))
+    userInputSubject.next(userInputSaved || '')
+    appliedFiltersSubject.next(userFiltersSaved || this.state.filter)    
+
 
     combineLatest([
       appliedFilters$,
       userInput$,
       unfilteredRecipes$
     ]).subscribe(([filters, input, recipes]) => {
-      console.log(filters)
-      console.log(input)
-      //console.log(recipes)
+      window.sessionStorage.setItem('filters', JSON.stringify(filters))
       window.sessionStorage.setItem('userInput', input)
       let newFilteredRecipesState = {}
       for (const category in recipes) {
         let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
         newFilteredRecipesState[category] = filteredCategory
       }
-      console.log('newFilteredRecipesState', newFilteredRecipesState)
 
       let selectedTags = []
       for (const tag in filters) {
@@ -127,11 +127,11 @@ class Dashboard extends React.Component {
 
         this.setState({
           filteredRecipes: newFilteredRecipesState
-        }, () => console.log('running with filter'))
+        })
       } else {
         this.setState({
           filteredRecipes: newFilteredRecipesState
-        }, () => console.log('running here'))
+        })
       }
     })
   }
@@ -179,55 +179,55 @@ class Dashboard extends React.Component {
           <ul id='dropdown' className='dropdown-content'>
             <li >
               <label>
-                <input  id="dairy_free" onClick={this.filter} type="checkbox" />
+                <input checked={appliedFiltersSubject.getValue()?.dairy_free} id="dairy_free" onClick={this.filter} type="checkbox" />
                 <span>Dairy-Free</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="easy" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.easy} id="easy" onClick={this.filter}  type="checkbox"  />
                 <span>Easy</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="gluten_free" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.gluten_free} id="gluten_free" onClick={this.filter}  type="checkbox"  />
                 <span>Gluten-Free</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="healthy" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.healthy} id="healthy" onClick={this.filter}  type="checkbox"  />
                 <span>Healthy</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="keto" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.keto} id="keto" onClick={this.filter}  type="checkbox"  />
                 <span>Keto</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="no_bake" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.no_bake} id="no_bake" onClick={this.filter}  type="checkbox"  />
                 <span>No Bake</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="sugar_free" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.sugar_free} id="sugar_free" onClick={this.filter}  type="checkbox"  />
                 <span>Sugar-Free</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="vegan" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.vegan} id="vegan" onClick={this.filter}  type="checkbox"  />
                 <span>Vegan</span>
               </label>
             </li>
             <li>
               <label>
-                <input id="vegetarian" onClick={this.filter}  type="checkbox"  />
+                <input checked={appliedFiltersSubject.getValue()?.vegetarian} id="vegetarian" onClick={this.filter}  type="checkbox"  />
                 <span>Vegetarian</span>
               </label>
             </li>
