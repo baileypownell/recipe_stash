@@ -17,4 +17,5 @@ And the answer isn't pinning recipes on a website that may not even exist in 20 
 <img src="src/images/recipe_mobile_2.png" width="300">
 <img src="src/images/settings_mobile.png" width="300">
 <img src="src/images/recipe_desktop.png" width="600">
-<img src="src/images/recipe_desktop_filtering.png" width="600">
+<img src="src/images/desktop_dashboard.png" width="600">
+<img src="src/images/desktop_dashboard_filtering.png" width="600">
