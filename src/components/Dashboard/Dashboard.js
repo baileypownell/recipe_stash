@@ -9,7 +9,17 @@ import './Dashboard.scss';
 let userInputSubject = new BehaviorSubject('')
 let userInput$ = userInputSubject.asObservable()
 
-const appliedFiltersSubject = new BehaviorSubject(null)
+const appliedFiltersSubject = new BehaviorSubject({
+  dairy_free: false, 
+  easy: false, 
+  gluten_free: false, 
+  healthy: false, 
+  keto: false, 
+  no_bake: false, 
+  sugar_free: false, 
+  vegan: false, 
+  vegetarian: false, 
+})
 let appliedFilters$ = appliedFiltersSubject.asObservable()
 
 let unfilteredRecipesSubject = new BehaviorSubject(null)
@@ -21,29 +31,15 @@ class Dashboard extends React.Component {
   state = {
     recipes_loaded: false,
     filteredRecipes: null,
-    filter: {
-      dairy_free: false, 
-      easy: false, 
-      gluten_free: false, 
-      healthy: false, 
-      keto: false, 
-      no_bake: false, 
-      sugar_free: false, 
-      vegan: false, 
-      vegetarian: false, 
-    }
   }
 
   fetchRecipes = () => {
     axios.get(`/recipe`)
     .then(res => {
-      res.data.breakfast.sort(this.sortByTitle)
-      res.data.lunch.sort(this.sortByTitle)
-      res.data.dinner.sort(this.sortByTitle)
-      res.data.side_dish.sort(this.sortByTitle)
-      res.data.dessert.sort(this.sortByTitle)
-      res.data.drinks.sort(this.sortByTitle)
-      res.data.other.sort(this.sortByTitle)
+      for (const category in res.data) {
+        let sortedCategory = res.data[category].sort(this.sortByTitle)
+        res.data[category] = sortedCategory
+      }
       unfilteredRecipesSubject.next(res.data)
       this.setState({
         recipes_loaded: true
@@ -86,13 +82,15 @@ class Dashboard extends React.Component {
     })
 
     let userInputSaved = window.sessionStorage.getItem('userInput')
+    if (userInputSaved) {
+      userInputSubject.next(userInputSaved)
+    }
     
-
     let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters'))
-    userInputSubject.next(userInputSaved || '')
-    appliedFiltersSubject.next(userFiltersSaved || this.state.filter)    
-
-
+    if (userFiltersSaved) {
+      appliedFiltersSubject.next(userFiltersSaved)  
+    }
+    
     combineLatest([
       appliedFilters$,
       userInput$,
@@ -134,17 +132,12 @@ class Dashboard extends React.Component {
   }
 
   filter = (e) => {
-    let currentState = this.state.filter[e.target.id]
+    let currentState = appliedFiltersSubject.getValue()[e.target.id]
     let filter = {
-      ...this.state.filter,
+      ...appliedFiltersSubject.getValue(),
       [e.target.id]: !currentState,
     }
-    this.setState({
-      ...this.state, 
-      filter: filter
-    }, () => {
-      appliedFiltersSubject.next(this.state.filter)
-     })
+    appliedFiltersSubject.next(filter)
   }
 
   updateDashboard = () => {
@@ -171,60 +164,16 @@ class Dashboard extends React.Component {
           <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
 
           <ul id='dropdown' className='dropdown-content'>
-            <li >
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.dairy_free} id="dairy_free" onClick={this.filter} type="checkbox" />
-                <span>Dairy-Free</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.easy} id="easy" onClick={this.filter}  type="checkbox"  />
-                <span>Easy</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.gluten_free} id="gluten_free" onClick={this.filter}  type="checkbox"  />
-                <span>Gluten-Free</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.healthy} id="healthy" onClick={this.filter}  type="checkbox"  />
-                <span>Healthy</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.keto} id="keto" onClick={this.filter}  type="checkbox"  />
-                <span>Keto</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.no_bake} id="no_bake" onClick={this.filter}  type="checkbox"  />
-                <span>No Bake</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.sugar_free} id="sugar_free" onClick={this.filter}  type="checkbox"  />
-                <span>Sugar-Free</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.vegan} id="vegan" onClick={this.filter}  type="checkbox"  />
-                <span>Vegan</span>
-              </label>
-            </li>
-            <li>
-              <label>
-                <input checked={appliedFiltersSubject.getValue()?.vegetarian} id="vegetarian" onClick={this.filter}  type="checkbox"  />
-                <span>Vegetarian</span>
-              </label>
-            </li>
+            {
+              Object.keys(appliedFiltersSubject.getValue()).map((filterCategory) => {
+                return <li key={filterCategory} >
+                          <label>
+                            <input checked={appliedFiltersSubject.getValue()?.[filterCategory]} id={filterCategory} onClick={this.filter} type="checkbox" />
+                          <span>{filterCategory}</span>
+                          </label>
+                      </li>
+              })
+            }
           </ul>
         </div>
         </div>
