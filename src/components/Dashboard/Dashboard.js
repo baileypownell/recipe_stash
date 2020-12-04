@@ -19,6 +19,17 @@ const filterTextMap = {
   vegetarian: 'Vegetarian'
 }
 
+// object for iterating through meal cateogries 
+const mealCategories = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch', 
+  dinner: 'Dinner',
+  side_dish: 'Side Dish',
+  dessert: 'Desser', 
+  drinks: 'Drinks', 
+  other: 'Other',
+}
+
 let userInputSubject = new BehaviorSubject('')
 let userInput$ = userInputSubject.asObservable()
 
@@ -202,49 +213,18 @@ class Dashboard extends React.Component {
           </div>
           :
           <>
-          <Category
-            title="Breakfast"
-            id="breakfast"
-            recipes={filteredRecipes.breakfast}
-            updateDashboard={this.updateDashboard}
-          />
-          <Category
-            title="Lunch"
-            id="lunch"
-            recipes={filteredRecipes.lunch}
-            updateDashboard={this.updateDashboard}
-          />
-          <Category
-            title="Dinner"
-            id="dinner"
-            recipes={filteredRecipes.dinner}
-            updateDashboard={this.updateDashboard}
-          />
-          <Category
-            title="Side Dish"
-            id="side_dish"
-            recipes={filteredRecipes.side_dish}
-            updateDashboard={this.updateDashboard}
-          />
-          <Category
-            title="Dessert"
-            id="dessert"
-            recipes={filteredRecipes.dessert}
-            updateDashboard={this.updateDashboard}
-          />
-          <Category
-            title="Drinks"
-            id="drinks"
-            recipes={filteredRecipes.drinks}
-            updateDashboard={this.updateDashboard}
-            />
-          <Category
-            title="Other"
-            id="other"
-            recipes={filteredRecipes.other}
-            updateDashboard={this.updateDashboard}
-            />
-            </>
+            {
+              Object.keys(mealCategories).map(mealCat => {
+                return <Category
+                  title={mealCategories[mealCat]}
+                  id={mealCat}
+                  recipes={filteredRecipes[mealCat]}
+                  updateDashboard={this.updateDashboard}
+                >
+                </Category>
+              })
+            }
+          </>
         }
      </div>
      </>
