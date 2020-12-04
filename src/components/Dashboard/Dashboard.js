@@ -6,6 +6,19 @@ import Category from './Category/Category';
 import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
 import './Dashboard.scss';
 
+// object for accessing human readable versions of recipe tag categories
+const filterTextMap = {
+  dairy_free: 'Dairy Free', 
+  easy: 'Easy',
+  gluten_free: 'Gluten Free', 
+  healthy: 'Healthy', 
+  keto: 'Keto', 
+  no_bake: 'No Bake', 
+  sugar_free: 'Sugar Free', 
+  vegan: 'Vegan', 
+  vegetarian: 'Vegetarian'
+}
+
 let userInputSubject = new BehaviorSubject('')
 let userInput$ = userInputSubject.asObservable()
 
@@ -169,7 +182,7 @@ class Dashboard extends React.Component {
                 return <li key={filterCategory} >
                           <label>
                             <input checked={appliedFiltersSubject.getValue()?.[filterCategory]} id={filterCategory} onClick={this.filter} type="checkbox" />
-                          <span>{filterCategory}</span>
+                          <span>{filterTextMap[filterCategory]}</span>
                           </label>
                       </li>
               })
