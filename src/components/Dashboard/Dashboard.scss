@@ -177,7 +177,10 @@
 #dropdown {
   min-width: 210px;
   overflow-x: hidden;
-  top: 130px!important;
+  top: 168px!important;
+  @include tablet {
+    top: 130px!important;
+  }
   li {
     display: flex;
   }
