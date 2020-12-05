@@ -72,3 +72,13 @@ label {
 .maxOpacity {
   opacity: 1;
 }
+
+.auth {
+  .input-field input {
+    border-bottom: 1px solid white!important;
+  }
+
+  .input-field input:focus {
+      border-bottom:2px solid white!important;
+  }  
+}

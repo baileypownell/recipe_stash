@@ -65,11 +65,13 @@
       @include flexColumn;
       width: 100%;
       margin: 0 auto;
-      background: white;
       padding: 5vw;
       border-radius: 0px;
       label {
-        color: $darkgray!important;
+        color: white!important;
+      }
+      input {
+        color: white!important;
       }
       @include tablet {
         width: 50%;
@@ -90,9 +92,11 @@
         text-decoration: underline;
       }
       button {
-        @include button;
-        background-color: $green;
+        background-color: $secondary!important;
         color: $white;
+        &:hover {
+          background-color: darken($secondary, 10%)!important;
+        }
       }
       .googleButton {
         width: 225px!important;
