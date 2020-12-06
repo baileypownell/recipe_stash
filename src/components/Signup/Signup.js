@@ -60,10 +60,10 @@ class Signup extends React.Component {
       }
     })
     .catch((err) => {
-      console.log(err);
       this.setState({
         loading: false
       })
+      M.toast({html: err.response.data.error})
     })
   }
 

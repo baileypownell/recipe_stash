@@ -54,7 +54,6 @@ class Login extends React.Component {
       res.data.success ? M.toast({html: 'Check your email for a link to reset your password.'}) : M.toast({html: 'There was an error.'}) 
     })
     .catch(err => {
-      console.log(err)
       M.toast({html: 'There was an error.'})
     })
   }
@@ -106,8 +105,7 @@ class Login extends React.Component {
       }
     })
     .catch((err) => {
-      console.log(err)
-      M.toast({html: 'There was an error.'})
+      M.toast({html: err.response.data.error || 'There was an error.'})
       this.setState({
         signInError: true,
         loading: false

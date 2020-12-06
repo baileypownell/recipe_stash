@@ -105,27 +105,15 @@ class Settings extends React.Component {
   }
 
   deleteAccount = (e) => {
-    e.preventDefault();
-    // first validate that their email is correct...
-    axios.post(`/signin`, {
-      password: this.state.password,
-      email: this.state.email
-    })
-    .then(res => {
-      if (res.data.success === false) {
-        M.toast({html: 'The password you entered is incorrect.'})
-      } else {
-        axios.delete(`/user`)
-        .then((res) => {
-          M.toast({html: 'Account deleted.'})
-            this.props.logout();
-            this.props.history.push('/home');
-          })
-        .catch(err => console.log(err))
-      }
+    e.preventDefault()
+    axios.delete(`/user`)
+    .then((res) => {
+      M.toast({html: 'Account deleted.'})
+      this.props.logout()
+      this.props.history.push('/home')
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err.response)
       M.toast({html: 'There was an error.'})
     })
   }
@@ -232,12 +220,12 @@ class Settings extends React.Component {
             <li>
               <div className="collapsible-header"><i className="material-icons">delete</i>Delete Account</div>
               <div className="collapsible-body">
-              <p>If you are sure you want to delete your account, enter your password below. (This action cannot be undone).</p>
-                <div style={{textAlign: "left"}}>
+              <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
+                {/* <div style={{textAlign: "left"}}>
                     <label htmlFor="password">Enter your password</label>
                       <input id="password" type="password" value={this.state.password} onChange={this.updateInput}></input>
                       
-                </div>
+                </div> */}
                 <button className="waves-effect waves-light btn" onClick={this.deleteAccount}>Delete Account</button>
                 </div>
             </li>

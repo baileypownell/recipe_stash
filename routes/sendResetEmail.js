@@ -14,12 +14,9 @@ if (environment === 'development') {
 }
 
 router.post('/', (request, response, next) => {
-  // if (!request.session.userId) {
-  //   return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
-  // }
   const { email } = request.body;
   if (!email) {
-    return response.json({success: false, message: 'Invalid request sent.'})
+    return response.status(400).json({success: false, message: 'Invalid request sent.'})
   }
     client.query('SELECT * FROM users WHERE email=$1',
     [email], 
