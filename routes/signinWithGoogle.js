@@ -6,7 +6,7 @@ const jwt_decode = require('jwt-decode')
 router.post('/', (request, response, next) => {
   const { token } = request.body
   if (!token) {
-    return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
+    return response.status(400).json({success: false, message: 'Insufficient or invalid credentials provided.'})
   }
   let decodedToken = jwt_decode(token)
   client.query('SELECT * FROM users WHERE email=$1',
@@ -21,7 +21,7 @@ router.post('/', (request, response, next) => {
           return response.status(200).json({ success: true })
         })
       } else {
-        return response.status(200).json({success: false, message: 'No user could be found with that address.'})
+        return response.status(404)
       }
   })
 })

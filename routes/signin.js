@@ -6,7 +6,7 @@ const router = Router();
 router.post('/', (request, response, next) => {
   const { password, email } = request.body
   if (!password || !email) {
-    return response.json({success: false, message: 'Insufficient or invalid credentials provided.'})
+    return response.status(400).json({success: false, message: 'Insufficient or invalid credentials provided.'})
   }
   client.query('SELECT * FROM users WHERE email=$1',
     [email],
@@ -35,11 +35,11 @@ router.post('/', (request, response, next) => {
               })
             })
           } else {
-            return response.json({success: false, message: 'User could not be authenticated'})
+            return response.status(403).json({error: 'User could not be authenticated'})
           }
         })
       } else {
-        return response.json({success: false, message: 'No user exists with that email address.'})
+        return response.status(403).json({error: 'No user exists with that email address.'})
       }
     })
 })

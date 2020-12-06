@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== 'production') {
 router.get('/', (request, response, next) => {
   let userId = request.session.userId;
   if (!userId) {
-    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
   }
   client.query('SELECT * FROM users WHERE id=$1',
   [userId],
@@ -21,10 +21,10 @@ router.get('/', (request, response, next) => {
     if (res.rows.length) {
       response.status(200).json(res)
     } else {
-      response.status(403).json({ success: false, message: 'Access denied: No session found.' })
+      response.status(500)
     }
-  });
-});
+  })
+})
 
 // lock down this endpoint to where you cannot post without a session?
 router.post('/', (request, response, next) => {
@@ -37,7 +37,7 @@ router.post('/', (request, response, next) => {
   (err, res) => {
     if (err) return next(err)
     if (res.rows.length >= 1) {
-      return response.status(200).json({success: false, message: 'An account already exists for this email.'})
+      return response.status(403).send({error: 'An account already exists for this email.'})
     } else {
       // if user doesn't exist already, create them:
       client.query('INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
@@ -48,17 +48,15 @@ router.post('/', (request, response, next) => {
           client.query('SELECT * FROM users WHERE email=$1',
           [email],
           (err, res) => {
-            if (err) {
-              return next(err);
-            }
-            if (res.rows[0]) {
+            if (err) return next(err)
+            if (res.rows.length) {
               let id=res.rows[0].id;
               let email=res.rows[0].email;
               let firstName=res.rows[0].first_name;
               let lastName=res.rows[0].last_name;
               request.session.userId = id;
               request.session.save();
-              return response.status(200).json({
+              return response.status(201).json({
                 success: true, 
                 message: 'User created', 
                 userData: {
@@ -71,10 +69,10 @@ router.post('/', (request, response, next) => {
             }
           })
         } 
-      });
+      })
     }
   })
-});
+})
 
 router.put('/', (request, response, next) => {
   const { email, reset_password_token, first_name, last_name, password, new_email } = request.body;
@@ -104,13 +102,13 @@ router.put('/', (request, response, next) => {
           }
         })
       } else {
-        return response.json({ success: false, message: 'Reset password token not found.' })
+        return response.status(400).json({ success: false, message: 'Reset password token not found.' })
       }
     })
     return
   } 
   if (!userId) {
-    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
   }
   if ( first_name && last_name ) {
       client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
@@ -129,16 +127,11 @@ router.put('/', (request, response, next) => {
       client.query('SELECT * FROM users WHERE id=$1',
         [userId],
         (err, res) => {
-          if (err) {
-            return next(err);
-          }
+          if (err) return next(err)
           let hashedPassword = res.rows[0].password;
           let oldEmail = res.rows[0].email;
           bcrypt.compare(password, hashedPassword, (err, res) => {
-            if (err) {
-              console.log(err)
-              return next(err);
-            }
+            if (err) return next(err)
             if (res) {
               // update record in DB
               // but first ensure it is unique!
@@ -197,7 +190,7 @@ router.put('/', (request, response, next) => {
 
 router.delete('/', (request, response, next) => {
   if (!request.session.userId) {
-    return response.status(403).json({success: false, message: 'Access denied: No session for the user.'})
+    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
   }
   let id = request.session.userId;
   client.query('DELETE FROM users WHERE id=$1',
@@ -211,15 +204,13 @@ router.delete('/', (request, response, next) => {
         if (err) return next(err)
         if (res) {
           request.session.regenerate(() => {
-            return response.status(200).json({success: true});
-          });
+            return response.status(200).json({success: true})
+          })
         } else {
-          return response.status(500).json({success: false, message: 'Could not delete user.'})
+          return response.status(500)
         }
-      });
-    } else {
-      return response.status(500).json({success: false, message: 'Could not delete user.'})
-    }
+      })
+    } 
   })
 })
 
