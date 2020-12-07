@@ -55,9 +55,9 @@ label {
   color: $secondary!important;
 }
 
-// .toast {
-//   background-color:$primary!important;
-// }
+.toast {
+  background-color:$green!important;
+}
 
 
 [type="checkbox"]:checked + span:not(.lever):before {
@@ -79,6 +79,6 @@ label {
   }
 
   .input-field input:focus {
-      border-bottom:2px solid white!important;
+      border-bottom:1px solid $primary!important;
   }  
 }

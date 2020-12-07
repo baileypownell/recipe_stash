@@ -119,7 +119,7 @@ class Login extends React.Component {
     return (
       <div className="auth">
         <div class="gradient">
-          <form className="fade z-depth-8" onSubmit={this.signin}>
+          <form className="fade" onSubmit={this.signin}>
             <h1>Login</h1>
             <div className="input-field">
               <input 
