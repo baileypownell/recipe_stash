@@ -1,6 +1,7 @@
-const { Router } = require('express');
-const client = require('../db');
-const router = Router();
+const { Router } = require('express')
+const client = require('../db')
+const router = Router()
+const authMiddleware = require('./authMiddleware.js')
 
 const constructTags = (recipe) => {
   let tagArray = []
@@ -46,11 +47,10 @@ const formatRecipeResponse = (recipe) => {
   }
 }
 
+router.use(authMiddleware)
+
 router.get('/', (request, response, next) => {
   let userId = request.session.userId;
-  if (!userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   client.query('SELECT * FROM recipes WHERE user_id=$1',
   [userId],
    (err, res) => {
@@ -91,9 +91,6 @@ router.get('/', (request, response, next) => {
 
 router.post('/', (request, response, next) => {
   let userId = request.session.userId
-  if (!userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   const { 
     title, 
     category, 
@@ -135,9 +132,6 @@ router.post('/', (request, response, next) => {
 
 router.put('/', (request, response, next) => {
   let userId = request.session.userId
-  if (!userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   const { recipeId, title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
   client.query('UPDATE recipes SET title=$1, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14 AND user_id=$15',
   [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId],
@@ -154,9 +148,6 @@ router.put('/', (request, response, next) => {
 router.get('/:recipeId', (request, response, next) => {
     const { recipeId } = request.params;
     let userId = request.session.userId;
-    if (!userId) {
-      return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-    }
     client.query('SELECT * FROM recipes WHERE user_id=$1 AND id=$2',
     [userId, recipeId],
      (err, res) => {
@@ -182,9 +173,6 @@ router.get('/:recipeId', (request, response, next) => {
 
 router.delete('/:recipeId', (request, response, next) => {
   let userId = request.session.userId
-  if (!userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   const { recipeId } = request.params;
   client.query('DELETE FROM recipes WHERE id=$1 AND user_id=$2',
   [recipeId, userId],
