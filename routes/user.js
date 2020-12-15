@@ -4,16 +4,14 @@ const router = Router()
 const nodemailer = require('nodemailer')
 const sgTransport = require('nodemailer-sendgrid-transport')
 const bcrypt = require('bcryptjs')
+const authMiddleware = require('./authMiddleware')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-router.get('/', (request, response, next) => {
+router.get('/', authMiddleware, (request, response, next) => {
   let userId = request.session.userId;
-  if (!userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
   client.query('SELECT * FROM users WHERE id=$1',
   [userId],
    (err, res) => {
@@ -26,10 +24,7 @@ router.get('/', (request, response, next) => {
   })
 })
 
-// lock down this endpoint to where you cannot post without a session?
 router.post('/', (request, response, next) => {
-  let userId = request.session.userId
-
   const { firstName, lastName, password, email } = request.body;
   let hashedPassword = bcrypt.hashSync(password, 10);
   // make sure user doesn't already exist in the DB
@@ -75,7 +70,7 @@ router.post('/', (request, response, next) => {
 })
 
 router.put('/', (request, response, next) => {
-  const { email, reset_password_token, first_name, last_name, password, new_email } = request.body;
+  const { reset_password_token, first_name, last_name, password, new_email } = request.body;
   let userId = request.session.userId
   if (password && reset_password_token) {
     client.query('SELECT * FROM users where reset_password_token=$1',
@@ -188,10 +183,7 @@ router.put('/', (request, response, next) => {
   } 
 })
 
-router.delete('/', (request, response, next) => {
-  if (!request.session.userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
+router.delete('/', authMiddleware, (request, response, next) => {
   let id = request.session.userId;
   client.query('DELETE FROM users WHERE id=$1',
   [id],
