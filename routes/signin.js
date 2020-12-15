@@ -1,7 +1,7 @@
-const { Router } = require('express');
-const client = require('../db');
-const bcrypt = require('bcryptjs');
-const router = Router();
+const { Router } = require('express')
+const client = require('../db')
+const bcrypt = require('bcryptjs')
+const router = Router()
 
 router.post('/', (request, response, next) => {
   const { password, email } = request.body
@@ -22,15 +22,22 @@ router.post('/', (request, response, next) => {
           if (err) return next(err)
           if (res) {
               request.session.regenerate(() => {
-              request.session.userId = id
               request.session.save()
-              return response.status(200).json({
-                success: true,
-                userData: {
-                  id: id,
-                  first_name: first_name,
-                  last_name: last_name,
-                  email: email
+              // update the session table with the user's sessionID 
+              client.query('UPDATE session SET user_id=$1 WHERE sid=$2',
+              [id, request.sessionID],
+              (err, res) => {
+                if (err) return next(err)
+                if (res.rowCount) {
+                  return response.status(200).json({
+                    success: true,
+                    userData: {
+                      id: id,
+                      first_name: first_name,
+                      last_name: last_name,
+                      email: email
+                    }
+                  })
                 }
               })
             })

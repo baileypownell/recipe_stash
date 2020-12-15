@@ -11,8 +11,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 router.get('/', authMiddleware, (request, response, next) => {
-  let userId = request.session.userId;
-  client.query('SELECT * FROM users WHERE id=$1',
+  let userId = request.userID
+  client.query('SELECT email, first_name, last_name FROM users WHERE id=$1',
   [userId],
    (err, res) => {
     if (err) return next(err)
@@ -70,8 +70,8 @@ router.post('/', (request, response, next) => {
 })
 
 router.put('/', (request, response, next) => {
-  const { reset_password_token, first_name, last_name, password, new_email } = request.body;
-  let userId = request.session.userId
+  const { reset_password_token, first_name, last_name, password, new_email } = request.body
+
   if (password && reset_password_token) {
     client.query('SELECT * FROM users where reset_password_token=$1',
     [reset_password_token],
@@ -102,89 +102,102 @@ router.put('/', (request, response, next) => {
     })
     return
   } 
-  if (!userId) {
-    return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
-  }
-  if ( first_name && last_name ) {
-      client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
-      [first_name, last_name, userId],
-      (err, res) => {
+
+
+
+  client.query('SELECT user_id FROM session WHERE sid=$1', 
+    [request.sessionID], 
+    (err, res) => {
         if (err) return next(err)
         if (res.rows) {
-          return response.status(200).json({ success: true })
-        } else {
-          return response.status(500).json({success: false, message: 'User could not be updated.'})
-        }
-      })
-  } 
-  if (new_email) {
-      // make sure password is correct, if not, reject
-      client.query('SELECT * FROM users WHERE id=$1',
-        [userId],
-        (err, res) => {
-          if (err) return next(err)
-          let hashedPassword = res.rows[0].password;
-          let oldEmail = res.rows[0].email;
-          bcrypt.compare(password, hashedPassword, (err, res) => {
-            if (err) return next(err)
-            if (res) {
-              // update record in DB
-              // but first ensure it is unique!
-              client.query('SELECT * FROM users WHERE email=$1', 
-              [new_email], 
+            let userId = res.rows[0].user_id
+            console.log(userId)
+                      
+            if (!userId) {
+              return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
+            }
+        if ( first_name && last_name ) {
+            client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
+            [first_name, last_name, userId],
+            (err, res) => {
+              if (err) return next(err)
+              if (res.rows) {
+                return response.status(200).json({ success: true })
+              } else {
+                return response.status(500).json({success: false, message: 'User could not be updated.'})
+              }
+            })
+        } 
+        if (new_email) {
+            // make sure password is correct, if not, reject
+            client.query('SELECT * FROM users WHERE id=$1',
+              [userId],
               (err, res) => {
                 if (err) return next(err)
-                if (res.rows.length) {
-                  return response.status(200).json({
-                    success: false,
-                    message: 'Email is not unique.'
-                  })
-                } else {
-                  client.query('UPDATE users SET email=$1 WHERE id=$2',
-                  [new_email, userId],
-                  (err, res) => {
-                    if (err) return next(err);
-                    if (res) {
-                      // then send notification to the old email
-                      const options = {
-                        auth: {
-                          api_key: `${process.env.SENDGRID_API_KEY}`
-                        }
-                      }
-                      const mailer = nodemailer.createTransport(sgTransport(options))
-                      const email = {
-                        from: 'virtualcookbook@outlook.com',
-                        to: `${oldEmail}`,
-                        subject: 'Your Email Address Has Been Changed',
-                        html: `<h1>Virtual Cookbook</h1><p>The email address for your Virtual Cookbook account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
-                      }
-                      mailer.sendMail(email, function(err, res) {
-                        if (err) {
-                          response.status(500).json({ success: false, message: 'There was an error sending the email.'})
-                        } else {
-                            return response.status(200).json({
-                              success: true,
-                              message: 'Email successfully updated.'
+                let hashedPassword = res.rows[0].password;
+                let oldEmail = res.rows[0].email;
+                bcrypt.compare(password, hashedPassword, (err, res) => {
+                  if (err) return next(err)
+                  if (res) {
+                    // update record in DB
+                    // but first ensure it is unique!
+                    client.query('SELECT * FROM users WHERE email=$1', 
+                    [new_email], 
+                    (err, res) => {
+                      if (err) return next(err)
+                      if (res.rows.length) {
+                        return response.status(200).json({
+                          success: false,
+                          message: 'Email is not unique.'
+                        })
+                      } else {
+                        client.query('UPDATE users SET email=$1 WHERE id=$2',
+                        [new_email, userId],
+                        (err, res) => {
+                          if (err) return next(err);
+                          if (res) {
+                            // then send notification to the old email
+                            const options = {
+                              auth: {
+                                api_key: `${process.env.SENDGRID_API_KEY}`
+                              }
+                            }
+                            const mailer = nodemailer.createTransport(sgTransport(options))
+                            const email = {
+                              from: 'virtualcookbook@outlook.com',
+                              to: `${oldEmail}`,
+                              subject: 'Your Email Address Has Been Changed',
+                              html: `<h1>Virtual Cookbook</h1><p>The email address for your Virtual Cookbook account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
+                            }
+                            mailer.sendMail(email, function(err, res) {
+                              if (err) {
+                                response.status(500).json({ success: false, message: 'There was an error sending the email.'})
+                              } else {
+                                  return response.status(200).json({
+                                    success: true,
+                                    message: 'Email successfully updated.'
+                                  })
+                                }
                             })
-                          }
-                      })
-                    };
-                  })
-                }
+                          };
+                        })
+                      }
+                    })
+                  } else {
+                    return response.status(403).json({
+                      success: false,
+                      message: 'There was an error.'
+                    })
+                  }
+                })
               })
-            } else {
-              return response.status(403).json({
-                success: false,
-                message: 'There was an error.'
-              })
-            }
-          })
-        })
-  } 
+        } 
+      }
+  })
 })
 
 router.delete('/', authMiddleware, (request, response, next) => {
-  let id = request.session.userId;
+  let id = request.userID
   client.query('DELETE FROM users WHERE id=$1',
   [id],
     (err, res) => {
