@@ -88,7 +88,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    !this.props.loggedIn ? this.props.history.push('/home') : null
+    !this.props.loggedIn ? this.props.history.push('/login') : null
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
     let Appear = () => {

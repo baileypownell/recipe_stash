@@ -83,7 +83,6 @@ router.put('/reset-password', (request, response, next) => {
     (err, res) => {
       if (err) return next(err)
       if (res.rows.length) {
-        let userId = res.rows[0].id
         // hash new password 
         let hashedPassword = bcrypt.hashSync(password, 10);
         client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
@@ -91,7 +90,6 @@ router.put('/reset-password', (request, response, next) => {
         (err, res) => {
           if (err) return next(err)
           if (res) {
-            // TO-DO: regenerate the session
             return response.status(200).json({success: true, message: 'Password updated.'});
           } else {
             return response.status(500).json({success: false, message: 'Could not update password.'})
