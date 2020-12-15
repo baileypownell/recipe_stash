@@ -74,7 +74,8 @@ class Login extends React.Component {
       }
     })
     .catch(err => {
-      M.toast({html: err.data.message})
+      console.log(err)
+      M.toast({html: err.data ? err.data.message : 'Could not authenticate.'})
       this.setState({
         signInError: true
       })
@@ -118,7 +119,7 @@ class Login extends React.Component {
     const { formValid, loading, signInError } = this.state;
     return (
       <div className="auth">
-        <div class="gradient">
+        <div className="gradient">
           <form className="fade" onSubmit={this.signin}>
             <h1>Login</h1>
             <div className="input-field">
