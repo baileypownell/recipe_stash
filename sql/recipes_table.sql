@@ -33,3 +33,6 @@ INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES('S
 INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES('Biscuits', 'Side Dish', 1, 'butter, salte, pepper, garlic, asparagus', 'fry in a cast iron skillet');
 
 INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES('Zuppa Toscana', 'Dinner', 1, 'ravioli, beans, chicken broth, tomatoes, g arlic, spinach', 'pan');
+
+
+ALTER TABLE session ADD COLUMN IF NOT EXISTS user_id character varying(50);
