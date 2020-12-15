@@ -139,12 +139,12 @@ class Settings extends React.Component {
   updateView() {
     axios.get(`/user`)
     .then((res) => {
-      let user = res.data.rows[0]
+      let user = res.data.userData
       this.setState({
-        firstName: user.first_name, 
-        firstNameReceived: user.first_name, 
-        lastName: user.last_name,
-        lastNameReceived: user.last_name,
+        firstName: user.firstName, 
+        firstNameReceived: user.firstName, 
+        lastName: user.lastName,
+        lastNameReceived: user.lastName,
         email: user.email,
         emailReceived: user.email
       })

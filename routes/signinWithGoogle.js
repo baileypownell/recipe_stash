@@ -15,12 +15,6 @@ router.post('/', (request, response, next) => {
       if (err) return next(err)
       if (res.rows.length) {
         id = res.rows[0].id;
-        // request.session.regenerate(() => {
-        //   request.session.userId = id;
-        //   request.session.save();
-        //   return response.status(200).json({ success: true })
-        // })
-        // new 
         request.session.regenerate(() => {
           request.session.save()
           // update the session table with the user's sessionID 
@@ -34,7 +28,7 @@ router.post('/', (request, response, next) => {
           })
         })
       } else {
-        return response.status(404)
+        return response.status(404).json({ success: false })
       }
   })
 })
