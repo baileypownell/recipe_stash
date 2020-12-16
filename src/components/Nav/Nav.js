@@ -13,6 +13,7 @@ class Nav extends React.Component {
     // check if the state we received from Redux is in fact still accurate 
     axios.get(`/user`)
     .then((res) => {
+      console.log(res)
       this.props.login()
     })
     .catch((err) => { 
@@ -20,8 +21,12 @@ class Nav extends React.Component {
       this.props.logout()
     })
 
-    // initalize the settings dropdown 
-    var elems = document.querySelectorAll('.dropdown-trigger-settings')
+    console.log(this.props.loggedIn)
+    // initalize the settings dropdown -- this is spotty because this.props.loggedIn isn't always evaluated to true in time before the DOM is rendered...
+    // because mapStateToProps finished after the DOm loaded
+    // eliminate Redux so we don't have this problem, among other bad practices.
+    var elems = document.querySelector('#dropdown-trigger-settings')
+    console.log(elems)
     M.Dropdown.init(elems, {})
   }
 
@@ -44,7 +49,7 @@ class Nav extends React.Component {
             { this.props.loggedIn ?
               <>
                   <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>
-                  <a activeClassName="active" className="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 
+                  <a activeClassName="active" id="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 
                   {/* settings dropdown */}
                   <ul id='settings-dropdown' className='dropdown-content'>
                     <li><a href="/settings">Settings</a></li>
