@@ -163,17 +163,16 @@ class Settings extends React.Component {
         <div className="fade settings">
           <div id="profileParent">
             <div id="profile">
-              <i className="fas fa-user-circle"></i><h3>{this.state.firstNameReceived}</h3>
+              <i className="fas fa-user-circle"></i><h3>{this.state.firstNameReceived} {this.state.lastNameReceived}</h3>
             </div>
-            <button className="waves-effect waves-light btn" onClick={this.logout}>Log out</button>
           </div>
           <div id="table">
-            <div className="row">
+            {/* <div className="row">
               <div>
                 <p>Name</p>
                 <h4>{this.state.firstNameReceived} {this.state.lastNameReceived}</h4>
               </div>
-            </div>
+            </div> */}
             <div className="row">
               <div>
                 <p>Email</p>
