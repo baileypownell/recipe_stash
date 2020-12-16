@@ -195,9 +195,9 @@ class Dashboard extends React.Component {
           <input onChange={this.handleSearchChange} value={userInputSubject.getValue()} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
 
           <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
-            <span>Filter </span>
+            <span>Filter</span>
             {
-              selectedFilterSubject.getValue() > 0 ? ` (${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
+              selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
             }
           </button>
 

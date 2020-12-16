@@ -161,17 +161,20 @@
 
 
 #filter-button {
-  display: flex;
+    display: flex;
     align-items: center;
     justify-content: space-between;
-  background-color: white!important;
-  color: $green;
-  i {
-    line-height: normal;
-    padding: 0px;
-    transform: none;
-    background-color: white;
-  }
+    background-color: white!important;
+    color: $green;
+    span {
+      padding-right: 3px;
+    }
+    i {
+      line-height: normal;
+      padding: 0px;
+      transform: none;
+      background-color: white;
+    }
 }
 
 #dropdown {
