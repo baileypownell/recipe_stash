@@ -49,6 +49,8 @@ let appliedFilters$ = appliedFiltersSubject.asObservable()
 let unfilteredRecipesSubject = new BehaviorSubject(null)
 let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 
+let selectedFilterSubject = new BehaviorSubject(0)
+// let selectedFilters$ = selectedFiltersSubject.asObservable()
 
 class Dashboard extends React.Component {
 
@@ -162,6 +164,13 @@ class Dashboard extends React.Component {
       [e.target.id]: !currentState,
     }
     appliedFiltersSubject.next(filter)
+    let selectedFilters = 0
+    for (const property in filter) {
+      if (filter[property]) {
+        selectedFilters++
+      }
+    }
+    selectedFilterSubject.next(selectedFilters)
   }
 
   updateDashboard = () => {
@@ -185,17 +194,28 @@ class Dashboard extends React.Component {
           <div className="searchbar">
           <input onChange={this.handleSearchChange} value={userInputSubject.getValue()} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
 
-          <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button"><span>Filter</span><i className="small material-icons">filter_list</i> </button>
+          <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
+            <span>Filter </span>
+            {
+              selectedFilterSubject.getValue() > 0 ? ` (${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
+            }
+          </button>
 
           <ul id='dropdown' className='dropdown-content'>
             {
               Object.keys(appliedFiltersSubject.getValue()).map((filterCategory) => {
-                return <li key={filterCategory} >
-                          <label>
-                            <input checked={appliedFiltersSubject.getValue()?.[filterCategory]} id={filterCategory} onClick={this.filter} type="checkbox" />
-                          <span>{filterTextMap[filterCategory]}</span>
-                          </label>
-                      </li>
+                return (
+                <li key={filterCategory} >
+                    <label>
+                      <input 
+                        checked={appliedFiltersSubject.getValue()?.[filterCategory]} 
+                        id={filterCategory} 
+                        onClick={this.filter} 
+                        type="checkbox" />
+                    <span>{filterTextMap[filterCategory]}</span>
+                    </label>
+                </li>
+                )
               })
             }
           </ul>
