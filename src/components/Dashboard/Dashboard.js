@@ -3,8 +3,8 @@ const axios = require('axios')
 import BounceLoader from "react-spinners/BounceLoader"
 import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
-import './Dashboard.scss';
-import Nav from '../Nav/Nav';
+import './Dashboard.scss'
+import Nav from '../Nav/Nav'
 
 // object for accessing human readable versions of recipe tag categories
 const filterTextMap = {
@@ -50,7 +50,6 @@ let unfilteredRecipesSubject = new BehaviorSubject(null)
 let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 
 let selectedFilterSubject = new BehaviorSubject(0)
-// let selectedFilters$ = selectedFiltersSubject.asObservable()
 
 class Dashboard extends React.Component {
 
@@ -75,7 +74,6 @@ class Dashboard extends React.Component {
       this.setState({
         recipes_loaded: false
       })
-      this.props.history.push('/login')
     })    
   }
 
@@ -191,68 +189,78 @@ class Dashboard extends React.Component {
   render() {
     const { filteredRecipes, recipes_loaded } = this.state;
 
+    const filterDropDownMap = new Map();
+    for (const val in appliedFiltersSubject.getValue()) {
+      filterDropDownMap.set(val, appliedFiltersSubject.getValue()?.[val])
+    }
+
     return (
       <>
-      <Nav loggedIn={true}/>
-      <div className="title">
-        <div>
-          <h1>Recipe Box</h1>
-          <div className="searchbar">
-          <input onChange={this.handleSearchChange} value={userInputSubject.getValue()} type="text" placeholder="Find a recipe"></input><i className="fas fa-search"></i>
+        <Nav loggedIn={true}/>
+        <div className="title">
+          <div>
+            <h1>Recipe Box</h1>
+            <div className="searchbar">
+            <input 
+              onChange={this.handleSearchChange} 
+              value={userInputSubject.getValue()} 
+              type="text" placeholder="Find a recipe">
+            </input>
+            <i className="fas fa-search"></i>
 
-          <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
-            <span>Filter</span>
-            {
-              selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
-            }
-          </button>
+            <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
+              <span>Filter</span>
+              {
+                selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
+              }
+            </button>
 
-          <ul id='dropdown' className='dropdown-content'>
-            {
-              Object.keys(appliedFiltersSubject.getValue()).map((filterCategory) => {
-                return (
-                <li key={filterCategory} >
-                    <label>
-                      <input 
-                        checked={appliedFiltersSubject.getValue()?.[filterCategory]} 
-                        id={filterCategory} 
-                        onClick={this.filter} 
-                        type="checkbox" />
-                    <span>{filterTextMap[filterCategory]}</span>
-                    </label>
-                </li>
-                )
-              })
-            }
-          </ul>
-        </div>
-        </div>
-      </div>
-      
-      <div className="dashboard">
-        {!recipes_loaded ?
-          <div className="BounceLoader">
-            <BounceLoader
-              size={100}
-              color={"#689943"}
-            />
+            <ul id='dropdown' className='dropdown-content'>
+              {
+                Array.from(filterDropDownMap).map(filterCategory => {
+                  return (
+                      <li key={filterCategory[0]} >
+                          <label>
+                            <input 
+                              checked={filterCategory[1]} 
+                              id={filterCategory[0]} 
+                              onClick={this.filter} 
+                              type="checkbox" />
+                          <span>{filterTextMap[filterCategory[0]]}</span>
+                          </label>
+                      </li>
+                    )
+                })
+              }
+            </ul>
           </div>
-          :
-          <>
-            {
-              Object.keys(mealCategories).map(mealCat => {
-                return <Category
-                  title={mealCategories[mealCat]}
-                  id={mealCat}
-                  recipes={filteredRecipes[mealCat]}
-                  updateDashboard={this.updateDashboard}
-                >
-                </Category>
-              })
-            }
-          </>
-        }
-     </div>
+          </div>
+        </div>
+        
+        <div className="dashboard">
+          {!recipes_loaded ?
+            <div className="BounceLoader">
+              <BounceLoader
+                size={100}
+                color={"#689943"}
+              />
+            </div>
+            :
+            <>
+              {
+                Object.keys(mealCategories).map(mealCat => {
+                  return <Category
+                    title={mealCategories[mealCat]}
+                    id={mealCat}
+                    recipes={filteredRecipes[mealCat]}
+                    updateDashboard={this.updateDashboard}
+                  >
+                  </Category>
+                })
+              }
+            </>
+          }
+      </div>
      </>
     )
   }
