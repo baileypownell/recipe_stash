@@ -56,19 +56,27 @@ router.post('/', (request, response, next) => {
               let email=res.rows[0].email;
               let firstName=res.rows[0].first_name;
               let lastName=res.rows[0].last_name;
-              request.session.save()
-              return response.status(201).json({
-                success: true, 
-                message: 'User created', 
-                // this probably won't work because we aren't regenerating or requirng auth 
-                // adding anyway
-                sessionID: request.sessionID,
-                userData: {
-                  id: id, 
-                  email: email, 
-                  firstName: firstName, 
-                  lastName: lastName
-                }
+              request.session.regenerate(() => {
+                request.session.save()
+                // update the session table with the user's sessionID 
+                client.query('UPDATE session SET user_id=$1 WHERE sid=$2',
+                [id, request.sessionID],
+                (err, res) => {
+                  if (err) return next(err)
+                  if (res.rowCount) {
+                    return response.status(201).json({
+                      success: true, 
+                      message: 'User created',
+                      sessionID: request.sessionID,
+                      userData: {
+                        id: id, 
+                        email: email, 
+                        firstName: firstName, 
+                        lastName: lastName
+                      }
+                    })
+                  }
+                })
               })
             }
           })
