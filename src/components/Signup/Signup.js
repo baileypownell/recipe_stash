@@ -3,6 +3,7 @@ import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import Nav from '../Nav/Nav'
+import { setUserLoggedIn, userLoginStatus } from '../../auth-session'
 
 class Signup extends React.Component {
 
@@ -17,7 +18,7 @@ class Signup extends React.Component {
     formValid: false,
     loading: false,
     submissionError: '',
-    error: false
+    error: false,
   }
 
 
@@ -48,7 +49,7 @@ class Signup extends React.Component {
     .then(res => {
       if (res.data.success) {
         M.toast({html: 'Success! Logging you in now...'})
-        this.props.login();
+        setUserLoggedIn(res.data.sessionID)
         this.props.history.push('/dashboard')
       } else {
         this.setState({
@@ -140,7 +141,7 @@ class Signup extends React.Component {
   }
 
   render() {
-    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid, submissionError } = this.state;
+    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid } = this.state;
     return (
       <>
         <Nav loggedIn={false}/>

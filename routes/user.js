@@ -60,6 +60,9 @@ router.post('/', (request, response, next) => {
               return response.status(201).json({
                 success: true, 
                 message: 'User created', 
+                // this probably won't work because we aren't regenerating or requirng auth 
+                // adding anyway
+                sessionID: request.sessionID,
                 userData: {
                   id: id, 
                   email: email, 

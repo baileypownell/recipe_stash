@@ -23,7 +23,10 @@ router.post('/', (request, response, next) => {
           (err, res) => {
             if (err) return next(err)
             if (res.rowCount) {
-              return response.status(200).json({ success: true })
+              return response.status(200).json({ 
+                success: true,
+                sessionID: request.sessionID
+               })
             }
           })
         })

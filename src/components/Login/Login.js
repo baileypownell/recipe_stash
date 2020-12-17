@@ -5,6 +5,7 @@ import GoogleLogin from 'react-google-login'
 import './Login.scss'
 import M from 'materialize-css'
 import Nav from '../Nav/Nav'
+import { setUserLoggedIn } from '../../auth-session'
 
 class Login extends React.Component {
 
@@ -62,7 +63,7 @@ class Login extends React.Component {
     })
     .then((res) => {
       if (res.data.success) {
-        this.props.login()
+        setUserLoggedIn(res.data.sessionID)
         this.props.history.push('/dashboard')
       } else {
         M.toast({ html: res.data.message })
@@ -79,8 +80,6 @@ class Login extends React.Component {
       })
     })
   }
-    
-
 
   signin = (event) => {
     event.preventDefault();
@@ -93,8 +92,8 @@ class Login extends React.Component {
     })
     .then(res => {
       if (res.data.success) {
-        this.props.login();
-        this.props.history.push(`/dashboard`);
+        setUserLoggedIn(res.data.sessionID)
+        this.props.history.push(`/dashboard`)
       } else {
         this.setState({
           loading: false,
@@ -104,7 +103,8 @@ class Login extends React.Component {
       }
     })
     .catch((err) => {
-      M.toast({html: err.response.data.error || 'There was an error.'})
+      console.log('ERROR ', err)
+      M.toast({html: err.response.data?.error || 'There was an error.'})
       this.setState({
         signInError: true,
         loading: false

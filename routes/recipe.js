@@ -49,7 +49,7 @@ const formatRecipeResponse = (recipe) => {
 
 router.use(authMiddleware)
 
-router.get('/', (request, response, next) => {
+router.get('/', authMiddleware, (request, response, next) => {
   let userId = request.userID
   client.query('SELECT * FROM recipes WHERE user_id=$1',
   [userId],

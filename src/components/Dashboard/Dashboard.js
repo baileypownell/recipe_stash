@@ -1,9 +1,8 @@
 import React from 'react'
 const axios = require('axios')
 import BounceLoader from "react-spinners/BounceLoader"
-import { connect } from 'react-redux'
 import Category from './Category/Category'
-import { of, subscribe, merge, pipe, BehaviorSubject, combineLatest } from "rxjs"
+import { BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss';
 import Nav from '../Nav/Nav';
 
@@ -73,7 +72,6 @@ class Dashboard extends React.Component {
       })
     })
     .catch((err) => {
-      console.log(err)
       this.setState({
         recipes_loaded: false
       })

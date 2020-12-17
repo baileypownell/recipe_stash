@@ -4,7 +4,7 @@ import axios from 'axios'
 import M from 'materialize-css'
 import './Settings.scss'
 import Nav from '../Nav/Nav'
-
+import { setUserLoggedOut } from '../../auth-session'
 
 class Settings extends React.Component {
 
@@ -21,7 +21,7 @@ class Settings extends React.Component {
   logout = () => {
     axios.get('/logout')
     .then((res) => {
-      // this.props.logout();
+      setUserLoggedOut()
       this.props.history.push('/home');
     })
     .catch((err) => {
@@ -79,7 +79,7 @@ class Settings extends React.Component {
         this.updateView()
       })
       .catch(err => {
-        // this.props.logout();
+        setUserLoggedOut()
         this.props.history.push('/login');
       })
   }
@@ -107,7 +107,7 @@ class Settings extends React.Component {
     axios.delete(`/user`)
     .then((res) => {
       M.toast({html: 'Account deleted.'})
-      //this.props.logout()
+      setUserLoggedOut()
       this.props.history.push('/home')
     })
     .catch((err) => {

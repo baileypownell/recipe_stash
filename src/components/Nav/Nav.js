@@ -3,22 +3,20 @@ import { NavLink, Link } from "react-router-dom"
 import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
 import { withRouter } from "react-router-dom"
+import { setUserLoggedOut } from '../../auth-session'
 const axios = require('axios')
 
 class Nav extends React.Component {
 
   componentDidMount() {
-
-    console.log(this.props.loggedIn)
     var elems = document.querySelector('#dropdown-trigger-settings')
-    console.log(elems)
     M.Dropdown.init(elems, {})
   }
 
   logout = () => {
     axios.get('/logout')
     .then(() => {
-      this.props.logout()
+      setUserLoggedOut()
       this.props.history.push('/home')
     })
     .catch((err) => {
