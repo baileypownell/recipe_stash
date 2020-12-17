@@ -1,10 +1,11 @@
-import React from 'react';
-import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
-import axios from 'axios';
-import M from 'materialize-css';
-import './Settings.scss';
+import React from 'react'
+import { withRouter } from "react-router-dom"
+import { connect } from 'react-redux'
+import * as actions from '../../store/actionCreators'
+import axios from 'axios'
+import M from 'materialize-css'
+import './Settings.scss'
+import Nav from '../Nav/Nav'
 
 
 class Settings extends React.Component {
@@ -159,6 +160,7 @@ class Settings extends React.Component {
   render() {
     return (
       <>
+        <Nav loggedIn={true}/>
         <h1 className="Title">Settings<i className="fas fa-cog"></i></h1>
         <div className="fade settings">
           <div id="profileParent">
@@ -167,12 +169,6 @@ class Settings extends React.Component {
             </div>
           </div>
           <div id="table">
-            {/* <div className="row">
-              <div>
-                <p>Name</p>
-                <h4>{this.state.firstNameReceived} {this.state.lastNameReceived}</h4>
-              </div>
-            </div> */}
             <div className="row">
               <div>
                 <p>Email</p>

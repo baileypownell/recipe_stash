@@ -10,21 +10,8 @@ const axios = require('axios');
 class Nav extends React.Component {
 
   componentDidMount() {
-    // check if the state we received from Redux is in fact still accurate 
-    axios.get(`/user`)
-    .then((res) => {
-      console.log(res)
-      this.props.login()
-    })
-    .catch((err) => { 
-      console.log(err)
-      this.props.logout()
-    })
 
     console.log(this.props.loggedIn)
-    // initalize the settings dropdown -- this is spotty because this.props.loggedIn isn't always evaluated to true in time before the DOM is rendered...
-    // because mapStateToProps finished after the DOm loaded
-    // eliminate Redux so we don't have this problem, among other bad practices.
     var elems = document.querySelector('#dropdown-trigger-settings')
     console.log(elems)
     M.Dropdown.init(elems, {})
@@ -48,8 +35,8 @@ class Nav extends React.Component {
           <div>            
             { this.props.loggedIn ?
               <>
-                  <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>
-                  <a activeClassName="active" id="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 
+                  <NavLink to="/dashboard" activeclassname="active">Dashboard</NavLink>
+                  <a activeclassname="active" id="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 
                   {/* settings dropdown */}
                   <ul id='settings-dropdown' className='dropdown-content'>
                     <li><a href="/settings">Settings</a></li>
@@ -68,11 +55,11 @@ class Nav extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.loggedIn
-  }
-}
+// const mapStateToProps = state => {
+//   return {
+//     loggedIn: state.loggedIn
+//   }
+// }
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -81,4 +68,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Nav));
+export default withRouter(connect(null, mapDispatchToProps)(Nav));

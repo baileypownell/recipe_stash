@@ -6,7 +6,7 @@ import * as actions from '../../store/actionCreators';
 import GoogleLogin from 'react-google-login';
 import './Login.scss';
 import M from 'materialize-css'
-
+import Nav from '../Nav/Nav'
 
 class Login extends React.Component {
 
@@ -118,64 +118,67 @@ class Login extends React.Component {
   render() {
     const { formValid, loading, signInError } = this.state;
     return (
-      <div className="auth">
-        <div className="gradient">
-          <form className="fade" onSubmit={this.signin}>
-            <h1>Login</h1>
-            <div className="input-field">
-              <input 
-                className="materialize-input" 
-                id="email" 
-                onChange={this.updateInput}
-                type="email" 
-                name="email" 
+      <>
+        <Nav loggedIn={false}/>
+        <div className="auth">
+          <div className="gradient">
+            <form className="fade" onSubmit={this.signin}>
+              <h1>Login</h1>
+              <div className="input-field">
+                <input 
+                  className="materialize-input" 
+                  id="email" 
+                  onChange={this.updateInput}
+                  type="email" 
+                  name="email" 
+                  />
+                <label className="active" htmlFor="email">Email</label>
+              </div>
+              <div className="input-field">
+                <input 
+                  onChange={this.updateInput} 
+                  id="password" 
+                  type="password" 
+                  name="password" 
                 />
-              <label className="active" htmlFor="email">Email</label>
-            </div>
-            <div className="input-field">
-              <input 
-                onChange={this.updateInput} 
-                id="password" 
-                type="password" 
-                name="password" 
-              />
-            <label className="active" htmlFor="password">
-              Password
-            </label>
-            </div>
+              <label className="active" htmlFor="password">
+                Password
+              </label>
+              </div>
 
-            <div className="buttons">
-            <button
-              disabled={!formValid}
-              className={formValid ? 'enabled' : 'disabled'}
-              className="waves-effect waves-light btn"
-              >
-              {loading?
-                <ClipLoader
-                  css={`border-color: white;`}
-                  size={30}
-                  color={"#689943"}
-                  loading={loading}
+              <div className="buttons">
+              <button
+                disabled={!formValid}
+                className={formValid ? 'enabled' : 'disabled'}
+                className="waves-effect waves-light btn"
+                >
+                {loading?
+                  <ClipLoader
+                    css={`border-color: white;`}
+                    size={30}
+                    color={"#689943"}
+                    loading={loading}
+                  />
+              : 'Submit'}
+              </button>
+              
+                <GoogleLogin
+                  className="googleButton"
+                  clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}
+                  buttonText="Login with Google"
+                  onSuccess={this.responseGoogle}
+                  onFailure={this.responseGoogle}
+                  cookiePolicy={'single_host_origin'}
                 />
-            : 'Submit'}
-            </button>
-            
-              <GoogleLogin
-                className="googleButton"
-                clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}
-                buttonText="Login with Google"
-                onSuccess={this.responseGoogle}
-                onFailure={this.responseGoogle}
-                cookiePolicy={'single_host_origin'}
-              />
 
-            {signInError ? 
-                  <button className="waves-effect waves-light btn" onClick={this.sendPasswordResetLink}>Reset Password</button>
-            : null}
-            </div>
-          </form>
+              {signInError ? 
+                    <button className="waves-effect waves-light btn" onClick={this.sendPasswordResetLink}>Reset Password</button>
+              : null}
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 }

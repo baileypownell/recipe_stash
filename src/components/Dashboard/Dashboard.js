@@ -1,10 +1,11 @@
-import React from 'react';
-const axios = require('axios');
+import React from 'react'
+const axios = require('axios')
 import BounceLoader from "react-spinners/BounceLoader"
-import { connect } from 'react-redux';
-import Category from './Category/Category';
-import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
+import { connect } from 'react-redux'
+import Category from './Category/Category'
+import { of, subscribe, merge, pipe, BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss';
+import Nav from '../Nav/Nav';
 
 // object for accessing human readable versions of recipe tag categories
 const filterTextMap = {
@@ -195,6 +196,7 @@ class Dashboard extends React.Component {
 
     return (
       <>
+      <Nav loggedIn={true}/>
       <div className="title">
         <div>
           <h1>Recipe Box</h1>
