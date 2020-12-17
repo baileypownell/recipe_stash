@@ -2,7 +2,6 @@ import React from 'react'
 import mobileView from '../../images/mobile_dashboard_edited.png'
 import { withRouter } from 'react-router'
 import Nav from '../Nav/Nav'
-import { userLoginStatus } from '../../auth-session'
 import './Home.scss';
 
 class Home extends React.Component {
@@ -24,7 +23,7 @@ class Home extends React.Component {
   render() {
     return (
       <>
-         <Nav loggedIn={userLoginStatus}/>
+         <Nav loggedIn={!!(window.localStorage.getItem('user_session_id'))}/>
          <div id="home">
             <div id="picture">
               <div className="flex">
