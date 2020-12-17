@@ -17,7 +17,7 @@ class Nav extends React.Component {
     axios.get('/logout')
     .then(() => {
       setUserLoggedOut()
-      this.props.history.push('/home')
+      this.props.history.push('/')
     })
     .catch((err) => {
       console.log(err)
