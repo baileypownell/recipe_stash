@@ -38,7 +38,7 @@ class ResetPassword extends React.Component {
   }
 
   goHome = () => {
-    this.props.history.push('/home')
+    this.props.history.push('/')
   }
 
   updatePasswordState = (e) => {

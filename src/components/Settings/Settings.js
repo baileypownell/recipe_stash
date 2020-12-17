@@ -22,7 +22,7 @@ class Settings extends React.Component {
     axios.get('/logout')
     .then((res) => {
       setUserLoggedOut()
-      this.props.history.push('/home');
+      this.props.history.push('/')
     })
     .catch((err) => {
       console.log(err)
@@ -108,7 +108,7 @@ class Settings extends React.Component {
     .then((res) => {
       M.toast({html: 'Account deleted.'})
       setUserLoggedOut()
-      this.props.history.push('/home')
+      this.props.history.push('/')
     })
     .catch((err) => {
       console.log(err.response)

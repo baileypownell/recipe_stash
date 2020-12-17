@@ -5,17 +5,7 @@ import axios from 'axios';
 class RequireAuthComponent extends React.Component {
 
     state = {
-        userAuthenticated: false
-    }
-
-    componentDidMount() {
-        axios.get('/getUserId')
-        .then((res) => 
-            this.setState({
-                userAuthenticated: !!res.data.userId
-            })
-        )
-        .catch((err) => console.log(err))
+        userAuthenticated: !!(window.localStorage.getItem('user_session_id'))
     }
 
     render() {
@@ -23,7 +13,7 @@ class RequireAuthComponent extends React.Component {
         return (
             <>
             {
-                userAuthenticated ? this.props.children : <Redirect to="/auth" />
+                userAuthenticated ? this.props.children : <Redirect to="/login" />
             }   
             </>
             
