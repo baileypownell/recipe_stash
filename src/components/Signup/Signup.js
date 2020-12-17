@@ -1,9 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
-import './Signup.scss';
-const axios = require('axios');
-import ClipLoader from "react-spinners/ClipLoader";
+import React from 'react'
+import './Signup.scss'
+const axios = require('axios')
+import ClipLoader from "react-spinners/ClipLoader"
+import Nav from '../Nav/Nav'
+import { setUserLoggedIn, userLoginStatus } from '../../auth-session'
 
 class Signup extends React.Component {
 
@@ -18,7 +18,7 @@ class Signup extends React.Component {
     formValid: false,
     loading: false,
     submissionError: '',
-    error: false
+    error: false,
   }
 
 
@@ -49,7 +49,7 @@ class Signup extends React.Component {
     .then(res => {
       if (res.data.success) {
         M.toast({html: 'Success! Logging you in now...'})
-        this.props.login();
+        setUserLoggedIn(res.data.sessionID)
         this.props.history.push('/dashboard')
       } else {
         this.setState({
@@ -141,64 +141,60 @@ class Signup extends React.Component {
   }
 
   render() {
-    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid, submissionError } = this.state;
+    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid } = this.state;
     return (
-      <div className="auth">
-        <div className="gradient">
-          <form className="fade" onSubmit={this.signup}>
-            <h1>Signup</h1>
-            <div className="input-field">
-              <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
-              <label htmlFor="firstName" className="active">
-                First Name
-              </label>
-            </div>
-            <div className="input-field">
-              <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
-            <label htmlFor="lastName" className="active">Last Name</label>
-            </div>
-            <div className="input-field">
-                <input onChange={this.updateInput} id="email" type="email" name="email" />
-              <label htmlFor="email" className="active">Email</label>
-            </div>
-            <div className="input-field">
-              <input onChange={this.validatePassword} id="password" type="password" name="password"  />
-              <label htmlFor="password" className="active">Password</label>
-              {
-                insufficientPasswordMessage ? 
-                  <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
-              : null}
-            </div>
-            <div className="input-field">
-              <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
-              {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
-            <label htmlFor="confirmPassword" className="active">Confirm Password</label>
-            </div>
-            <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
-            <button
-              disabled={!formValid}
-              className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
-              {loading?
-                <ClipLoader
-                  css={`border-color: white;`}
-                  size={30}
-                  color={"white"}
-                  loading={this.state.loading}
-                />
-            : 'Submit'}
-            </button>
-          </form>
+      <>
+        <Nav loggedIn={false}/>
+        <div className="auth">
+          <div className="gradient">
+            <form className="fade" onSubmit={this.signup}>
+              <h1>Signup</h1>
+              <div className="input-field">
+                <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
+                <label htmlFor="firstName" className="active">
+                  First Name
+                </label>
+              </div>
+              <div className="input-field">
+                <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
+              <label htmlFor="lastName" className="active">Last Name</label>
+              </div>
+              <div className="input-field">
+                  <input onChange={this.updateInput} id="email" type="email" name="email" />
+                <label htmlFor="email" className="active">Email</label>
+              </div>
+              <div className="input-field">
+                <input onChange={this.validatePassword} id="password" type="password" name="password"  />
+                <label htmlFor="password" className="active">Password</label>
+                {
+                  insufficientPasswordMessage ? 
+                    <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+                : null}
+              </div>
+              <div className="input-field">
+                <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
+                {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
+              <label htmlFor="confirmPassword" className="active">Confirm Password</label>
+              </div>
+              <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
+              <button
+                disabled={!formValid}
+                className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
+                {loading?
+                  <ClipLoader
+                    css={`border-color: white;`}
+                    size={30}
+                    color={"white"}
+                    loading={this.state.loading}
+                  />
+              : 'Submit'}
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    login: () => dispatch(actions.login())
-  }
-}
-
-
-export default connect(null, mapDispatchToProps)(Signup);
+export default Signup;

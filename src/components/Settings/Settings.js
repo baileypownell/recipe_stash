@@ -1,11 +1,10 @@
-import React from 'react';
-import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
-import axios from 'axios';
-import M from 'materialize-css';
-import './Settings.scss';
-
+import React from 'react'
+import { withRouter } from "react-router-dom"
+import axios from 'axios'
+import M from 'materialize-css'
+import './Settings.scss'
+import Nav from '../Nav/Nav'
+import { setUserLoggedOut } from '../../auth-session'
 
 class Settings extends React.Component {
 
@@ -22,7 +21,7 @@ class Settings extends React.Component {
   logout = () => {
     axios.get('/logout')
     .then((res) => {
-      this.props.logout();
+      setUserLoggedOut()
       this.props.history.push('/home');
     })
     .catch((err) => {
@@ -47,7 +46,6 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    !this.props.loggedIn ? this.props.history.push('/home') : null
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
@@ -81,7 +79,7 @@ class Settings extends React.Component {
         this.updateView()
       })
       .catch(err => {
-        this.props.logout();
+        setUserLoggedOut()
         this.props.history.push('/login');
       })
   }
@@ -109,7 +107,7 @@ class Settings extends React.Component {
     axios.delete(`/user`)
     .then((res) => {
       M.toast({html: 'Account deleted.'})
-      this.props.logout()
+      setUserLoggedOut()
       this.props.history.push('/home')
     })
     .catch((err) => {
@@ -151,7 +149,7 @@ class Settings extends React.Component {
       M.updateTextFields()
     })
     .catch((err) => { 
-      console.log(err)
+      console.log('error = ',err)
       this.props.history.push('/login')
     })
   }
@@ -159,21 +157,15 @@ class Settings extends React.Component {
   render() {
     return (
       <>
+        <Nav loggedIn={true}/>
         <h1 className="Title">Settings<i className="fas fa-cog"></i></h1>
         <div className="fade settings">
           <div id="profileParent">
             <div id="profile">
-              <i className="fas fa-user-circle"></i><h3>{this.state.firstNameReceived}</h3>
+              <i className="fas fa-user-circle"></i><h3>{this.state.firstNameReceived} {this.state.lastNameReceived}</h3>
             </div>
-            <button className="waves-effect waves-light btn" onClick={this.logout}>Log out</button>
           </div>
           <div id="table">
-            <div className="row">
-              <div>
-                <p>Name</p>
-                <h4>{this.state.firstNameReceived} {this.state.lastNameReceived}</h4>
-              </div>
-            </div>
             <div className="row">
               <div>
                 <p>Email</p>
@@ -236,17 +228,4 @@ class Settings extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.loggedIn
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    logout: () => dispatch(actions.logout())
-  }
-}
-
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings));
+export default withRouter(Settings);

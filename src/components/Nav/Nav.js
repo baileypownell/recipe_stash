@@ -1,22 +1,26 @@
-import React from 'react';
-import { NavLink, Link } from "react-router-dom";
-import icon from '../../images/apple-touch-icon.png';
+import React from 'react'
+import { NavLink, Link } from "react-router-dom"
+import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
-const axios = require('axios');
+import { withRouter } from "react-router-dom"
+import { setUserLoggedOut } from '../../auth-session'
+const axios = require('axios')
 
 class Nav extends React.Component {
 
   componentDidMount() {
-    // check if the state we received from Redux is in fact still accurate 
-    axios.get(`/user`)
-    .then((res) => {
-      this.props.login()
+    var elems = document.querySelector('#dropdown-trigger-settings')
+    M.Dropdown.init(elems, {})
+  }
+
+  logout = () => {
+    axios.get('/logout')
+    .then(() => {
+      setUserLoggedOut()
+      this.props.history.push('/home')
     })
-    .catch((err) => { 
+    .catch((err) => {
       console.log(err)
-      this.props.logout()
     })
   }
 
@@ -26,9 +30,14 @@ class Nav extends React.Component {
           <Link to="/"><img src={icon} alt="logo" /></Link>
           <div>            
             { this.props.loggedIn ?
-            <>
-                <NavLink to="/dashboard" activeClassName="active">Dashboard</NavLink>
-                <NavLink to="/settings" activeClassName="active"><i className="fas fa-user-cog"></i></NavLink> 
+              <>
+                  <NavLink to="/dashboard" activeclassname="active">Dashboard</NavLink>
+                  <a activeclassname="active" id="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 
+                  {/* settings dropdown */}
+                  <ul id='settings-dropdown' className='dropdown-content'>
+                    <li><a href="/settings">Settings</a></li>
+                    <li><a onClick={this.logout}>Logout</a></li>
+                  </ul>
               </>
          
             : <>
@@ -42,17 +51,4 @@ class Nav extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.loggedIn
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    logout: () => dispatch(actions.logout()),
-    login: () => dispatch(actions.login())
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Nav);
+export default withRouter(Nav);

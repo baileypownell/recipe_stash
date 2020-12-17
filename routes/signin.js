@@ -31,6 +31,7 @@ router.post('/', (request, response, next) => {
                   if (res.rowCount) {
                     return response.status(200).json({
                       success: true,
+                      sessionID: request.sessionID,
                       userData: {
                         id: id,
                         first_name: first_name,

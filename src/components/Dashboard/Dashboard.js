@@ -1,10 +1,10 @@
-import React from 'react';
-const axios = require('axios');
+import React from 'react'
+const axios = require('axios')
 import BounceLoader from "react-spinners/BounceLoader"
-import { connect } from 'react-redux';
-import Category from './Category/Category';
-import { of, subscribe, merge, pipe, BehaviorSubject, Observable, combineLatest } from "rxjs";
+import Category from './Category/Category'
+import { BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss';
+import Nav from '../Nav/Nav';
 
 // object for accessing human readable versions of recipe tag categories
 const filterTextMap = {
@@ -72,7 +72,6 @@ class Dashboard extends React.Component {
       })
     })
     .catch((err) => {
-      console.log(err)
       this.setState({
         recipes_loaded: false
       })
@@ -90,7 +89,6 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    !this.props.loggedIn ? this.props.history.push('/login') : null
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
     let Appear = () => {
@@ -114,6 +112,13 @@ class Dashboard extends React.Component {
     
     let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters'))
     if (userFiltersSaved) {
+      let selectedFilters = 0
+      for (const property in userFiltersSaved) {
+        if (userFiltersSaved[property]) {
+          selectedFilters++
+        }
+      }
+      selectedFilterSubject.next(selectedFilters)
       appliedFiltersSubject.next(userFiltersSaved)  
     }
     
@@ -188,6 +193,7 @@ class Dashboard extends React.Component {
 
     return (
       <>
+      <Nav loggedIn={true}/>
       <div className="title">
         <div>
           <h1>Recipe Box</h1>
@@ -252,10 +258,4 @@ class Dashboard extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.loggedIn
-  }
-}
-
-export default connect(mapStateToProps)(Dashboard);
+export default(Dashboard);

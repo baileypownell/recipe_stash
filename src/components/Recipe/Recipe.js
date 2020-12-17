@@ -4,6 +4,7 @@ const axios = require('axios')
 import './Recipe.scss'
 import M from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
+import Nav from '../Nav/Nav'
 
 class Recipe extends React.Component {
 
@@ -116,27 +117,25 @@ class Recipe extends React.Component {
       })
     })
     .catch((err) => {
-      this.props.history.push('/login')
       console.log(err)
     })
   }
 
   componentDidMount() {
-    // get data
     this.fetchData()
   }
 
   openModal = () => {
     let singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
     let instance = M.Modal.getInstance(singleModalElem)
-    instance.open();
-    M.updateTextFields();
+    instance.open()
+    M.updateTextFields()
   }
 
   closeModal = () => {
     let singleModalElem = document.querySelector(`.modal`);
     let instance = M.Modal.getInstance(singleModalElem); 
-    instance.close();
+    instance.close()
   } 
 
   checkValidity = () => {
@@ -156,12 +155,12 @@ class Recipe extends React.Component {
     axios.delete(`/recipe/${this.state.recipeId}`)
     .then(() => {
         M.toast({html: 'Recipe deleted.'});
-        this.closeModal();
+        this.closeModal()
         this.props.history.push('/dashboard')
     })
     .catch((err) => {
       console.log(err)
-      this.closeModal();
+      this.closeModal()
       M.toast({html: 'There was an error.'})
     })
 
@@ -236,6 +235,7 @@ class Recipe extends React.Component {
 
     return (
       <>
+      <Nav loggedIn={true}/>
         {
           loaded ? 
           <>
