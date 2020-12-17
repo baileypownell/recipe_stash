@@ -91,7 +91,6 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    !this.props.loggedIn ? this.props.history.push('/login') : null
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
     let Appear = () => {
@@ -261,10 +260,4 @@ class Dashboard extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.loggedIn
-  }
-}
-
-export default connect(mapStateToProps)(Dashboard);
+export default(Dashboard);

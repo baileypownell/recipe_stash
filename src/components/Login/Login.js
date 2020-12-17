@@ -1,10 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
-const axios = require('axios');
-import ClipLoader from "react-spinners/ClipLoader";
-import * as actions from '../../store/actionCreators';
-import GoogleLogin from 'react-google-login';
-import './Login.scss';
+import React from 'react'
+const axios = require('axios')
+import ClipLoader from "react-spinners/ClipLoader"
+import GoogleLogin from 'react-google-login'
+import './Login.scss'
 import M from 'materialize-css'
 import Nav from '../Nav/Nav'
 
@@ -182,11 +180,4 @@ class Login extends React.Component {
     )
   }
 }
-
-const mapDispatchToProps = dispatch => {
-  return {
-    login: () => dispatch(actions.login())
-  }
-}
-
-export default connect(null, mapDispatchToProps)(Login);
+export default Login;

@@ -1,6 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import * as actions from '../../store/actionCreators'
 import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
@@ -198,11 +196,4 @@ class Signup extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    login: () => dispatch(actions.login())
-  }
-}
-
-
-export default connect(null, mapDispatchToProps)(Signup);
+export default Signup;

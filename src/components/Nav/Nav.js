@@ -1,11 +1,9 @@
-import React from 'react';
-import { NavLink, Link } from "react-router-dom";
-import icon from '../../images/apple-touch-icon.png';
+import React from 'react'
+import { NavLink, Link } from "react-router-dom"
+import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
-import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
-import * as actions from '../../store/actionCreators';
-const axios = require('axios');
+import { withRouter } from "react-router-dom"
+const axios = require('axios')
 
 class Nav extends React.Component {
 
@@ -55,17 +53,4 @@ class Nav extends React.Component {
   }
 }
 
-// const mapStateToProps = state => {
-//   return {
-//     loggedIn: state.loggedIn
-//   }
-// }
-
-const mapDispatchToProps = dispatch => {
-  return {
-    logout: () => dispatch(actions.logout()),
-    login: () => dispatch(actions.login())
-  }
-}
-
-export default withRouter(connect(null, mapDispatchToProps)(Nav));
+export default withRouter(Nav);

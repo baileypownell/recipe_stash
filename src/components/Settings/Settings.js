@@ -1,7 +1,5 @@
 import React from 'react'
 import { withRouter } from "react-router-dom"
-import { connect } from 'react-redux'
-import * as actions from '../../store/actionCreators'
 import axios from 'axios'
 import M from 'materialize-css'
 import './Settings.scss'
@@ -23,7 +21,7 @@ class Settings extends React.Component {
   logout = () => {
     axios.get('/logout')
     .then((res) => {
-      this.props.logout();
+      // this.props.logout();
       this.props.history.push('/home');
     })
     .catch((err) => {
@@ -48,7 +46,6 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    !this.props.loggedIn ? this.props.history.push('/home') : null
     let faded = document.querySelectorAll('.fade');
     let Appear = () => {
       for (let i = 0; i <faded.length; i++) {
@@ -82,7 +79,7 @@ class Settings extends React.Component {
         this.updateView()
       })
       .catch(err => {
-        this.props.logout();
+        // this.props.logout();
         this.props.history.push('/login');
       })
   }
@@ -110,7 +107,7 @@ class Settings extends React.Component {
     axios.delete(`/user`)
     .then((res) => {
       M.toast({html: 'Account deleted.'})
-      this.props.logout()
+      //this.props.logout()
       this.props.history.push('/home')
     })
     .catch((err) => {
@@ -231,17 +228,4 @@ class Settings extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.loggedIn
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    logout: () => dispatch(actions.logout())
-  }
-}
-
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings));
+export default withRouter(Settings);

@@ -1,7 +1,5 @@
 import React from 'react';
 import mobileView from '../../images/mobile_dashboard_edited.png'
-import { connect, compose } from 'react-redux';
-import * as actions from '../../store/actionCreators';
 import { withRouter } from 'react-router'
 import Nav from '../Nav/Nav'
 
@@ -49,10 +47,4 @@ class Home extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    logout: () => dispatch(actions.logout())
-  }
-}
-
-export default withRouter(connect(null, mapDispatchToProps)(Home));
+export default withRouter(Home);
