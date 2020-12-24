@@ -25,7 +25,7 @@ const mealCategories = {
   lunch: 'Lunch', 
   dinner: 'Dinner',
   side_dish: 'Side Dish',
-  dessert: 'Desser', 
+  dessert: 'Dessert', 
   drinks: 'Drinks', 
   other: 'Other',
 }
