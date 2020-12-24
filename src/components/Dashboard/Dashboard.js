@@ -189,9 +189,10 @@ class Dashboard extends React.Component {
   render() {
     const { filteredRecipes, recipes_loaded } = this.state;
 
-    const filterDropDownMap = new Map();
+    // using an array, as iterating over an object produces inconsistent ordering of object properties in some browsers
+    const filterDropDownArray = [];
     for (const val in appliedFiltersSubject.getValue()) {
-      filterDropDownMap.set(val, appliedFiltersSubject.getValue()?.[val])
+      filterDropDownArray.push({ filterValue: val, boolean: appliedFiltersSubject.getValue()?.[val]})
     }
 
     return (
@@ -217,16 +218,16 @@ class Dashboard extends React.Component {
 
             <ul id='dropdown' className='dropdown-content'>
               {
-                Array.from(filterDropDownMap).map(filterCategory => {
+                filterDropDownArray.map(filterCategory => {
                   return (
-                      <li key={filterCategory[0]} >
+                      <li key={filterCategory.filterValue} >
                           <label>
                             <input 
-                              checked={filterCategory[1]} 
-                              id={filterCategory[0]} 
+                              checked={filterCategory.boolean} 
+                              id={filterCategory.filterValue} 
                               onClick={this.filter} 
                               type="checkbox" />
-                          <span>{filterTextMap[filterCategory[0]]}</span>
+                          <span>{filterTextMap[filterCategory.filterValue]}</span>
                           </label>
                       </li>
                     )
