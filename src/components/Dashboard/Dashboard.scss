@@ -190,4 +190,15 @@
     width: 100%;
     padding: 0 10px;
   }
+  p {
+    color: $secondary;
+    border-bottom: 1px solid $secondary;
+    font-weight: 700;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
+}
+
+.dropdown-content li {
+  min-height: 35px!important;
 }

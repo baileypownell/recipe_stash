@@ -32,6 +32,18 @@ const appliedFiltersSubject = new BehaviorSubject({
   vegetarian: false, 
 })
 let appliedFilters$ = appliedFiltersSubject.asObservable()
+const appliedCategorySubject = new BehaviorSubject({
+  breakfast: false, 
+  lunch: false, 
+  dinner: false, 
+  side_dish: false, 
+  dessert: false, 
+  drinks: false, 
+  other: false
+})
+let appliedCategory$ = appliedCategorySubject.asObservable()
+
+appliedCategory$.subscribe(res => console.log(res))
 
 let unfilteredRecipesSubject = new BehaviorSubject(null)
 let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
@@ -109,9 +121,10 @@ class Dashboard extends React.Component {
     
     combineLatest([
       appliedFilters$,
+      appliedCategory$,
       userInput$,
       unfilteredRecipes$
-    ]).subscribe(([filters, input, recipes]) => {
+    ]).subscribe(([filters, categoryFilters, input, recipes]) => {
       window.sessionStorage.setItem('filters', JSON.stringify(filters))
       window.sessionStorage.setItem('userInput', input)
       let newFilteredRecipesState = {}
@@ -147,6 +160,21 @@ class Dashboard extends React.Component {
     })
   }
 
+  calculateSelectedFiltersNumber() {
+    let selectedFilters = 0
+    for (const property in appliedFiltersSubject.getValue()) {
+      if (appliedFiltersSubject.getValue()[property]) {
+        selectedFilters++
+      }
+    }
+    for (const property in appliedCategorySubject.getValue()) {
+      if (appliedCategorySubject.getValue()[property]) {
+        selectedFilters++
+      }
+    }
+    selectedFilterSubject.next(selectedFilters)
+  }
+
   filter = (e) => {
     let currentState = appliedFiltersSubject.getValue()[e.target.id]
     let filter = {
@@ -154,13 +182,17 @@ class Dashboard extends React.Component {
       [e.target.id]: !currentState,
     }
     appliedFiltersSubject.next(filter)
-    let selectedFilters = 0
-    for (const property in filter) {
-      if (filter[property]) {
-        selectedFilters++
-      }
+    this.calculateSelectedFiltersNumber()
+  }
+
+  filterByCategory = (e) => {
+    let currentState = appliedCategorySubject.getValue()[e.target.id]
+    let filter = {
+      ...appliedCategorySubject.getValue(), 
+      [e.target.id]: !currentState
     }
-    selectedFilterSubject.next(selectedFilters)
+    appliedCategorySubject.next(filter)
+    this.calculateSelectedFiltersNumber()
   }
 
   updateDashboard = () => {
@@ -176,6 +208,7 @@ class Dashboard extends React.Component {
   render() {
     const { filteredRecipes, recipes_loaded } = this.state;
     const appliedFilt = appliedFiltersSubject.getValue();
+    const appliedCat = appliedCategorySubject.getValue();
 
     let filterArray = [
       {key: "dairy_free", name: 'Dairy Free'}, 
@@ -187,6 +220,16 @@ class Dashboard extends React.Component {
       {key: "sugar_free", name: 'Sugar Free'}, 
       {key: "vegan", name: 'Vegan'}, 
       {key: "vegetarian", name: 'Vegetarian'}
+    ];
+
+    let filterCategoryArray = [
+      {key: "breakfast", name: mealCategories['breakfast']},
+      {key: "lunch", name: mealCategories['lunch']},
+      {key: "dinner", name: mealCategories['dinner']}, 
+      {key: "side_dish", name: mealCategories['side_dish']}, 
+      {key: "dessert", name: mealCategories['dessert']},
+      {key: "drinks", name: mealCategories['drinks']}, 
+      {key: "other", name: mealCategories['other']}
     ];
 
     return (
@@ -210,10 +253,11 @@ class Dashboard extends React.Component {
               }
             </button>
             <ul id='dropdown' className='dropdown-content'>
+              <p>Features</p>
                 {
-                  filterArray.map(item => {
+                  filterArray.map((item, index) => {
                     return (
-                      <li key={item.key} >
+                      <li key={index} >
                         <label>
                           <input 
                             checked={appliedFilt[item.key]} 
@@ -221,6 +265,23 @@ class Dashboard extends React.Component {
                             onClick={this.filter} 
                             type="checkbox" />
                           <span>{item.name}</span>
+                          </label>
+                      </li>
+                    )
+                  })
+                }
+              <p>Categories</p>
+                {
+                  filterCategoryArray.map((item, index) => {
+                    return (
+                      <li key={index}>
+                        <label>
+                            <input 
+                              checked={appliedCat[item.key]} 
+                              id={item.key} 
+                              onClick={this.filterByCategory}
+                              type="checkbox" />
+                            <span>{item.name}</span>
                           </label>
                       </li>
                     )
