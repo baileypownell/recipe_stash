@@ -6,19 +6,6 @@ import { BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss'
 import Nav from '../Nav/Nav'
 
-// object for accessing human readable versions of recipe tag categories
-const filterTextMap = {
-  dairy_free: 'Dairy Free', 
-  easy: 'Easy',
-  gluten_free: 'Gluten Free', 
-  healthy: 'Healthy', 
-  keto: 'Keto', 
-  no_bake: 'No Bake', 
-  sugar_free: 'Sugar Free', 
-  vegan: 'Vegan', 
-  vegetarian: 'Vegetarian'
-}
-
 // object for iterating through meal cateogries 
 const mealCategories = {
   breakfast: 'Breakfast',
@@ -190,7 +177,17 @@ class Dashboard extends React.Component {
     const { filteredRecipes, recipes_loaded } = this.state;
     const appliedFilt = appliedFiltersSubject.getValue();
 
-    let filterArray = ["dairy_free", "easy", "gluten_free", "healthy", "keto", "no_bake", "sugar_free", "vegan", "vegetarian"];
+    let filterArray = [
+      {key: "dairy_free", name: 'Dairy Free'}, 
+      {key: "easy", name: 'Easy'}, 
+      {key: "gluten_free", name: 'Gluten Free'}, 
+      {key: "healthy", name: 'Healthy'}, 
+      {key: "keto", name: 'Keto'}, 
+      {key: "no_bake", name: 'No Bake'}, 
+      {key: "sugar_free", name: 'Sugar Free'}, 
+      {key: "vegan", name: 'Vegan'}, 
+      {key: "vegetarian", name: 'Vegetarian'}
+    ];
 
     return (
       <>
@@ -212,99 +209,23 @@ class Dashboard extends React.Component {
                 selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
               }
             </button>
-
-            {/* This is purposefully not DRY, as iterating over an array, Map, or object resulted in unexpected listitem re-ordering in iOS Chrome */}
             <ul id='dropdown' className='dropdown-content'>
-              <li key={filterArray[0]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[0]]} 
-                    id={filterArray[0]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[0]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[1]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[1]]} 
-                    id={filterArray[1]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[1]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[2]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[2]]} 
-                    id={filterArray[2]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[2]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[3]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[3]]} 
-                    id={filterArray[3]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[3]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[4]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[4]]} 
-                    id={filterArray[4]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[4]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[5]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[5]]} 
-                    id={filterArray[5]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[5]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[6]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[6]]} 
-                    id={filterArray[6]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[6]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[7]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[7]]} 
-                    id={filterArray[7]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[7]]}</span>
-                  </label>
-              </li>
-              <li key={filterArray[8]} >
-                <label>
-                  <input 
-                    checked={appliedFilt[filterArray[8]]} 
-                    id={filterArray[8]} 
-                    onClick={this.filter} 
-                    type="checkbox" />
-                  <span>{filterTextMap[filterArray[8]]}</span>
-                  </label>
-              </li>
+                {
+                  filterArray.map(item => {
+                    return (
+                      <li key={item.key} >
+                        <label>
+                          <input 
+                            checked={appliedFilt[item.key]} 
+                            id={item.key} 
+                            onClick={this.filter} 
+                            type="checkbox" />
+                          <span>{item.name}</span>
+                          </label>
+                      </li>
+                    )
+                  })
+                }
             </ul>
           </div>
           </div>
