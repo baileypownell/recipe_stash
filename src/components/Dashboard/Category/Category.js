@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
-import AddRecipe from './AddRecipe/AddRecipe';
-import Square from './Square/Square';
+import React, { useEffect } from 'react'
+import AddRecipe from './AddRecipe/AddRecipe'
+import Square from './Square/Square'
 
 const Category = (props) => {
   useEffect(() => {
-      let opacity = document.querySelectorAll('.opacity');
+      let opacity = document.querySelectorAll('.opacity')
       let Appear = () => {
         for (let i = 0; i < opacity.length; i++) {
-        opacity[i].classList.add('maxOpacity');
+        opacity[i].classList.add('maxOpacity')
         }
       }
       setTimeout(Appear, 300);
   })
-  const { title, id, recipes } = props;
+  const { title, id, recipes, visibility } = props;
     return (
-      <>
+      <div className={visibility === 'true' ? 'visible category' : 'invisible category'}>
         <h3 className="opacity">{title}</h3>
         <div className="recipeBox opacity">
           <AddRecipe
@@ -30,7 +30,7 @@ const Category = (props) => {
               })
           : null}
         </div>
-      </>
+      </div>
     )
 }
 

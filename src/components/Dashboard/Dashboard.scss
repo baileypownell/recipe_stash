@@ -180,10 +180,6 @@
 #dropdown {
   min-width: 210px;
   overflow-x: hidden;
-  top: 168px!important;
-  @include tablet {
-    top: 130px!important;
-  }
   li {
     display: flex;
   }
@@ -194,4 +190,27 @@
     width: 100%;
     padding: 0 10px;
   }
+  p {
+    color: $secondary;
+    border-bottom: 1px solid $secondary;
+    font-weight: 700;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
+}
+
+.dropdown-content li {
+  min-height: 35px!important;
+}
+
+.category {
+  transition: all .4s;
+}
+
+.invisible {
+  display: none;
+}
+
+.visible {
+  display: block;
 }
