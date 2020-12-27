@@ -218,13 +218,7 @@ class Dashboard extends React.Component {
         allFalse = false
         break
       }
-      // if (!cat[1] && i === 6) {
-      //   console.log('cat ', cat[1])
-      //   allFalse = true
-      // } 
     }
-
-    console.log(allFalse)
 
     let filterArray = [
       {key: "dairy_free", name: 'Dairy Free'}, 
