@@ -43,8 +43,6 @@ const appliedCategorySubject = new BehaviorSubject({
 })
 let appliedCategory$ = appliedCategorySubject.asObservable()
 
-appliedCategory$.subscribe(res => console.log(res))
-
 let unfilteredRecipesSubject = new BehaviorSubject(null)
 let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 
@@ -214,6 +212,20 @@ class Dashboard extends React.Component {
     const appliedFilt = appliedFiltersSubject.getValue();
     const appliedCat = appliedCategorySubject.getValue();
 
+    let allFalse = true
+    for (const [i, cat] of Object.entries(appliedCat).entries()) {
+      if (cat[1]) {
+        allFalse = false
+        break
+      }
+      // if (!cat[1] && i === 6) {
+      //   console.log('cat ', cat[1])
+      //   allFalse = true
+      // } 
+    }
+
+    console.log(allFalse)
+
     let filterArray = [
       {key: "dairy_free", name: 'Dairy Free'}, 
       {key: "easy", name: 'Easy'}, 
@@ -311,6 +323,7 @@ class Dashboard extends React.Component {
                   return <Category
                     title={mealCategories[mealCat]}
                     id={mealCat}
+                    visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
                     recipes={filteredRecipes[mealCat]}
                     updateDashboard={this.updateDashboard}
                   >

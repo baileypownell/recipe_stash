@@ -202,3 +202,15 @@
 .dropdown-content li {
   min-height: 35px!important;
 }
+
+.category {
+  transition: all .4s;
+}
+
+.invisible {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
