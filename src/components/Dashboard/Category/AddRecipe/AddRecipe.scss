@@ -66,3 +66,11 @@
 .collapsible-body {
     text-align: left!important;
 }
+
+.add-button {
+    background-color: $orange!important;
+    margin-bottom: 10px;
+    i {
+        margin-left: 5px;
+    }
+}
