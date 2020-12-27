@@ -111,13 +111,7 @@ class Dashboard extends React.Component {
     
     let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters'))
     if (userFiltersSaved) {
-      let selectedFilters = 0
-      for (const property in userFiltersSaved) {
-        if (userFiltersSaved[property]) {
-          selectedFilters++
-        }
-      }
-      selectedFilterSubject.next(selectedFilters)
+      this.calculateSelectedFiltersNumber()
       appliedFiltersSubject.next(userFiltersSaved)  
     }
     
