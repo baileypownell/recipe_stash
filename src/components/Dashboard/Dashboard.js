@@ -70,6 +70,10 @@ class Dashboard extends React.Component {
       })
     })
     .catch((err) => {
+      if (err.response.status === 401) {
+        // unathenticated; redirect to log in 
+        this.props.history.push('/login')
+      }
       this.setState({
         recipes_loaded: false
       })
