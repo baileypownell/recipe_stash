@@ -53,6 +53,7 @@ class Dashboard extends React.Component {
   state = {
     recipes_loaded: false,
     filteredRecipes: null,
+    gridView: true,
   }
 
   fetchRecipes = () => {
@@ -114,6 +115,13 @@ class Dashboard extends React.Component {
       this.calculateSelectedFiltersNumber()
       appliedFiltersSubject.next(userFiltersSaved)  
     }
+
+    // set gridView 
+    let gridView = JSON.parse(window.sessionStorage.getItem('gridView'))
+    this.setState({
+      gridView
+    })
+    
     
     combineLatest([
       appliedFilters$,
@@ -201,8 +209,17 @@ class Dashboard extends React.Component {
     userInputSubject.next(input)
   }
 
+  toggleView = (e) => {    
+    let val = !!(e.target.id === 'grid')
+    this.setState({
+      gridView: val
+    }, () => {
+      window.sessionStorage.setItem('gridView', val)
+    })
+  }
+
   render() {
-    const { filteredRecipes, recipes_loaded } = this.state;
+    const { filteredRecipes, recipes_loaded, gridView } = this.state;
     const appliedFilt = appliedFiltersSubject.getValue();
     const appliedCat = appliedCategorySubject.getValue();
 
@@ -306,16 +323,21 @@ class Dashboard extends React.Component {
             </div>
             :
             <>
+              <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
+              <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
               {
                 Object.keys(mealCategories).map(mealCat => {
-                  return <Category
-                    title={mealCategories[mealCat]}
-                    id={mealCat}
-                    visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
-                    recipes={filteredRecipes[mealCat]}
-                    updateDashboard={this.updateDashboard}
-                  >
-                  </Category>
+                  return (
+                      <Category
+                        title={mealCategories[mealCat]}
+                        id={mealCat}
+                        visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
+                        gridView={gridView}
+                        recipes={filteredRecipes[mealCat]}
+                        updateDashboard={this.updateDashboard}
+                      >
+                      </Category>                       
+                  )
                 })
               }
             </>

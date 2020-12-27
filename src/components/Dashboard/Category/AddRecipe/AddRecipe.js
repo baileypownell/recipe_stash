@@ -160,7 +160,7 @@ class AddRecipe extends React.Component {
 
   
   render() {
-    const { id } = this.props;
+    const { id, gridView } = this.props;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -173,15 +173,16 @@ class AddRecipe extends React.Component {
 
     return (
       <>
-        <div
+        { gridView ? <div
             onClick={this.openModal}
             className="addRecipe z-depth-4"
             id={id}
              >
             <i className="fas fa-plus-circle"></i>
-        </div>
+        </div> : <a onClick={this.openModal} className="waves-effect waves-light btn add-button">Add Recipe<i className="fas fa-plus-circle"></i></a>
+      }
 
-            <div id={`${this.props.id}_modal`} className="modal">
+        <div id={`${this.props.id}_modal`} className="modal">
               <h1 className="Title">New Recipe</h1>
               <div className="recipe">
               <div>

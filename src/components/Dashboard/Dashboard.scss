@@ -100,7 +100,6 @@
       border-radius: 5px;
       border: 2px solid $primary;
       cursor: pointer;
-      // flex-grow: 1;
       transition: background-color .5s;
       &:hover {
         background-color: $primary-transparent;
@@ -205,6 +204,7 @@
 
 .category {
   transition: all .4s;
+  padding: 10px 0;
 }
 
 .invisible {
