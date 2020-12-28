@@ -10,7 +10,7 @@ And the answer isn't pinning recipes on a website that may not even exist in 20 
 
 #### Built with React, MaterializeCSS, RxJS, Node, & PostgreSQL.
 
-## [Visit the web app](https://glacial-savannah-05736.herokuapp.com/login)
+## [Visit the web app](https://virtual-cookbook-1.herokuapp.com/)
 
 <img src="src/images/mobile_dashboard.png" width="300">
 <img src="src/images/recipe_mobile.png" width="300">
