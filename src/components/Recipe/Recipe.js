@@ -118,6 +118,10 @@ class Recipe extends React.Component {
     })
     .catch((err) => {
       console.log(err)
+      if (err.response.status === 401) {
+        // unathenticated; redirect to log in 
+        this.props.history.push('/login')
+      }
     })
   }
 
