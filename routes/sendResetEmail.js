@@ -65,7 +65,7 @@ router.post('/', (request, response, next) => {
 
 router.get('/:token', (request, response, next) => {
   let token = request.params.token;
-  client.query('SELECT * FROM users WHERE reset_password_token=$1',
+  client.query('SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1',
   [token],
    (err, res) => {
     if (err) return next(err)
@@ -74,7 +74,8 @@ router.get('/:token', (request, response, next) => {
       if ( res.rows[0].reset_password_expires > now ) {
         return response.status(200).send({
           success: true,
-          message: 'Password reset link is valid.'
+          message: 'Password reset link is valid.',
+          user_email: res.rows[0].email
         })
       } else {
         return response.status(403).send({ message: 'The token is expired.'})

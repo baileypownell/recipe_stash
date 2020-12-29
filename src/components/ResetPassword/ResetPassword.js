@@ -1,9 +1,11 @@
-import React from 'react';
-import { withRouter } from "react-router-dom";
-const axios = require('axios');
-import ClipLoader from "react-spinners/ClipLoader";
-import M from 'materialize-css';
-import './ResetPassword.scss';
+import React from 'react'
+import { withRouter } from "react-router-dom"
+const axios = require('axios')
+import ClipLoader from "react-spinners/ClipLoader"
+import M from 'materialize-css'
+import './ResetPassword.scss'
+import Nav from '../Nav/Nav'
+import { setUserLoggedIn } from '../../auth-session'
 
 class ResetPassword extends React.Component {
 
@@ -25,7 +27,8 @@ class ResetPassword extends React.Component {
         })
       } else {
         this.setState({
-          invalidLink: false
+          invalidLink: false,
+          email: res.data.user_email
         })
       }
     })
@@ -69,9 +72,22 @@ class ResetPassword extends React.Component {
     .then(res => {
       this.setState({
         loading: false
-      });
+      })
       M.toast({html: 'Password updated!'})
-      this.props.history.push('/dashboard')
+      // log the user in here
+      axios.post(`/signin`, {
+        password: this.state.password, 
+        email: this.state.email
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setUserLoggedIn(res.data.sessionID)
+          this.props.history.push(`/dashboard`)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     })
     .catch((err) => {
       this.setState({
@@ -84,33 +100,39 @@ class ResetPassword extends React.Component {
   render() {
     if (this.state.invalidLink) {
       return (
-        <div className="invalidLink">
-          <h3>The link is invalid or expired.</h3>
-          <button className="waves-effect waves-light btn" onClick={this.goHome}>Home</button>
-        </div>
+        <>
+            <Nav loggedIn={false}/>
+            <div className="invalidLink">
+              <h3>The link is invalid or expired.</h3>
+              <button className="waves-effect waves-light btn" onClick={this.goHome}>Home</button>
+            </div>
+        </>
       )
     } else {
       return (
-        <div className="resetPassword">
-          <h4>New Password</h4>
-          <form onSubmit={this.updatePassword}>
-          <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
-          {this.state.passwordInvalid && this.state.password !== '' ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
-          <button
-            disabled={this.state.passwordInvalid} 
-            className="waves-effect waves-light btn"
-            >
-            {this.state.loading?
-              <ClipLoader
-                css={`border-color: white;`}
-                size={30}
-                color={"#689943"}
-                loading={this.state.loading}
-              />
-          : 'Submit'}
-          </button>
-          </form>
-        </div>
+        <>
+          <Nav loggedIn={false}/>
+          <div className="resetPassword">
+            <h4>New Password</h4>
+            <form onSubmit={this.updatePassword}>
+            <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
+            {this.state.passwordInvalid && this.state.password.lengh > 0 ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
+            <button
+              disabled={this.state.passwordInvalid} 
+              className="waves-effect waves-light btn"
+              >
+              {this.state.loading?
+                <ClipLoader
+                  css={`border-color: white;`}
+                  size={30}
+                  color={"#689943"}
+                  loading={this.state.loading}
+                />
+            : 'Submit'}
+            </button>
+            </form>
+          </div>
+        </>
       )
     }
   }
