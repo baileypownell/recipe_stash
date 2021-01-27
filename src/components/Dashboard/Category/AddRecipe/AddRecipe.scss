@@ -74,3 +74,11 @@
         margin-left: 5px;
     }
 }
+
+.fr-box button {
+    background-color: transparent!important; 
+    &:hover,
+    &:active {
+        background-color: rgb(214, 214, 214)!important;
+    }
+}

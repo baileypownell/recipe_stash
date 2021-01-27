@@ -2,6 +2,11 @@ import React from 'react';
 import M from 'materialize-css';
 import './AddRecipe.scss';
 const axios = require('axios');
+// Require Editor CSS files.
+import '../../../../../node_modules/froala-editor/css/froala_style.min.css';
+import '../../../../../node_modules/froala-editor/css/froala_editor.pkgd.min.css';
+
+import FroalaEditorComponent from 'react-froala-wysiwyg';
 
 class AddRecipe extends React.Component {
 
@@ -158,6 +163,12 @@ class AddRecipe extends React.Component {
     this.setState({tags});
   }
 
+  handleModelChange = (html) => {
+    this.setState({
+      recipe_title: html
+    });
+  }
+
   
   render() {
     const { id, gridView } = this.props;
@@ -187,8 +198,17 @@ class AddRecipe extends React.Component {
               <div className="recipe">
               <div>
                   <div className="input-field">
-                      <textarea onChange={this.updateInput} id="recipe_title" value={this.state.recipe_title || ''} className="materialize-textarea"></textarea>
-                      <label htmlFor="recipe_title">Title</label>
+                      {/* <textarea onChange={this.updateInput} id="recipe_title" value={this.state.recipe_title || ''} className="materialize-textarea"></textarea> */}
+                      <h3>Title</h3>
+                      <FroalaEditorComponent 
+                        tag='textarea'
+                        config={{
+                          events: {
+                            'change': (html) => this.handleModelChange(html)
+                          }
+                        }}
+                        model={this.state.recipe_title}
+			                  onModelChange={this.handleModelChange}/>
                   </div>
                   <div className="input-field">
                       <textarea onChange={this.updateInput} id="ingredients" value={this.state.ingredients || ''} className="materialize-textarea minHeight"></textarea>
