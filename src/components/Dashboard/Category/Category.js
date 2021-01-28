@@ -27,7 +27,15 @@ const Category = (props) => {
           {
               recipes ? recipes.map((recipe) => {
                 return (
-                  gridView ? <Square key={recipe.id} data={recipe} title={recipe.title}/> : <ListItem key={recipe.id} data={recipe} title={recipe.title}></ListItem>
+                  gridView ? <Square 
+                    key={recipe.id} 
+                    data={recipe} 
+                    rawTitle={recipe.rawTitle}/> : 
+                  <ListItem 
+                    key={recipe.id} 
+                    data={recipe} 
+                    title={recipe.title}>
+                  </ListItem>
                 )
               })
               : null

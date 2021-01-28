@@ -9,7 +9,7 @@ class Square extends React.Component {
   }
 
   render() {
-    const { data, key, title } = this.props;
+    const { data, key, rawTitle } = this.props;
     return (
       <div
         className="recipeCard z-depth-4"
@@ -17,8 +17,7 @@ class Square extends React.Component {
         data={data}
         onClick={this.viewRecipe}
       >
-        <div dangerouslySetInnerHTML={{__html: title}} />
-        {/* <h4>{title}</h4> */}
+        <h4>{rawTitle}</h4>
       </div>
     )
   }
