@@ -82,3 +82,9 @@ label {
       border-bottom:1px solid $primary!important;
   }  
 }
+
+.recipe-modal {
+  width: 100%!important;
+  max-height: 100vh!important;
+  top:0!important;
+}

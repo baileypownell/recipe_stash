@@ -5,6 +5,8 @@ const axios = require('axios');
 // Require Editor CSS files.
 import '../../../../../node_modules/froala-editor/css/froala_style.min.css';
 import '../../../../../node_modules/froala-editor/css/froala_editor.pkgd.min.css';
+import DOMPurify from 'dompurify';
+const { htmlToText } = require('html-to-text');
 
 import FroalaEditorComponent from 'react-froala-wysiwyg';
 
@@ -76,6 +78,7 @@ class AddRecipe extends React.Component {
 
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state;
+    console.log(directions, ingredients, recipe_title)
     if (directions && ingredients && recipe_title) {
       this.setState({
         recipeValid: true
@@ -98,11 +101,16 @@ class AddRecipe extends React.Component {
   createRecipe = (e) => {
     e.preventDefault();
     let tags = this.state.tags;
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title)
+    const rawTitle = htmlToText(titleHTML, {
+      wordwrap: 130
+    })
     axios.post(`/recipe`, {
-      title: this.state.recipe_title,
+      title: DOMPurify.sanitize(this.state.recipe_title),
+      rawTitle,
       category: this.state.category,
-      ingredients: this.state.ingredients,
-      directions: this.state.directions,
+      ingredients: DOMPurify.sanitize(this.state.ingredients),
+      directions: DOMPurify.sanitize(this.state.directions),
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
@@ -166,7 +174,19 @@ class AddRecipe extends React.Component {
   handleModelChange = (html) => {
     this.setState({
       recipe_title: html
-    });
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeIngredients = (html) => {
+    this.setState({
+      ingredients: html
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeDirections = (html) => {
+    this.setState({
+      directions: html
+    }, () => this.checkValidity());
   }
 
   
@@ -193,7 +213,7 @@ class AddRecipe extends React.Component {
         </div> : <a onClick={this.openModal} className="waves-effect waves-light btn add-button">Add Recipe<i className="fas fa-plus-circle"></i></a>
       }
 
-        <div id={`${this.props.id}_modal`} className="modal">
+        <div id={`${this.props.id}_modal`} className="modal recipe-modal">
               <h1 className="Title">New Recipe</h1>
               <div className="recipe">
               <div>
@@ -211,13 +231,33 @@ class AddRecipe extends React.Component {
 			                  onModelChange={this.handleModelChange}/>
                   </div>
                   <div className="input-field">
-                      <textarea onChange={this.updateInput} id="ingredients" value={this.state.ingredients || ''} className="materialize-textarea minHeight"></textarea>
-                      <label htmlFor="ingredients">Ingredients</label>
+                      {/* <textarea onChange={this.updateInput} id="ingredients" value={this.state.ingredients || ''} className="materialize-textarea minHeight"></textarea>
+                      <label htmlFor="ingredients">Ingredients</label> */}
+                      <h3>Ingredients</h3>
+                      <FroalaEditorComponent 
+                        tag='textarea'
+                        config={{
+                          events: {
+                            'change': (html) => this.handleModelChangeIngredients(html)
+                          }
+                        }}
+                        model={this.state.ingredients}
+			                  onModelChange={this.handleModelChangeIngredients}/>
                   </div>
 
                   <div className="input-field">
-                    <textarea onChange={this.updateInput} id="directions" value={this.state.directions || ''} className="materialize-textarea minHeight"></textarea>
-                    <label htmlFor="directions">Directions</label>
+                    {/* <textarea onChange={this.updateInput} id="directions" value={this.state.directions || ''} className="materialize-textarea minHeight"></textarea>
+                    <label htmlFor="directions">Directions</label> */}
+                    <h3>Directions</h3>
+                      <FroalaEditorComponent 
+                        tag='textarea'
+                        config={{
+                          events: {
+                            'change': (html) => this.handleModelChangeDirections(html)
+                          }
+                        }}
+                        model={this.state.directions}
+			                  onModelChange={this.handleModelChangeDirections}/>
                   </div>
               
                   <div >

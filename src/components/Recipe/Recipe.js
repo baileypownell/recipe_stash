@@ -225,6 +225,10 @@ class Recipe extends React.Component {
       })
   }
 
+  createMarkeup = (stateProperty) => {
+    return {__html: 'a string'}
+  }
+
   render() {
     const { ingredients, directions, recipe_title, recipeId, category, loaded } = this.state;
     const options = [
@@ -243,34 +247,36 @@ class Recipe extends React.Component {
         {
           loaded ? 
           <>
-            <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{recipe_title}</h1>
+            <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i><span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/></h1>
             <div className="recipe viewRecipe" >
               <div>
                 <div className="section">
                   <h3>Title</h3>
-                  <h2>{recipe_title}</h2>
+                  <div dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
                 </div>
                 <div className="section">
                   <h3>Ingredients</h3>
-                  {(ingredients || '').split('\n').map(function(item, key) {
+                  <div dangerouslySetInnerHTML={{__html: this.state.ingredients}} />
+                  {/* {(ingredients || '').split('\n').map(function(item, key) {
                       return (
                         <h2 key={key}>
                           {item}
                           <br/>
                         </h2>
                       )
-                    })}
+                    })} */}
                 </div>
                 <div className="section">
                   <h3>Directions </h3>
-                  {(directions || '').split('\n').map(function(item, key) {
+                  <div dangerouslySetInnerHTML={{__html: this.state.directions}}/>
+                  {/* {(directions || '').split('\n').map(function(item, key) {
                       return (
                         <h2 key={key}>
                           {item}
                           <br/>
                         </h2>
                       )
-                    })}
+                    })} */}
                 </div>
                 <div className="section">
                   <h3>Category</h3>

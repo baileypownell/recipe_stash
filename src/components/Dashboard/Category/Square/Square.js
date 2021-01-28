@@ -17,7 +17,8 @@ class Square extends React.Component {
         data={data}
         onClick={this.viewRecipe}
       >
-        <h4>{title}</h4>
+        <div dangerouslySetInnerHTML={{__html: title}} />
+        {/* <h4>{title}</h4> */}
       </div>
     )
   }
