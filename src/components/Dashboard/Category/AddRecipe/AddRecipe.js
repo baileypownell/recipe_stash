@@ -78,7 +78,6 @@ class AddRecipe extends React.Component {
 
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state;
-    console.log(directions, ingredients, recipe_title)
     if (directions && ingredients && recipe_title) {
       this.setState({
         recipeValid: true

@@ -230,7 +230,7 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { ingredients, directions, recipe_title, recipeId, category, loaded } = this.state;
+    const { recipeId, category, loaded } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -257,26 +257,10 @@ class Recipe extends React.Component {
                 <div className="section">
                   <h3>Ingredients</h3>
                   <div dangerouslySetInnerHTML={{__html: this.state.ingredients}} />
-                  {/* {(ingredients || '').split('\n').map(function(item, key) {
-                      return (
-                        <h2 key={key}>
-                          {item}
-                          <br/>
-                        </h2>
-                      )
-                    })} */}
                 </div>
                 <div className="section">
                   <h3>Directions </h3>
                   <div dangerouslySetInnerHTML={{__html: this.state.directions}}/>
-                  {/* {(directions || '').split('\n').map(function(item, key) {
-                      return (
-                        <h2 key={key}>
-                          {item}
-                          <br/>
-                        </h2>
-                      )
-                    })} */}
                 </div>
                 <div className="section">
                   <h3>Category</h3>

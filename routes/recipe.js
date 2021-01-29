@@ -39,6 +39,7 @@ const formatRecipeResponse = (recipe) => {
   return {
     id: recipe.id, 
     title: recipe.title, 
+    rawTitle: recipe.raw_title || recipe.title,
     category: recipe.category, 
     user_id: recipe.user_id, 
     ingredients: recipe.ingredients, 
@@ -108,13 +109,13 @@ router.post('/', (request, response, next) => {
     isKeto 
   } = request.body;
   if (
-    !!rawTtile &&
+    !!rawTitle &&
     !!title && 
     !!category && 
     !!ingredients && 
     !!directions
    ) {
-      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
+      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',
         [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
         (err, res) => {
           if (err) return next(err)
@@ -160,6 +161,7 @@ router.get('/:recipeId', (request, response, next) => {
         let recipe_response = {
           id: recipe.id, 
           title: recipe.title, 
+          rawTitle: recipe.rawTitle || recipe.title,
           category: recipe.category, 
           user_id: recipe.user_id, 
           ingredients: recipe.ingredients, 
