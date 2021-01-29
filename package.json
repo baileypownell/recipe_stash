@@ -51,6 +51,7 @@
     "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^2.0.4",
     "pg": "^8.3.0",
+    "quill": "^1.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-froala-wysiwyg": "^3.2.6",

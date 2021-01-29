@@ -274,7 +274,10 @@ class Recipe extends React.Component {
         {
           loaded ? 
           <>
-            <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i><span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/></h1>
+            <h1 className="Title">
+              <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
+              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
+            </h1>
             <div className="recipe viewRecipe" >
               <div>
                 <div className="section">
@@ -307,37 +310,40 @@ class Recipe extends React.Component {
           <div id={`modal_${recipeId}`} className="modal recipe-modal">
             <h1 className="Title">Edit Recipe</h1>
             <div className="recipe">
-            <div>
-            <FroalaEditorComponent 
-              tag='textarea'
-              config={{
-                events: {
-                  'change': (html) => this.handleModelChange(html)
-                }
-              }}
-              model={this.state.recipe_title_edit}
-              onModelChange={this.handleModelChange}
-            />
-            <FroalaEditorComponent 
-              tag='textarea'
-              config={{
-                events: {
-                  'change': (html) => this.handleModelChangeIngredients(html)
-                }
-              }}
-              model={this.state.ingredients_edit}
-              onModelChange={this.handleModelChangeIngredients}
-            />
-            <FroalaEditorComponent 
-              tag='textarea'
-              config={{
-                events: {
-                  'change': (html) => this.handleModelChangeDirections(html)
-                }
-              }}
-              model={this.state.directions_edit}
-              onModelChange={this.handleModelChangeDirections}
-            />       
+              <div>
+                <h3>Title</h3>
+                  <FroalaEditorComponent 
+                  tag='textarea'
+                  config={{
+                    events: {
+                      'change': (html) => this.handleModelChange(html)
+                    }
+                  }}
+                  model={this.state.recipe_title_edit}
+                  onModelChange={this.handleModelChange}
+                />
+                <h3>Ingredients</h3>
+                <FroalaEditorComponent 
+                  tag='textarea'
+                  config={{
+                    events: {
+                      'change': (html) => this.handleModelChangeIngredients(html)
+                    }
+                }}
+                model={this.state.ingredients_edit}
+                onModelChange={this.handleModelChangeIngredients}
+              />
+              <h3>Directions</h3>
+              <FroalaEditorComponent 
+                tag='textarea'
+                config={{
+                  events: {
+                    'change': (html) => this.handleModelChangeDirections(html)
+                  }
+                }}
+                model={this.state.directions_edit}
+                onModelChange={this.handleModelChangeDirections}
+              />       
             <div className="options">
               <h3>Category</h3>
               <div className="select">
@@ -366,7 +372,8 @@ class Recipe extends React.Component {
               </div>
                     
             </div>
-            <div className="modal-close-buttons">
+          </div> 
+          <div className="modal-close-buttons">
               <button id="delete" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
               <div>
                 <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
@@ -377,7 +384,6 @@ class Recipe extends React.Component {
                 </button>
               </div>
             </div>
-          </div> 
         </div>
           </> :  
           <div className="BounceLoader">

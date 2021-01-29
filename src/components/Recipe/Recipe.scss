@@ -18,6 +18,10 @@
   align-items: flex-end;
   > div {
     width: 100%;
+    @include desktop {
+      width: 55%;
+      margin: 0 auto;
+    }
   }
   @include desktop {
     margin: 0 auto;
@@ -125,4 +129,8 @@
 
 .options {
   padding: 10px 0;
+}
+
+.fr-box {
+  margin: 10px 0;
 }

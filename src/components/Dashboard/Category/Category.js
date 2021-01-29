@@ -34,7 +34,7 @@ const Category = (props) => {
                   <ListItem 
                     key={recipe.id} 
                     data={recipe} 
-                    title={recipe.title}>
+                    rawTitle={recipe.rawTitle}>
                   </ListItem>
                 )
               })

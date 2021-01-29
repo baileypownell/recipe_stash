@@ -216,9 +216,8 @@ class AddRecipe extends React.Component {
               <h1 className="Title">New Recipe</h1>
               <div className="recipe">
               <div>
-                  <div className="input-field">
-                      <h3>Title</h3>
-                      <FroalaEditorComponent 
+                  <h3>Title</h3>
+                  <FroalaEditorComponent 
                         tag='textarea'
                         config={{
                           events: {
@@ -227,10 +226,8 @@ class AddRecipe extends React.Component {
                         }}
                         model={this.state.recipe_title}
 			                  onModelChange={this.handleModelChange}/>
-                  </div>
-                  <div className="input-field">
-                      <h3>Ingredients</h3>
-                      <FroalaEditorComponent 
+                  <h3>Ingredients</h3>
+                  <FroalaEditorComponent 
                         tag='textarea'
                         config={{
                           events: {
@@ -239,9 +236,6 @@ class AddRecipe extends React.Component {
                         }}
                         model={this.state.ingredients}
 			                  onModelChange={this.handleModelChangeIngredients}/>
-                  </div>
-
-                  <div className="input-field">
                     <h3>Directions</h3>
                       <FroalaEditorComponent 
                         tag='textarea'
@@ -252,7 +246,6 @@ class AddRecipe extends React.Component {
                         }}
                         model={this.state.directions}
 			                  onModelChange={this.handleModelChangeDirections}/>
-                  </div>
               
                   <div >
                     <h3>Category</h3>
@@ -287,7 +280,8 @@ class AddRecipe extends React.Component {
                   </li>
                 </ul>
               </div>
-              <div className="modal-close-buttons">
+            </div>
+            <div className="modal-close-buttons">
                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
@@ -295,8 +289,6 @@ class AddRecipe extends React.Component {
                   onClick={this.createRecipe}>Save
                  </button>
               </div>
-              
-            </div>
           </div> 
       </>
       
