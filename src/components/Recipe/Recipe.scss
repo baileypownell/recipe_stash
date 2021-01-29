@@ -102,11 +102,7 @@
     width: 60%;
   }
   .section {
-    padding: 10px 0;
-    // h2 {
-    //   border-left: 1px solid $secondary; 
-    //   padding-left: 15px;
-    // }
+    padding: 0;
     .chip {
       &:hover {
         background-color: white!important;
@@ -127,10 +123,6 @@
   background-color: $orange!important;
 }
 
-.recipeTags {
+.options {
   padding: 10px 0;
 }
-
-// .input-field > label {
-//   font-size: 22px!important;
-// }

@@ -5,6 +5,13 @@ import './Recipe.scss'
 import M from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
 import Nav from '../Nav/Nav'
+// Require Editor CSS files.
+import '../../../node_modules/froala-editor/css/froala_style.min.css'
+import '../../../node_modules/froala-editor/css/froala_editor.pkgd.min.css'
+import DOMPurify from 'dompurify'
+const { htmlToText } = require('html-to-text')
+
+import FroalaEditorComponent from 'react-froala-wysiwyg'
 
 class Recipe extends React.Component {
 
@@ -193,9 +200,14 @@ class Recipe extends React.Component {
 
   updateRecipe = (e) => {
       e.preventDefault();
-      let tags = this.state.tags;
+      let tags = this.state.tags
+      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_edit)
+      const rawTitle = htmlToText(titleHTML, {
+        wordwrap: 130
+      })
       axios.put(`/recipe`, {
         title: this.state.recipe_title_edit,
+        rawTitle,
         ingredients: this.state.ingredients_edit,
         directions: this.state.directions_edit,
         recipeId: this.state.recipeId,
@@ -225,9 +237,24 @@ class Recipe extends React.Component {
       })
   }
 
-  createMarkeup = (stateProperty) => {
-    return {__html: 'a string'}
+  handleModelChange = (html) => {
+    this.setState({
+      recipe_title_edit: html
+    }, () => this.checkValidity());
   }
+
+  handleModelChangeIngredients = (html) => {
+    this.setState({
+      ingredients_edit: html
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeDirections = (html) => {
+    this.setState({
+      directions_edit: html
+    }, () => this.checkValidity());
+  }
+
 
   render() {
     const { recipeId, category, loaded } = this.state;
@@ -277,40 +304,53 @@ class Recipe extends React.Component {
                 <button onClick={this.openModal} className="btn">Edit <i className="fas fa-pen"></i></button>
               </div>
           </div>
-          <div id={`modal_${recipeId}`} className="modal">
+          <div id={`modal_${recipeId}`} className="modal recipe-modal">
             <h1 className="Title">Edit Recipe</h1>
             <div className="recipe">
             <div>
-                <div className="input-field">
-                    <textarea onChange={this.updateInput} id="recipe_title_edit" value={this.state.recipe_title_edit || ''} className="materialize-textarea"></textarea>
-                    <label className="active" htmlFor="recipe_title">Title</label>
-                </div>
-                <div className="input-field">
-                    <textarea onChange={this.updateInput} id="ingredients_edit" value={this.state.ingredients_edit || ''} className="materialize-textarea minHeight"></textarea>
-                    <label className="active" htmlFor="ingredients">Ingredients</label>
-                </div>
-
-                <div className="input-field">
-                  <textarea onChange={this.updateInput} id="directions_edit" value={this.state.directions_edit || ''} className="materialize-textarea minHeight"></textarea>
-                  <label className="active" htmlFor="directions">Directions</label>
-                </div>
-                  
-                <div >
-                  <h3>Category</h3>
-                  <div className="select">
-                    <select onChange={this.updateInput} id="category" value={this.state.category} >
-                      {
-                        options.map((val, index) => {
-                          return <option val={val.label} key={index}>{val.label}</option>
-                        })
-                      }
-                    </select>
-                  </div>
+            <FroalaEditorComponent 
+              tag='textarea'
+              config={{
+                events: {
+                  'change': (html) => this.handleModelChange(html)
+                }
+              }}
+              model={this.state.recipe_title_edit}
+              onModelChange={this.handleModelChange}
+            />
+            <FroalaEditorComponent 
+              tag='textarea'
+              config={{
+                events: {
+                  'change': (html) => this.handleModelChangeIngredients(html)
+                }
+              }}
+              model={this.state.ingredients_edit}
+              onModelChange={this.handleModelChangeIngredients}
+            />
+            <FroalaEditorComponent 
+              tag='textarea'
+              config={{
+                events: {
+                  'change': (html) => this.handleModelChangeDirections(html)
+                }
+              }}
+              model={this.state.directions_edit}
+              onModelChange={this.handleModelChangeDirections}
+            />       
+            <div className="options">
+              <h3>Category</h3>
+              <div className="select">
+                <select onChange={this.updateInput} id="category" value={this.state.category} >
+                  {
+                    options.map((val, index) => {
+                      return <option val={val.label} key={index}>{val.label}</option>
+                    })
+                  }
+                </select>
               </div>
-
-      
-
-              <div className="recipeTags">
+            </div>
+              <div className="options">
                 <h3>Recipe Tags</h3>
                 {
                   this.state.tags.map((tag, index) => {

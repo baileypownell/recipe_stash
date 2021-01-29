@@ -85,6 +85,11 @@ label {
 
 .recipe-modal {
   width: 100%!important;
-  max-height: 100vh!important;
+  min-height: 100vh !important;
   top:0!important;
+}
+
+// preserve froala bold setting 
+strong {
+  font-weight: 800!important;
 }
