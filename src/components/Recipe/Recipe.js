@@ -202,7 +202,7 @@ class Recipe extends React.Component {
   updateRecipe = (e) => {
       e.preventDefault();
       let tags = this.state.tags
-      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit)
+      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
       const rawTitle = htmlToText(titleHTML, {
         wordwrap: 130
       })
