@@ -35,14 +35,13 @@
     margin: 0;
 }
 
-// .modal {
-//     width: 90%!important;
-//     max-height: 85%!important;
-//     @include tablet {
-//         max-height: 70%!important;
-//         max-width: 700px;
-//     }
-// }
+.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+
 
 .chip {
     background-color: white!important;

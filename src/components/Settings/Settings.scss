@@ -7,13 +7,16 @@
   font-family: 'Roboto', sans-serif;
   padding: 5vw;
   @include tablet {
-    padding: 1vw;
+    padding: 20px;
   }
   i {
     padding-left: 10px;
     @include tablet {
       padding-left: 20px;
     }
+  }
+  p {
+    margin: 0;
   }
 }
 

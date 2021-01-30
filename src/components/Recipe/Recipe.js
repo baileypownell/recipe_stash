@@ -21,6 +21,7 @@ class Recipe extends React.Component {
     ingredients: null,
     directions: null,
     recipe_title_edit: null, 
+    recipe_title_raw: null,
     ingredients_edit: null, 
     directions_edit: null,
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
@@ -88,6 +89,7 @@ class Recipe extends React.Component {
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
+        recipe_title_raw: recipe.rawTitle,
         recipe_title_edit: recipe.title,
         ingredients: recipe.ingredients,
         ingredients_edit: recipe.ingredients,
@@ -276,24 +278,23 @@ class Recipe extends React.Component {
           <>
             <h1 className="Title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
-              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
+              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title_raw}}/>
             </h1>
-            <div className="recipe viewRecipe" >
+            <div className="view-recipe" >
               <div>
                 <div className="section">
-                  <h3>Title</h3>
-                  <div dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
+                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: this.state.recipe_title_raw}}/>
                 </div>
                 <div className="section">
-                  <h3>Ingredients</h3>
+                  <h3 className="default">Ingredients</h3>
                   <div dangerouslySetInnerHTML={{__html: this.state.ingredients}} />
                 </div>
                 <div className="section">
-                  <h3>Directions </h3>
+                  <h3 className="default">Directions </h3>
                   <div dangerouslySetInnerHTML={{__html: this.state.directions}}/>
                 </div>
                 <div className="section">
-                  <h3>Category</h3>
+                  <h3 className="default">Category</h3>
                   <h2>{category}</h2>
                 </div>
                 <div className="section">

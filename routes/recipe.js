@@ -177,8 +177,8 @@ router.get('/:recipeId', (request, response, next) => {
         let recipe_response = {
           id: recipe.id, 
           title: recipe.title, 
-          rawTitle: recipe.rawTitle || recipe.title,
-          category: recipe.category, 
+          rawTitle: recipe.raw_title || recipe.title,
+          category: recipe.category,  
           user_id: recipe.user_id, 
           ingredients: recipe.ingredients, 
           directions: recipe.directions, 

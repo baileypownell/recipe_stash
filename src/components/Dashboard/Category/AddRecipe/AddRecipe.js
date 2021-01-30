@@ -101,6 +101,7 @@ class AddRecipe extends React.Component {
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
+    console.log('rawTitle = ', rawTitle)
     axios.post(`/recipe`, {
       title: DOMPurify.sanitize(this.state.recipe_title),
       rawTitle,
@@ -210,9 +211,11 @@ class AddRecipe extends React.Component {
       }
 
         <div id={`${this.props.id}_modal`} className="modal recipe-modal">
-              <h1 className="Title">New Recipe</h1>
+              
               <div className="recipe">
+              
               <div>
+              <h1 className="Title fixed">New Recipe</h1>
                   <h3>Title</h3>
                   <ReactQuill  value={this.state.recipe_title} onChange={this.handleModelChange}/>
                   <h3>Ingredients</h3>

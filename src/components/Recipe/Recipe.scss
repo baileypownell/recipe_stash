@@ -16,11 +16,14 @@
   font-family: 'Roboto', sans-serif;
   padding: 30px;
   align-items: flex-end;
+  height: 100vh;
+  overflow: scroll;
   > div {
+    margin-top: 30px;
     width: 100%;
     @include desktop {
       width: 55%;
-      margin: 0 auto;
+      margin: 60px auto 80px;
     }
   }
   @include desktop {
@@ -86,7 +89,9 @@
 
 }
 
-.viewRecipe {
+.view-recipe {
+  margin: 0 auto;
+  padding: 0 20px;
   h2 {
     font-size: 18px;
   }
@@ -99,7 +104,7 @@
     }
     > div {
       width: 75%;
-      margin: 0 auto;
+      margin: 20px auto;
     }
   }
   @include desktop {
@@ -116,10 +121,10 @@
       }
     }
   }
-  h3 {
-    font-weight:800;
-    color: $green;
-
+  .default {
+    margin: 10px 0;
+    border-left: 1px solid $secondary;
+    padding-left: 10px;
   }
 }
 
@@ -133,4 +138,8 @@
 
 .fr-box {
   margin: 10px 0;
+}
+
+#recipe-title {
+  font-size: 30px;
 }
