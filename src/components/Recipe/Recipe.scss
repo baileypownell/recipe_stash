@@ -14,10 +14,17 @@
   @include flexColumn;
   justify-content: space-between;
   font-family: 'Roboto', sans-serif;
-  padding: 30px;
-  align-items: flex-end;
+  align-items: center;
+  justify-content:flex-start;
+  height: 100vh;
+  overflow: scroll;
   > div {
-    width: 100%;
+    margin-top: 85px;
+    margin-bottom: 100px;
+    width: 90%;
+    @include desktop {
+      width: 55%;
+    }
   }
   @include desktop {
     margin: 0 auto;
@@ -82,7 +89,15 @@
 
 }
 
-.viewRecipe {
+.view-recipe {
+  margin: 0 auto;
+  padding: 0 20px;
+  ul {
+    padding-left: revert!important;
+  }
+  // li {
+  //   list-style-type: inherit!important;
+  // }
   h2 {
     font-size: 18px;
   }
@@ -95,42 +110,48 @@
     }
     > div {
       width: 75%;
-      margin: 0 auto;
+      margin: 20px auto;
     }
   }
   @include desktop {
     width: 60%;
   }
   .section {
-    padding: 10px 0;
-    h2 {
-      border-left: 1px solid $secondary; 
-      padding-left: 15px;
-    }
+    padding: 0;
     .chip {
+      font-weight: normal;
       &:hover {
-        background-color: white!important;
-        color: $green!important;
         transform: none;
         cursor: inherit!important;
+        background-color: $orange!important;
       }
     }
   }
-  h3 {
-    font-weight:800;
-    color: $green;
-
+  .default {
+    margin: 10px 0;
+    border-left: 1px solid $secondary;
+    padding-left: 10px;
   }
 }
 
-#delete {
-  background-color: $orange!important;
+#primary-color {
+  background-color: $primary!important;
 }
 
-.recipeTags {
+.options {
   padding: 10px 0;
 }
 
-// .input-field > label {
-//   font-size: 22px!important;
-// }
+.fr-box {
+  margin: 10px 0;
+}
+
+#recipe-title {
+   p, h3, h2, h1 {
+    font-size: 30px;
+  }
+ }
+
+.view-recipe li {
+   list-style-type: initial!important;
+ }

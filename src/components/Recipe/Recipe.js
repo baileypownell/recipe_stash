@@ -5,6 +5,9 @@ import './Recipe.scss'
 import M from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
 import Nav from '../Nav/Nav'
+import DOMPurify from 'dompurify'
+const { htmlToText } = require('html-to-text')
+import ReactQuill from 'react-quill'
 
 class Recipe extends React.Component {
 
@@ -14,6 +17,8 @@ class Recipe extends React.Component {
     ingredients: null,
     directions: null,
     recipe_title_edit: null, 
+    recipe_title_raw: null,
+    recipe_title_raw_edit: null,
     ingredients_edit: null, 
     directions_edit: null,
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
@@ -81,6 +86,7 @@ class Recipe extends React.Component {
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
+        recipe_title_raw: recipe.rawTitle,
         recipe_title_edit: recipe.title,
         ingredients: recipe.ingredients,
         ingredients_edit: recipe.ingredients,
@@ -127,6 +133,8 @@ class Recipe extends React.Component {
 
   componentDidMount() {
     this.fetchData()
+    var elems = document.querySelectorAll('.fixed-action-btn');
+    var instances = M.FloatingActionButton.init(elems, {});
   }
 
   openModal = () => {
@@ -193,9 +201,14 @@ class Recipe extends React.Component {
 
   updateRecipe = (e) => {
       e.preventDefault();
-      let tags = this.state.tags;
+      let tags = this.state.tags
+      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+      const rawTitle = htmlToText(titleHTML, {
+        wordwrap: 130
+      })
       axios.put(`/recipe`, {
         title: this.state.recipe_title_edit,
+        rawTitle,
         ingredients: this.state.ingredients_edit,
         directions: this.state.directions_edit,
         recipeId: this.state.recipeId,
@@ -225,8 +238,28 @@ class Recipe extends React.Component {
       })
   }
 
+  handleModelChange = (content, delta, source, editor) => {
+    this.setState({
+      recipe_title_edit: content,
+      recipe_title_raw_edit: editor.getText()
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeIngredients = (html) => {
+    this.setState({
+      ingredients_edit: html
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeDirections = (html) => {
+    this.setState({
+      directions_edit: html
+    }, () => this.checkValidity());
+  }
+
+
   render() {
-    const { ingredients, directions, recipe_title, recipeId, category, loaded } = this.state;
+    const { recipeId, category, loaded } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -243,69 +276,52 @@ class Recipe extends React.Component {
         {
           loaded ? 
           <>
-            <h1 className="Title"><i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>{recipe_title}</h1>
-            <div className="recipe viewRecipe" >
+            <h1 className="Title">
+              <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
+              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title_raw}}/>
+            </h1>
+            <div className="view-recipe" >
               <div>
                 <div className="section">
-                  <h3>Title</h3>
-                  <h2>{recipe_title}</h2>
+                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
                 </div>
                 <div className="section">
-                  <h3>Ingredients</h3>
-                  {(ingredients || '').split('\n').map(function(item, key) {
-                      return (
-                        <h2 key={key}>
-                          {item}
-                          <br/>
-                        </h2>
-                      )
-                    })}
+                  <h3 className="default">Ingredients</h3>
+                  <div dangerouslySetInnerHTML={{__html: this.state.ingredients}} />
                 </div>
                 <div className="section">
-                  <h3>Directions </h3>
-                  {(directions || '').split('\n').map(function(item, key) {
-                      return (
-                        <h2 key={key}>
-                          {item}
-                          <br/>
-                        </h2>
-                      )
-                    })}
+                  <h3 className="default">Directions </h3>
+                  <div dangerouslySetInnerHTML={{__html: this.state.directions}}/>
                 </div>
                 <div className="section">
-                  <h3>Category</h3>
+                  <h3 className="default">Category</h3>
                   <h2>{category}</h2>
                 </div>
                 <div className="section">
                   {
                     this.state.tags.map((tag) => {
-                        return ( tag.selected ? <div className="chip z-depth-2">{ tag.label }</div> : null )
+                        return ( tag.selected ? <div className="chip z-depth-2 selectedTag">{ tag.label }</div> : null )
                     }) 
                   }
                 </div>
-                  
-                <button onClick={this.openModal} className="btn">Edit <i className="fas fa-pen"></i></button>
+                <div onClick={this.openModal} className="fixed-action-btn">
+                  <a className="btn-floating btn-large" id="primary-color">
+                    <i className="large material-icons">mode_edit</i>
+                  </a>
+                </div>
               </div>
           </div>
-          <div id={`modal_${recipeId}`} className="modal">
-            <h1 className="Title">Edit Recipe</h1>
+          <div id={`modal_${recipeId}`} className="modal recipe-modal">
             <div className="recipe">
-            <div>
-                <div className="input-field">
-                    <textarea onChange={this.updateInput} id="recipe_title_edit" value={this.state.recipe_title_edit || ''} className="materialize-textarea"></textarea>
-                    <label className="active" htmlFor="recipe_title">Title</label>
-                </div>
-                <div className="input-field">
-                    <textarea onChange={this.updateInput} id="ingredients_edit" value={this.state.ingredients_edit || ''} className="materialize-textarea minHeight"></textarea>
-                    <label className="active" htmlFor="ingredients">Ingredients</label>
-                </div>
-
-                <div className="input-field">
-                  <textarea onChange={this.updateInput} id="directions_edit" value={this.state.directions_edit || ''} className="materialize-textarea minHeight"></textarea>
-                  <label className="active" htmlFor="directions">Directions</label>
-                </div>
-                  
-                <div >
+              <div>
+                <h1 className="Title fixed">Edit Recipe</h1>
+                <h3>Title</h3>
+                <ReactQuill  value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
+                <h3>Ingredients</h3>
+                <ReactQuill  value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
+                <h3>Directions</h3>
+                <ReactQuill  value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
+                <div className="options">
                   <h3>Category</h3>
                   <div className="select">
                     <select onChange={this.updateInput} id="category" value={this.state.category} >
@@ -316,11 +332,8 @@ class Recipe extends React.Component {
                       }
                     </select>
                   </div>
-              </div>
-
-      
-
-              <div className="recipeTags">
+                </div>
+              <div className="options">
                 <h3>Recipe Tags</h3>
                 {
                   this.state.tags.map((tag, index) => {
@@ -336,18 +349,20 @@ class Recipe extends React.Component {
               </div>
                     
             </div>
-            <div className="modal-close-buttons">
-              <button id="delete" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
+          </div> 
+          <div className="modal-close-buttons">
+              <button id="primary-color" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
               <div>
                 <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
-                  onClick={this.updateRecipe}>Update Recipe
+                  onClick={this.updateRecipe}>
+                    Update Recipe
+                    <i className="fas fa-check-square"></i>
                 </button>
               </div>
             </div>
-          </div> 
         </div>
           </> :  
           <div className="BounceLoader">

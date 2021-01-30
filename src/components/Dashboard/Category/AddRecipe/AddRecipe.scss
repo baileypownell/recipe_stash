@@ -35,31 +35,29 @@
     margin: 0;
 }
 
-.modal {
-    width: 90%!important;
-    max-height: 85%!important;
-    @include tablet {
-        width: 80%!important;
-        max-height: 70%!important;
-        max-width: 700px;
-    }
+.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
 }
+
 
 .chip {
     background-color: white!important;
-    border: 1px solid $green;
-    color: $green!important;
+    border: 1px solid $orange;
+    color: $orange!important;
     cursor: pointer!important;
     transition: all .4s;
     &:hover {
-        background-color: $green!important;
+        background-color: $orange!important;
         color: white!important;
         transform: translateY(-5px);
     }
 }
 
 .selectedTag {
-    background-color: $green!important;
+    background-color: $orange!important;
     color: white!important;
 }
 
@@ -72,5 +70,13 @@
     margin-bottom: 10px;
     i {
         margin-left: 5px;
+    }
+}
+
+.fr-box button {
+    background-color: transparent!important; 
+    &:hover,
+    &:active {
+        background-color: rgb(214, 214, 214)!important;
     }
 }

@@ -1,7 +1,11 @@
-import React from 'react';
-import M from 'materialize-css';
-import './AddRecipe.scss';
-const axios = require('axios');
+import React from 'react'
+import M from 'materialize-css'
+import './AddRecipe.scss'
+const axios = require('axios')
+import DOMPurify from 'dompurify'
+const { htmlToText } = require('html-to-text')
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
 class AddRecipe extends React.Component {
 
@@ -93,11 +97,16 @@ class AddRecipe extends React.Component {
   createRecipe = (e) => {
     e.preventDefault();
     let tags = this.state.tags;
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title)
+    const rawTitle = htmlToText(titleHTML, {
+      wordwrap: 130
+    })
     axios.post(`/recipe`, {
-      title: this.state.recipe_title,
+      title: DOMPurify.sanitize(this.state.recipe_title),
+      rawTitle,
       category: this.state.category,
-      ingredients: this.state.ingredients,
-      directions: this.state.directions,
+      ingredients: DOMPurify.sanitize(this.state.ingredients),
+      directions: DOMPurify.sanitize(this.state.directions),
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
@@ -158,7 +167,24 @@ class AddRecipe extends React.Component {
     this.setState({tags});
   }
 
-  
+  handleModelChange = (html) => {
+    this.setState({
+      recipe_title: html
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeIngredients = (html) => {
+    this.setState({
+      ingredients: html
+    }, () => this.checkValidity());
+  }
+
+  handleModelChangeDirections = (html) => {
+    this.setState({
+      directions: html
+    }, () => this.checkValidity());
+  }
+
   render() {
     const { id, gridView } = this.props;
     const options = [
@@ -182,25 +208,17 @@ class AddRecipe extends React.Component {
         </div> : <a onClick={this.openModal} className="waves-effect waves-light btn add-button">Add Recipe<i className="fas fa-plus-circle"></i></a>
       }
 
-        <div id={`${this.props.id}_modal`} className="modal">
-              <h1 className="Title">New Recipe</h1>
-              <div className="recipe">
+        <div id={`${this.props.id}_modal`} className="modal recipe-modal">
+            <div className="recipe">
               <div>
-                  <div className="input-field">
-                      <textarea onChange={this.updateInput} id="recipe_title" value={this.state.recipe_title || ''} className="materialize-textarea"></textarea>
-                      <label htmlFor="recipe_title">Title</label>
-                  </div>
-                  <div className="input-field">
-                      <textarea onChange={this.updateInput} id="ingredients" value={this.state.ingredients || ''} className="materialize-textarea minHeight"></textarea>
-                      <label htmlFor="ingredients">Ingredients</label>
-                  </div>
-
-                  <div className="input-field">
-                    <textarea onChange={this.updateInput} id="directions" value={this.state.directions || ''} className="materialize-textarea minHeight"></textarea>
-                    <label htmlFor="directions">Directions</label>
-                  </div>
-              
-                  <div >
+                <h1 className="Title fixed">New Recipe</h1>
+                <h3>Title</h3>
+                <ReactQuill value={this.state.recipe_title} onChange={this.handleModelChange}/>
+                <h3>Ingredients</h3>
+                <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
+                <h3>Directions</h3>
+                <ReactQuill theme="snow" value={this.state.directions} onChange={this.handleModelChangeDirections}/>
+                <div>
                     <h3>Category</h3>
                     <div className="select">
                       <select onChange={this.updateInput} id="category" value={this.state.category} >
@@ -233,16 +251,17 @@ class AddRecipe extends React.Component {
                   </li>
                 </ul>
               </div>
-              <div className="modal-close-buttons">
+            </div>
+            <div className="modal-close-buttons">
                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
-                  onClick={this.createRecipe}>Save
+                  onClick={this.createRecipe}>
+                    Save
+                    <i className="fas fa-check-square"></i>
                  </button>
               </div>
-              
-            </div>
           </div> 
       </>
       

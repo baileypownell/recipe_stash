@@ -39,6 +39,7 @@ const formatRecipeResponse = (recipe) => {
   return {
     id: recipe.id, 
     title: recipe.title, 
+    rawTitle: recipe.raw_title || recipe.title,
     category: recipe.category, 
     user_id: recipe.user_id, 
     ingredients: recipe.ingredients, 
@@ -93,6 +94,7 @@ router.post('/', (request, response, next) => {
   let userId = request.userID
   const { 
     title, 
+    rawTitle,
     category, 
     ingredients, 
     directions, 
@@ -107,13 +109,14 @@ router.post('/', (request, response, next) => {
     isKeto 
   } = request.body;
   if (
+    !!rawTitle &&
     !!title && 
     !!category && 
     !!ingredients && 
     !!directions
    ) {
-      client.query('INSERT INTO recipes(title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
-        [title, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
+      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',
+        [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
         (err, res) => {
           if (err) return next(err)
           if (res.rowCount) {
@@ -132,9 +135,25 @@ router.post('/', (request, response, next) => {
 
 router.put('/', (request, response, next) => {
   let userId = request.userID
-  const { recipeId, title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
-  client.query('UPDATE recipes SET title=$1, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14 AND user_id=$15',
-  [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId],
+  const { 
+    recipeId, 
+    title, 
+    rawTitle, 
+    ingredients,
+    directions, 
+    category, 
+    isNoBake, 
+    isEasy, 
+    isHealthy, 
+    isGlutenFree, 
+    isDairyFree, 
+    isSugarFree, 
+    isVegetarian, 
+    isVegan, 
+    isKeto 
+  } = request.body;
+  client.query('UPDATE recipes SET title=$1, raw_title=$16, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14 AND user_id=$15',
+  [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId, rawTitle],
    (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
@@ -158,7 +177,8 @@ router.get('/:recipeId', (request, response, next) => {
         let recipe_response = {
           id: recipe.id, 
           title: recipe.title, 
-          category: recipe.category, 
+          rawTitle: recipe.raw_title || recipe.title,
+          category: recipe.category,  
           user_id: recipe.user_id, 
           ingredients: recipe.ingredients, 
           directions: recipe.directions, 

@@ -56,7 +56,7 @@ label {
 }
 
 .toast {
-  background-color:$green!important;
+  background-color:$primary!important;
 }
 
 
@@ -81,4 +81,42 @@ label {
   .input-field input:focus {
       border-bottom:1px solid $primary!important;
   }  
+}
+
+.recipe-modal {
+  width: 100%!important;
+  min-height: 100vh !important;
+  top:0!important;
+  overflow: hidden;
+}
+
+// preserve froala bold setting 
+strong {
+  font-weight: 800!important;
+}
+
+.modal-close-buttons {
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(250, 250, 250);
+  z-index: 1;
+}
+
+.quill {
+  button {
+    background-color: white!important;
+  }
+  .select-wrapper {
+    display: none;
+  }
+}
+
+button {
+  i {
+    margin-left: 8px;
+    font-size: 1.2rem;
+  }
 }
