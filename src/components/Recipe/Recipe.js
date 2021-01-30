@@ -5,13 +5,9 @@ import './Recipe.scss'
 import M from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
 import Nav from '../Nav/Nav'
-// Require Editor CSS files.
-import '../../../node_modules/froala-editor/css/froala_style.min.css'
-import '../../../node_modules/froala-editor/css/froala_editor.pkgd.min.css'
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
-
-import FroalaEditorComponent from 'react-froala-wysiwyg'
+import ReactQuill from 'react-quill'
 
 class Recipe extends React.Component {
 
@@ -22,6 +18,7 @@ class Recipe extends React.Component {
     directions: null,
     recipe_title_edit: null, 
     recipe_title_raw: null,
+    recipe_title_raw_edit: null,
     ingredients_edit: null, 
     directions_edit: null,
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
@@ -203,7 +200,7 @@ class Recipe extends React.Component {
   updateRecipe = (e) => {
       e.preventDefault();
       let tags = this.state.tags
-      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_edit)
+      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit)
       const rawTitle = htmlToText(titleHTML, {
         wordwrap: 130
       })
@@ -239,9 +236,10 @@ class Recipe extends React.Component {
       })
   }
 
-  handleModelChange = (html) => {
+  handleModelChange = (content, delta, source, editor) => {
     this.setState({
-      recipe_title_edit: html
+      recipe_title_edit: content,
+      recipe_title_raw_edit: editor.getText()
     }, () => this.checkValidity());
   }
 
@@ -283,7 +281,7 @@ class Recipe extends React.Component {
             <div className="view-recipe" >
               <div>
                 <div className="section">
-                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: this.state.recipe_title_raw}}/>
+                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
                 </div>
                 <div className="section">
                   <h3 className="default">Ingredients</h3>
@@ -300,7 +298,7 @@ class Recipe extends React.Component {
                 <div className="section">
                   {
                     this.state.tags.map((tag) => {
-                        return ( tag.selected ? <div className="chip z-depth-2">{ tag.label }</div> : null )
+                        return ( tag.selected ? <div className="chip z-depth-2 selectedTag">{ tag.label }</div> : null )
                     }) 
                   }
                 </div>
@@ -309,54 +307,27 @@ class Recipe extends React.Component {
               </div>
           </div>
           <div id={`modal_${recipeId}`} className="modal recipe-modal">
-            <h1 className="Title">Edit Recipe</h1>
             <div className="recipe">
               <div>
+                <h1 className="Title fixed">Edit Recipe</h1>
                 <h3>Title</h3>
-                  <FroalaEditorComponent 
-                  tag='textarea'
-                  config={{
-                    events: {
-                      'change': (html) => this.handleModelChange(html)
-                    }
-                  }}
-                  model={this.state.recipe_title_edit}
-                  onModelChange={this.handleModelChange}
-                />
+                <ReactQuill  value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
                 <h3>Ingredients</h3>
-                <FroalaEditorComponent 
-                  tag='textarea'
-                  config={{
-                    events: {
-                      'change': (html) => this.handleModelChangeIngredients(html)
-                    }
-                }}
-                model={this.state.ingredients_edit}
-                onModelChange={this.handleModelChangeIngredients}
-              />
-              <h3>Directions</h3>
-              <FroalaEditorComponent 
-                tag='textarea'
-                config={{
-                  events: {
-                    'change': (html) => this.handleModelChangeDirections(html)
-                  }
-                }}
-                model={this.state.directions_edit}
-                onModelChange={this.handleModelChangeDirections}
-              />       
-            <div className="options">
-              <h3>Category</h3>
-              <div className="select">
-                <select onChange={this.updateInput} id="category" value={this.state.category} >
-                  {
-                    options.map((val, index) => {
-                      return <option val={val.label} key={index}>{val.label}</option>
-                    })
-                  }
-                </select>
-              </div>
-            </div>
+                <ReactQuill  value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
+                <h3>Directions</h3>
+                <ReactQuill  value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
+                <div className="options">
+                  <h3>Category</h3>
+                  <div className="select">
+                    <select onChange={this.updateInput} id="category" value={this.state.category} >
+                      {
+                        options.map((val, index) => {
+                          return <option val={val.label} key={index}>{val.label}</option>
+                        })
+                      }
+                    </select>
+                  </div>
+                </div>
               <div className="options">
                 <h3>Recipe Tags</h3>
                 {

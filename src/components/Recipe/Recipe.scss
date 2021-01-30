@@ -14,16 +14,16 @@
   @include flexColumn;
   justify-content: space-between;
   font-family: 'Roboto', sans-serif;
-  padding: 30px;
-  align-items: flex-end;
+  align-items: center;
+  justify-content:flex-start;
   height: 100vh;
   overflow: scroll;
   > div {
-    margin-top: 30px;
+    margin-top: 85px;
+    margin-bottom: 60px;
     width: 100%;
     @include desktop {
       width: 55%;
-      margin: 60px auto 80px;
     }
   }
   @include desktop {
@@ -113,9 +113,8 @@
   .section {
     padding: 0;
     .chip {
+      font-weight: normal;
       &:hover {
-        background-color: white!important;
-        color: $green!important;
         transform: none;
         cursor: inherit!important;
       }
@@ -141,5 +140,7 @@
 }
 
 #recipe-title {
-  font-size: 30px;
-}
+   p, h3, h2, h1 {
+    font-size: 30px;
+  }
+ }

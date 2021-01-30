@@ -54,7 +54,6 @@
     "quill": "^1.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-froala-wysiwyg": "^3.2.6",
     "react-google-login": "^5.1.21",
     "react-quill": "^1.3.5",
     "react-router-redux": "^4.0.8",
