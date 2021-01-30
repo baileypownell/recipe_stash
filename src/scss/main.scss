@@ -97,3 +97,12 @@ strong {
 .modal-close-buttons {
   padding: 10px;
 }
+
+.quill {
+  button {
+    background-color: white!important;
+  }
+  .select-wrapper {
+    display: none;
+  }
+}

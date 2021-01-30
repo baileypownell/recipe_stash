@@ -2,13 +2,10 @@ import React from 'react';
 import M from 'materialize-css';
 import './AddRecipe.scss';
 const axios = require('axios');
-// Require Editor CSS files.
-import '../../../../../node_modules/froala-editor/css/froala_style.min.css'
-import '../../../../../node_modules/froala-editor/css/froala_editor.pkgd.min.css'
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
-
-import FroalaEditorComponent from 'react-froala-wysiwyg'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css';
 
 class AddRecipe extends React.Component {
 
@@ -217,36 +214,11 @@ class AddRecipe extends React.Component {
               <div className="recipe">
               <div>
                   <h3>Title</h3>
-                  <FroalaEditorComponent 
-                        tag='textarea'
-                        config={{
-                          events: {
-                            'change': (html) => this.handleModelChange(html)
-                          }
-                        }}
-                        model={this.state.recipe_title}
-			                  onModelChange={this.handleModelChange}/>
+                  <ReactQuill  value={this.state.recipe_title} onChange={this.handleModelChange}/>
                   <h3>Ingredients</h3>
-                  <FroalaEditorComponent 
-                        tag='textarea'
-                        config={{
-                          events: {
-                            'change': (html) => this.handleModelChangeIngredients(html)
-                          }
-                        }}
-                        model={this.state.ingredients}
-			                  onModelChange={this.handleModelChangeIngredients}/>
-                    <h3>Directions</h3>
-                      <FroalaEditorComponent 
-                        tag='textarea'
-                        config={{
-                          events: {
-                            'change': (html) => this.handleModelChangeDirections(html)
-                          }
-                        }}
-                        model={this.state.directions}
-			                  onModelChange={this.handleModelChangeDirections}/>
-              
+                  <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
+                  <h3>Directions</h3>
+                  <ReactQuill theme="snow" value={this.state.directions} onChange={this.handleModelChangeDirections}/>
                   <div >
                     <h3>Category</h3>
                     <div className="select">
