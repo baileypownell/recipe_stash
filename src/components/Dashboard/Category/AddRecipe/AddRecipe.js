@@ -185,7 +185,6 @@ class AddRecipe extends React.Component {
     }, () => this.checkValidity());
   }
 
-  
   render() {
     const { id, gridView } = this.props;
     const options = [
@@ -214,7 +213,7 @@ class AddRecipe extends React.Component {
               <div>
                 <h1 className="Title fixed">New Recipe</h1>
                 <h3>Title</h3>
-                <ReactQuill  value={this.state.recipe_title} onChange={this.handleModelChange}/>
+                <ReactQuill value={this.state.recipe_title} onChange={this.handleModelChange}/>
                 <h3>Ingredients</h3>
                 <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
                 <h3>Directions</h3>
@@ -258,7 +257,9 @@ class AddRecipe extends React.Component {
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
-                  onClick={this.createRecipe}>Save
+                  onClick={this.createRecipe}>
+                    Save
+                    <i className="fas fa-check-square"></i>
                  </button>
               </div>
           </div> 

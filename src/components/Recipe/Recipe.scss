@@ -20,8 +20,8 @@
   overflow: scroll;
   > div {
     margin-top: 85px;
-    margin-bottom: 60px;
-    width: 100%;
+    margin-bottom: 100px;
+    width: 90%;
     @include desktop {
       width: 55%;
     }
@@ -92,6 +92,12 @@
 .view-recipe {
   margin: 0 auto;
   padding: 0 20px;
+  ul {
+    padding-left: revert!important;
+  }
+  // li {
+  //   list-style-type: inherit!important;
+  // }
   h2 {
     font-size: 18px;
   }
@@ -117,6 +123,7 @@
       &:hover {
         transform: none;
         cursor: inherit!important;
+        background-color: $orange!important;
       }
     }
   }
@@ -127,8 +134,8 @@
   }
 }
 
-#delete {
-  background-color: $orange!important;
+#primary-color {
+  background-color: $primary!important;
 }
 
 .options {
@@ -143,4 +150,8 @@
    p, h3, h2, h1 {
     font-size: 30px;
   }
+ }
+
+.view-recipe li {
+   list-style-type: initial!important;
  }

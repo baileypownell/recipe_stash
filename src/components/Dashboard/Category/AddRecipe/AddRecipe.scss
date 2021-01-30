@@ -45,19 +45,19 @@
 
 .chip {
     background-color: white!important;
-    border: 1px solid $green;
-    color: $green!important;
+    border: 1px solid $orange;
+    color: $orange!important;
     cursor: pointer!important;
     transition: all .4s;
     &:hover {
-        background-color: $green!important;
+        background-color: $orange!important;
         color: white!important;
         transform: translateY(-5px);
     }
 }
 
 .selectedTag {
-    background-color: $green!important;
+    background-color: $orange!important;
     color: white!important;
 }
 

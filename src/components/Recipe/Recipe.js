@@ -133,6 +133,8 @@ class Recipe extends React.Component {
 
   componentDidMount() {
     this.fetchData()
+    var elems = document.querySelectorAll('.fixed-action-btn');
+    var instances = M.FloatingActionButton.init(elems, {});
   }
 
   openModal = () => {
@@ -302,8 +304,11 @@ class Recipe extends React.Component {
                     }) 
                   }
                 </div>
-                  
-                <button onClick={this.openModal} className="btn">Edit <i className="fas fa-pen"></i></button>
+                <div onClick={this.openModal} className="fixed-action-btn">
+                  <a className="btn-floating btn-large" id="primary-color">
+                    <i className="large material-icons">mode_edit</i>
+                  </a>
+                </div>
               </div>
           </div>
           <div id={`modal_${recipeId}`} className="modal recipe-modal">
@@ -346,13 +351,15 @@ class Recipe extends React.Component {
             </div>
           </div> 
           <div className="modal-close-buttons">
-              <button id="delete" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
+              <button id="primary-color" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
               <div>
                 <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
-                  onClick={this.updateRecipe}>Update Recipe
+                  onClick={this.updateRecipe}>
+                    Update Recipe
+                    <i className="fas fa-check-square"></i>
                 </button>
               </div>
             </div>

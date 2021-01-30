@@ -56,7 +56,7 @@ label {
 }
 
 .toast {
-  background-color:$green!important;
+  background-color:$primary!important;
 }
 
 
@@ -111,5 +111,12 @@ strong {
   }
   .select-wrapper {
     display: none;
+  }
+}
+
+button {
+  i {
+    margin-left: 8px;
+    font-size: 1.2rem;
   }
 }
