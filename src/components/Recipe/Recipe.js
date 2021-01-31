@@ -283,7 +283,7 @@ class Recipe extends React.Component {
             <div className="view-recipe" >
               <div>
                 <div className="section">
-                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: this.state.recipe_title}}/>
+                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.state.recipe_title)}}/>
                 </div>
                 <div className="section">
                   <h3 className="default">Ingredients</h3>
