@@ -1,0 +1,25 @@
+
+@import '../../scss/mixins.scss';
+@import '../../scss/variables.scss';
+
+.dropzone {
+    border: 2px dashed $gray;
+    width: 100%;
+    min-height: 200px;
+    padding: 20px;
+    &:hover {
+        i {
+            color: $orange;
+        }
+    }
+    > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        i {
+            transition: color .5s;
+            color: $primary;
+            font-size: 100px;
+        }
+    }
+}

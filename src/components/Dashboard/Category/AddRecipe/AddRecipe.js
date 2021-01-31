@@ -6,6 +6,8 @@ import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import '../../../File-Upload/FileUpload'
+import FileUpload from '../../../File-Upload/FileUpload'
 
 class AddRecipe extends React.Component {
 
@@ -250,8 +252,10 @@ class AddRecipe extends React.Component {
                     </div>
                   </li>
                 </ul>
+                <FileUpload></FileUpload>
               </div>
             </div>
+            
             <div className="modal-close-buttons">
                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
