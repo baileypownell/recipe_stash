@@ -4,9 +4,13 @@
 
 .dropzone {
     border: 2px dashed $gray;
-    width: 100%;
-    min-height: 200px;
-    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    input {
+        min-height: 300px; 
+        display: block;
+        width: 100%;
+    }
     &:hover {
         i {
             color: $orange;
@@ -15,11 +19,37 @@
     > div {
         display: flex;
         flex-direction: column;
+        justify-content: center;
         align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        background-color: #fafafa;
+        p {
+            margin: 5px;
+        }
         i {
             transition: color .5s;
             color: $primary;
             font-size: 100px;
+            margin-top: 15px;
         }
+    }
+}
+
+.files-list {
+    padding: 15px 0;
+}
+
+.file-name {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    i {
+        color: $gray;
+        font-size: 20px;
+        cursor: pointer;
     }
 }
