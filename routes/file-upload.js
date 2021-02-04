@@ -3,10 +3,7 @@ const { Router } = require('express')
 const client = require('../db')
 const router = Router()
 const aws = require('aws-sdk')
-const presignedUrlObject = require('./services/file-upload')
-
 const uuid = require('uuid')
-// const { S3RequestPresigner } = require("@aws-sdk/s3-request-presigner");
 const environment = process.env.NODE_ENV || 'development';
 
 if (environment === 'development') {
@@ -23,26 +20,27 @@ const s3 = new aws.S3({
 })
 
 router.post('/', (req, res) => {
+
+    if (!req.files) {
+        return res.status(400).json({success: false, message: 'No file attached.'})
+    }
  
-    const params = {
-        Bucket: 'virtualcookbook-media', 
+    let file = req.files.file
+    console.log(file)
+
+    let params = {
+        Bucket: 'virtualcookbook-media',
         Key: uuid.v4(),
-        Expires: 10000, 
-        ContentType: 'image/jpeg'
-    } 
+        Body: file.data, 
+        ContentType: file.mimetype, 
+    }
 
-    console.log(params)
-
-    s3.getSignedUrl('putObject', params, function(err, getSignedUrl) {
+    s3.upload(params, (err, data) => {
         if (err) {
             console.log(err)
-            return res.status(422).send('Url not generated')
+        } else {
+            return res.status(200).json({ success: true })
         }
-
-        return res.json({
-            postURL: getSignedUrl, 
-            getURL: getSignedUrl.split('?')[0]
-        })
     })
 })
 
