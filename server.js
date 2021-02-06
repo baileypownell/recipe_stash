@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const routes = require('./routes');
 const client = require('./db/index');
-const fileUpload = require('express-fileupload')
 var pg = require('pg')
   , session = require('express-session')
   , pgSession = require('connect-pg-simple')(session);
@@ -12,16 +11,11 @@ var pg = require('pg')
 // middleware
 app.use(bodyParser.json());
 
-
 app.use(express.json())
 
 app.use((err, req, res, next) => {
   res.json(err);
 })
-
-app.use(fileUpload({
-  limits: { fileSize: 50 * 1024 * 1024 },
-}))
 
 var environment = process.env.NODE_ENV || 'development';
 
