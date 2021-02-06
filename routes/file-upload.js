@@ -24,7 +24,6 @@ const s3 = new aws.S3({
 const storage = multer.diskStorage({
     destination: './uploads', 
     fileName: function(req, file, callback) {
-        console.log(file)
       callback(null, `${file.originalname}`)
     }
   })
@@ -44,7 +43,7 @@ router.post('/', (req, res) => {
         let params = {
             Bucket: 'virtualcookbook-media',
             Key: uuid.v4(),
-            Body: `uploads/${req.file.filename}`, 
+            Body: fs.createReadStream(`uploads/${req.file.filename}`), 
             ContentType: req.file.mimetype, 
         }
     
