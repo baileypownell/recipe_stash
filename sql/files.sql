@@ -1,4 +1,6 @@
 CREATE TABLE files(
-  id UUID PRIMARY KEY,
-  aws_key text,
+  id serial,
+  aws_download_url text,
+  recipe_id integer, 
+  user_id integer
 );

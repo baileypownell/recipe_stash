@@ -1,12 +1,12 @@
 
-const { Router } = require('express')
+const { Router, response } = require('express')
 const client = require('../db')
 const router = Router()
 const aws = require('aws-sdk')
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer')
 const multerS3 = require('multer-s3')
-const fs = require('fs')
+const authMiddleware = require('./authMiddleware.js')
 const environment = process.env.NODE_ENV || 'development';
 
 if (environment === 'development') {
@@ -50,11 +50,21 @@ function uploadToS3(req, res) {
     })
 }
 
-router.post('/', (req, res) => {
+router.use(authMiddleware)
+
+router.post('/:userId/:recipeId', authMiddleware, (req, res) => {
+    const { recipeId } = req.params
+    const { userId } = req.params
     uploadToS3(req, res)
     .then(downloadUrl => {
-        // update the db
-        return res.status(200).send({ downloadUrl })
+        client.query('INSERT INTO files(aws_download_url, recipe_id, user_id) VALUES($1, $2, $3)', 
+        [downloadUrl, recipeId, userId],
+        (error, response) => {
+            if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
+            if (response.rowCount) {
+                return res.status(200).json({ success: true, downloadUrl })
+            }
+        })
     })
     .catch(e => {
         console.log(e)
