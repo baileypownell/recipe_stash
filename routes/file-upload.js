@@ -52,9 +52,9 @@ function uploadToS3(req, res) {
 
 router.use(authMiddleware)
 
-router.post('/:userId/:recipeId', authMiddleware, (req, res) => {
+router.post('/:recipeId', authMiddleware, (req, res) => {
     const { recipeId } = req.params
-    const { userId } = req.params
+    let userId = request.userID
     uploadToS3(req, res)
     .then(downloadUrl => {
         client.query('INSERT INTO files(aws_download_url, recipe_id, user_id) VALUES($1, $2, $3)', 
@@ -71,13 +71,16 @@ router.post('/:userId/:recipeId', authMiddleware, (req, res) => {
     })
 })
 
-router.delete('/:userId/:recipeId', authMiddleware, (req, res) => {
+router.delete('/:recipeId/:recipeKey', authMiddleware, (req, res) => {
     const { recipeId } = req.params
-    const { userId } = req.params
+    const { recipeKey } = req.params
+    let userId = request.userID
+
+    // get the name of the file extension based on the id
 
     s3.deleteObject({
         Bucket: 'virtualcookbook-media',
-        Key: 'nameofthefile1.extension'
+        Key: recipeKey
     }, (err, data) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'File could not be deleted from AWS.'})
