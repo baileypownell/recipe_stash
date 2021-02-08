@@ -71,4 +71,27 @@ router.post('/:userId/:recipeId', authMiddleware, (req, res) => {
     })
 })
 
+router.delete('/:userId/:recipeId', authMiddleware, (req, res) => {
+    const { recipeId } = req.params
+    const { userId } = req.params
+
+    s3.deleteObject({
+        Bucket: 'virtualcookbook-media',
+        Key: 'nameofthefile1.extension'
+    }, (err, data) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'File could not be deleted from AWS.'})
+        } else {
+            client.query('DELETE FROM files WHERE recipeId=$1 AND userId=$2', 
+                [recipeId, userId],
+                (error, response) => {
+                    if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
+                    if (response.rowCount) {
+                        return res.status(200).json({ success: true, message: 'File deleted.' })
+                    }
+                })
+        }
+    })
+})
+
 module.exports = router;
