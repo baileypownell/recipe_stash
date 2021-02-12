@@ -8,6 +8,7 @@ class FileUpload extends React.Component {
     }
     
     openFileFinder = () => {
+        console.log(input)
         input.click()
     }
 
@@ -39,9 +40,9 @@ class FileUpload extends React.Component {
                 <div className="dropzone" onDrop={this.handleDrop} onDragOver={this.handleDrop}>
                 <input ref={i => this.input = i} type="file" id="input" multiple></input>
                     <div>
-                    
-                        <span><button onClick={this.openFileFinder} className="waves-effect waves-light btn">Choose a file</button> or drop one here</span>
-                        <p>Accepted file types: JPG & PNG</p>
+                        <h1>Drag & Drop an image</h1>
+                        <button onClick={this.openFileFinder} className="waves-effect waves-light btn">Choose a file</button>
+                   
                         <i className="fas fa-file-upload"></i>
                     </div>
                     
@@ -50,7 +51,10 @@ class FileUpload extends React.Component {
                 { this.state.files.length > 0 ?
                 <div class="file-list">
                     {Array.from(this.state.files).map(file => {
-                        return <div class="file-name"><span>{file?.name}</span> <i onClick={(e) => this.removeFile(file)} className="fas fa-trash"></i></div>
+                        return <div class="file-name">
+                            <span>{file?.name}</span> 
+                            <i onClick={(e) => this.removeFile(file)} className="fas fa-trash"></i>
+                        </div>
                     })}
                  
                 </div>
