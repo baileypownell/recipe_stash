@@ -11,6 +11,10 @@ import FileUpload from '../../../File-Upload/FileUpload'
 
 class AddRecipe extends React.Component {
 
+  
+  fileUpload = React.createRef()
+  
+
   state = {
     recipe_title: null,
     ingredients: null,
@@ -122,11 +126,23 @@ class AddRecipe extends React.Component {
     .then(res => {
       if (res) {
         M.toast({html: 'Recipe added.'})
+        // handle image uploads
+        let uploads = this.fileUpload.current.state.files
+        if (uploads.length) {
+          let recipeId = res.data.recipeId
+          uploads.forEach(file => {
+            axios.post(`/file-upload/${recipeId}`, {
+              image: file
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
+          })
+        }
         // clear modal state 
-        this.clearState();
+        this.clearState()
         // close modal 
-        this.closeModal();
-        this.props.updateDashboard();
+        this.closeModal()
+        this.props.updateDashboard()
         
       }
     })
@@ -252,7 +268,7 @@ class AddRecipe extends React.Component {
                     </div>
                   </li>
                 </ul>
-                <FileUpload></FileUpload>
+                <FileUpload ref={this.fileUpload}></FileUpload>
               </div>
             </div>
             

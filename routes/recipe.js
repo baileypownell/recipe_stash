@@ -115,12 +115,12 @@ router.post('/', (request, response, next) => {
     !!ingredients && 
     !!directions
    ) {
-      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',
+      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "id"',
         [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
         (err, res) => {
           if (err) return next(err)
           if (res.rowCount) {
-            return response.status(200).json({ success: true, message: 'Recipe created.' })
+            return response.status(200).json({ success: true, message: 'Recipe created.', recipeId: res.rows[0].id })
           } else {
             return response.status(500).json({ success: false, message: 'Could not create recipe.' })
           }

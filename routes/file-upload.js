@@ -54,7 +54,7 @@ router.use(authMiddleware)
 
 router.post('/:recipeId', authMiddleware, (req, res) => {
     const { recipeId } = req.params
-    let userId = request.userID
+    let userId = req.userID
     uploadToS3(req, res)
     .then(downloadUrl => {
         client.query('INSERT INTO files(aws_download_url, recipe_id, user_id) VALUES($1, $2, $3)', 
