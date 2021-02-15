@@ -15,6 +15,7 @@ class Recipe extends React.Component {
   fileUpload = React.createRef()
 
   state = {
+    loading: false,
     loaded: false,
     recipe_title: null,
     ingredients: null,
@@ -178,7 +179,6 @@ class Recipe extends React.Component {
       this.closeModal()
       M.toast({html: 'There was an error.'})
     })
-
   }
 
   updateInput = (e) => {
@@ -202,12 +202,51 @@ class Recipe extends React.Component {
     this.setState({tags}, () => this.checkValidity());
   }
 
+  handleUpdate() {
+    // close modal 
+    this.closeModal();
+    // Update recipe details to reflect the change
+    this.fetchData();
+    M.toast({html: 'Recipe updated.'})
+    this.setState({
+      loading: false
+    })
+  }
+
+  uploadFiles = async(recipeId) => {
+    let uploads = this.fileUpload.current.state.files
+    await Promise.all(uploads.map( async file => {
+      let formData = new FormData() 
+      formData.append('image', file.file)
+
+      await axios.post(
+        `/file-upload/${recipeId}`, 
+        formData,
+        {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
+        }
+      )
+      .then(res => {})
+      .catch(err => {
+        console.log(err)
+        this.setState({
+          loading: false
+        })
+      })
+    }))
+  }
+
   updateRecipe = (e) => {
       e.preventDefault();
       let tags = this.state.tags
       let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
       const rawTitle = htmlToText(titleHTML, {
         wordwrap: 130
+      })
+      this.setState({
+        loading: true
       })
       axios.put(`/recipe`, {
         title: this.state.recipe_title_edit,
@@ -228,11 +267,22 @@ class Recipe extends React.Component {
       })
       .then(res => {
         if (res) {
-          // close modal 
-          this.closeModal();
-          // Update recipe details to reflect the change
-          this.fetchData();
-          M.toast({html: 'Recipe updated.'})
+          // handle image uploads
+          let uploads = this.fileUpload.current.state.files
+          if (uploads.length) { 
+            this.uploadFiles(res.data.recipeId)
+            .then(() => {
+              this.handleUpdate()
+            })
+            .catch(err => {
+              console.log(err)
+              this.setState({
+                loading: false
+              })
+            })
+          } else {
+            this.handleUpdate()
+          }
         }
       })
       .catch((err) => {
@@ -361,8 +411,23 @@ class Recipe extends React.Component {
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
                   onClick={this.updateRecipe}>
-                    Update Recipe
-                    <i className="fas fa-check-square"></i>
+                    {this.state.loading ? 
+                      <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                          <div class="circle-clipper left">
+                            <div class="circle"></div>
+                          </div><div class="gap-patch">
+                            <div class="circle"></div>
+                          </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                          </div>
+                        </div>
+                      </div> : 
+                      <>
+                        Update Recipe
+                        <i className="fas fa-check-square"></i>
+                      </>
+                      }
                 </button>
               </div>
             </div>

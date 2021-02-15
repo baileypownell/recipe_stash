@@ -117,7 +117,7 @@ class AddRecipe extends React.Component {
           }
         }
       )
-      .then(res => console.log(res))
+      .then(res => {})
       .catch(err => console.log(err))
     }))
   }
