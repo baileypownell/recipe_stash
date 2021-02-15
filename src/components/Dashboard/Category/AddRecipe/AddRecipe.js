@@ -17,6 +17,7 @@ class AddRecipe extends React.Component {
   
 
   state = {
+    loading: false,
     recipe_title: null,
     ingredients: null,
     directions: null,
@@ -143,6 +144,9 @@ class AddRecipe extends React.Component {
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
+    this.setState({
+      loading: true
+    })
     axios.post(`/recipe`, {
       title: DOMPurify.sanitize(this.state.recipe_title),
       rawTitle,
@@ -161,18 +165,38 @@ class AddRecipe extends React.Component {
     })
     .then(res => {
       if (res) {
-        M.toast({html: 'Recipe added.'})
         // handle image uploads
         let uploads = this.fileUpload.current.state.files
         if (uploads.length) {
           this.uploadFiles(res.data.recipeId)
+          .then(() => {
+            M.toast({html: 'Recipe added.'})
+            // clear modal state 
+            this.clearState()
+            // close modal 
+            this.closeModal()
+            this.props.updateDashboard()
+            this.setState({
+              loading: false
+            })
+          })
+          .catch(err => {
+            console.log(err)
+            this.setState({
+              loading: false
+            })
+          })
+        } else {
+          M.toast({html: 'Recipe added.'})
+          // clear modal state 
+          this.clearState()
+          // close modal 
+          this.closeModal()
+          this.props.updateDashboard()
+          this.setState({
+            loading: false
+          })
         }
-        // clear modal state 
-        this.clearState()
-        // close modal 
-        this.closeModal()
-        this.props.updateDashboard()
-        
       }
     })
     .catch((err) => {
@@ -307,8 +331,23 @@ class AddRecipe extends React.Component {
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
                   onClick={this.createRecipe}>
-                    Save
-                    <i className="fas fa-check-square"></i>
+                    {this.state.loading ? 
+                      <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                          <div class="circle-clipper left">
+                            <div class="circle"></div>
+                          </div><div class="gap-patch">
+                            <div class="circle"></div>
+                          </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                          </div>
+                        </div>
+                      </div> : 
+                      <>
+                        Save
+                        <i className="fas fa-check-square"></i>
+                      </>
+                      }
                  </button>
               </div>
           </div> 
