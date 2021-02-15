@@ -8,8 +8,11 @@ import Nav from '../Nav/Nav'
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
+import FileUpload from '../File-Upload/FileUpload'
 
 class Recipe extends React.Component {
+
+  fileUpload = React.createRef()
 
   state = {
     loaded: false,
@@ -347,7 +350,7 @@ class Recipe extends React.Component {
                   })
                 }
               </div>
-                    
+              <FileUpload ref={this.fileUpload}></FileUpload>   
             </div>
           </div> 
           <div className="modal-close-buttons">

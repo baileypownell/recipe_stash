@@ -74,7 +74,6 @@ class FileUpload extends React.Component {
                     <div>
                         <h1>Drag & Drop an image</h1>
                         <button onClick={this.openFileFinder} className="waves-effect waves-light btn">Choose a file</button>
-                   
                         <i className="fas fa-file-upload"></i>
                     </div>
                     
@@ -84,12 +83,13 @@ class FileUpload extends React.Component {
                     <div class="file-list">
                         {Array.from(this.state.files).map(file => {
                             return (
-                                <div className="file-preview">
-                                    <div className="file-name">
+                                <div 
+                                    className="file-preview z-depth-2" 
+                                    style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})`  }}>
+                                    <div className="file-name" >
                                         <span>{file.file?.name}</span> 
                                         <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
                                     </div>
-                                    <img src={URL.createObjectURL(file.file)} />
                                 </div>
                             )
                         })}

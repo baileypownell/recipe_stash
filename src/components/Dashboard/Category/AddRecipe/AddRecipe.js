@@ -8,6 +8,7 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
+var FormData = require('form-data');
 
 class AddRecipe extends React.Component {
 
@@ -100,6 +101,41 @@ class AddRecipe extends React.Component {
     })
   }
 
+  uploadFiles = async(recipeId) => {
+    let uploads = this.fileUpload.current.state.files
+    await Promise.all(uploads.map( async file => {
+      let formData = new FormData() 
+      formData.append('image', file.file)
+
+      await axios.post(
+        `/file-upload/${recipeId}`, 
+        formData,
+        {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
+        }
+      )
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+    }))
+    // let formData = new FormData() 
+    // formData.append('image', uploads[0].file)
+
+    // await axios.post(
+    //   `/file-upload/${recipeId}`, 
+    //   formData,
+    //   {
+    //     headers: {
+    //       'content-type': 'multipart/form-data'
+    //     }
+    //   }
+    // )
+    // .then(res => console.log(res))
+    // .catch(err => console.log(err))
+   
+  }
+
   createRecipe = (e) => {
     e.preventDefault();
     let tags = this.state.tags;
@@ -129,14 +165,7 @@ class AddRecipe extends React.Component {
         // handle image uploads
         let uploads = this.fileUpload.current.state.files
         if (uploads.length) {
-          let recipeId = res.data.recipeId
-          uploads.forEach(file => {
-            axios.post(`/file-upload/${recipeId}`, {
-              image: file
-            })
-            .then(res => console.log(res))
-            .catch(err => console.log(err))
-          })
+          this.uploadFiles(res.data.recipeId)
         }
         // clear modal state 
         this.clearState()

@@ -30,6 +30,7 @@ const upload = multer({
         bucket: 'virtualcookbook-media',
         contentType: multerS3.AUTO_CONTENT_TYPE,
         metadata: function (req, file, cb) {
+            //console.log(file)
             cb(null, {fieldName: file.fieldname})
         }, 
         key: function (req, file, cb) {
@@ -50,11 +51,11 @@ function uploadToS3(req, res) {
     })
 }
 
-router.use(authMiddleware)
+// router.use(authMiddleware)
 
-router.post('/:recipeId', authMiddleware, (req, res) => {
+router.post('/:recipeId', (req, res) => {
     const { recipeId } = req.params
-    let userId = req.userID
+    let userId = 33//req.userID
     uploadToS3(req, res)
     .then(downloadUrl => {
         client.query('INSERT INTO files(aws_download_url, recipe_id, user_id) VALUES($1, $2, $3)', 
@@ -62,7 +63,14 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
         (error, response) => {
             if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
             if (response.rowCount) {
-                return res.status(200).json({ success: true, downloadUrl })
+                client.query('UPDATE recipes SET has_images = TRUE WHERE id = $1', 
+                    [recipeId], 
+                    (error, response) => {
+                        if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`}) 
+                        if (response.rowCount) {
+                            return res.status(200).json({ success: true, downloadUrl })
+                        }
+                    })
             }
         })
     })
