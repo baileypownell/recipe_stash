@@ -34,7 +34,11 @@ class FileUpload extends React.Component {
     handleUpload = (e) => {
         let currentFiles = this.state.files
         Array.from(e.target.files).forEach(file => {
-            if (file.type === 'image/jpeg' || file.type === 'image/png') {
+            if (this.state.files.length === 5) {
+                M.toast({html: 'Only 5 images allowed per recipe.'})
+                return
+            }
+            if ((file.type === 'image/jpeg' || file.type === 'image/png') && this.state.files.length <= 4) {
                 currentFiles.push({
                     file: file,
                     id: uuidv4()
@@ -68,12 +72,14 @@ class FileUpload extends React.Component {
                     ref={i => this.input = i} 
                     type="file" 
                     id="input" 
+                    disabled={this.state.files.length === 5}
                     onChange={this.handleUpload}
                     multiple>
                  </input>
                     <div>
                         <h1>Drag & Drop an image</h1>
-                        <button onClick={this.openFileFinder} className="waves-effect waves-light btn">Choose a file</button>
+                        <button onClick={this.openFileFinder} disabled={this.state.files.length === 5} className="waves-effect waves-light btn">Choose a file</button>
+                        <span>(Limit 5)</span>
                         <i className="fas fa-file-upload"></i>
                     </div>
                     

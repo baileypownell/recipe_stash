@@ -120,22 +120,19 @@ class AddRecipe extends React.Component {
       .then(res => console.log(res))
       .catch(err => console.log(err))
     }))
-    // let formData = new FormData() 
-    // formData.append('image', uploads[0].file)
-
-    // await axios.post(
-    //   `/file-upload/${recipeId}`, 
-    //   formData,
-    //   {
-    //     headers: {
-    //       'content-type': 'multipart/form-data'
-    //     }
-    //   }
-    // )
-    // .then(res => console.log(res))
-    // .catch(err => console.log(err))
-   
   }
+
+  handleSuccess() {
+    M.toast({html: 'Recipe added.'})
+    // clear modal state 
+    this.clearState()
+    // close modal 
+    this.closeModal()
+    this.props.updateDashboard()
+    this.setState({
+      loading: false
+    })
+}
 
   createRecipe = (e) => {
     e.preventDefault();
@@ -170,15 +167,7 @@ class AddRecipe extends React.Component {
         if (uploads.length) {
           this.uploadFiles(res.data.recipeId)
           .then(() => {
-            M.toast({html: 'Recipe added.'})
-            // clear modal state 
-            this.clearState()
-            // close modal 
-            this.closeModal()
-            this.props.updateDashboard()
-            this.setState({
-              loading: false
-            })
+            this.handleSuccess()
           })
           .catch(err => {
             console.log(err)
@@ -187,15 +176,7 @@ class AddRecipe extends React.Component {
             })
           })
         } else {
-          M.toast({html: 'Recipe added.'})
-          // clear modal state 
-          this.clearState()
-          // close modal 
-          this.closeModal()
-          this.props.updateDashboard()
-          this.setState({
-            loading: false
-          })
+          this.handleSuccess()
         }
       }
     })
