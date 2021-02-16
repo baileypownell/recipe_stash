@@ -170,10 +170,10 @@ const formatUrls = async(recipeId) => {
     [recipeId], 
     (err, res) => {
       if (err) resolve(err)
-      let image_url_array = []
-      for (let i = 0; i < res.rowCount; i++) {
-        image_url_array.push(res.rows[i].aws_download_url)
-      }
+      let image_url_array = res.rows.reduce((arr, el) => {
+        arr.push(el.aws_download_url)
+        return arr
+      }, [])
       resolve(image_url_array)
     })
   })

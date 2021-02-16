@@ -29,7 +29,6 @@ const upload = multer({
         bucket: 'virtualcookbook-media',
         contentType: multerS3.AUTO_CONTENT_TYPE,
         metadata: function (req, file, cb) {
-            //console.log(file)
             cb(null, {fieldName: file.fieldname})
         }, 
         key: function (req, file, cb) {
@@ -76,6 +75,23 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
     .catch(e => {
         console.log(e)
     })
+})
+
+router.get('/:UUID', authMiddleware, (req, res) => {
+    // generate presigned url 
+    const UUID = req.params
+    const Key = UUID
+    s3.getSignedUrl(
+        'getObject', 
+        {
+            Bucket: 'virtualcookbook-media', 
+            ContentType: req.body.ContentType, 
+            Key
+        }, 
+        (err, url) => {
+            
+        }
+    )
 })
 
 router.delete('/:recipeId/:recipeKey', authMiddleware, (req, res) => {
