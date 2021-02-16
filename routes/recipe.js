@@ -164,6 +164,21 @@ router.put('/', (request, response, next) => {
   });
 })
 
+const formatUrls = async(recipeId) => {
+  return new Promise((resolve, reject) => {
+    client.query('SELECT aws_download_url FROM files WHERE recipe_id=$1', 
+    [recipeId], 
+    (err, res) => {
+      if (err) resolve(err)
+      let image_url_array = []
+      for (let i = 0; i < res.rowCount; i++) {
+        image_url_array.push(res.rows[i].aws_download_url)
+      }
+      resolve(image_url_array)
+    })
+  })
+}
+
 router.get('/:recipeId', (request, response, next) => {
     const { recipeId } = request.params
     let userId = request.userID
@@ -172,7 +187,6 @@ router.get('/:recipeId', (request, response, next) => {
      (err, res) => {
       if (err) return next(err);
       let recipe = res.rows[0]
-
       if (recipe) {
         let recipe_response = {
           id: recipe.id, 
@@ -184,7 +198,16 @@ router.get('/:recipeId', (request, response, next) => {
           directions: recipe.directions, 
           tags: constructTags(recipe)
         }
-        response.status(200).json({ success: true, recipe: recipe_response })
+        if (recipe.has_images) {
+          formatUrls(recipeId)
+          .then(res => {
+            recipe_response.image_urls = res
+            response.status(200).json({ success: true, recipe: recipe_response })
+          })
+          .catch(err => console.log(err))
+        } else {
+          response.status(200).json({ success: true, recipe: recipe_response })
+        }        
       } else {
         response.status(500).json({ success: false, message: 'No recipe could be found.'})
       }
