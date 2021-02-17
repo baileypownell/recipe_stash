@@ -44,7 +44,7 @@ function uploadToS3(req, res) {
     return new Promise((resolve, reject) => {
         return singleFileUpload(req, res, err => {
             if (err) return reject(err)
-            return resolve(downloadUrl)
+            return resolve({downloadUrl, key: req.s3Key})
         }) 
     })
 }
@@ -55,9 +55,9 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
     const { recipeId } = req.params
     let userId = req.userID
     uploadToS3(req, res)
-    .then(downloadUrl => {
-        client.query('INSERT INTO files(aws_download_url, recipe_id, user_id) VALUES($1, $2, $3)', 
-        [downloadUrl, recipeId, userId],
+    .then(awsUploadRes => {
+        client.query('INSERT INTO files(aws_download_url, recipe_id, user_id, key) VALUES($1, $2, $3, $4)', 
+        [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
         (error, response) => {
             if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
             if (response.rowCount) {
@@ -66,7 +66,7 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
                     (error, response) => {
                         if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`}) 
                         if (response.rowCount) {
-                            return res.status(200).json({ success: true, downloadUrl })
+                            return res.status(200).json({ success: true, url: awsUploadRes.downloadUrl })
                         }
                     })
             }
@@ -77,19 +77,58 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
     })
 })
 
+getPresignedUrls = async(image_uuids) => {
+    return new Promise((resolve, reject) => {
+        let presignedUrls = []
+        // return singleFileUpload(req, res, err => {
+        //     if (err) return reject(err)
+        //     return resolve({downloadUrl, key: req.s3Key})
+        // }) 
+        for (let i = 0; i < image_uuids.length; i ++) {
+            console.log(i)
+            s3.getSignedUrl(
+                'getObject', 
+                {
+                    Bucket: 'virtualcookbook-media', 
+                    Key: image_uuids[i]
+                }, 
+                (err, url) => {
+                    if (err) return res.status(500).json({ success: false, message: `Error getting the url: ${err}`})
+                    presignedUrls.push(url)
+                    // return res.status(200).json({success: true, url})
+                }
+            )
+
+            if (i === image_uuids.length-1) {
+                console.log('here')
+                return resolve(presignedUrls)
+            }
+        }
+    })
+}
+
+router.post('/', authMiddleware, (req, res) => {
+    // generate presigned url 
+    const image_uuids = req.body.image_urls
+    getPresignedUrls(image_uuids)
+    .then(presignedUrls => {
+        res.status(200).json({presignedUrls})
+    })
+    .catch(err => console.log(err))
+})
+
 router.get('/:UUID', authMiddleware, (req, res) => {
     // generate presigned url 
-    const UUID = req.params
-    const Key = UUID
+    const UUID = req.params.UUID
     s3.getSignedUrl(
         'getObject', 
         {
             Bucket: 'virtualcookbook-media', 
-            ContentType: req.body.ContentType, 
-            Key
+            Key: UUID
         }, 
         (err, url) => {
-            
+            if (err) return res.status(500).json({ success: false, message: `Error getting the url: ${err}`})
+            return res.status(200).json({success: true, url})
         }
     )
 })

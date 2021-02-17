@@ -30,6 +30,7 @@ class Recipe extends React.Component {
     category: '',
     category_edit: '', 
     recipe: null,
+    presignedUrls: [],
     tags: [
       {
         selected: false, 
@@ -100,6 +101,18 @@ class Recipe extends React.Component {
         category_edit: recipe.category,
       })
 
+      if (recipe.image_urls) {
+        // get image urls 
+        axios.post(`file-upload`, {
+          image_urls: recipe.image_urls
+        })
+        .then(res => {
+          this.setState({
+            presignedUrls: res.data.presignedUrls
+          })
+        })
+        .catch(err => console.log(err))
+      } 
 
       this.state.tags.forEach((tag, index) => {
         if (recipe.tags.includes(tag.recipeTagPropertyName)) {
@@ -310,6 +323,9 @@ class Recipe extends React.Component {
     }, () => this.checkValidity());
   }
 
+  viewImage = () => {
+    console.log('viewImage')
+  }
 
   render() {
     const { recipeId, category, loaded } = this.state;
@@ -357,6 +373,17 @@ class Recipe extends React.Component {
                     }) 
                   }
                 </div>
+                {
+                  this.state.presignedUrls.map(url => {
+                    return (
+                      <img 
+                        className="recipe-image" 
+                        onClick={this.viewImage}
+                        src={url} >
+                        </img>
+                    )
+                  })
+                }
                 <div onClick={this.openModal} className="fixed-action-btn">
                   <a className="btn-floating btn-large" id="primary-color">
                     <i className="large material-icons">mode_edit</i>

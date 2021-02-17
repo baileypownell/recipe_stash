@@ -164,14 +164,14 @@ router.put('/', (request, response, next) => {
   });
 })
 
-const formatUrls = async(recipeId) => {
+const getImageAWSKeys = async(recipeId) => {
   return new Promise((resolve, reject) => {
-    client.query('SELECT aws_download_url FROM files WHERE recipe_id=$1', 
+    client.query('SELECT key FROM files WHERE recipe_id=$1', 
     [recipeId], 
     (err, res) => {
       if (err) resolve(err)
       let image_url_array = res.rows.reduce((arr, el) => {
-        arr.push(el.aws_download_url)
+        arr.push(el.key)
         return arr
       }, [])
       resolve(image_url_array)
@@ -199,7 +199,42 @@ router.get('/:recipeId', (request, response, next) => {
           tags: constructTags(recipe)
         }
         if (recipe.has_images) {
-          formatUrls(recipeId)
+          getImageAWSKeys(recipeId)
+          .then(res => {
+            recipe_response.image_urls = res
+            response.status(200).json({ success: true, recipe: recipe_response })
+          })
+          .catch(err => console.log(err))
+        } else {
+          response.status(200).json({ success: true, recipe: recipe_response })
+        }        
+      } else {
+        response.status(500).json({ success: false, message: 'No recipe could be found.'})
+      }
+    })
+  })
+
+router.get('/:recipeId', (request, response, next) => {
+    const { recipeId } = request.params
+    let userId = request.userID
+    client.query('SELECT * FROM recipes WHERE user_id=$1 AND id=$2',
+    [userId, recipeId],
+     (err, res) => {
+      if (err) return next(err);
+      let recipe = res.rows[0]
+      if (recipe) {
+        let recipe_response = {
+          id: recipe.id, 
+          title: recipe.title, 
+          rawTitle: recipe.raw_title || recipe.title,
+          category: recipe.category,  
+          user_id: recipe.user_id, 
+          ingredients: recipe.ingredients, 
+          directions: recipe.directions, 
+          tags: constructTags(recipe)
+        }
+        if (recipe.has_images) {
+          getImageAWSKeys(recipeId)
           .then(res => {
             recipe_response.image_urls = res
             response.status(200).json({ success: true, recipe: recipe_response })
