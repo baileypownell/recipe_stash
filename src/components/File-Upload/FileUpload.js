@@ -78,27 +78,47 @@ class FileUpload extends React.Component {
                  </input>
                     <div>
                         <h1>Drag & Drop an image</h1>
-                        <button onClick={this.openFileFinder} disabled={this.state.files.length === 5} className="waves-effect waves-light btn">Choose a file</button>
+                        <button 
+                            onClick={this.openFileFinder} 
+                            disabled={this.state.files.length === 5} 
+                            className="waves-effect waves-light btn">Choose a file</button>
                         <span>(Limit 5)</span>
                         <i className="fas fa-file-upload"></i>
                     </div>
                     
                 </div>
 
-                { this.state.files.length > 0 ?
-                    <div class="file-list">
-                        {Array.from(this.state.files).map(file => {
-                            return (
-                                <div 
-                                    className="file-preview z-depth-2" 
-                                    style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})`  }}>
-                                    <div className="file-name" >
-                                        <span>{file.file?.name}</span> 
-                                        <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
+                { this.state.files.length > 0 || this.props.preExistingImageUrls.length > 0 ?
+                    <div className="file-list">
+                        <>
+                            {Array.from(this.state.files).map(file => {
+                                return (
+                                    <div 
+                                        className="file-preview z-depth-2" 
+                                        style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})`  }}>
+                                        <div className="file-name" >
+                                            <span>{file.file?.name}</span> 
+                                            <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
+                                        </div>
                                     </div>
-                                </div>
-                            )
-                        })}
+                                )
+                            })}
+
+                            {
+                                this.props.preExistingImageUrls.map(url => {
+                                    return ( 
+                                        <div
+                                            className="file-preview z-depth-2"
+                                            style={{ backgroundImage: `url(${url})`  }}>
+                                            <div className="file-name" >
+                                                
+                                                <i onClick={(e) => this.removeFile()} className="fas fa-trash"></i>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </>
                     </div>
                 : null}
             </div>

@@ -80,12 +80,7 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
 getPresignedUrls = async(image_uuids) => {
     return new Promise((resolve, reject) => {
         let presignedUrls = []
-        // return singleFileUpload(req, res, err => {
-        //     if (err) return reject(err)
-        //     return resolve({downloadUrl, key: req.s3Key})
-        // }) 
         for (let i = 0; i < image_uuids.length; i ++) {
-            console.log(i)
             s3.getSignedUrl(
                 'getObject', 
                 {
@@ -93,14 +88,12 @@ getPresignedUrls = async(image_uuids) => {
                     Key: image_uuids[i]
                 }, 
                 (err, url) => {
-                    if (err) return res.status(500).json({ success: false, message: `Error getting the url: ${err}`})
+                    if (err) return
                     presignedUrls.push(url)
-                    // return res.status(200).json({success: true, url})
                 }
             )
 
             if (i === image_uuids.length-1) {
-                console.log('here')
                 return resolve(presignedUrls)
             }
         }

@@ -146,6 +146,7 @@
 #recipe-title {
    p, h3, h2, h1 {
     font-size: 30px;
+    margin: 0 0 10px 0;
   }
  }
 
@@ -153,8 +154,13 @@
    list-style-type: initial!important;
  }
 
+ #images {
+   padding: 20px 0;
+ }
+
  .recipe-image {
    width: 100%;
    margin: 10px 0;
    cursor: pointer;
+   border-radius: 8px;
  }

@@ -109,6 +109,9 @@ class Recipe extends React.Component {
         .then(res => {
           this.setState({
             presignedUrls: res.data.presignedUrls
+          }, () => {
+            const images = document.querySelectorAll('.materialboxed');
+            M.Materialbox.init(images, {});
           })
         })
         .catch(err => console.log(err))
@@ -150,8 +153,9 @@ class Recipe extends React.Component {
 
   componentDidMount() {
     this.fetchData()
-    var elems = document.querySelectorAll('.fixed-action-btn');
-    var instances = M.FloatingActionButton.init(elems, {});
+
+    const elems = document.querySelectorAll('.fixed-action-btn');
+    const instances = M.FloatingActionButton.init(elems, {});
   }
 
   openModal = () => {
@@ -323,12 +327,8 @@ class Recipe extends React.Component {
     }, () => this.checkValidity());
   }
 
-  viewImage = () => {
-    console.log('viewImage')
-  }
-
   render() {
-    const { recipeId, category, loaded } = this.state;
+    const { recipeId, category, loading, presignedUrls } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -343,7 +343,7 @@ class Recipe extends React.Component {
       <>
       <Nav loggedIn={true}/>
         {
-          loaded ? 
+          !loading ? 
           <>
             <h1 className="Title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
@@ -373,17 +373,19 @@ class Recipe extends React.Component {
                     }) 
                   }
                 </div>
-                {
-                  this.state.presignedUrls.map(url => {
-                    return (
-                      <img 
-                        className="recipe-image" 
-                        onClick={this.viewImage}
-                        src={url} >
-                        </img>
-                    )
-                  })
-                }
+                <div id="images">
+                  {
+                    presignedUrls.map(url => {
+                      return (
+                        <img 
+                          className="recipe-image materialboxed z-depth-4" 
+                          key={url}
+                          src={url} >
+                          </img>
+                      )
+                    })
+                  }
+                </div>
                 <div onClick={this.openModal} className="fixed-action-btn">
                   <a className="btn-floating btn-large" id="primary-color">
                     <i className="large material-icons">mode_edit</i>
@@ -427,7 +429,10 @@ class Recipe extends React.Component {
                   })
                 }
               </div>
-              <FileUpload ref={this.fileUpload}></FileUpload>   
+              <FileUpload 
+                preExistingImageUrls={presignedUrls}
+                ref={this.fileUpload}>
+              </FileUpload>   
             </div>
           </div> 
           <div className="modal-close-buttons">
