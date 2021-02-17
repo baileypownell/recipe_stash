@@ -12,11 +12,8 @@ import FileUpload from '../File-Upload/FileUpload'
 
 class Recipe extends React.Component {
 
-  fileUpload = React.createRef()
-
   state = {
     loading: false,
-    loaded: false,
     recipe_title: null,
     ingredients: null,
     directions: null,
@@ -31,6 +28,7 @@ class Recipe extends React.Component {
     category_edit: '', 
     recipe: null,
     presignedUrls: [],
+    newFiles: [],
     tags: [
       {
         selected: false, 
@@ -231,7 +229,8 @@ class Recipe extends React.Component {
   }
 
   uploadFiles = async(recipeId) => {
-    let uploads = this.fileUpload.current.state.files
+    // this is problematic... 
+    let uploads = this.state.newFiles
     await Promise.all(uploads.map( async file => {
       let formData = new FormData() 
       formData.append('image', file.file)
@@ -285,9 +284,9 @@ class Recipe extends React.Component {
       .then(res => {
         if (res) {
           // handle image uploads
-          let uploads = this.fileUpload.current.state.files
+          let uploads = this.state.newFiles
           if (uploads.length) { 
-            this.uploadFiles(res.data.recipeId)
+            this.uploadFiles(this.state.recipeId)
             .then(() => {
               this.handleUpdate()
             })
@@ -327,8 +326,15 @@ class Recipe extends React.Component {
     }, () => this.checkValidity());
   }
 
+  setFiles = (val) => {
+    // new files 
+    this.setState({
+      newFiles: val
+    })
+  }
+
   render() {
-    const { recipeId, category, loading, presignedUrls } = this.state;
+    const { recipeId, category, loading } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -375,7 +381,7 @@ class Recipe extends React.Component {
                 </div>
                 <div id="images">
                   {
-                    presignedUrls.map(url => {
+                    this.state.presignedUrls.map(url => {
                       return (
                         <img 
                           className="recipe-image materialboxed z-depth-4" 
@@ -430,8 +436,8 @@ class Recipe extends React.Component {
                 }
               </div>
               <FileUpload 
-                preExistingImageUrls={presignedUrls}
-                ref={this.fileUpload}>
+                preExistingImageUrls={this.state.presignedUrls}
+                passFiles={this.setFiles}>
               </FileUpload>   
             </div>
           </div> 

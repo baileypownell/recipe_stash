@@ -5,7 +5,14 @@ const { v4: uuidv4 } = require('uuid')
 class FileUpload extends React.Component {
 
     state = {
-        files: []
+        files: [],
+        preExistingImageUrls: this.props.preExistingImageUrls
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            preExistingImageUrls: nextProps.preExistingImageUrls
+        })
     }
     
     openFileFinder = () => {
@@ -27,6 +34,8 @@ class FileUpload extends React.Component {
             })
             this.setState({
                 files: currentFiles
+            }, () => {
+                this.props.passFiles(this.state.files)
             })
         }
     }
@@ -34,7 +43,7 @@ class FileUpload extends React.Component {
     handleUpload = (e) => {
         let currentFiles = this.state.files
         Array.from(e.target.files).forEach(file => {
-            if (this.state.files.length === 5) {
+            if (this.state.files.length + this.state.preExistingImageUrls.length === 5) {
                 M.toast({html: 'Only 5 images allowed per recipe.'})
                 return
             }
@@ -47,6 +56,8 @@ class FileUpload extends React.Component {
         })
         this.setState({
             files: currentFiles
+        }, () => {
+            this.props.passFiles(this.state.files)
         })
     }
 
@@ -59,6 +70,15 @@ class FileUpload extends React.Component {
         })
         this.setState({
             files: updatedFileList
+        }, () => {
+            this.props.setFiles(this.state.files)
+        })
+    }
+
+    stageAWSFileDeletion(url) {
+        let updatedFiles = this.state.preExistingImageUrls.filter(u => u !== url)
+        this.setState({
+            preExistingImageUrls: updatedFiles
         })
     }
 
@@ -72,7 +92,7 @@ class FileUpload extends React.Component {
                     ref={i => this.input = i} 
                     type="file" 
                     id="input" 
-                    disabled={this.state.files.length === 5}
+                    disabled={this.state.files.length + this.state.preExistingImageUrls?.length === 5}
                     onChange={this.handleUpload}
                     multiple>
                  </input>
@@ -80,7 +100,7 @@ class FileUpload extends React.Component {
                         <h1>Drag & Drop an image</h1>
                         <button 
                             onClick={this.openFileFinder} 
-                            disabled={this.state.files.length === 5} 
+                            disabled={this.state.files.length + this.state.preExistingImageUrls?.length === 5} 
                             className="waves-effect waves-light btn">Choose a file</button>
                         <span>(Limit 5)</span>
                         <i className="fas fa-file-upload"></i>
@@ -88,7 +108,7 @@ class FileUpload extends React.Component {
                     
                 </div>
 
-                { this.state.files.length > 0 || this.props.preExistingImageUrls.length > 0 ?
+                { this.state.files.length > 0 || this.state.preExistingImageUrls?.length > 0 ?
                     <div className="file-list">
                         <>
                             {Array.from(this.state.files).map(file => {
@@ -97,7 +117,7 @@ class FileUpload extends React.Component {
                                         className="file-preview z-depth-2" 
                                         style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})`  }}>
                                         <div className="file-name" >
-                                            <span>{file.file?.name}</span> 
+                                            {/* <span>{file.file?.name}</span>  */}
                                             <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
                                         </div>
                                     </div>
@@ -105,14 +125,14 @@ class FileUpload extends React.Component {
                             })}
 
                             {
-                                this.props.preExistingImageUrls.map(url => {
+                                this.state.preExistingImageUrls?.map(url => {
                                     return ( 
                                         <div
                                             className="file-preview z-depth-2"
                                             style={{ backgroundImage: `url(${url})`  }}>
                                             <div className="file-name" >
                                                 
-                                                <i onClick={(e) => this.removeFile()} className="fas fa-trash"></i>
+                                                <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>
                                             </div>
                                         </div>
                                     )
