@@ -126,27 +126,39 @@ router.get('/:UUID', authMiddleware, (req, res) => {
     )
 })
 
-router.delete('/:recipeId/:recipeKey', authMiddleware, (req, res) => {
-    const { recipeId } = req.params
-    const { recipeKey } = req.params
-    let userId = request.userID
-
-    // get the name of the file extension based on the id
-
+router.delete('/:imageKey', authMiddleware, (req, res) => {
+    const { imageKey } = req.params
     s3.deleteObject({
         Bucket: 'virtualcookbook-media',
-        Key: recipeKey
+        Key: imageKey
     }, (err, data) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'File could not be deleted from AWS.'})
         } else {
-            client.query('DELETE FROM files WHERE recipeId=$1 AND userId=$2', 
-                [recipeId, userId],
+            client.query('DELETE FROM files WHERE key=$1 RETURNING recipe_id', 
+                [imageKey],
                 (error, response) => {
                     if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
-                    if (response.rowCount) {
-                        return res.status(200).json({ success: true, message: 'File deleted.' })
-                    }
+                    // set recipe's "has_images" property to false if necessary
+                    let recipeId = response.rows[0].recipe_id
+                    client.query('SELECT * FROM files WHERE recipe_id=$1', 
+                    [recipeId],
+                    (error, response) => {
+                        if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
+                        if (response.rowCount) {
+                            return res.status(200).json({ success: true, message: 'File deleted.' })
+                        } else {
+                            // mark has_images to false 
+                            client.query('UPDATE recipes SET has_images = FALSE WHERE id = $1', 
+                            [recipeId], 
+                            (error, response) => {
+                                if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`}) 
+                                if (response.rowCount) {
+                                    return res.status(200).json({ success: true, message: 'File deleted.' }) 
+                                }
+                            })
+                        }
+                    })
                 })
         }
     })

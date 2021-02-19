@@ -12,10 +12,6 @@ var FormData = require('form-data');
 
 class AddRecipe extends React.Component {
 
-  
-  fileUpload = React.createRef()
-  
-
   state = {
     loading: false,
     recipe_title: null,
@@ -23,6 +19,7 @@ class AddRecipe extends React.Component {
     directions: null,
     category: this.props.category,
     recipeValid: false,
+    newFiles: [],
     tags: [
       {
         selected: false, 
@@ -103,7 +100,7 @@ class AddRecipe extends React.Component {
   }
 
   uploadFiles = async(recipeId) => {
-    let uploads = this.fileUpload.current.state.files
+    let uploads = this.state.newFiles
     await Promise.all(uploads.map( async file => {
       let formData = new FormData() 
       formData.append('image', file.file)
@@ -163,7 +160,7 @@ class AddRecipe extends React.Component {
     .then(res => {
       if (res) {
         // handle image uploads
-        let uploads = this.fileUpload.current.state.files
+        let uploads = this.state.newFiles
         if (uploads.length) {
           this.uploadFiles(res.data.recipeId)
           .then(() => {
@@ -237,6 +234,13 @@ class AddRecipe extends React.Component {
     }, () => this.checkValidity());
   }
 
+  setFiles = (val) => {
+    // new files 
+    this.setState({
+      newFiles: val
+    })
+  }
+
   render() {
     const { id, gridView } = this.props;
     const options = [
@@ -302,7 +306,7 @@ class AddRecipe extends React.Component {
                     </div>
                   </li>
                 </ul>
-                <FileUpload ref={this.fileUpload}></FileUpload>
+                <FileUpload passFiles={this.setFiles}></FileUpload>
               </div>
             </div>
             

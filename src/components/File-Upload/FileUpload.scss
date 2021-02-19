@@ -58,13 +58,12 @@
     flex-grow: 1;
     position: relative;
     height: 200px;
-    // max-width: 400px;
     min-width: 200px;
     background-position: center;
     background-size: cover;
     border-radius: 5px;
     margin: 5px;
-    .file-name {
+    .file-cover {
         position: absolute;
         background-color: $primary-transparent;
         color: white;

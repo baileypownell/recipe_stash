@@ -29,6 +29,7 @@ class Recipe extends React.Component {
     recipe: null,
     presignedUrls: [],
     newFiles: [],
+    filesToDelete: [],
     tags: [
       {
         selected: false, 
@@ -100,6 +101,7 @@ class Recipe extends React.Component {
       })
 
       if (recipe.image_urls) {
+        console.log('recipe has images', recipe)
         // get image urls 
         axios.post(`file-upload`, {
           image_urls: recipe.image_urls
@@ -153,7 +155,7 @@ class Recipe extends React.Component {
     this.fetchData()
 
     const elems = document.querySelectorAll('.fixed-action-btn');
-    const instances = M.FloatingActionButton.init(elems, {});
+    M.FloatingActionButton.init(elems, {});
   }
 
   openModal = () => {
@@ -218,10 +220,8 @@ class Recipe extends React.Component {
   }
 
   handleUpdate() {
-    // close modal 
-    this.closeModal();
     // Update recipe details to reflect the change
-    this.fetchData();
+    this.fetchData()
     M.toast({html: 'Recipe updated.'})
     this.setState({
       loading: false
@@ -254,6 +254,17 @@ class Recipe extends React.Component {
     }))
   }
 
+  deleteFiles = () => {
+    this.state.filesToDelete.map(url => {
+      let key = url.split('amazonaws.com/')[1].split('?')[0]
+      axios.delete(`/file-upload/${key}`)
+      .then(() => {})
+      .catch(err => {
+        console.log(err)
+      })
+    })
+  }
+
   updateRecipe = (e) => {
       e.preventDefault();
       let tags = this.state.tags
@@ -264,6 +275,7 @@ class Recipe extends React.Component {
       this.setState({
         loading: true
       })
+      this.closeModal()
       axios.put(`/recipe`, {
         title: this.state.recipe_title_edit,
         rawTitle,
@@ -285,10 +297,11 @@ class Recipe extends React.Component {
         if (res) {
           // handle image uploads
           let uploads = this.state.newFiles
-          if (uploads.length) { 
+          if (uploads.length && !this.state.filesToDelete.length) { 
             this.uploadFiles(this.state.recipeId)
             .then(() => {
               this.handleUpdate()
+              return
             })
             .catch(err => {
               console.log(err)
@@ -296,14 +309,23 @@ class Recipe extends React.Component {
                 loading: false
               })
             })
-          } else {
-            this.handleUpdate()
+          } 
+          
+          // handle images that need deleted 
+          if (this.state.filesToDelete.length) {
+            this.deleteFiles()
           }
+          
+          this.handleUpdate()
+          
         }
       })
       .catch((err) => {
         console.log(err)
         M.toast({html: 'There was an error updating the recipe.'})
+        this.setState({
+          loading: false
+        })
       })
   }
 
@@ -330,6 +352,12 @@ class Recipe extends React.Component {
     // new files 
     this.setState({
       newFiles: val
+    })
+  }
+
+  setFilesToDelete = (files) => {
+    this.setState({
+      filesToDelete: files
     })
   }
 
@@ -383,11 +411,11 @@ class Recipe extends React.Component {
                   {
                     this.state.presignedUrls.map(url => {
                       return (
-                        <img 
-                          className="recipe-image materialboxed z-depth-4" 
-                          key={url}
-                          src={url} >
-                          </img>
+                        <div
+                            className="materialboxed z-depth-2 recipe-image"
+                            style={{ backgroundImage: `url(${url})`  }}>
+                            
+                        </div>
                       )
                     })
                   }
@@ -437,6 +465,7 @@ class Recipe extends React.Component {
               </div>
               <FileUpload 
                 preExistingImageUrls={this.state.presignedUrls}
+                passFilesToDelete={this.setFilesToDelete}
                 passFiles={this.setFiles}>
               </FileUpload>   
             </div>
