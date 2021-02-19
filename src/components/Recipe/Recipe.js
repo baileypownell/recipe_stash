@@ -293,26 +293,21 @@ class Recipe extends React.Component {
         if (res) {
           // handle image uploads
           let uploads = this.state.newFiles
-          if (uploads.length && !this.state.filesToDelete.length) { 
-            this.uploadFiles(this.state.recipeId)
-            .then(() => {
+          if (uploads.length && this.state.filesToDelete.length) {
+            Promise.all([this.uploadFiles(this.state.recipeId), this.deleteFiles()]).then((val) => {
               this.handleUpdate()
-              return
             })
-            .catch(err => {
-              console.log(err)
-              this.setState({
-                loading: false
-              })
-            })
+          } else if (uploads.length) { 
+            this.uploadFiles(this.state.recipeId)
+            .then(() => this.handleUpdate())
+            .catch(err => console.log(err))
           } else if (this.state.filesToDelete.length) {
             this.deleteFiles()
-            .then(res => {
-              this.handleUpdate()
-            })
+            .then(() => this.handleUpdate())
             .catch(err => console.log(err))
-          } else {          
-           this.handleUpdate()
+          } else {    
+            // does this ever run?      
+            this.handleUpdate()
           }
         }
       })
