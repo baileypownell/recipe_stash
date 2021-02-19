@@ -101,7 +101,6 @@ class Recipe extends React.Component {
       })
 
       if (recipe.image_urls) {
-        console.log('recipe has images', recipe)
         // get image urls 
         axios.post(`file-upload`, {
           image_urls: recipe.image_urls
@@ -115,7 +114,11 @@ class Recipe extends React.Component {
           })
         })
         .catch(err => console.log(err))
-      } 
+      } else {
+        this.setState({
+          presignedUrls: []
+        })
+      }
 
       this.state.tags.forEach((tag, index) => {
         if (recipe.tags.includes(tag.recipeTagPropertyName)) {
@@ -229,7 +232,6 @@ class Recipe extends React.Component {
   }
 
   uploadFiles = async(recipeId) => {
-    // this is problematic... 
     let uploads = this.state.newFiles
     await Promise.all(uploads.map( async file => {
       let formData = new FormData() 
@@ -244,25 +246,19 @@ class Recipe extends React.Component {
           }
         }
       )
-      .then(res => {})
-      .catch(err => {
-        console.log(err)
-        this.setState({
-          loading: false
-        })
-      })
     }))
   }
 
-  deleteFiles = () => {
-    this.state.filesToDelete.map(url => {
+  deleteFiles = async() => {
+    await Promise.all(this.state.filesToDelete.map( async url => {
       let key = url.split('amazonaws.com/')[1].split('?')[0]
-      axios.delete(`/file-upload/${key}`)
-      .then(() => {})
-      .catch(err => {
-        console.log(err)
+        await axios.delete(`/file-upload/${key}`)
+        .then(() => {})
+        .catch(err => {
+          console.log(err)
+        })
       })
-    })
+    )
   }
 
   updateRecipe = (e) => {
@@ -309,15 +305,15 @@ class Recipe extends React.Component {
                 loading: false
               })
             })
-          } 
-          
-          // handle images that need deleted 
-          if (this.state.filesToDelete.length) {
+          } else if (this.state.filesToDelete.length) {
             this.deleteFiles()
+            .then(res => {
+              this.handleUpdate()
+            })
+            .catch(err => console.log(err))
+          } else {          
+           this.handleUpdate()
           }
-          
-          this.handleUpdate()
-          
         }
       })
       .catch((err) => {
