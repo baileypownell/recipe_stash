@@ -227,7 +227,9 @@ class Recipe extends React.Component {
     this.fetchData()
     M.toast({html: 'Recipe updated.'})
     this.setState({
-      loading: false
+      loading: false,
+      filesToDelete: [],
+      newFiles: []
     })
   }
 
@@ -249,6 +251,7 @@ class Recipe extends React.Component {
     }))
   }
 
+  // this being called when it shouldn't
   deleteFiles = async() => {
     await Promise.all(this.state.filesToDelete.map( async url => {
       let key = url.split('amazonaws.com/')[1].split('?')[0]

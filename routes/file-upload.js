@@ -140,8 +140,7 @@ router.delete('/:imageKey', authMiddleware, (req, res) => {
                 (error, response) => {
                     if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
                     // set recipe's "has_images" property to false if necessary
-                    let recipeId = response.rows[0] ? response.rows[0].recipe_id : null 
-                    if (recipeId) {
+                    let recipeId = response.rows[0].recipe_id 
                     client.query('SELECT * FROM files WHERE recipe_id=$1', 
                     [recipeId],
                     (error, response) => {
@@ -160,9 +159,6 @@ router.delete('/:imageKey', authMiddleware, (req, res) => {
                             })
                         }
                     })
-                } else {
-                    return res.status(200).json({ success: true}) 
-                }
                 })
         }
     })

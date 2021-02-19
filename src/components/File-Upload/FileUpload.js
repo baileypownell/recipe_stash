@@ -11,7 +11,7 @@ class FileUpload extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.preExistingImageUrls.length !== nextProps.preExistingImageUrls.length) {
+        if (this.props.preExistingImageUrls?.length !== nextProps.preExistingImageUrls?.length) {
             this.setState({
                 preExistingImageUrls: nextProps.preExistingImageUrls
             })
