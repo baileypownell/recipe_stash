@@ -163,15 +163,15 @@
      margin: 10px;
    }
    .recipe-image {
-    background-size: cover;
-     background-position: center;
-     flex-grow: 1;
-     min-width: 200px;
-     height: 300px; 
-     background-position: center;
-     background-size: cover;
-     @include desktop {
-       min-width: 300px;
-     }
+      background-size: cover;
+      background-position: center;
+      flex-grow: 1;
+      min-width: 200px;
+      height: 400px; 
+      background-position: center;
+      background-size: cover;
+      @include desktop {
+        min-width: 300px;
+      }
    }
  }

@@ -9,11 +9,15 @@ import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
+import { BehaviorSubject } from 'rxjs'
+
+let presignedUrlsSubject = new BehaviorSubject([])
+let presignedUrls$ = presignedUrlsSubject.asObservable()
 
 class Recipe extends React.Component {
 
   state = {
-    loading: false,
+    loading: true,
     recipe_title: null,
     ingredients: null,
     directions: null,
@@ -27,7 +31,6 @@ class Recipe extends React.Component {
     category: '',
     category_edit: '', 
     recipe: null,
-    presignedUrls: [],
     newFiles: [],
     filesToDelete: [],
     tags: [
@@ -106,20 +109,15 @@ class Recipe extends React.Component {
           image_urls: recipe.image_urls
         })
         .then(res => {
+          presignedUrlsSubject.next(res.data.presignedUrls)
+          const images = document.querySelectorAll('.materialboxed')
+          M.Materialbox.init(images, {})
           this.setState({
-            presignedUrls: res.data.presignedUrls
-          }, () => {
-            const images = document.querySelectorAll('.materialboxed');
-            M.Materialbox.init(images, {});
+            loading: false
           })
         })
         .catch(err => console.log(err))
-      } else {
-        this.setState({
-          presignedUrls: []
-        })
-      }
-
+      } 
       this.state.tags.forEach((tag, index) => {
         if (recipe.tags.includes(tag.recipeTagPropertyName)) {
             // 1. Make a shallow copy of the items
@@ -256,10 +254,6 @@ class Recipe extends React.Component {
     await Promise.all(this.state.filesToDelete.map( async url => {
       let key = url.split('amazonaws.com/')[1].split('?')[0]
         await axios.delete(`/file-upload/${key}`)
-        .then(() => {})
-        .catch(err => {
-          console.log(err)
-        })
       })
     )
   }
@@ -297,7 +291,11 @@ class Recipe extends React.Component {
           // handle image uploads
           let uploads = this.state.newFiles
           if (uploads.length && this.state.filesToDelete.length) {
-            Promise.all([this.uploadFiles(this.state.recipeId), this.deleteFiles()]).then((val) => {
+            Promise.all([
+              this.uploadFiles(this.state.recipeId), 
+              this.deleteFiles()
+            ])
+            .then((val) => {
               this.handleUpdate()
             })
           } else if (uploads.length) { 
@@ -356,7 +354,7 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { recipeId, category, loading } = this.state;
+    const { recipeId, category, loading, tags } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -366,12 +364,13 @@ class Recipe extends React.Component {
       { value: 'drinks', label: 'Drinks' },
       { value: 'other', label: 'Other' }
     ]
+    console.log('rendering with : ', presignedUrlsSubject.getValue())
 
     return (
       <>
       <Nav loggedIn={true}/>
         {
-          !loading ? 
+          !loading  ? 
           <>
             <h1 className="Title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
@@ -395,24 +394,22 @@ class Recipe extends React.Component {
                   <h2>{category}</h2>
                 </div>
                 <div className="section">
-                  {
-                    this.state.tags.map((tag) => {
-                        return ( tag.selected ? <div className="chip z-depth-2 selectedTag">{ tag.label }</div> : null )
-                    }) 
-                  }
+                  {tags.map((tag) => ( tag.selected ? 
+                        <div 
+                          key={tag.label}
+                          className="chip z-depth-2 selectedTag">
+                          { tag.label }
+                        </div> 
+                        : null )
+                  )}
                 </div>
                 <div id="images">
-                  {
-                    this.state.presignedUrls.map(url => {
-                      return (
-                        <div
-                            className="materialboxed z-depth-2 recipe-image"
-                            style={{ backgroundImage: `url(${url})`  }}>
-                            
-                        </div>
-                      )
-                    })
-                  }
+                  {presignedUrlsSubject.getValue()?.map(url => ( 
+                      <div
+                          className="materialboxed z-depth-2 recipe-image"
+                          style={{ backgroundImage: `url(${url})`  }}>     
+                      </div>
+                  ))}
                 </div>
                 <div onClick={this.openModal} className="fixed-action-btn">
                   <a className="btn-floating btn-large" id="primary-color">
@@ -458,7 +455,7 @@ class Recipe extends React.Component {
                 }
               </div>
               <FileUpload 
-                preExistingImageUrls={this.state.presignedUrls}
+                preExistingImageUrls={presignedUrls$}
                 passFilesToDelete={this.setFilesToDelete}
                 passFiles={this.setFiles}>
               </FileUpload>   
@@ -473,14 +470,14 @@ class Recipe extends React.Component {
                   disabled={!this.state.recipeValid} 
                   onClick={this.updateRecipe}>
                     {this.state.loading ? 
-                      <div class="preloader-wrapper small active">
-                        <div class="spinner-layer">
-                          <div class="circle-clipper left">
-                            <div class="circle"></div>
-                          </div><div class="gap-patch">
-                            <div class="circle"></div>
-                          </div><div class="circle-clipper right">
-                            <div class="circle"></div>
+                      <div className="preloader-wrapper small active">
+                        <div className="spinner-layer">
+                          <div className="circle-clipper left">
+                            <div className="circle"></div>
+                          </div><div className="gap-patch">
+                            <div className="circle"></div>
+                          </div><div className="circle-clipper right">
+                            <div className="circle"></div>
                           </div>
                         </div>
                       </div> : 
