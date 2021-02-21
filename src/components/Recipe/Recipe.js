@@ -14,6 +14,8 @@ import { BehaviorSubject } from 'rxjs'
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
+let modalInstance
+
 class Recipe extends React.Component {
 
   state = {
@@ -114,6 +116,13 @@ class Recipe extends React.Component {
           M.Materialbox.init(images, {})
           this.setState({
             loading: false
+          }, () => {
+            let modal = document.querySelectorAll('.modal')
+            M.Modal.init(modal, {
+              opacity: 0.5
+            })
+            let singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
+            modalInstance = M.Modal.getInstance(singleModalElem)
           })
         })
         .catch(err => console.log(err))
@@ -132,16 +141,8 @@ class Recipe extends React.Component {
             this.setState({tags});
         }
       })
-      this.setState({
-        loaded: true
-      }, () => {
-        let modal = document.querySelectorAll('.modal')
-        M.Modal.init(modal, {
-          opacity: 0.5
-        })
-        var select = document.querySelectorAll('select')
-        M.FormSelect.init(select, {})
-      })
+      var select = document.querySelectorAll('select')
+      M.FormSelect.init(select, {})
     })
     .catch((err) => {
       console.log(err)
@@ -160,16 +161,15 @@ class Recipe extends React.Component {
   }
 
   openModal = () => {
-    let singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
-    let instance = M.Modal.getInstance(singleModalElem)
-    instance.open()
+    modalInstance.open()
     M.updateTextFields()
   }
 
   closeModal = () => {
-    let singleModalElem = document.querySelector(`.modal`);
-    let instance = M.Modal.getInstance(singleModalElem); 
-    instance.close()
+    // let singleModalElem = document.querySelector(`.modal`);
+    // let instance = M.Modal.getInstance(singleModalElem); 
+    modalInstance.close()
+    // instance.close()
   } 
 
   checkValidity = () => {
@@ -189,12 +189,12 @@ class Recipe extends React.Component {
     axios.delete(`/recipe/${this.state.recipeId}`)
     .then(() => {
         M.toast({html: 'Recipe deleted.'});
-        this.closeModal()
+        //this.closeModal()
         this.props.history.push('/dashboard')
     })
     .catch((err) => {
       console.log(err)
-      this.closeModal()
+      //this.closeModal()
       M.toast({html: 'There was an error.'})
     })
   }
@@ -228,7 +228,8 @@ class Recipe extends React.Component {
       loading: false,
       filesToDelete: [],
       newFiles: []
-    })
+    }) 
+    //this.closeModal()
   }
 
   uploadFiles = async(recipeId) => {
@@ -251,9 +252,9 @@ class Recipe extends React.Component {
 
   // this being called when it shouldn't
   deleteFiles = async() => {
-    await Promise.all(this.state.filesToDelete.map( async url => {
-      let key = url.split('amazonaws.com/')[1].split('?')[0]
-        await axios.delete(`/file-upload/${key}`)
+    return await Promise.all(this.state.filesToDelete.map( async url => {
+        let key = url.split('amazonaws.com/')[1].split('?')[0]
+        return await axios.delete(`/file-upload/${key}`)
       })
     )
   }
@@ -290,7 +291,10 @@ class Recipe extends React.Component {
         if (res) {
           // handle image uploads
           let uploads = this.state.newFiles
-          if (uploads.length && this.state.filesToDelete.length) {
+          let filesToDelete = this.state.filesToDelete
+          let uploading = !!uploads.length 
+          let deleting = !!filesToDelete.length
+          if (uploading && deleting) {
             Promise.all([
               this.uploadFiles(this.state.recipeId), 
               this.deleteFiles()
@@ -298,16 +302,19 @@ class Recipe extends React.Component {
             .then((val) => {
               this.handleUpdate()
             })
-          } else if (uploads.length) { 
+          } else if (uploading) { 
             this.uploadFiles(this.state.recipeId)
             .then(() => this.handleUpdate())
             .catch(err => console.log(err))
-          } else if (this.state.filesToDelete.length) {
+          } else if (deleting) {
             this.deleteFiles()
-            .then(() => this.handleUpdate())
+            .then((res) => {
+              console.log(res)
+              console.log('time to call handleUpdate()...')
+              this.handleUpdate()
+            })
             .catch(err => console.log(err))
-          } else {    
-            // does this ever run?      
+          } else {        
             this.handleUpdate()
           }
         }
@@ -344,13 +351,13 @@ class Recipe extends React.Component {
     // new files 
     this.setState({
       newFiles: val
-    })
+    }, () => this.checkValidity())
   }
 
   setFilesToDelete = (files) => {
     this.setState({
       filesToDelete: files
-    })
+    }, () => this.checkValidity())
   }
 
   render() {
@@ -364,7 +371,6 @@ class Recipe extends React.Component {
       { value: 'drinks', label: 'Drinks' },
       { value: 'other', label: 'Other' }
     ]
-    console.log('rendering with : ', presignedUrlsSubject.getValue())
 
     return (
       <>
@@ -395,17 +401,18 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   {tags.map((tag) => ( tag.selected ? 
-                        <div 
-                          key={tag.label}
-                          className="chip z-depth-2 selectedTag">
-                          { tag.label }
-                        </div> 
-                        : null )
+                      <div 
+                        key={tag.label}
+                        className="chip z-depth-2 selectedTag">
+                        { tag.label }
+                      </div> 
+                      : null )
                   )}
                 </div>
                 <div id="images">
-                  {presignedUrlsSubject.getValue()?.map(url => ( 
+                  {presignedUrlsSubject.getValue()?.map((url, i) => ( 
                       <div
+                          key={i}
                           className="materialboxed z-depth-2 recipe-image"
                           style={{ backgroundImage: `url(${url})`  }}>     
                       </div>

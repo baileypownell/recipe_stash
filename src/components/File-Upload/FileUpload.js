@@ -11,7 +11,7 @@ class FileUpload extends React.Component {
     }
 
     componentDidMount() {
-        this.props.preExistingImageUrls.subscribe(preExistingImageUrls => {
+        this.props.preExistingImageUrls?.subscribe(preExistingImageUrls => {
             this.setState({
                 preExistingImageUrls: preExistingImageUrls
             })

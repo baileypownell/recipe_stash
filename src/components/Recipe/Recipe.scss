@@ -170,6 +170,7 @@
       height: 400px; 
       background-position: center;
       background-size: cover;
+      border-radius: 5px;
       @include desktop {
         min-width: 300px;
       }

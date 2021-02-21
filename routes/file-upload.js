@@ -77,37 +77,22 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
     })
 })
 
-getPresignedUrls = async(image_uuids) => {
-    return new Promise((resolve, reject) => {
-        let presignedUrls = []
-        for (let i = 0; i < image_uuids.length; i ++) {
-            s3.getSignedUrl(
-                'getObject', 
-                {
-                    Bucket: 'virtualcookbook-media', 
-                    Key: image_uuids[i]
-                }, 
-                (err, url) => {
-                    if (err) return
-                    presignedUrls.push(url)
-                }
-            )
-
-            if (i === image_uuids.length-1) {
-                return resolve(presignedUrls)
+getPresignedUrls = (image_uuids) => {
+    return (image_uuids.map(url => {
+        return s3.getSignedUrl(
+            'getObject', 
+            {
+                Bucket: 'virtualcookbook-media', 
+                Key: url
             }
-        }
-    })
+        )
+    }))
 }
 
-router.post('/', authMiddleware, (req, res) => {
-    // generate presigned url 
+router.post('/', authMiddleware, async(req, res) => {
     const image_uuids = req.body.image_urls
-    getPresignedUrls(image_uuids)
-    .then(presignedUrls => {
-        res.status(200).json({presignedUrls})
-    })
-    .catch(err => console.log(err))
+    let urls = getPresignedUrls(image_uuids)
+    res.status(200).json({ presignedUrls: urls})
 })
 
 router.get('/:UUID', authMiddleware, (req, res) => {

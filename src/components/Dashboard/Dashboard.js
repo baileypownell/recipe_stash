@@ -331,6 +331,7 @@ class Dashboard extends React.Component {
                       <Category
                         title={mealCategories[mealCat]}
                         id={mealCat}
+                        key={mealCat}
                         visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
                         gridView={gridView}
                         recipes={filteredRecipes[mealCat]}

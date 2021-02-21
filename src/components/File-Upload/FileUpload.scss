@@ -63,6 +63,9 @@
     background-size: cover;
     border-radius: 5px;
     margin: 5px;
+    @include desktop {
+        max-width: 300px;
+    }
     .file-cover {
         position: absolute;
         background-color: $primary-transparent;
