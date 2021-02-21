@@ -8,7 +8,8 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
-var FormData = require('form-data');
+const FormData = require('form-data')
+const tags = require('../../../../models/tags')
 
 class AddRecipe extends React.Component {
 
@@ -20,44 +21,7 @@ class AddRecipe extends React.Component {
     category: this.props.category,
     recipeValid: false,
     newFiles: [],
-    tags: [
-      {
-        selected: false, 
-        label: 'No Bake',
-      }, 
-      {
-        selected: false,
-        label: 'Easy',
-      }, 
-      {
-        selected: false,
-        label: 'Healthy',
-      }, 
-      {
-        selected: false,
-        label: 'Gluten-Free',
-      }, 
-      {
-        selected: false,
-        label: 'Dairy-Free',
-      }, 
-      {
-        selected: false,
-        label: 'Sugar-Free', 
-      }, 
-      {
-        selected: false,
-        label: 'Vegetarian', 
-      }, 
-      {
-        selected: false, 
-        label: 'Vegan',
-      },
-      {
-        selected: false,
-        label: 'Keto',
-      }
-    ]
+    tags: tags
   }
 
   componentDidMount() {
@@ -114,16 +78,12 @@ class AddRecipe extends React.Component {
           }
         }
       )
-      .then(res => {})
-      .catch(err => console.log(err))
     }))
   }
 
   handleSuccess() {
     M.toast({html: 'Recipe added.'})
-    // clear modal state 
     this.clearState()
-    // close modal 
     this.closeModal()
     this.props.updateDashboard()
     this.setState({

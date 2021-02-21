@@ -2,6 +2,7 @@ const { Router } = require('express')
 const client = require('../db')
 const router = Router()
 const authMiddleware = require('./authMiddleware.js')
+const  { getPresignedUrls, s3 } = require('./file-upload')
 
 const constructTags = (recipe) => {
   let tagArray = []
@@ -201,7 +202,8 @@ router.get('/:recipeId', (request, response, next) => {
         if (recipe.has_images) {
           getImageAWSKeys(recipeId)
           .then(res => {
-            recipe_response.image_urls = res
+            recipe_response.image_uuids = res
+            recipe_response.preSignedUrls = getPresignedUrls(res)
             response.status(200).json({ success: true, recipe: recipe_response })
           })
           .catch(err => console.log(err))
@@ -214,53 +216,54 @@ router.get('/:recipeId', (request, response, next) => {
     })
   })
 
-router.get('/:recipeId', (request, response, next) => {
-    const { recipeId } = request.params
-    let userId = request.userID
-    client.query('SELECT * FROM recipes WHERE user_id=$1 AND id=$2',
-    [userId, recipeId],
-     (err, res) => {
-      if (err) return next(err);
-      let recipe = res.rows[0]
-      if (recipe) {
-        let recipe_response = {
-          id: recipe.id, 
-          title: recipe.title, 
-          rawTitle: recipe.raw_title || recipe.title,
-          category: recipe.category,  
-          user_id: recipe.user_id, 
-          ingredients: recipe.ingredients, 
-          directions: recipe.directions, 
-          tags: constructTags(recipe)
+const deleteAWSFiles = async (awsKeys) => {
+  return new Promise((resolve, reject) => {
+    awsKeys.map((url, index) => {
+      s3.deleteObject({
+        Bucket: 'virtualcookbook-media',
+        Key: url
+      }, (err, data) => {
+        if (data) {
+            if (index == awsKeys.length-1) {
+              resolve({success: true})
+            }
         }
-        if (recipe.has_images) {
-          getImageAWSKeys(recipeId)
-          .then(res => {
-            recipe_response.image_urls = res
-            response.status(200).json({ success: true, recipe: recipe_response })
-          })
-          .catch(err => console.log(err))
-        } else {
-          response.status(200).json({ success: true, recipe: recipe_response })
-        }        
-      } else {
-        response.status(500).json({ success: false, message: 'No recipe could be found.'})
-      }
+      })
     })
   })
+}
 
 router.delete('/:recipeId', (request, response, next) => {
   let userId = request.userID
   const { recipeId } = request.params
-  client.query('DELETE FROM recipes WHERE id=$1 AND user_id=$2',
+  client.query('DELETE FROM recipes WHERE id=$1 AND user_id=$2 RETURNING has_images, id',
   [recipeId, userId],
       (err, res) => {
       if (err) return next(err);
       if (res) {
-        return response.status(200).json({ success: true, message: 'Recipe deleted.' })
-      } else {
-        return response.status(500).json({success: false, message: 'Recipe not deleted.'})
-      }
+        let has_images = res.rows[0].has_images
+        let recipe_id = res.rows[0].id
+        if (has_images) {
+          // delete images associated with the recipe from database
+          client.query('DELETE FROM files WHERE recipe_id=$1 RETURNING key', 
+          [recipe_id],
+          async(error, res) => {
+              if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}`})
+              // set recipe's "has_images" property to false if necessary
+              if (res) {
+                let awsKeys = [] 
+                res.rows.forEach(result => awsKeys.push(result.key)) 
+                // then delete from AWS S3
+                let awsDeletions = await deleteAWSFiles(awsKeys)
+                if (awsDeletions) {
+                  return response.status(200).json({ success: true, message: 'Recipe deleted.' })
+                }
+              }  
+          })
+        } else {
+          return response.status(500).json({success: false, message: 'Recipe not deleted.'})
+        }
+    }
   })
 })
 

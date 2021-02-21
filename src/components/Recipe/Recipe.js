@@ -10,6 +10,7 @@ const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import { BehaviorSubject } from 'rxjs'
+const tags = require('../../models/tags')
 
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -35,53 +36,7 @@ class Recipe extends React.Component {
     recipe: null,
     newFiles: [],
     filesToDelete: [],
-    tags: [
-      {
-        selected: false, 
-        recipeTagPropertyName: 'no_bake',
-        label: 'No Bake',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'easy',
-        label: 'Easy',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'healthy',
-        label: 'Healthy',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'gluten_free',
-        label: 'Gluten-Free',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'dairy_free',
-        label: 'Dairy-Free',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'sugar_free',
-        label: 'Sugar-Free', 
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'vegetarian',
-        label: 'Vegetarian', 
-      }, 
-      {
-        selected: false, 
-        recipeTagPropertyName: 'vegan',
-        label: 'Vegan',
-      },
-      {
-        selected: false,
-        recipeTagPropertyName: 'keto',
-        label: 'Keto',
-      }
-    ]
+    tags: tags
   }
 
   goBack = () => {
@@ -103,46 +58,31 @@ class Recipe extends React.Component {
         directions_edit: recipe.directions,
         category: recipe.category,
         category_edit: recipe.category,
-      })
-
-      if (recipe.image_urls) {
-        // get image urls 
-        axios.post(`file-upload`, {
-          image_urls: recipe.image_urls
-        })
-        .then(res => {
-          presignedUrlsSubject.next(res.data.presignedUrls)
+        loading: false
+      }, () => {
+          presignedUrlsSubject.next(res.data.recipe.preSignedUrls)
           const images = document.querySelectorAll('.materialboxed')
           M.Materialbox.init(images, {})
-          this.setState({
-            loading: false
-          }, () => {
-            let modal = document.querySelectorAll('.modal')
-            M.Modal.init(modal, {
-              opacity: 0.5
-            })
-            let singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
-            modalInstance = M.Modal.getInstance(singleModalElem)
+          const modal = document.querySelectorAll('.modal')
+          M.Modal.init(modal, {
+            opacity: 0.5
           })
-        })
-        .catch(err => console.log(err))
-      } 
+          const singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
+          modalInstance = M.Modal.getInstance(singleModalElem)
+          const select = document.querySelectorAll('select')
+          M.FormSelect.init(select, {})
+          const elems = document.querySelectorAll('.fixed-action-btn')
+          M.FloatingActionButton.init(elems, {})
+      })
       this.state.tags.forEach((tag, index) => {
         if (recipe.tags.includes(tag.recipeTagPropertyName)) {
-            // 1. Make a shallow copy of the items
-            let tags = [...this.state.tags];
-            // 2. Make a shallow copy of the item you want to mutate
-            let item = {...tags[index]};
-            // 3. Replace the property you're intested in
-            item.selected = true;
-            // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-            tags[index] = item;
-            // 5. Set the state to our new copy
-            this.setState({tags});
+            let tags = [...this.state.tags]
+            let item = {...tags[index]}
+            item.selected = true
+            tags[index] = item
+            this.setState({tags})
         }
       })
-      var select = document.querySelectorAll('select')
-      M.FormSelect.init(select, {})
     })
     .catch((err) => {
       console.log(err)
@@ -155,9 +95,6 @@ class Recipe extends React.Component {
 
   componentDidMount() {
     this.fetchData()
-
-    const elems = document.querySelectorAll('.fixed-action-btn');
-    M.FloatingActionButton.init(elems, {});
   }
 
   openModal = () => {
@@ -165,12 +102,7 @@ class Recipe extends React.Component {
     M.updateTextFields()
   }
 
-  closeModal = () => {
-    // let singleModalElem = document.querySelector(`.modal`);
-    // let instance = M.Modal.getInstance(singleModalElem); 
-    modalInstance.close()
-    // instance.close()
-  } 
+  closeModal = () => modalInstance.close() 
 
   checkValidity = () => {
     const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
@@ -188,13 +120,12 @@ class Recipe extends React.Component {
   deleteRecipe = () => {
     axios.delete(`/recipe/${this.state.recipeId}`)
     .then(() => {
-        M.toast({html: 'Recipe deleted.'});
-        //this.closeModal()
+        M.toast({html: 'Recipe deleted.'})
+        this.closeModal()
         this.props.history.push('/dashboard')
     })
     .catch((err) => {
       console.log(err)
-      //this.closeModal()
       M.toast({html: 'There was an error.'})
     })
   }
@@ -207,16 +138,11 @@ class Recipe extends React.Component {
 
   toggleTagSelectionStatus = (e) => {
     let index = e.target.id 
-    // 1. Make a shallow copy of the items
-    let tags = [...this.state.tags];
-    // 2. Make a shallow copy of the item you want to mutate
-    let item = {...tags[index]};
-    // 3. Replace the property you're intested in
+    let tags = [...this.state.tags]
+    let item = {...tags[index]}
     let priorSelectedValue = item.selected
-    item.selected = !priorSelectedValue;
-    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    item.selected = !priorSelectedValue
     tags[index] = item;
-    // 5. Set the state to our new copy
     this.setState({tags}, () => this.checkValidity());
   }
 
@@ -229,7 +155,6 @@ class Recipe extends React.Component {
       filesToDelete: [],
       newFiles: []
     }) 
-    //this.closeModal()
   }
 
   uploadFiles = async(recipeId) => {
@@ -309,8 +234,6 @@ class Recipe extends React.Component {
           } else if (deleting) {
             this.deleteFiles()
             .then((res) => {
-              console.log(res)
-              console.log('time to call handleUpdate()...')
               this.handleUpdate()
             })
             .catch(err => console.log(err))
@@ -361,7 +284,7 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { recipeId, category, loading, tags } = this.state;
+    const { recipeId, category, loading, tags, recipe } = this.state;
     const options = [
       { value: 'breakfast', label: 'Breakfast' },
       { value: 'lunch', label: 'Lunch' },
@@ -410,7 +333,7 @@ class Recipe extends React.Component {
                   )}
                 </div>
                 <div id="images">
-                  {presignedUrlsSubject.getValue()?.map((url, i) => ( 
+                  {recipe.preSignedUrls?.map((url, i) => ( 
                       <div
                           key={i}
                           className="materialboxed z-depth-2 recipe-image"

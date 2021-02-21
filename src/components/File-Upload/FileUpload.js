@@ -26,17 +26,19 @@ class FileUpload extends React.Component {
         if (e.dataTransfer.files && e.dataTransfer.items.length >=1 ) {
             let currentFiles = this.state.files
             Array.from(e.dataTransfer.files).forEach(file => {
+                if (this.state.files.length + this.state.preExistingImageUrls?.length === 5) {
+                    M.toast({html: 'Only 5 images allowed per recipe.'})
+                    return
+                }
                 if (file.type === 'image/jpeg' || file.type === 'image/png') {
                     currentFiles.push({
                         file: file,
                         id: uuidv4()
                     })
+                    this.setState({
+                        files: currentFiles
+                    }, () => this.props.passFiles(this.state.files))
                 }
-            })
-            this.setState({
-                files: currentFiles
-            }, () => {
-                this.props.passFiles(this.state.files)
             })
         }
     }
@@ -53,12 +55,10 @@ class FileUpload extends React.Component {
                     file: file,
                     id: uuidv4()
                 })
+                this.setState({
+                    files: currentFiles
+                }, () => this.props.passFiles(this.state.files))
             }
-        })
-        this.setState({
-            files: currentFiles
-        }, () => {
-            this.props.passFiles(this.state.files)
         })
     }
 

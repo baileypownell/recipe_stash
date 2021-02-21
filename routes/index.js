@@ -6,7 +6,7 @@ const signinWithGoogle = require('./signinWithGoogle')
 const logout = require('./logout')
 const user = require('./user')
 const recipe = require('./recipe')
-const fileUpload = require('./file-upload')
+const fileUpload  = require('./file-upload')
 const router = Router();
 
 // middleware 
@@ -17,6 +17,6 @@ router.use('/signinWithGoogle', signinWithGoogle)
 router.use('/logout', logout)
 router.use('/user', user)
 router.use('/recipe', recipe)
-router.use('/file-upload', fileUpload)
+router.use('/file-upload', fileUpload.router)
 
 module.exports = router
