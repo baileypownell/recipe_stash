@@ -91,7 +91,9 @@ class Login extends React.Component {
         email: this.state.email
     })
     .then(res => {
+      console.log(res)
       if (res.data.success) {
+        console.log('here')
         setUserLoggedIn(res.data.sessionID)
         this.props.history.push(`/dashboard`)
       } else {

@@ -20,46 +20,33 @@ class FileUpload extends React.Component {
     
     openFileFinder = () => this.input.click()
 
-    handleDrop(e) {
+    processFile(file) {
+        let currentFiles = this.state.files
+        if (this.state.files.length + this.state.preExistingImageUrls?.length === 5) {
+            M.toast({html: 'Only 5 images allowed per recipe.'})
+            return
+        }
+        if ((file.type === 'image/jpeg' || file.type === 'image/png')) {
+            currentFiles.push({
+                file: file,
+                id: uuidv4()
+            })
+            this.setState({
+                files: currentFiles
+            }, () => this.props.passFiles(this.state.files))
+        }
+    }
+
+    handleDrop = (e) => {
         e.preventDefault()
         e.stopPropagation()
         if (e.dataTransfer.files && e.dataTransfer.items.length >=1 ) {
-            let currentFiles = this.state.files
-            Array.from(e.dataTransfer.files).forEach(file => {
-                if (this.state.files.length + this.state.preExistingImageUrls?.length === 5) {
-                    M.toast({html: 'Only 5 images allowed per recipe.'})
-                    return
-                }
-                if (file.type === 'image/jpeg' || file.type === 'image/png') {
-                    currentFiles.push({
-                        file: file,
-                        id: uuidv4()
-                    })
-                    this.setState({
-                        files: currentFiles
-                    }, () => this.props.passFiles(this.state.files))
-                }
-            })
+            Array.from(e.dataTransfer.files).forEach(file => this.processFile(file))
         }
     }
 
     handleUpload = (e) => {
-        let currentFiles = this.state.files
-        Array.from(e.target.files).forEach(file => {
-            if (this.state.files.length + this.state.preExistingImageUrls?.length === 5) {
-                M.toast({html: 'Only 5 images allowed per recipe.'})
-                return
-            }
-            if ((file.type === 'image/jpeg' || file.type === 'image/png') && this.state.files.length <= 4) {
-                currentFiles.push({
-                    file: file,
-                    id: uuidv4()
-                })
-                this.setState({
-                    files: currentFiles
-                }, () => this.props.passFiles(this.state.files))
-            }
-        })
+        Array.from(e.target.files).forEach(file => this.processFile(file))
     }
 
     removeFile(fileId) {
@@ -92,6 +79,7 @@ class FileUpload extends React.Component {
 
     render() {
         const { preExistingImageUrls, files } = this.state
+        const limitReached = files.length + preExistingImageUrls?.length === 5
         return (
             <div className="file-upload">
                 <div className="dropzone" onDrop={this.handleDrop} onDragOver={this.handleDrop}>
@@ -99,7 +87,7 @@ class FileUpload extends React.Component {
                         ref={i => this.input = i} 
                         type="file" 
                         id="input" 
-                        disabled={files.length + preExistingImageUrls?.length === 5}
+                        disabled={limitReached}
                         onChange={this.handleUpload}
                         multiple>
                     </input>
@@ -107,7 +95,7 @@ class FileUpload extends React.Component {
                         <h1>Drag & Drop an image</h1>
                         <button 
                             onClick={this.openFileFinder} 
-                            disabled={files.length + preExistingImageUrls?.length === 5} 
+                            disabled={limitReached} 
                             className="waves-effect waves-light btn">Choose a file</button>
                         <span>(Limit 5)</span>
                         <i className="fas fa-file-upload"></i>
