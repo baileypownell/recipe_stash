@@ -1,16 +1,9 @@
 
-const { Router, response } = require('express')
+const { Router } = require('express')
 const client = require('../db')
 const router = Router()
 const authMiddleware = require('./authMiddleware.js')
-const environment = process.env.NODE_ENV || 'development';
 const  { getPresignedUrls, s3, uploadToS3 } = require('./aws-s3')
-
-if (environment === 'development') {
-    require('dotenv').config({
-      path: '../.env'
-    })
-  }
 
 router.use(authMiddleware)
 
@@ -44,22 +37,6 @@ router.post('/', authMiddleware, async(req, res) => {
     const image_uuids = req.body.image_urls
     let urls = getPresignedUrls(image_uuids)
     res.status(200).json({ presignedUrls: urls})
-})
-
-router.get('/:UUID', authMiddleware, (req, res) => {
-    // generate presigned url 
-    const UUID = req.params.UUID
-    s3.getSignedUrl(
-        'getObject', 
-        {
-            Bucket: 'virtualcookbook-media', 
-            Key: UUID
-        }, 
-        (err, url) => {
-            if (err) return res.status(500).json({ success: false, message: `Error getting the url: ${err}`})
-            return res.status(200).json({success: true, url})
-        }
-    )
 })
 
 router.delete('/:imageKey', authMiddleware, (req, res) => {
