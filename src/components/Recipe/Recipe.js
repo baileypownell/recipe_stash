@@ -11,6 +11,7 @@ import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import { BehaviorSubject } from 'rxjs'
 const tags = require('../../models/tags')
+const options = require('../../models/options')
 
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -143,7 +144,7 @@ class Recipe extends React.Component {
     let priorSelectedValue = item.selected
     item.selected = !priorSelectedValue
     tags[index] = item;
-    this.setState({tags}, () => this.checkValidity());
+    this.setState({tags}, () => this.checkValidity())
   }
 
   handleUpdate() {
@@ -175,7 +176,6 @@ class Recipe extends React.Component {
     }))
   }
 
-  // this being called when it shouldn't
   deleteFiles = async() => {
     return await Promise.all(this.state.filesToDelete.map( async url => {
         let key = url.split('amazonaws.com/')[1].split('?')[0]
@@ -255,19 +255,19 @@ class Recipe extends React.Component {
     this.setState({
       recipe_title_edit: content,
       recipe_title_raw_edit: editor.getText()
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   handleModelChangeIngredients = (html) => {
     this.setState({
       ingredients_edit: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   handleModelChangeDirections = (html) => {
     this.setState({
       directions_edit: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   setFiles = (val) => {
@@ -285,15 +285,6 @@ class Recipe extends React.Component {
 
   render() {
     const { recipeId, category, loading, tags, recipe } = this.state;
-    const options = [
-      { value: 'breakfast', label: 'Breakfast' },
-      { value: 'lunch', label: 'Lunch' },
-      { value: 'dinner', label: 'Dinner' },
-      { value: 'dessert', label: 'Dessert' },
-      { value: 'side_dish', label: 'Side Dish' },
-      { value: 'drinks', label: 'Drinks' },
-      { value: 'other', label: 'Other' }
-    ]
 
     return (
       <>

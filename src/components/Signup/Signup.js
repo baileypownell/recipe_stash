@@ -3,7 +3,7 @@ import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import Nav from '../Nav/Nav'
-import { setUserLoggedIn, userLoginStatus } from '../../auth-session'
+import { setUserLoggedIn } from '../../auth-session'
 
 class Signup extends React.Component {
 

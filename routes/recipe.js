@@ -2,7 +2,7 @@ const { Router } = require('express')
 const client = require('../db')
 const router = Router()
 const authMiddleware = require('./authMiddleware.js')
-const  { getPresignedUrls, s3 } = require('./file-upload')
+const  { getPresignedUrls, s3 } = require('./aws-s3')
 
 const constructTags = (recipe) => {
   let tagArray = []

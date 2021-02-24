@@ -17,6 +17,6 @@ router.use('/signinWithGoogle', signinWithGoogle)
 router.use('/logout', logout)
 router.use('/user', user)
 router.use('/recipe', recipe)
-router.use('/file-upload', fileUpload.router)
+router.use('/file-upload', fileUpload)
 
 module.exports = router

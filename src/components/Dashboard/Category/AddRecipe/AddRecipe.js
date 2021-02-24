@@ -10,6 +10,7 @@ import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 const FormData = require('form-data')
 const tags = require('../../../../models/tags')
+const options = require('../../../../models/options')
 
 class AddRecipe extends React.Component {
 
@@ -203,15 +204,6 @@ class AddRecipe extends React.Component {
 
   render() {
     const { id, gridView } = this.props;
-    const options = [
-      { value: 'breakfast', label: 'Breakfast' },
-      { value: 'lunch', label: 'Lunch' },
-      { value: 'dinner', label: 'Dinner' },
-      { value: 'dessert', label: 'Dessert' },
-      { value: 'side_dish', label: 'Side Dish' },
-      { value: 'drinks', label: 'Drinks' },
-      { value: 'other', label: 'Other' }
-    ]
 
     return (
       <>
