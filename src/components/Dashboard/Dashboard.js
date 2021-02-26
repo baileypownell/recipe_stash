@@ -91,12 +91,10 @@ class Dashboard extends React.Component {
   componentDidMount() {
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
-    let Appear = () => {
-      for (let i = 0; i <faded.length; i++) {
-      faded[i].classList.add('fade-in')
-      }
+    let appear = () => {
+      faded.forEach((el => el.classList.add('fade-in')))
     }
-    setTimeout(Appear, 300)
+    setTimeout(appear, 300);
 
 
     // filter dropdown

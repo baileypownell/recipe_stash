@@ -47,12 +47,10 @@ class Settings extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    let Appear = () => {
-      for (let i = 0; i <faded.length; i++) {
-      faded[i].classList.add('fade-in');
-      }
+    let appear = () => {
+      faded.forEach((el => el.classList.add('fade-in')))
     }
-    setTimeout(Appear, 500);
+    setTimeout(appear, 500);
     var elems = document.querySelectorAll('.collapsible');
     M.Collapsible.init(elems, {});
     this.updateView()
