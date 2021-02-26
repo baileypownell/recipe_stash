@@ -13,10 +13,12 @@ if (environment === 'development') {
     })
   }
 
+const validExtension = ['image/jpg', 'image/jpeg', 'image/png']
+
 aws.config.update({
     secretAccessKey: process.env.S3_ACCESS_SECRET, 
     accessKeyId: process.env.S3_ACCESS_KEY_ID, 
-    region: 'us-east-2'
+    region: process.env.S3_REGION
 })
 
 const s3 = new aws.S3()
@@ -32,13 +34,19 @@ const upload = multer({
         key: function (req, file, cb) {
             cb(null, req.s3Key)
         }
-    })
+    }), 
+    fileFilter: function (req, file, cb) {
+        if (!validExtension.includes(file.mimetype)) {
+          return cb(null, false)
+        }
+        cb(null, true)
+      }
 })
 const singleFileUpload = upload.single('image')
 
 uploadSingleAWSFile = (req, res) => {
     req.s3Key = uuidv4()
-    let downloadUrl = `https://s3-us-east-2.amazonaws.com/virtualcookbook-media/${req.s3Key}`
+    let downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`
     return new Promise((resolve, reject) => {
         return singleFileUpload(req, res, err => {
             if (err) return reject(err)

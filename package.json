@@ -41,7 +41,6 @@
     "dot-env": "0.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-fileupload": "^1.2.1",
     "express-session": "^1.17.1",
     "form-data": "^3.0.0",
     "html-to-text": "^6.0.0",
