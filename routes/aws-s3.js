@@ -24,7 +24,7 @@ const s3 = new aws.S3()
 const upload = multer({
     storage: multerS3({
         s3, 
-        bucket: 'virtualcookbook-media',
+        bucket: process.env.S3_BUCKET,
         contentType: multerS3.AUTO_CONTENT_TYPE,
         metadata: function (req, file, cb) {
             cb(null, {fieldName: file.fieldname})
@@ -36,7 +36,7 @@ const upload = multer({
 })
 const singleFileUpload = upload.single('image')
 
-function uploadToS3(req, res) {
+uploadSingleAWSFile = (req, res) => {
     req.s3Key = uuidv4()
     let downloadUrl = `https://s3-us-east-2.amazonaws.com/virtualcookbook-media/${req.s3Key}`
     return new Promise((resolve, reject) => {
@@ -52,15 +52,48 @@ getPresignedUrls = (image_uuids) => {
         return s3.getSignedUrl(
             'getObject', 
             {
-                Bucket: 'virtualcookbook-media', 
+                Bucket: process.env.S3_BUCKET, 
                 Key: url
             }
         )
     }))
 }
 
+const deleteAWSFiles = async (awsKeys) => {
+    return new Promise((resolve, reject) => {
+      awsKeys.map((url, index) => {
+        s3.deleteObject({
+          Bucket: process.env.S3_BUCKET,
+          Key: url
+        }, (err, data) => {
+          if (data) {
+              if (index == awsKeys.length-1) {
+                resolve({success: true})
+              }
+          }
+        })
+      })
+    })
+  }
+
+deleteSingleAWSFile = (imageKey) => {
+    return new Promise((resolve, reject) => {
+        s3.deleteObject({
+            Bucket: process.env.S3_BUCKET,
+            Key: imageKey
+        }, (err, data) => {
+            if (err) {
+                reject(err)
+            } else if (data) {
+                resolve(data)
+            }
+        })
+    })
+}
+
 module.exports = {
     getPresignedUrls, 
-    s3,
-    uploadToS3
+    uploadSingleAWSFile,
+    deleteAWSFiles,
+    deleteSingleAWSFile
 };

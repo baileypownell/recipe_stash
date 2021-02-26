@@ -2,7 +2,7 @@ const { Router } = require('express')
 const client = require('../db')
 const router = Router()
 const authMiddleware = require('./authMiddleware.js')
-const  { getPresignedUrls, s3 } = require('./aws-s3')
+const  { getPresignedUrls, deleteAWSFiles } = require('./aws-s3')
 
 const constructTags = (recipe) => {
   let tagArray = []
@@ -215,23 +215,6 @@ router.get('/:recipeId', (request, response, next) => {
       }
     })
   })
-
-const deleteAWSFiles = async (awsKeys) => {
-  return new Promise((resolve, reject) => {
-    awsKeys.map((url, index) => {
-      s3.deleteObject({
-        Bucket: 'virtualcookbook-media',
-        Key: url
-      }, (err, data) => {
-        if (data) {
-            if (index == awsKeys.length-1) {
-              resolve({success: true})
-            }
-        }
-      })
-    })
-  })
-}
 
 router.delete('/:recipeId', (request, response, next) => {
   let userId = request.userID
