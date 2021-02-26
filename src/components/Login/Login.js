@@ -91,9 +91,7 @@ class Login extends React.Component {
         email: this.state.email
     })
     .then(res => {
-      console.log(res)
       if (res.data.success) {
-        console.log('here')
         setUserLoggedIn(res.data.sessionID)
         this.props.history.push(`/dashboard`)
       } else {
@@ -105,7 +103,6 @@ class Login extends React.Component {
       }
     })
     .catch((err) => {
-      console.log('ERROR ', err)
       M.toast({html: err.response.data?.error || 'There was an error.'})
       this.setState({
         signInError: true,

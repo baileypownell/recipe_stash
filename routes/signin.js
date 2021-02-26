@@ -12,7 +12,6 @@ router.post('/', (request, response, next) => {
     [email],
     (err, res) => {
       if (err) return next(err)
-      console.log(res)
       if (res.rows.length) {
         let first_name, last_name, id;
         first_name = res.rows[0].first_name;
@@ -40,7 +39,7 @@ router.post('/', (request, response, next) => {
                         email: email
                       }
                     })
-                  } 
+                  }
                 })
               })
           } else {
