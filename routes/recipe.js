@@ -165,12 +165,12 @@ router.put('/', (request, response, next) => {
   });
 })
 
-const getImageAWSKeys = async(recipeId) => {
+const getImageAWSKeys = (recipeId) => {
   return new Promise((resolve, reject) => {
     client.query('SELECT key FROM files WHERE recipe_id=$1', 
     [recipeId], 
     (err, res) => {
-      if (err) resolve(err)
+      if (err) reject(err)
       let image_url_array = res.rows.reduce((arr, el) => {
         arr.push(el.key)
         return arr
@@ -185,7 +185,7 @@ router.get('/:recipeId', (request, response, next) => {
     let userId = request.userID
     client.query('SELECT * FROM recipes WHERE user_id=$1 AND id=$2',
     [userId, recipeId],
-     (err, res) => {
+     async(err, res) => {
       if (err) return next(err);
       let recipe = res.rows[0]
       if (recipe) {
@@ -200,13 +200,12 @@ router.get('/:recipeId', (request, response, next) => {
           tags: constructTags(recipe)
         }
         if (recipe.has_images) {
-          getImageAWSKeys(recipeId)
-          .then(res => {
-            recipe_response.image_uuids = res
-            recipe_response.preSignedUrls = getPresignedUrls(res)
+          let urls = await getImageAWSKeys(recipeId)
+          if (urls) {
+            recipe_response.image_uuids = urls
+            recipe_response.preSignedUrls = getPresignedUrls(urls)
             response.status(200).json({ success: true, recipe: recipe_response })
-          })
-          .catch(err => console.log(err))
+          } 
         } else {
           response.status(200).json({ success: true, recipe: recipe_response })
         }        
