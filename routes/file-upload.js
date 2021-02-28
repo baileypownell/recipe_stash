@@ -5,6 +5,10 @@ const router = Router()
 const authMiddleware = require('./authMiddleware.js')
 const  { getPresignedUrls, uploadSingleAWSFile, deleteSingleAWSFile } = require('./aws-s3')
 
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+  }
+
 router.use(authMiddleware)
 
 router.post('/:recipeId', authMiddleware, async(req, res) => {
@@ -33,7 +37,7 @@ router.post('/:recipeId', authMiddleware, async(req, res) => {
                 })
             }
         })
-    } catch(err) {
+    } catch(error) {
         return res.status(500).json({ success: false, message: `There was an error: ${error}`})
     }
 })

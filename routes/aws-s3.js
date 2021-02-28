@@ -5,12 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 const multer = require('multer')
 const multerS3 = require('multer-s3')
 
-const environment = process.env.NODE_ENV || 'development';
-
-if (environment === 'development') {
-    require('dotenv').config({
-      path: '../.env'
-    })
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
   }
 
 const validExtension = ['image/jpg', 'image/jpeg', 'image/png']

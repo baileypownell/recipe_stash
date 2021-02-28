@@ -104,7 +104,7 @@ class Settings extends React.Component {
       setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
-      console.log(err.response)
+      console.log(err)
       M.toast({html: 'There was an error.'})
     }
   }

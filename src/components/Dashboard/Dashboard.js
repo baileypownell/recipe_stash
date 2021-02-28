@@ -65,7 +65,6 @@ class Dashboard extends React.Component {
       }
       unfilteredRecipesSubject.next(recipe.data)
     } catch (error) {
-      console.log(error)
       if (error.response?.status === 401) {
         // unathenticated; redirect to log in 
         this.props.history.push('/login')
