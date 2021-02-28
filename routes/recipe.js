@@ -242,7 +242,7 @@ router.delete('/:recipeId', (request, response, next) => {
               }  
           })
         } else {
-          return response.status(500).json({success: false, message: 'Recipe not deleted.'})
+          return response.status(200).json({ success: true, message: 'Recipe deleted.' })
         }
     }
   })

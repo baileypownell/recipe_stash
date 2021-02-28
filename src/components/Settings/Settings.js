@@ -204,12 +204,12 @@ class Settings extends React.Component {
               <div className="collapsible-header"><i className="material-icons">delete</i>Delete Account</div>
               <div className="collapsible-body">
               <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
-                {/* <div style={{textAlign: "left"}}>
-                    <label htmlFor="password">Enter your password</label>
-                      <input id="password" type="password" value={this.state.password} onChange={this.updateInput}></input>
-                      
-                </div> */}
-                <button className="waves-effect waves-light btn" onClick={this.deleteAccount}>Delete Account</button>
+                <button 
+                  className="waves-effect waves-light btn" 
+                  id="delete"
+                  onClick={this.deleteAccount}>
+                    Delete Account <i class="fas fa-exclamation-triangle"></i>
+                  </button>
                 </div>
             </li>
           </ul>
