@@ -7,11 +7,11 @@ const  { getPresignedUrls, uploadSingleAWSFile, deleteSingleAWSFile } = require(
 
 router.use(authMiddleware)
 
-router.post('/:recipeId', authMiddleware, (req, res) => {
+router.post('/:recipeId', authMiddleware, async(req, res) => {
     const { recipeId } = req.params
     let userId = req.userID
-    uploadSingleAWSFile(req, res)
-    .then(awsUploadRes => {
+    try {
+        let awsUploadRes = await uploadSingleAWSFile(req, res)
         client.query('INSERT INTO files(aws_download_url, recipe_id, user_id, key) VALUES($1, $2, $3, $4)', 
         [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
         (error, response) => {
@@ -33,10 +33,9 @@ router.post('/:recipeId', authMiddleware, (req, res) => {
                 })
             }
         })
-    })
-    .catch(e => {
-        console.log(e)
-    })
+    } catch(err) {
+        return res.status(500).json({ success: false, message: `There was an error: ${error}`})
+    }
 })
 
 router.post('/', authMiddleware, async(req, res) => {
@@ -45,10 +44,10 @@ router.post('/', authMiddleware, async(req, res) => {
     res.status(200).json({ presignedUrls: urls})
 })
 
-router.delete('/:imageKey', authMiddleware, (req, res) => {
+router.delete('/:imageKey', authMiddleware, async(req, res) => {
     const { imageKey } = req.params
-    deleteSingleAWSFile(imageKey)
-    .then(result => {
+    try {
+        await deleteSingleAWSFile(imageKey)
         client.query('DELETE FROM files WHERE key=$1 RETURNING recipe_id', 
         [imageKey],
         (error, response) => {
@@ -74,11 +73,9 @@ router.delete('/:imageKey', authMiddleware, (req, res) => {
                 }
             })
         })
-    })
-    .catch((err => {
-        console.log(err)
+    } catch(err) {
         return res.status(500).json({ success: false, message: 'File could not be deleted from AWS.'})
-    }))
+    }
 })
 
 module.exports = router;
