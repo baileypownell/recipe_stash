@@ -87,12 +87,12 @@ class AddRecipe extends React.Component {
     this.clearState()
     this.closeModal()
     this.props.updateDashboard()
-    this.setState({
-      loading: false
-    })
+    // this.setState({
+    //   loading: false
+    // })
 }
 
-  createRecipe = (e) => {
+  createRecipe = async(e) => {
     e.preventDefault();
     let tags = this.state.tags;
     let titleHTML = DOMPurify.sanitize(this.state.recipe_title)
@@ -102,47 +102,43 @@ class AddRecipe extends React.Component {
     this.setState({
       loading: true
     })
-    axios.post(`/recipe`, {
-      title: DOMPurify.sanitize(this.state.recipe_title),
-      rawTitle,
-      category: this.state.category,
-      ingredients: DOMPurify.sanitize(this.state.ingredients),
-      directions: DOMPurify.sanitize(this.state.directions),
-      isNoBake: tags[0].selected,
-      isEasy: tags[1].selected,
-      isHealthy: tags[2].selected,
-      isGlutenFree: tags[3].selected, 
-      isDairyFree: tags[4].selected,
-      isSugarFree: tags[5].selected, 
-      isVegetarian: tags[6].selected, 
-      isVegan: tags[7].selected,
-      isKeto: tags[8].selected
-    })
-    .then(res => {
-      if (res) {
-        // handle image uploads
-        let uploads = this.state.newFiles
-        if (uploads.length) {
-          this.uploadFiles(res.data.recipeId)
-          .then(() => {
-            this.handleSuccess()
-          })
-          .catch(err => {
-            console.log(err)
-            this.setState({
-              loading: false
-            })
-          })
-        } else {
+    try {
+      let recipeCreated = await axios.post(`/recipe`, {
+        title: DOMPurify.sanitize(this.state.recipe_title),
+        rawTitle,
+        category: this.state.category,
+        ingredients: DOMPurify.sanitize(this.state.ingredients),
+        directions: DOMPurify.sanitize(this.state.directions),
+        isNoBake: tags[0].selected,
+        isEasy: tags[1].selected,
+        isHealthy: tags[2].selected,
+        isGlutenFree: tags[3].selected, 
+        isDairyFree: tags[4].selected,
+        isSugarFree: tags[5].selected, 
+        isVegetarian: tags[6].selected, 
+        isVegan: tags[7].selected,
+        isKeto: tags[8].selected
+      })
+      let uploads = this.state.newFiles
+      if (uploads) {
+        try {
+          await this.uploadFiles(recipeCreated.data.recipeId)
           this.handleSuccess()
+        } catch (error) {
+          console.log(error)
         }
+      } else {
+        this.handleSuccess()
       }
-    })
-    .catch((err) => {
-      console.log(err)
+    } catch (error) {
+      console.log(error)
       M.toast({html: 'There was an error.'})
-    })
-  }
+    } finally {
+      this.setState({
+        loading: false
+      })
+    } 
+  }  
 
   closeModal = () => {
     let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 

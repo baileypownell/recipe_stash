@@ -16,11 +16,11 @@ class ResetPassword extends React.Component {
     loading: false
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // verify token matches AND hasn't expired
     let token = this.props.location.pathname.split('/')[2];
-    axios.get(`/sendResetEmail/${token}`)
-    .then((res) => {
+    try {
+      let res = await axios.get(`/sendResetEmail/${token}`)
       if (!res.data.success) {
         this.setState({
           invalidLink: true
@@ -31,13 +31,12 @@ class ResetPassword extends React.Component {
           email: res.data.user_email
         })
       }
-    })
-    .catch(err => {
+    } catch(err) {
       this.setState({
         invalidLink: true
       })
       console.log(err)
-    })
+    }
   }
 
   goHome = () => {
@@ -60,41 +59,37 @@ class ResetPassword extends React.Component {
   }
 }
 
-  updatePassword = (e) => {
+  updatePassword = async(e) => {
     e.preventDefault();
     this.setState({
       loading: true
     })
-    axios.put(`/user/reset-password`, {
-      password: this.state.password,
-      reset_password_token: this.props.location.pathname.split('/')[2]
-    })
-    .then(res => {
-      this.setState({
-        loading: false
+    try {
+      await axios.put(`/user/reset-password`, {
+        password: this.state.password,
+        reset_password_token: this.props.location.pathname.split('/')[2]
       })
       M.toast({html: 'Password updated!'})
-      // log the user in here
-      axios.post(`/signin`, {
-        password: this.state.password, 
-        email: this.state.email
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setUserLoggedIn(res.data.sessionID)
-          this.props.history.push(`/dashboard`)
+        // log the user in here
+        try {
+          let res = await axios.post(`/signin`, {
+            password: this.state.password, 
+            email: this.state.email
+          })
+          if (res.data.success) {
+            setUserLoggedIn(res.data.sessionID)
+            this.props.history.push(`/dashboard`)
+          }
+        } catch(err) {
+          console.log(err)
         }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-    })
-    .catch((err) => {
+    } catch(err) {
+      M.toast({html: 'There was an error.'})
+    } finally {
       this.setState({
         loading: false
       })
-      M.toast({html: 'There was an error.'})
-    })
+    }
   }
 
   render() {

@@ -18,31 +18,29 @@ class Settings extends React.Component {
     emailReceived: ''
   }
 
-  logout = () => {
-    axios.get('/logout')
-    .then((res) => {
+  logout = async() => {
+    try {
+      await axios.get('/logout')
       setUserLoggedOut()
       this.props.history.push('/')
-    })
-    .catch((err) => {
+    } catch(err) {
       console.log(err)
-    })
+    }
   }
 
-  resetPassword = () => {
-    axios.post(`/sendResetEmail`, {
-      email: this.state.email
-    })
-    .then(res => {
+  resetPassword = async() => {
+    try {
+      let res = await axios.post(`/sendResetEmail`, {
+        email: this.state.email
+      })
       if (!res.data.success) {
         M.toast({html: 'There was an error.'})
       } else {
         M.toast({html: 'Check your email for a link to reset your password.'})
       }
-    })
-    .catch(err => {
+    } catch(err) {
       M.toast({html: 'Password could not be reset.'})
-    })
+    }
   }
 
   componentDidMount() {
@@ -62,79 +60,75 @@ class Settings extends React.Component {
     })
   }
 
-  updateProfile = (e) => {
-      const { firstName, lastName } = this.state;
-      const { id } = this.props;
-      e.preventDefault();
+  updateProfile = async(e) => {
+    const { firstName, lastName } = this.state;
+    const { id } = this.props;
+    e.preventDefault();
+    try {
       let payload = {
-          first_name: firstName,
-          last_name: lastName,
-          id: id
+        first_name: firstName,
+        last_name: lastName,
+        id: id
       }
-      axios.put(`/user`, payload)
-      .then((res) => {
-        M.toast({html: 'Profile updated successfully.'})
-        this.updateView()
-      })
-      .catch(err => {
-        setUserLoggedOut()
-        this.props.history.push('/login');
-      })
+      await axios.put(`/user`, payload)
+      M.toast({html: 'Profile updated successfully.'})
+      this.updateView()
+    } catch(err) {
+      setUserLoggedOut()
+      this.props.history.push('/login');
+    }
   }
 
-  updateEmail = (e) => {
+  updateEmail = async(e) => {
     e.preventDefault();
-    axios.put(`/user`, {
-      new_email: this.state.new_email,
-      password: this.state.password,
-    })
-    .then(res => {
+    try {
+      let res = await axios.put(`/user`, {
+        new_email: this.state.new_email,
+        password: this.state.password,
+      })
       M.toast({ html: res.data.message })
       if (res.data.success) {
         this.updateView()
       }
-    })
-    .catch(err => {
+    } catch(err) {
       console.log(err)
       M.toast({html: 'Passwords do not match.'})
-    })
+    }
   }
 
-  deleteAccount = (e) => {
+  deleteAccount = async(e) => {
     e.preventDefault()
-    axios.delete(`/user`)
-    .then((res) => {
+    try { 
+      await axios.delete(`/user`)
       M.toast({html: 'Account deleted.'})
       setUserLoggedOut()
       this.props.history.push('/')
-    })
-    .catch((err) => {
+    } catch(err) {
       console.log(err.response)
       M.toast({html: 'There was an error.'})
-    })
+    }
   }
 
-  updatePassword = (e) => {
+  updatePassword = async(e) => {
     e.preventDefault();
-    axios.post('/sendResetEmail', {
-      email: this.state.email
-    })
-    .then((res) => {
+    try {
+      let res = await axios.post('/sendResetEmail', {
+        email: this.state.email
+      })
       M.toast({html: res.data.message})
       if (res.data.success) {
         // log out 
         this.logout()
       }
-    })
-    .catch((err) => {
+    } catch(err) {
       console.log(err)
       M.toast({html: 'There was an error.'})
-    })
+    }
   }
 
-  updateView() {
-    axios.get(`/user`)
-    .then((res) => {
+  updateView = async() => {
+    try {
+      let res = await axios.get(`/user`)
       let user = res.data.userData
       this.setState({
         firstName: user.firstName, 
@@ -145,11 +139,10 @@ class Settings extends React.Component {
         emailReceived: user.email
       })
       M.updateTextFields()
-    })
-    .catch((err) => { 
-      console.log('error = ',err)
+    } catch(err) {
+      console.log(err)
       this.props.history.push('/login')
-    })
+    }
   }
 
   render() {

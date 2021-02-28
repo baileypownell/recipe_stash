@@ -44,9 +44,9 @@ class Recipe extends React.Component {
     this.props.history.push('/dashboard')
   }
 
-  fetchData = () => {
-    axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
-    .then(res => {
+  fetchData = async() => {
+    try {
+      let res = await axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
       let recipe = res.data.recipe
       this.setState({
         recipe: recipe,
@@ -84,14 +84,13 @@ class Recipe extends React.Component {
             this.setState({tags})
         }
       })
-    })
-    .catch((err) => {
+    } catch(err) {
       console.log(err)
       if (err.response.status === 401) {
         // unathenticated; redirect to log in 
         this.props.history.push('/login')
       }
-    })
+    }
   }
 
   componentDidMount() {
@@ -118,17 +117,16 @@ class Recipe extends React.Component {
     }
   }
 
-  deleteRecipe = () => {
-    axios.delete(`/recipe/${this.state.recipeId}`)
-    .then(() => {
-        M.toast({html: 'Recipe deleted.'})
-        this.closeModal()
-        this.props.history.push('/dashboard')
-    })
-    .catch((err) => {
+  deleteRecipe = async() => {
+    try {
+      await axios.delete(`/recipe/${this.state.recipeId}`)
+      M.toast({html: 'Recipe deleted.'})
+      this.closeModal()
+      this.props.history.push('/dashboard')
+    } catch(err) {
       console.log(err)
       M.toast({html: 'There was an error.'})
-    })
+    }
   }
 
   updateInput = (e) => {
@@ -152,7 +150,6 @@ class Recipe extends React.Component {
     this.fetchData()
     M.toast({html: 'Recipe updated.'})
     this.setState({
-      loading: false,
       filesToDelete: [],
       newFiles: []
     }) 
@@ -184,7 +181,7 @@ class Recipe extends React.Component {
     )
   }
 
-  updateRecipe = (e) => {
+  updateRecipe = async(e) => {
       e.preventDefault();
       let tags = this.state.tags
       let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
@@ -195,60 +192,52 @@ class Recipe extends React.Component {
         loading: true
       })
       this.closeModal()
-      axios.put(`/recipe`, {
-        title: this.state.recipe_title_edit,
-        rawTitle,
-        ingredients: this.state.ingredients_edit,
-        directions: this.state.directions_edit,
-        recipeId: this.state.recipeId,
-        category: this.state.category,
-        isNoBake: tags[0].selected,
-        isEasy: tags[1].selected,
-        isHealthy: tags[2].selected,
-        isGlutenFree: tags[3].selected, 
-        isDairyFree: tags[4].selected,
-        isSugarFree: tags[5].selected, 
-        isVegetarian: tags[6].selected, 
-        isVegan: tags[7].selected,
-        isKeto: tags[8].selected
-      })
-      .then(res => {
-        if (res) {
-          // handle image uploads
-          let uploads = this.state.newFiles
-          let filesToDelete = this.state.filesToDelete
-          let uploading = !!uploads.length 
-          let deleting = !!filesToDelete.length
-          if (uploading && deleting) {
-            Promise.all([
-              this.uploadFiles(this.state.recipeId), 
-              this.deleteFiles()
-            ])
-            .then((val) => {
-              this.handleUpdate()
-            })
-          } else if (uploading) { 
-            this.uploadFiles(this.state.recipeId)
-            .then(() => this.handleUpdate())
-            .catch(err => console.log(err))
-          } else if (deleting) {
+      try {
+        await axios.put(`/recipe`, {
+          title: this.state.recipe_title_edit,
+          rawTitle,
+          ingredients: this.state.ingredients_edit,
+          directions: this.state.directions_edit,
+          recipeId: this.state.recipeId,
+          category: this.state.category,
+          isNoBake: tags[0].selected,
+          isEasy: tags[1].selected,
+          isHealthy: tags[2].selected,
+          isGlutenFree: tags[3].selected, 
+          isDairyFree: tags[4].selected,
+          isSugarFree: tags[5].selected, 
+          isVegetarian: tags[6].selected, 
+          isVegan: tags[7].selected,
+          isKeto: tags[8].selected
+        })
+        // handle image uploads
+        let uploads = this.state.newFiles
+        let filesToDelete = this.state.filesToDelete
+        let uploading = !!uploads.length 
+        let deleting = !!filesToDelete.length
+        if (uploading && deleting) {
+          await Promise.all([
+            this.uploadFiles(this.state.recipeId), 
             this.deleteFiles()
-            .then((res) => {
-              this.handleUpdate()
-            })
-            .catch(err => console.log(err))
-          } else {        
-            this.handleUpdate()
-          }
+          ])
+          this.handleUpdate()
+        } else if (uploading) { 
+          await this.uploadFiles(this.state.recipeId)
+          this.handleUpdate()
+        } else if (deleting) {
+          await this.deleteFiles()
+          this.handleUpdate()
+        } else {        
+          this.handleUpdate()
         }
-      })
-      .catch((err) => {
+      } catch(err) {
         console.log(err)
         M.toast({html: 'There was an error updating the recipe.'})
+      } finally {
         this.setState({
           loading: false
         })
-      })
+      }
   }
 
   handleModelChange = (content, delta, source, editor) => {

@@ -42,24 +42,23 @@ class Login extends React.Component {
     });
   }
 
-  sendPasswordResetLink = (e) => {
+  sendPasswordResetLink = async(e) => {
     e.preventDefault()
-    axios.post(`/sendResetEmail`, {
-      email: this.state.email
-    })
-    .then(res => {
+    try {
+      let res = await axios.post(`/sendResetEmail`, {
+        email: this.state.email
+      })
       res.data.success ? M.toast({html: 'Check your email for a link to reset your password.'}) : M.toast({html: 'There was an error.'}) 
-    })
-    .catch(err => {
+    } catch(err) {
       M.toast({html: 'There was an error.'})
-    })
+    }
   }
 
-  responseGoogle = (response) => {
-    axios.post(`/signinWithGoogle`, {
-        token: response.tokenId, 
-    })
-    .then((res) => {
+  responseGoogle = async(response) => {
+    try {
+      let res = await axios.post(`/signinWithGoogle`, {
+          token: response.tokenId, 
+      })
       if (res.data.success) {
         setUserLoggedIn(res.data.sessionID)
         this.props.history.push('/dashboard')
@@ -69,26 +68,25 @@ class Login extends React.Component {
           signInError: true
         })
       }
-    })
-    .catch(err => {
+    } catch(err) {
       console.log(err)
       M.toast({html: err.data ? err.data.message : 'Could not authenticate.'})
       this.setState({
         signInError: true
       })
-    })
+    }
   }
 
-  signin = (event) => {
+  signin = async(event) => {
     event.preventDefault();
     this.setState({
       loading: true
     })
-    axios.post(`/signin`, {
-        password: this.state.password,
-        email: this.state.email
-    })
-    .then(res => {
+    try {
+      let res = await axios.post(`/signin`, {
+          password: this.state.password,
+          email: this.state.email
+      })
       if (res.data.success) {
         setUserLoggedIn(res.data.sessionID)
         this.props.history.push(`/dashboard`)
@@ -99,14 +97,13 @@ class Login extends React.Component {
         })
         M.toast({html: res.data.message})
       }
-    })
-    .catch((err) => {
+    } catch(err) {
       M.toast({html: err.response.data?.error || 'There was an error.'})
       this.setState({
         signInError: true,
         loading: false
       })
-    })
+    }
   }
   
 
