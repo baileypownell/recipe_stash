@@ -233,8 +233,7 @@ router.delete('/:recipeId', (request, response, next) => {
               if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}`})
               // set recipe's "has_images" property to false if necessary
               if (res) {
-                let awsKeys = [] 
-                res.rows.forEach(result => awsKeys.push(result.key)) 
+                let awsKeys = res.rows.map(row => row.key) 
                 // then delete from AWS S3
                 let awsDeletions = await deleteAWSFiles(awsKeys)
                 if (awsDeletions) {

@@ -87,9 +87,6 @@ class AddRecipe extends React.Component {
     this.clearState()
     this.closeModal()
     this.props.updateDashboard()
-    // this.setState({
-    //   loading: false
-    // })
 }
 
   createRecipe = async(e) => {
