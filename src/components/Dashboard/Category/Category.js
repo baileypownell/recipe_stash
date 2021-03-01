@@ -2,14 +2,12 @@ import React, { useEffect } from 'react'
 import AddRecipe from './AddRecipe/AddRecipe'
 import Square from './Square/Square'
 import ListItem from './ListItem/ListItem'
+const appear = require('../../../models/functions')
 
 const Category = (props) => {
   useEffect(() => {
       let opacity = document.querySelectorAll('.opacity')
-      let appear = () => {
-        opacity.forEach(el => el.classList.add('maxOpacity'))
-      }
-      setTimeout(appear, 300);
+      setTimeout(appear(opacity, 'maxOpacity'), 300);
   })
   const { title, id, recipes, visibility, gridView } = props;
     return (

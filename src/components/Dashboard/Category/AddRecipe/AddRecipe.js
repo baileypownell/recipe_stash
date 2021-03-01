@@ -8,6 +8,7 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
+import Preloader from '../../../Preloader/Preloader'
 const FormData = require('form-data')
 const tags = require('../../../../models/tags')
 const options = require('../../../../models/options')
@@ -211,7 +212,7 @@ class AddRecipe extends React.Component {
 
         <div id={`${this.props.id}_modal`} className="modal recipe-modal">
             <div className="recipe">
-              <h1 className="Title">New Recipe</h1>
+              <h1 className="title">New Recipe</h1>
               <div className="modal-scroll">
                   <div className="modal-content">
                     <h3>Title</h3>
@@ -262,17 +263,7 @@ class AddRecipe extends React.Component {
                   disabled={!this.state.recipeValid} 
                   onClick={this.createRecipe}>
                     {this.state.loading ? 
-                      <div className="preloader-wrapper small active">
-                        <div className="spinner-layer">
-                          <div className="circle-clipper left">
-                            <div className="circle"></div>
-                          </div><div className="gap-patch">
-                            <div className="circle"></div>
-                          </div><div className="circle-clipper right">
-                            <div className="circle"></div>
-                          </div>
-                        </div>
-                      </div> : 
+                      <Preloader/> : 
                       <>
                         Save
                         <i className="fas fa-check-square"></i>

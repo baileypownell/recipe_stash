@@ -6,6 +6,7 @@ import './Login.scss'
 import M from 'materialize-css'
 import Nav from '../Nav/Nav'
 import { setUserLoggedIn } from '../../auth-session'
+const appear = require('../../models/functions')
 
 class Login extends React.Component {
 
@@ -19,10 +20,7 @@ class Login extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade')
-    let appear = () => {
-      faded.forEach((el => el.classList.add('fade-in')))
-    }
-    setTimeout(appear, 500);
+    setTimeout(appear(faded, 'fade-in'), 500);
     M.updateTextFields()
 }
 
