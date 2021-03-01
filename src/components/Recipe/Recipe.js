@@ -9,10 +9,11 @@ import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
+import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
 const tags = require('../../models/tags')
 const options = require('../../models/options')
-
+const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -95,6 +96,8 @@ class Recipe extends React.Component {
 
   componentDidMount() {
     this.fetchData()
+    let faded = document.querySelectorAll('.fade')
+    setTimeout(appear(faded, 'fade-in'), 700)
   }
 
   openModal = () => {
@@ -273,7 +276,16 @@ class Recipe extends React.Component {
   }
 
   render() {
-    const { recipeId, category, loading, tags, recipe } = this.state;
+    const { 
+      recipeId, 
+      category, 
+      loading,
+      tags, 
+      recipe, 
+      directions, 
+      ingredients, 
+      recipe_title_raw 
+    } = this.state;
 
     return (
       <>
@@ -281,9 +293,9 @@ class Recipe extends React.Component {
         {
           !loading  ? 
           <>
-            <h1 className="Title">
+            <h1 className="title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
-              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: this.state.recipe_title_raw}}/>
+              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: recipe_title_raw}}/>
             </h1>
             <div className="view-recipe" >
               <div>
@@ -292,11 +304,11 @@ class Recipe extends React.Component {
                 </div>
                 <div className="section">
                   <h3 className="default">Ingredients</h3>
-                  <div dangerouslySetInnerHTML={{__html: this.state.ingredients}} />
+                  <div dangerouslySetInnerHTML={{__html: ingredients}} />
                 </div>
                 <div className="section">
                   <h3 className="default">Directions </h3>
-                  <div dangerouslySetInnerHTML={{__html: this.state.directions}}/>
+                  <div dangerouslySetInnerHTML={{__html: directions}}/>
                 </div>
                 <div className="section">
                   <h3 className="default">Category</h3>
@@ -312,13 +324,12 @@ class Recipe extends React.Component {
                       : null )
                   )}
                 </div>
-                <div id="images">
+                <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
                   {recipe.preSignedUrls?.map((url, i) => ( 
-                      <div
-                          key={i}
-                          className="materialboxed z-depth-2 recipe-image"
-                          style={{ backgroundImage: `url(${url})`  }}>     
-                      </div>
+                    <img 
+                      key={i}
+                      className="materialboxed z-depth-2 faded"
+                      src={url}/>
                   ))}
                 </div>
                 <div onClick={this.openModal} className="fixed-action-btn">
@@ -330,7 +341,7 @@ class Recipe extends React.Component {
           </div>
           <div id={`modal_${recipeId}`} className="modal recipe-modal">
             <div className="recipe">
-              <h1 className="Title">Edit Recipe</h1>
+              <h1 className="title">Edit Recipe</h1>
               <div className="modal-scroll">
                 <div className="modal-content">
                     <h3>Title</h3>
@@ -354,11 +365,11 @@ class Recipe extends React.Component {
                     <div className="options">
                       <h3>Recipe Tags</h3>
                       {
-                        this.state.tags.map((tag, index) => {
+                        tags.map((tag, index) => {
                           return <div 
                             onClick={this.toggleTagSelectionStatus} 
                             id={index} 
-                            className={`chip z-depth-2 ${this.state.recipe && this.state.tags[index].selected  ? "selectedTag" : "null"}`}
+                            className={`chip z-depth-2 ${recipe && tags[index].selected  ? "selectedTag" : "null"}`}
                             key={index}>
                               {tag.label}
                             </div>
@@ -373,25 +384,20 @@ class Recipe extends React.Component {
                 </div>
             </div>
               <div className="modal-close-buttons">
-                <button id="primary-color" className="waves-effect waves-light btn" onClick={this.deleteRecipe}>Delete Recipe <i className="fas fa-trash"></i></button>
+                <button 
+                  id="primary-color" 
+                  className="waves-effect waves-light btn" 
+                  onClick={this.deleteRecipe}>
+                  Delete Recipe <i className="fas fa-trash"></i>
+                </button>
                 <div>
                   <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                   <button 
                     className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                     disabled={!this.state.recipeValid} 
                     onClick={this.updateRecipe}>
-                      {this.state.loading ? 
-                        <div className="preloader-wrapper small active">
-                          <div className="spinner-layer">
-                            <div className="circle-clipper left">
-                              <div className="circle"></div>
-                            </div><div className="gap-patch">
-                              <div className="circle"></div>
-                            </div><div className="circle-clipper right">
-                              <div className="circle"></div>
-                            </div>
-                          </div>
-                        </div> : 
+                      {loading ? 
+                        <Preloader/> : 
                         <>
                           Update Recipe
                           <i className="fas fa-check-square"></i>

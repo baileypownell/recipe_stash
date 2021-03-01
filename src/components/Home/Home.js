@@ -3,6 +3,7 @@ import mobileView from '../../images/mobile_dashboard_edited.png'
 import { withRouter } from 'react-router'
 import Nav from '../Nav/Nav'
 import './Home.scss';
+const appear = require('../../models/functions')
 
 class Home extends React.Component {
 
@@ -12,10 +13,7 @@ class Home extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    let appear = () => {
-      faded.forEach((el => el.classList.add('fade-in')))
-    }
-    setTimeout(appear, 500);
+    setTimeout(appear(faded, 'fade-in'), 500);
   }
 
   render() {

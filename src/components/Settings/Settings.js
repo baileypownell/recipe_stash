@@ -5,6 +5,7 @@ import M from 'materialize-css'
 import './Settings.scss'
 import Nav from '../Nav/Nav'
 import { setUserLoggedOut } from '../../auth-session'
+const appear = require('../../models/functions')
 
 class Settings extends React.Component {
 
@@ -45,10 +46,7 @@ class Settings extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    let appear = () => {
-      faded.forEach((el => el.classList.add('fade-in')))
-    }
-    setTimeout(appear, 500);
+    setTimeout(appear(faded, 'fade-in'), 500);
     var elems = document.querySelectorAll('.collapsible');
     M.Collapsible.init(elems, {});
     this.updateView()
@@ -149,7 +147,7 @@ class Settings extends React.Component {
     return (
       <>
         <Nav loggedIn={true}/>
-        <h1 className="Title">Settings<i className="fas fa-cog"></i></h1>
+        <h1 className="title">Settings<i className="fas fa-cog"></i></h1>
         <div className="fade settings">
           <div id="profileParent">
             <div id="profile">

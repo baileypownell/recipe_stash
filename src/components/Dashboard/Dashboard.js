@@ -5,6 +5,7 @@ import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss'
 import Nav from '../Nav/Nav'
+const appear = require('../../models/functions')
 
 // object for iterating through meal cateogries 
 const mealCategories = {
@@ -88,10 +89,7 @@ class Dashboard extends React.Component {
   componentDidMount() {
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
-    let appear = () => {
-      faded.forEach((el => el.classList.add('fade-in')))
-    }
-    setTimeout(appear, 300);
+    setTimeout(appear(faded, 'fade-in'), 300);
 
 
     // filter dropdown
@@ -251,60 +249,58 @@ class Dashboard extends React.Component {
     return (
       <>
         <Nav loggedIn={true}/>
-        <div className="title">
+        <div className="title-bar">
           <div>
             <h1>Recipe Box</h1>
             <div className="searchbar">
-            <input 
-              onChange={this.handleSearchChange} 
-              value={userInputSubject.getValue()} 
-              type="text" placeholder="Find a recipe">
-            </input>
-            <i className="fas fa-search"></i>
+                <input 
+                  onChange={this.handleSearchChange} 
+                  value={userInputSubject.getValue()} 
+                  type="text" placeholder="Find a recipe">
+                </input>
+                <i className="fas fa-search"></i>
 
-            <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
-              <span>Filter</span>
-              {
-                selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
-              }
-            </button>
-            <ul id='dropdown' className='dropdown-content'>
-              <p>Features</p>
-                {
-                  filterArray.map((item, index) => {
-                    return (
-                      <li key={index} >
-                        <label>
-                          <input 
-                            checked={appliedFilt[item.key]} 
-                            id={item.key} 
-                            onClick={this.filter} 
-                            type="checkbox" />
-                          <span>{item.name}</span>
-                          </label>
-                      </li>
-                    )
-                  })
-                }
-              <p>Categories</p>
-                {
-                  filterCategoryArray.map((item, index) => {
-                    return (
-                      <li key={index}>
-                        <label>
-                            <input 
-                              checked={appliedCat[item.key]} 
-                              id={item.key} 
-                              onClick={this.filterByCategory}
-                              type="checkbox" />
-                            <span>{item.name}</span>
-                          </label>
-                      </li>
-                    )
-                  })
-                }
-            </ul>
-          </div>
+                <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
+                  <span>Filter</span>
+                  {
+                    selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
+                  }
+                </button>
+                <ul id='dropdown' className='dropdown-content'>
+                  <p>Features</p>
+                    {filterArray.map((item, index) => {
+                        return (
+                          <li key={index} >
+                            <label>
+                              <input 
+                                checked={appliedFilt[item.key]} 
+                                id={item.key} 
+                                onClick={this.filter} 
+                                type="checkbox" />
+                              <span>{item.name}</span>
+                              </label>
+                          </li>
+                        )
+                      })
+                    }
+                  <p>Categories</p>
+                    {filterCategoryArray.map((item, index) => {
+                        return (
+                          <li key={index}>
+                            <label>
+                                <input 
+                                  checked={appliedCat[item.key]} 
+                                  id={item.key} 
+                                  onClick={this.filterByCategory}
+                                  type="checkbox" />
+                                <span>{item.name}</span>
+                              </label>
+                          </li>
+                        )
+                      })
+                    }
+                </ul>
+            </div>
           </div>
         </div>
         

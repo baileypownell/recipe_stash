@@ -44,16 +44,6 @@ h3 {
   font-size: 30px;
   cursor: pointer;
 }
-#pot {
-  text-align: center;
-  padding-top: 10vh;
-    img {
-    width: 100px;
-  }
-  @include tablet {
-    display: none;
-  }
-}
 .bottom {
   position: absolute;
   bottom: 0px;
@@ -82,14 +72,6 @@ h3 {
   button {
     margin: 20px 0px;
   }
-}
-
-.BounceLoader {
-  @include flexColumn;
-  align-items: center;
-  height: 65vh;
-  justify-content: center;
-
 }
 
 .view-recipe {
@@ -161,21 +143,28 @@ h3 {
    padding: 20px 0;
    display: flex;
    flex-wrap: wrap;
-   > div {
-     flex-grow: 1;
-     margin: 10px;
+   @include desktop {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     grid-template-rows: auto;
+     gap: 0 15px;
    }
-   .recipe-image {
-      background-size: cover;
-      background-position: center;
-      flex-grow: 1;
-      min-width: 200px;
-      height: 400px; 
-      background-position: center;
-      background-size: cover;
-      border-radius: 5px;
-      @include desktop {
-        min-width: 300px;
-      }
+   img {
+     width: 100%;
+     margin: 15px 0;
+     border-radius: 5px;
+   }
+ }
+
+ #noGrid {
+   display: flex;
+   padding: 30px 0;
+   img {
+     width: 100%;
+     max-width: 400px;
+     border-radius: 5px;
+   }
+   > div {
+     margin: 0 auto;
    }
  }

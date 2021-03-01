@@ -4,6 +4,7 @@ const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import Nav from '../Nav/Nav'
 import { setUserLoggedIn } from '../../auth-session'
+const appear = require('../../models/functions')
 
 class Signup extends React.Component {
 
@@ -24,12 +25,7 @@ class Signup extends React.Component {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-
-    let appear = () => {
-      faded.forEach((el => el.classList.add('fade-in')))
-    }
-    setTimeout(appear, 500);
-    
+    setTimeout(appear(faded, 'fade-in'), 500);
   }
 
   signup = async(e) => {
