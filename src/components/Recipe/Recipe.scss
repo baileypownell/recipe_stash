@@ -11,39 +11,42 @@
 }
 
 .recipe {
-  @include flexColumn;
-  justify-content: space-between;
-  font-family: 'Roboto', sans-serif;
-  align-items: center;
-  justify-content:flex-start;
   height: 100vh;
-  overflow: scroll;
-  > div {
-    margin-top: 85px;
-    margin-bottom: 100px;
-    width: 90%;
-    @include desktop {
-      width: 55%;
-    }
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 
+  'title'
+  'main'
+  'footer';
+  .modal-scroll {
+    overflow: auto;
   }
+}
+
+
+.modal-content {
   @include desktop {
+    width: 50%;
     margin: 0 auto;
   }
-  .ingredients {
-    white-space: pre-line;
-  }
-  h3 {
-    @include flexRow;
-    justify-content: space-between;
-  }
-  .fa-edit {
-    color: $primary;
-    font-size: 30px;
-    cursor: pointer;
-  }
-  #pot {
-    text-align: center;
-    padding-top: 10vh;
+}
+.ingredients {
+  white-space: pre-line;
+}
+h3 {
+  @include flexRow;
+  justify-content: space-between;
+}
+.fa-edit {
+  color: $primary;
+  font-size: 30px;
+  cursor: pointer;
+}
+#pot {
+  text-align: center;
+  padding-top: 10vh;
     img {
     width: 100px;
   }
@@ -68,7 +71,7 @@
       width: 100%;
     }
   }
-}
+
 
 .select {
   text-align: end;
