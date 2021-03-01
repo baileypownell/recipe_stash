@@ -211,51 +211,51 @@ class AddRecipe extends React.Component {
 
         <div id={`${this.props.id}_modal`} className="modal recipe-modal">
             <div className="recipe">
-              <div>
-                <h1 className="Title fixed">New Recipe</h1>
-                <h3>Title</h3>
-                <ReactQuill value={this.state.recipe_title} onChange={this.handleModelChange}/>
-                <h3>Ingredients</h3>
-                <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
-                <h3>Directions</h3>
-                <ReactQuill theme="snow" value={this.state.directions} onChange={this.handleModelChangeDirections}/>
-                <div>
-                    <h3>Category</h3>
-                    <div className="select">
-                      <select onChange={this.updateInput} id="category" value={this.state.category} >
-                        {
-                          options.map((val, index) => {
-                            return <option key={index}>{val.label}</option>
-                          })
-                        }
-                      </select>
-                        
+              <h1 className="Title">New Recipe</h1>
+              <div className="modal-scroll">
+                  <div className="modal-content">
+                    <h3>Title</h3>
+                    <ReactQuill value={this.state.recipe_title} onChange={this.handleModelChange}/>
+                    <h3>Ingredients</h3>
+                    <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
+                    <h3>Directions</h3>
+                    <ReactQuill theme="snow" value={this.state.directions} onChange={this.handleModelChangeDirections}/>
+                    <div>
+                        <h3>Category</h3>
+                        <div className="select">
+                          <select onChange={this.updateInput} id="category" value={this.state.category} >
+                            {
+                              options.map((val, index) => {
+                                return <option key={index}>{val.label}</option>
+                              })
+                            }
+                          </select>
+                            
+                        </div>
                     </div>
-                </div>
 
-                <ul className="collapsible">
-                  <li>
-                    <div className="collapsible-header"><p>Recipe Tags</p></div>
-                    <div className="collapsible-body">
-                        {
-                          this.state.tags.map((tag, index) => {
-                            return <div 
-                              onClick={this.toggleTagSelectionStatus} 
-                              id={index} 
-                              className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
-                              key={index}>
-                                {tag.label}
-                              </div>
-                          })
-                        }
-                    </div>
-                  </li>
-                </ul>
-                <FileUpload passFiles={this.setFiles}></FileUpload>
-              </div>
-            </div>
-            
-            <div className="modal-close-buttons">
+                    <ul className="collapsible">
+                      <li>
+                        <div className="collapsible-header"><p>Recipe Tags</p></div>
+                        <div className="collapsible-body">
+                            {
+                              this.state.tags.map((tag, index) => {
+                                return <div 
+                                  onClick={this.toggleTagSelectionStatus} 
+                                  id={index} 
+                                  className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
+                                  key={index}>
+                                    {tag.label}
+                                  </div>
+                              })
+                            }
+                        </div>
+                      </li>
+                    </ul>
+                    <FileUpload passFiles={this.setFiles}></FileUpload>
+                  </div>
+                </div>
+                <div className="modal-close-buttons">
                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
@@ -280,6 +280,7 @@ class AddRecipe extends React.Component {
                       }
                  </button>
               </div>
+            </div>
           </div> 
       </>
       

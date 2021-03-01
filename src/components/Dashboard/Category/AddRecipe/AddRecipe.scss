@@ -5,6 +5,28 @@
     min-height: 100px!important;
 }
 
+.recipe {
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas: 
+    'title'
+    'main'
+    'footer';
+    .modal-scroll {
+      overflow: auto;
+    }
+  }
+
+  .modal-content {
+    @include desktop {
+      width: 50%;
+      margin: 0 auto;
+    }
+  }
+
 .modal-close-buttons {
     display: flex;
     justify-content: space-between;
@@ -34,15 +56,6 @@
 .collapsible-header p {
     margin: 0;
 }
-
-.fixed {
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    left: 0;
-}
-
 
 .chip {
     background-color: white!important;
