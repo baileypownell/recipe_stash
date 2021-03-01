@@ -13,15 +13,14 @@ class Nav extends React.Component {
     M.Dropdown.init(elems, {})
   }
 
-  logout = () => {
-    axios.get('/logout')
-    .then(() => {
+  logout = async() => {
+    try {
+      await axios.get('/logout')
       setUserLoggedOut()
       this.props.history.push('/')
-    })
-    .catch((err) => {
+    } catch(err) {
       console.log(err)
-    })
+    }
   }
 
   render() {

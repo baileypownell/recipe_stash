@@ -6,12 +6,10 @@ import ListItem from './ListItem/ListItem'
 const Category = (props) => {
   useEffect(() => {
       let opacity = document.querySelectorAll('.opacity')
-      let Appear = () => {
-        for (let i = 0; i < opacity.length; i++) {
-        opacity[i].classList.add('maxOpacity')
-        }
+      let appear = () => {
+        opacity.forEach(el => el.classList.add('maxOpacity'))
       }
-      setTimeout(Appear, 300);
+      setTimeout(appear, 300);
   })
   const { title, id, recipes, visibility, gridView } = props;
     return (

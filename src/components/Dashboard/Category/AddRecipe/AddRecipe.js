@@ -6,53 +6,23 @@ import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import '../../../File-Upload/FileUpload'
+import FileUpload from '../../../File-Upload/FileUpload'
+const FormData = require('form-data')
+const tags = require('../../../../models/tags')
+const options = require('../../../../models/options')
 
 class AddRecipe extends React.Component {
 
   state = {
+    loading: false,
     recipe_title: null,
     ingredients: null,
     directions: null,
     category: this.props.category,
     recipeValid: false,
-    tags: [
-      {
-        selected: false, 
-        label: 'No Bake',
-      }, 
-      {
-        selected: false,
-        label: 'Easy',
-      }, 
-      {
-        selected: false,
-        label: 'Healthy',
-      }, 
-      {
-        selected: false,
-        label: 'Gluten-Free',
-      }, 
-      {
-        selected: false,
-        label: 'Dairy-Free',
-      }, 
-      {
-        selected: false,
-        label: 'Sugar-Free', 
-      }, 
-      {
-        selected: false,
-        label: 'Vegetarian', 
-      }, 
-      {
-        selected: false, 
-        label: 'Vegan',
-      },
-      {
-        selected: false,
-        label: 'Keto',
-      }
-    ]
+    newFiles: [],
+    tags: tags
   }
 
   componentDidMount() {
@@ -94,45 +64,78 @@ class AddRecipe extends React.Component {
     })
   }
 
-  createRecipe = (e) => {
+  uploadFiles = async(recipeId) => {
+    let uploads = this.state.newFiles
+    await Promise.all(uploads.map( async file => {
+      let formData = new FormData() 
+      formData.append('image', file.file)
+
+      await axios.post(
+        `/file-upload/${recipeId}`, 
+        formData,
+        {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
+        }
+      )
+    }))
+  }
+
+  handleSuccess() {
+    M.toast({html: 'Recipe added.'})
+    this.clearState()
+    this.closeModal()
+    this.props.updateDashboard()
+}
+
+  createRecipe = async(e) => {
     e.preventDefault();
     let tags = this.state.tags;
     let titleHTML = DOMPurify.sanitize(this.state.recipe_title)
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
-    axios.post(`/recipe`, {
-      title: DOMPurify.sanitize(this.state.recipe_title),
-      rawTitle,
-      category: this.state.category,
-      ingredients: DOMPurify.sanitize(this.state.ingredients),
-      directions: DOMPurify.sanitize(this.state.directions),
-      isNoBake: tags[0].selected,
-      isEasy: tags[1].selected,
-      isHealthy: tags[2].selected,
-      isGlutenFree: tags[3].selected, 
-      isDairyFree: tags[4].selected,
-      isSugarFree: tags[5].selected, 
-      isVegetarian: tags[6].selected, 
-      isVegan: tags[7].selected,
-      isKeto: tags[8].selected
+    this.setState({
+      loading: true
     })
-    .then(res => {
-      if (res) {
-        M.toast({html: 'Recipe added.'})
-        // clear modal state 
-        this.clearState();
-        // close modal 
-        this.closeModal();
-        this.props.updateDashboard();
-        
+    try {
+      let recipeCreated = await axios.post(`/recipe`, {
+        title: DOMPurify.sanitize(this.state.recipe_title),
+        rawTitle,
+        category: this.state.category,
+        ingredients: DOMPurify.sanitize(this.state.ingredients),
+        directions: DOMPurify.sanitize(this.state.directions),
+        isNoBake: tags[0].selected,
+        isEasy: tags[1].selected,
+        isHealthy: tags[2].selected,
+        isGlutenFree: tags[3].selected, 
+        isDairyFree: tags[4].selected,
+        isSugarFree: tags[5].selected, 
+        isVegetarian: tags[6].selected, 
+        isVegan: tags[7].selected,
+        isKeto: tags[8].selected
+      })
+      let uploads = this.state.newFiles
+      if (uploads) {
+        try {
+          await this.uploadFiles(recipeCreated.data.recipeId)
+          this.handleSuccess()
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        this.handleSuccess()
       }
-    })
-    .catch((err) => {
-      console.log(err)
+    } catch (error) {
+      console.log(error)
       M.toast({html: 'There was an error.'})
-    })
-  }
+    } finally {
+      this.setState({
+        loading: false
+      })
+    } 
+  }  
 
   closeModal = () => {
     let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 
@@ -185,17 +188,15 @@ class AddRecipe extends React.Component {
     }, () => this.checkValidity());
   }
 
+  setFiles = (val) => {
+    // new files 
+    this.setState({
+      newFiles: val
+    })
+  }
+
   render() {
     const { id, gridView } = this.props;
-    const options = [
-      { value: 'breakfast', label: 'Breakfast' },
-      { value: 'lunch', label: 'Lunch' },
-      { value: 'dinner', label: 'Dinner' },
-      { value: 'dessert', label: 'Dessert' },
-      { value: 'side_dish', label: 'Side Dish' },
-      { value: 'drinks', label: 'Drinks' },
-      { value: 'other', label: 'Other' }
-    ]
 
     return (
       <>
@@ -250,16 +251,33 @@ class AddRecipe extends React.Component {
                     </div>
                   </li>
                 </ul>
+                <FileUpload passFiles={this.setFiles}></FileUpload>
               </div>
             </div>
+            
             <div className="modal-close-buttons">
                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
                   onClick={this.createRecipe}>
-                    Save
-                    <i className="fas fa-check-square"></i>
+                    {this.state.loading ? 
+                      <div className="preloader-wrapper small active">
+                        <div className="spinner-layer">
+                          <div className="circle-clipper left">
+                            <div className="circle"></div>
+                          </div><div className="gap-patch">
+                            <div className="circle"></div>
+                          </div><div className="circle-clipper right">
+                            <div className="circle"></div>
+                          </div>
+                        </div>
+                      </div> : 
+                      <>
+                        Save
+                        <i className="fas fa-check-square"></i>
+                      </>
+                      }
                  </button>
               </div>
           </div> 

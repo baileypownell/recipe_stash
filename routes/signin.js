@@ -39,7 +39,7 @@ router.post('/', (request, response, next) => {
                         email: email
                       }
                     })
-                  } 
+                  }
                 })
               })
           } else {

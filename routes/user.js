@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer')
 const sgTransport = require('nodemailer-sendgrid-transport')
 const bcrypt = require('bcryptjs')
 const authMiddleware = require('./authMiddleware')
+const  { deleteAWSFiles } = require('./aws-s3')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -206,8 +207,21 @@ router.delete('/', authMiddleware, (request, response, next) => {
       (err, res) => {
         if (err) return next(err)
         if (res) {
-            // TO-DO: regenerate the session
-            return response.status(200).json({success: true})
+          // remove image files
+          client.query('DELETE FROM files WHERE user_id=$1 RETURNING key', 
+          [id],
+          async(error, res) => {
+              if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}`})
+              let awsKeys = res.rows.map(val => val.key)
+              try {
+                let awsDeletions = await deleteAWSFiles(awsKeys)
+                if (awsDeletions) {
+                  return response.status(200).json({success: true})
+                }
+              } catch(error) {
+                response.status(500).json({ success: false, message: `There was an error: ${error}`})
+              }
+          })
         } else {
           return response.status(500)
         }

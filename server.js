@@ -11,12 +11,11 @@ var pg = require('pg')
 // middleware
 app.use(bodyParser.json());
 
-
 app.use(express.json())
 
 app.use((err, req, res, next) => {
   res.json(err);
-});
+})
 
 var environment = process.env.NODE_ENV || 'development';
 
@@ -35,7 +34,7 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET || secret, 
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: { maxAge: 3600000, secure: false } // 1 hour
 }));
 

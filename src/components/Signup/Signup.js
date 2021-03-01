@@ -3,7 +3,7 @@ import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import Nav from '../Nav/Nav'
-import { setUserLoggedIn, userLoginStatus } from '../../auth-session'
+import { setUserLoggedIn } from '../../auth-session'
 
 class Signup extends React.Component {
 
@@ -25,28 +25,26 @@ class Signup extends React.Component {
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
 
-    let Appear = () => {
-      for (let i = 0; i <faded.length; i++) {
-      faded[i].classList.add('fade-in');
-      }
+    let appear = () => {
+      faded.forEach((el => el.classList.add('fade-in')))
     }
-    setTimeout(Appear, 500);
+    setTimeout(appear, 500);
     
   }
 
-  signup = (e) => {
+  signup = async(e) => {
     e.preventDefault();
     const { email, password, firstName, lastName } = this.state;
     this.setState({
       loading: true
     })
-    axios.post(`/user`, {
-      firstName: firstName,
-      lastName: lastName,
-      password: password,
-      email: email
-    })
-    .then(res => {
+    try {
+      let res = await axios.post(`/user`, {
+        firstName: firstName,
+        lastName: lastName,
+        password: password,
+        email: email
+      })
       if (res.data.success) {
         M.toast({html: 'Success! Logging you in now...'})
         setUserLoggedIn(res.data.sessionID)
@@ -58,13 +56,12 @@ class Signup extends React.Component {
         })
         M.toast({html: res.data.message})
       }
-    })
-    .catch((err) => {
+    } catch(err) {
       this.setState({
         loading: false
       })
       M.toast({html: err.response.data.error})
-    })
+    }
   }
 
   checkFormValidation = () => {

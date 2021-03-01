@@ -8,11 +8,20 @@ import Nav from '../Nav/Nav'
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
+import FileUpload from '../File-Upload/FileUpload'
+import { BehaviorSubject } from 'rxjs'
+const tags = require('../../models/tags')
+const options = require('../../models/options')
+
+let presignedUrlsSubject = new BehaviorSubject([])
+let presignedUrls$ = presignedUrlsSubject.asObservable()
+
+let modalInstance
 
 class Recipe extends React.Component {
 
   state = {
-    loaded: false,
+    loading: true,
     recipe_title: null,
     ingredients: null,
     directions: null,
@@ -26,62 +35,18 @@ class Recipe extends React.Component {
     category: '',
     category_edit: '', 
     recipe: null,
-    tags: [
-      {
-        selected: false, 
-        recipeTagPropertyName: 'no_bake',
-        label: 'No Bake',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'easy',
-        label: 'Easy',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'healthy',
-        label: 'Healthy',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'gluten_free',
-        label: 'Gluten-Free',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'dairy_free',
-        label: 'Dairy-Free',
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'sugar_free',
-        label: 'Sugar-Free', 
-      }, 
-      {
-        selected: false,
-        recipeTagPropertyName: 'vegetarian',
-        label: 'Vegetarian', 
-      }, 
-      {
-        selected: false, 
-        recipeTagPropertyName: 'vegan',
-        label: 'Vegan',
-      },
-      {
-        selected: false,
-        recipeTagPropertyName: 'keto',
-        label: 'Keto',
-      }
-    ]
+    newFiles: [],
+    filesToDelete: [],
+    tags: tags
   }
 
   goBack = () => {
     this.props.history.push('/dashboard')
   }
 
-  fetchData = () => {
-    axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
-    .then(res => {
+  fetchData = async() => {
+    try {
+      let res = await axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
       let recipe = res.data.recipe
       this.setState({
         recipe: recipe,
@@ -94,61 +59,50 @@ class Recipe extends React.Component {
         directions_edit: recipe.directions,
         category: recipe.category,
         category_edit: recipe.category,
+        loading: false
+      }, () => {
+          presignedUrlsSubject.next(res.data.recipe.preSignedUrls)
+          const images = document.querySelectorAll('.materialboxed')
+          M.Materialbox.init(images, {})
+          const modal = document.querySelectorAll('.modal')
+          M.Modal.init(modal, {
+            opacity: 0.5
+          })
+          const singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
+          modalInstance = M.Modal.getInstance(singleModalElem)
+          const select = document.querySelectorAll('select')
+          M.FormSelect.init(select, {})
+          const elems = document.querySelectorAll('.fixed-action-btn')
+          M.FloatingActionButton.init(elems, {})
       })
-
-
       this.state.tags.forEach((tag, index) => {
         if (recipe.tags.includes(tag.recipeTagPropertyName)) {
-            // 1. Make a shallow copy of the items
-            let tags = [...this.state.tags];
-            // 2. Make a shallow copy of the item you want to mutate
-            let item = {...tags[index]};
-            // 3. Replace the property you're intested in
-            item.selected = true;
-            // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-            tags[index] = item;
-            // 5. Set the state to our new copy
-            this.setState({tags});
+            let tags = [...this.state.tags]
+            let item = {...tags[index]}
+            item.selected = true
+            tags[index] = item
+            this.setState({tags})
         }
       })
-      this.setState({
-        loaded: true
-      }, () => {
-        let modal = document.querySelectorAll('.modal')
-        M.Modal.init(modal, {
-          opacity: 0.5
-        })
-        var select = document.querySelectorAll('select')
-        M.FormSelect.init(select, {})
-      })
-    })
-    .catch((err) => {
+    } catch(err) {
       console.log(err)
       if (err.response.status === 401) {
         // unathenticated; redirect to log in 
         this.props.history.push('/login')
       }
-    })
+    }
   }
 
   componentDidMount() {
     this.fetchData()
-    var elems = document.querySelectorAll('.fixed-action-btn');
-    var instances = M.FloatingActionButton.init(elems, {});
   }
 
   openModal = () => {
-    let singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
-    let instance = M.Modal.getInstance(singleModalElem)
-    instance.open()
+    modalInstance.open()
     M.updateTextFields()
   }
 
-  closeModal = () => {
-    let singleModalElem = document.querySelector(`.modal`);
-    let instance = M.Modal.getInstance(singleModalElem); 
-    instance.close()
-  } 
+  closeModal = () => modalInstance.close() 
 
   checkValidity = () => {
     const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
@@ -163,19 +117,16 @@ class Recipe extends React.Component {
     }
   }
 
-  deleteRecipe = () => {
-    axios.delete(`/recipe/${this.state.recipeId}`)
-    .then(() => {
-        M.toast({html: 'Recipe deleted.'});
-        this.closeModal()
-        this.props.history.push('/dashboard')
-    })
-    .catch((err) => {
-      console.log(err)
+  deleteRecipe = async() => {
+    try {
+      await axios.delete(`/recipe/${this.state.recipeId}`)
+      M.toast({html: 'Recipe deleted.'})
       this.closeModal()
+      this.props.history.push('/dashboard')
+    } catch(err) {
+      console.log(err)
       M.toast({html: 'There was an error.'})
-    })
-
+    }
   }
 
   updateInput = (e) => {
@@ -186,95 +137,149 @@ class Recipe extends React.Component {
 
   toggleTagSelectionStatus = (e) => {
     let index = e.target.id 
-    // 1. Make a shallow copy of the items
-    let tags = [...this.state.tags];
-    // 2. Make a shallow copy of the item you want to mutate
-    let item = {...tags[index]};
-    // 3. Replace the property you're intested in
+    let tags = [...this.state.tags]
+    let item = {...tags[index]}
     let priorSelectedValue = item.selected
-    item.selected = !priorSelectedValue;
-    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    item.selected = !priorSelectedValue
     tags[index] = item;
-    // 5. Set the state to our new copy
-    this.setState({tags}, () => this.checkValidity());
+    this.setState({tags}, () => this.checkValidity())
   }
 
-  updateRecipe = (e) => {
+  handleUpdate() {
+    // Update recipe details to reflect the change
+    this.fetchData()
+    M.toast({html: 'Recipe updated.'})
+    this.setState({
+      filesToDelete: [],
+      newFiles: []
+    }) 
+  }
+
+  uploadFiles = async(recipeId) => {
+    let uploads = this.state.newFiles
+    await Promise.all(uploads.map( async file => {
+      let formData = new FormData() 
+      formData.append('image', file.file)
+
+      await axios.post(
+        `/file-upload/${recipeId}`, 
+        formData,
+        {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
+        }
+      )
+    }))
+  }
+
+  deleteFiles = async() => {
+    return await Promise.all(this.state.filesToDelete.map( async url => {
+        let key = url.split('amazonaws.com/')[1].split('?')[0]
+        return await axios.delete(`/file-upload/${key}`)
+      })
+    )
+  }
+
+  updateRecipe = async(e) => {
       e.preventDefault();
       let tags = this.state.tags
       let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
       const rawTitle = htmlToText(titleHTML, {
         wordwrap: 130
       })
-      axios.put(`/recipe`, {
-        title: this.state.recipe_title_edit,
-        rawTitle,
-        ingredients: this.state.ingredients_edit,
-        directions: this.state.directions_edit,
-        recipeId: this.state.recipeId,
-        category: this.state.category,
-        isNoBake: tags[0].selected,
-        isEasy: tags[1].selected,
-        isHealthy: tags[2].selected,
-        isGlutenFree: tags[3].selected, 
-        isDairyFree: tags[4].selected,
-        isSugarFree: tags[5].selected, 
-        isVegetarian: tags[6].selected, 
-        isVegan: tags[7].selected,
-        isKeto: tags[8].selected
+      this.setState({
+        loading: true
       })
-      .then(res => {
-        if (res) {
-          // close modal 
-          this.closeModal();
-          // Update recipe details to reflect the change
-          this.fetchData();
-          M.toast({html: 'Recipe updated.'})
+      this.closeModal()
+      try {
+        await axios.put(`/recipe`, {
+          title: this.state.recipe_title_edit,
+          rawTitle,
+          ingredients: this.state.ingredients_edit,
+          directions: this.state.directions_edit,
+          recipeId: this.state.recipeId,
+          category: this.state.category,
+          isNoBake: tags[0].selected,
+          isEasy: tags[1].selected,
+          isHealthy: tags[2].selected,
+          isGlutenFree: tags[3].selected, 
+          isDairyFree: tags[4].selected,
+          isSugarFree: tags[5].selected, 
+          isVegetarian: tags[6].selected, 
+          isVegan: tags[7].selected,
+          isKeto: tags[8].selected
+        })
+        // handle image uploads
+        let uploads = this.state.newFiles
+        let filesToDelete = this.state.filesToDelete
+        let uploading = !!uploads.length 
+        let deleting = !!filesToDelete.length
+        if (uploading && deleting) {
+          await Promise.all([
+            this.uploadFiles(this.state.recipeId), 
+            this.deleteFiles()
+          ])
+          this.handleUpdate()
+        } else if (uploading) { 
+          await this.uploadFiles(this.state.recipeId)
+          this.handleUpdate()
+        } else if (deleting) {
+          await this.deleteFiles()
+          this.handleUpdate()
+        } else {        
+          this.handleUpdate()
         }
-      })
-      .catch((err) => {
+      } catch(err) {
         console.log(err)
         M.toast({html: 'There was an error updating the recipe.'})
-      })
+      } finally {
+        this.setState({
+          loading: false
+        })
+      }
   }
 
   handleModelChange = (content, delta, source, editor) => {
     this.setState({
       recipe_title_edit: content,
       recipe_title_raw_edit: editor.getText()
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   handleModelChangeIngredients = (html) => {
     this.setState({
       ingredients_edit: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   handleModelChangeDirections = (html) => {
     this.setState({
       directions_edit: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
+  setFiles = (val) => {
+    // new files 
+    this.setState({
+      newFiles: val
+    }, () => this.checkValidity())
+  }
+
+  setFilesToDelete = (files) => {
+    this.setState({
+      filesToDelete: files
+    }, () => this.checkValidity())
+  }
 
   render() {
-    const { recipeId, category, loaded } = this.state;
-    const options = [
-      { value: 'breakfast', label: 'Breakfast' },
-      { value: 'lunch', label: 'Lunch' },
-      { value: 'dinner', label: 'Dinner' },
-      { value: 'dessert', label: 'Dessert' },
-      { value: 'side_dish', label: 'Side Dish' },
-      { value: 'drinks', label: 'Drinks' },
-      { value: 'other', label: 'Other' }
-    ]
+    const { recipeId, category, loading, tags, recipe } = this.state;
 
     return (
       <>
       <Nav loggedIn={true}/>
         {
-          loaded ? 
+          !loading  ? 
           <>
             <h1 className="Title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
@@ -298,11 +303,23 @@ class Recipe extends React.Component {
                   <h2>{category}</h2>
                 </div>
                 <div className="section">
-                  {
-                    this.state.tags.map((tag) => {
-                        return ( tag.selected ? <div className="chip z-depth-2 selectedTag">{ tag.label }</div> : null )
-                    }) 
-                  }
+                  {tags.map((tag) => ( tag.selected ? 
+                      <div 
+                        key={tag.label}
+                        className="chip z-depth-2 selectedTag">
+                        { tag.label }
+                      </div> 
+                      : null )
+                  )}
+                </div>
+                <div id="images">
+                  {recipe.preSignedUrls?.map((url, i) => ( 
+                      <div
+                          key={i}
+                          className="materialboxed z-depth-2 recipe-image"
+                          style={{ backgroundImage: `url(${url})`  }}>     
+                      </div>
+                  ))}
                 </div>
                 <div onClick={this.openModal} className="fixed-action-btn">
                   <a className="btn-floating btn-large" id="primary-color">
@@ -347,7 +364,11 @@ class Recipe extends React.Component {
                   })
                 }
               </div>
-                    
+              <FileUpload 
+                preExistingImageUrls={presignedUrls$}
+                passFilesToDelete={this.setFilesToDelete}
+                passFiles={this.setFiles}>
+              </FileUpload>   
             </div>
           </div> 
           <div className="modal-close-buttons">
@@ -358,8 +379,23 @@ class Recipe extends React.Component {
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
                   onClick={this.updateRecipe}>
-                    Update Recipe
-                    <i className="fas fa-check-square"></i>
+                    {this.state.loading ? 
+                      <div className="preloader-wrapper small active">
+                        <div className="spinner-layer">
+                          <div className="circle-clipper left">
+                            <div className="circle"></div>
+                          </div><div className="gap-patch">
+                            <div className="circle"></div>
+                          </div><div className="circle-clipper right">
+                            <div className="circle"></div>
+                          </div>
+                        </div>
+                      </div> : 
+                      <>
+                        Update Recipe
+                        <i className="fas fa-check-square"></i>
+                      </>
+                      }
                 </button>
               </div>
             </div>

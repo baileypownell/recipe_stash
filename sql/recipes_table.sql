@@ -38,3 +38,5 @@ INSERT INTO recipes(title, category, user_id, ingredients, directions) VALUES('Z
 ALTER TABLE session ADD COLUMN IF NOT EXISTS user_id character varying(50);
 
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS raw_title character varying(100);
+
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS has_images BOOLEAN;

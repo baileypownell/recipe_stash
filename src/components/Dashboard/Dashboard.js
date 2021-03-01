@@ -56,27 +56,24 @@ class Dashboard extends React.Component {
     gridView: true,
   }
 
-  fetchRecipes = () => {
-    axios.get(`/recipe`)
-    .then(res => {
-      for (const category in res.data) {
-        let sortedCategory = res.data[category].sort(this.sortByTitle)
-        res.data[category] = sortedCategory
+  fetchRecipes = async() => {
+    try {
+      let recipe = await axios.get(`/recipe`)
+      for (const category in recipe.data) {
+        let sortedCategory = recipe.data[category].sort(this.sortByTitle)
+        recipe.data[category] = sortedCategory
       }
-      unfilteredRecipesSubject.next(res.data)
-      this.setState({
-        recipes_loaded: true
-      })
-    })
-    .catch((err) => {
-      if (err.response.status === 401) {
+      unfilteredRecipesSubject.next(recipe.data)
+    } catch (error) {
+      if (error.response?.status === 401) {
         // unathenticated; redirect to log in 
         this.props.history.push('/login')
       }
+    } finally {
       this.setState({
-        recipes_loaded: false
+        recipes_loaded: !!unfilteredRecipesSubject.getValue()
       })
-    })    
+    }
   }
 
   sortByTitle(a, b) {
@@ -91,12 +88,10 @@ class Dashboard extends React.Component {
   componentDidMount() {
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
-    let Appear = () => {
-      for (let i = 0; i <faded.length; i++) {
-      faded[i].classList.add('fade-in')
-      }
+    let appear = () => {
+      faded.forEach((el => el.classList.add('fade-in')))
     }
-    setTimeout(Appear, 300)
+    setTimeout(appear, 300);
 
 
     // filter dropdown
@@ -331,6 +326,7 @@ class Dashboard extends React.Component {
                       <Category
                         title={mealCategories[mealCat]}
                         id={mealCat}
+                        key={mealCat}
                         visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
                         gridView={gridView}
                         recipes={filteredRecipes[mealCat]}

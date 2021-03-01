@@ -146,9 +146,33 @@
 #recipe-title {
    p, h3, h2, h1 {
     font-size: 30px;
+    margin: 0 0 10px 0;
   }
  }
 
 .view-recipe li {
    list-style-type: initial!important;
+ }
+
+ #images {
+   padding: 20px 0;
+   display: flex;
+   flex-wrap: wrap;
+   > div {
+     flex-grow: 1;
+     margin: 10px;
+   }
+   .recipe-image {
+      background-size: cover;
+      background-position: center;
+      flex-grow: 1;
+      min-width: 200px;
+      height: 400px; 
+      background-position: center;
+      background-size: cover;
+      border-radius: 5px;
+      @include desktop {
+        min-width: 300px;
+      }
+   }
  }
