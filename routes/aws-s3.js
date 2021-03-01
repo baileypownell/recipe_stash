@@ -63,21 +63,18 @@ getPresignedUrls = (image_uuids) => {
     }))
 }
 
-const deleteAWSFiles = async (awsKeys) => {
-    return new Promise((resolve, reject) => {
-      awsKeys.map((url, index) => {
-        s3.deleteObject({
-          Bucket: process.env.S3_BUCKET,
-          Key: url
-        }, (err, data) => {
-          if (data) {
-              if (index == awsKeys.length-1) {
-                resolve({success: true})
-              }
-          }
+const deleteAWSFiles = (awsKeys) => {
+    return Promise.all(awsKeys.map(key => {
+        return new Promise((resolve, reject) => {
+            s3.deleteObject({
+                Bucket: process.env.S3_BUCKET,
+                Key: key
+            }, (err, data) => {
+                if (err) reject (err)
+                if (data) resolve (data)
+            })
         })
-      })
-    })
+    }))
   }
 
 deleteSingleAWSFile = (imageKey) => {
