@@ -7,7 +7,7 @@ module.exports = function(req, response, next) {
         [req.sessionID], 
         (err, res) => {
             if (err) return next(err)
-            if (res.rows.length) {
+            if (res.rows.length && res.rows[0].user_id) {
                 req.userID = res.rows[0].user_id
                 next()
             } else {
@@ -17,6 +17,4 @@ module.exports = function(req, response, next) {
     } else {
         return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
     }
-
-   
 }
