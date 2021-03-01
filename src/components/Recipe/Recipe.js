@@ -13,7 +13,7 @@ import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
 const tags = require('../../models/tags')
 const options = require('../../models/options')
-
+const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -96,6 +96,8 @@ class Recipe extends React.Component {
 
   componentDidMount() {
     this.fetchData()
+    let faded = document.querySelectorAll('.fade')
+    setTimeout(appear(faded, 'fade-in'), 700)
   }
 
   openModal = () => {
@@ -322,13 +324,12 @@ class Recipe extends React.Component {
                       : null )
                   )}
                 </div>
-                <div id="images">
+                <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
                   {recipe.preSignedUrls?.map((url, i) => ( 
-                      <div
-                          key={i}
-                          className="materialboxed z-depth-2 recipe-image"
-                          style={{ backgroundImage: `url(${url})`  }}>     
-                      </div>
+                    <img 
+                      key={i}
+                      className="materialboxed z-depth-2 faded"
+                      src={url}/>
                   ))}
                 </div>
                 <div onClick={this.openModal} className="fixed-action-btn">

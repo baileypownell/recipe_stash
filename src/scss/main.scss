@@ -114,6 +114,13 @@ button {
   }
 }
 
+.BounceLoader {
+  @include flexColumn;
+  align-items: center;
+  height: 65vh;
+  justify-content: center;
+}
+
 
 .spinner-layer {
   border-color: white!important;
