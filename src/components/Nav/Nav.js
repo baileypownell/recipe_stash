@@ -13,6 +13,7 @@ class Nav extends React.Component {
   }
 
   componentDidMount() {
+    this.initializeSettingsDropdown()
     this.props.history.listen((location, action) => {
       this.setState({
         loggedIn: !!window.localStorage.getItem('user_session_id')
