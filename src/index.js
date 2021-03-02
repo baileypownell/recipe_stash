@@ -25,7 +25,7 @@ import './scss/main.scss';
 
 ReactDOM.render(
     <BrowserRouter>
-      <Nav loggedIn={!!( window.localStorage.getItem('user_session_id') )}/>
+      <Nav/>
       <Switch>
         <Route exact={true} path="/" component={Home}/>
         <Route path="/login" component={Login}/>
