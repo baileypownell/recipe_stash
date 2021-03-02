@@ -3,7 +3,6 @@ import { withRouter } from "react-router-dom"
 import axios from 'axios'
 import M from 'materialize-css'
 import './Settings.scss'
-import Nav from '../Nav/Nav'
 import { setUserLoggedOut } from '../../auth-session'
 const appear = require('../../models/functions')
 
@@ -146,7 +145,6 @@ class Settings extends React.Component {
   render() {
     return (
       <>
-        <Nav loggedIn={true}/>
         <h1 className="title">Settings<i className="fas fa-cog"></i></h1>
         <div className="fade settings">
           <div id="profileParent">

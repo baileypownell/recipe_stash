@@ -6,6 +6,7 @@ import Recipe from './Recipe/Recipe'
 import Settings from './Settings/Settings'
 import ResetPassword from './ResetPassword/ResetPassword'
 import RequireAuthComponent from './RequireAuthComponent'
+import Nav from './Nav/Nav'
 
 export {
   Home,
@@ -15,5 +16,6 @@ export {
   Recipe,
   Settings,
   ResetPassword,
-  RequireAuthComponent
+  RequireAuthComponent,
+  Nav
 };

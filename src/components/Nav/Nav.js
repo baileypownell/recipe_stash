@@ -8,9 +8,18 @@ const axios = require('axios')
 
 class Nav extends React.Component {
 
+  state = {
+    loggedIn: !!window.localStorage.getItem('user_session_id')
+  }
+
   componentDidMount() {
     var elems = document.querySelector('#dropdown-trigger-settings')
     M.Dropdown.init(elems, {})
+    this.props.history.listen((location, action) => {
+      this.setState({
+        loggedIn: !!window.localStorage.getItem('user_session_id')
+      })
+    })
   }
 
   logout = async() => {
@@ -28,7 +37,7 @@ class Nav extends React.Component {
         <nav>
           <Link to="/"><img src={icon} alt="logo" /></Link>
           <div>            
-            { this.props.loggedIn ?
+            { this.state.loggedIn ?
               <>
                   <NavLink to="/dashboard" activeclassname="active">Dashboard</NavLink>
                   <a activeclassname="active" id="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 

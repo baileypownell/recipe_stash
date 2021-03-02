@@ -288,9 +288,6 @@ class Recipe extends React.Component {
     } = this.state;
 
     return (
-      <>
-      <Nav loggedIn={true}/>
-        {
           !loading  ? 
           <>
             <h1 className="title">
@@ -339,75 +336,75 @@ class Recipe extends React.Component {
                 </div>
               </div>
           </div>
-          <div id={`modal_${recipeId}`} className="modal recipe-modal">
-            <div className="recipe">
-              <h1 className="title">Edit Recipe</h1>
-              <div className="modal-scroll">
-                <div className="modal-content">
-                    <h3>Title</h3>
-                    <ReactQuill  value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
-                    <h3>Ingredients</h3>
-                    <ReactQuill  value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
-                    <h3>Directions</h3>
-                    <ReactQuill  value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
-                    <div className="options">
-                      <h3>Category</h3>
-                      <div className="select">
-                        <select onChange={this.updateInput} id="category" value={this.state.category} >
-                          {
-                            options.map((val, index) => {
-                              return <option val={val.label} key={index}>{val.label}</option>
-                            })
-                          }
-                        </select>
+            <div id={`modal_${recipeId}`} className="modal recipe-modal">
+              <div className="recipe">
+                <h1 className="title">Edit Recipe</h1>
+                <div className="modal-scroll">
+                  <div className="modal-content">
+                      <h3>Title</h3>
+                      <ReactQuill  value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
+                      <h3>Ingredients</h3>
+                      <ReactQuill  value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
+                      <h3>Directions</h3>
+                      <ReactQuill  value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
+                      <div className="options">
+                        <h3>Category</h3>
+                        <div className="select">
+                          <select onChange={this.updateInput} id="category" value={this.state.category} >
+                            {
+                              options.map((val, index) => {
+                                return <option val={val.label} key={index}>{val.label}</option>
+                              })
+                            }
+                          </select>
+                        </div>
                       </div>
-                    </div>
-                    <div className="options">
-                      <h3>Recipe Tags</h3>
-                      {
-                        tags.map((tag, index) => {
-                          return <div 
-                            onClick={this.toggleTagSelectionStatus} 
-                            id={index} 
-                            className={`chip z-depth-2 ${recipe && tags[index].selected  ? "selectedTag" : "null"}`}
-                            key={index}>
-                              {tag.label}
-                            </div>
-                        })
-                      }
-                    </div>
-                    <FileUpload 
-                      preExistingImageUrls={presignedUrls$}
-                      passFilesToDelete={this.setFilesToDelete}
-                      passFiles={this.setFiles}>
-                    </FileUpload>  
-                </div>
-            </div>
-              <div className="modal-close-buttons">
-                <button 
-                  id="primary-color" 
-                  className="waves-effect waves-light btn" 
-                  onClick={this.deleteRecipe}>
-                  Delete Recipe <i className="fas fa-trash"></i>
-                </button>
-                <div>
-                  <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
-                  <button 
-                    className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
-                    disabled={!this.state.recipeValid} 
-                    onClick={this.updateRecipe}>
-                      {loading ? 
-                        <Preloader/> : 
-                        <>
-                          Update Recipe
-                          <i className="fas fa-check-square"></i>
-                        </>
+                      <div className="options">
+                        <h3>Recipe Tags</h3>
+                        {
+                          tags.map((tag, index) => {
+                            return <div 
+                              onClick={this.toggleTagSelectionStatus} 
+                              id={index} 
+                              className={`chip z-depth-2 ${recipe && tags[index].selected  ? "selectedTag" : "null"}`}
+                              key={index}>
+                                {tag.label}
+                              </div>
+                          })
                         }
-                  </button>
-                </div>
+                      </div>
+                      <FileUpload 
+                        preExistingImageUrls={presignedUrls$}
+                        passFilesToDelete={this.setFilesToDelete}
+                        passFiles={this.setFiles}>
+                      </FileUpload>  
+                  </div>
               </div>
-          </div> 
-        </div>
+                <div className="modal-close-buttons">
+                  <button 
+                    id="primary-color" 
+                    className="waves-effect waves-light btn" 
+                    onClick={this.deleteRecipe}>
+                    Delete Recipe <i className="fas fa-trash"></i>
+                  </button>
+                  <div>
+                    <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
+                    <button 
+                      className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
+                      disabled={!this.state.recipeValid} 
+                      onClick={this.updateRecipe}>
+                        {loading ? 
+                          <Preloader/> : 
+                          <>
+                            Update Recipe
+                            <i className="fas fa-check-square"></i>
+                          </>
+                          }
+                    </button>
+                  </div>
+                </div>
+            </div> 
+          </div>
           </> :  
           <div className="BounceLoader">
             <BounceLoader
@@ -415,8 +412,6 @@ class Recipe extends React.Component {
                 color={"#689943"}
             />
           </div>
-        }
-        </>
     )
   }
 }

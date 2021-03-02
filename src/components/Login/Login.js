@@ -4,7 +4,6 @@ import ClipLoader from "react-spinners/ClipLoader"
 import GoogleLogin from 'react-google-login'
 import './Login.scss'
 import M from 'materialize-css'
-import Nav from '../Nav/Nav'
 import { setUserLoggedIn } from '../../auth-session'
 const appear = require('../../models/functions')
 
@@ -109,7 +108,6 @@ class Login extends React.Component {
     const { formValid, loading, signInError } = this.state;
     return (
       <>
-        <Nav loggedIn={false}/>
         <div className="auth">
           <div className="gradient">
             <form className="fade" onSubmit={this.signin}>

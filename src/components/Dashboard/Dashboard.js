@@ -4,7 +4,6 @@ import BounceLoader from "react-spinners/BounceLoader"
 import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss'
-import Nav from '../Nav/Nav'
 const appear = require('../../models/functions')
 
 // object for iterating through meal cateogries 
@@ -247,8 +246,7 @@ class Dashboard extends React.Component {
     ];
 
     return (
-      <>
-        <Nav loggedIn={true}/>
+      <div>
         <div className="title-bar">
           <div>
             <h1>Recipe Box</h1>
@@ -335,7 +333,7 @@ class Dashboard extends React.Component {
             </>
           }
       </div>
-     </>
+     </div>
     )
   }
 }

@@ -4,7 +4,6 @@ const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import M from 'materialize-css'
 import './ResetPassword.scss'
-import Nav from '../Nav/Nav'
 import { setUserLoggedIn } from '../../auth-session'
 
 class ResetPassword extends React.Component {
@@ -96,7 +95,6 @@ class ResetPassword extends React.Component {
     if (this.state.invalidLink) {
       return (
         <>
-            <Nav loggedIn={false}/>
             <div className="invalidLink">
               <h3>The link is invalid or expired.</h3>
               <button className="waves-effect waves-light btn" onClick={this.goHome}>Home</button>
@@ -106,7 +104,6 @@ class ResetPassword extends React.Component {
     } else {
       return (
         <>
-          <Nav loggedIn={false}/>
           <div className="resetPassword">
             <h4>New Password</h4>
             <form onSubmit={this.updatePassword}>
