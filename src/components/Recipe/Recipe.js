@@ -289,7 +289,7 @@ class Recipe extends React.Component {
 
     return (
           !loading  ? 
-          <>
+          <div>
             <h1 className="title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
               <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: recipe_title_raw}}/>
@@ -405,7 +405,7 @@ class Recipe extends React.Component {
                 </div>
             </div> 
           </div>
-          </> :  
+          </div> :  
           <div className="BounceLoader">
             <BounceLoader
                 size={100}

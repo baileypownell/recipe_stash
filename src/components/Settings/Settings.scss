@@ -5,11 +5,14 @@
   background-color: $green;
   color: $white;
   font-family: 'Roboto', sans-serif;
-  padding: 5vw;
+  padding: 3vw;
+  display: flex;
+  align-items: center;
   @include tablet {
     padding: 20px;
   }
   i {
+    font-size: 30px;
     padding-left: 10px;
     @include tablet {
       padding-left: 20px;
