@@ -144,7 +144,7 @@ class Settings extends React.Component {
 
   render() {
     return (
-      <>
+      <div>
         <h1 className="title">Settings<i className="fas fa-cog"></i></h1>
         <div className="fade settings">
           <div id="profileParent">
@@ -210,7 +210,7 @@ class Settings extends React.Component {
             </li>
           </ul>
         </div>
-      </>
+      </div>
     )
   }
 }
