@@ -136,8 +136,6 @@ class Signup extends React.Component {
   render() {
     const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid } = this.state;
     return (
-      <>
-        <Nav loggedIn={false}/>
         <div className="auth">
           <div className="gradient">
             <form className="fade" onSubmit={this.signup}>
@@ -185,7 +183,6 @@ class Signup extends React.Component {
             </form>
           </div>
         </div>
-      </>
     )
   }
 }

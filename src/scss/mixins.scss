@@ -47,9 +47,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    @include tablet {
-      height: calc(100vh - 75px);
-    }
     .error {
       font-family: 'Roboto', sans-serif;
       background-color: $orange;
@@ -65,7 +62,6 @@
     }
     form {
       @include flexColumn;
-      height: calc(100vh - 75px);
       width: 100%;
       margin: 0 auto;
       padding: 5vw;

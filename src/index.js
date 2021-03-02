@@ -16,26 +16,28 @@ import {
   Recipe,
   Settings,
   ResetPassword,
-  RequireAuthComponent
+  RequireAuthComponent,
+  Nav
 } from './components/index'
 
 import 'materialize-css/dist/css/materialize.min.css';
 import './scss/main.scss';
 
 ReactDOM.render(
-      <BrowserRouter>
-        <Switch>
-          <Route exact={true} path="/" component={Home}/>
-          <Route path="/login" component={Login}/>
-          <Route path="/signup" component={Signup}/>
-          <Route path="/reset" component={ResetPassword}/>
-          <RequireAuthComponent>
-            <Route path="/dashboard" exact={true} component={Dashboard}/> 
-            <Route path="/settings" component={Settings}/>
-            <Route path="/view-recipe/:id" component={Recipe}/>
-          </RequireAuthComponent>
-          <Redirect to="/" />
-        </Switch>
-      </BrowserRouter>,
+    <BrowserRouter>
+      <Nav loggedIn={!!( window.localStorage.getItem('user_session_id') )}/>
+      <Switch>
+        <Route exact={true} path="/" component={Home}/>
+        <Route path="/login" component={Login}/>
+        <Route path="/signup" component={Signup}/>
+        <Route path="/reset" component={ResetPassword}/>
+        <RequireAuthComponent>
+          <Route path="/dashboard" exact={true} component={Dashboard}/> 
+          <Route path="/settings" component={Settings}/>
+          <Route path="/view-recipe/:id" component={Recipe}/>
+        </RequireAuthComponent>
+        <Redirect to="/" />
+      </Switch>
+    </BrowserRouter>,
   document.getElementById('app')
 );

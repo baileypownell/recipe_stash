@@ -32,10 +32,6 @@ body {
   overflow-x: hidden;
 }
 
-#app {
-  min-height: 100vh;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -85,8 +81,9 @@ label {
 
 .recipe-modal {
   width: 100%!important;
-  min-height: 100vh!important;
   top:0!important;
+  max-height: none!important;
+  height: 100%;
 }
 
 // preserve froala bold setting 
@@ -124,4 +121,18 @@ button {
 
 .spinner-layer {
   border-color: white!important;
+}
+
+html, body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+      'header'
+      'main';
 }
