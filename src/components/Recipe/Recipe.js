@@ -38,7 +38,8 @@ class Recipe extends React.Component {
     recipe: null,
     newFiles: [],
     filesToDelete: [],
-    tags: tags
+    tags: tags,
+    defaultTileImageKey: null
   }
 
   goBack = () => {
@@ -211,7 +212,8 @@ class Recipe extends React.Component {
           isSugarFree: tags[5].selected, 
           isVegetarian: tags[6].selected, 
           isVegan: tags[7].selected,
-          isKeto: tags[8].selected
+          isKeto: tags[8].selected, 
+          defaultTileImageKey: this.state.defaultTileImageKey
         })
         // handle image uploads
         let uploads = this.state.newFiles
@@ -273,6 +275,12 @@ class Recipe extends React.Component {
     this.setState({
       filesToDelete: files
     }, () => this.checkValidity())
+  }
+
+  setDefaultTileImage = (key) => {
+    this.setState({
+      defaultTileImageKey: key
+    })
   }
 
   render() {
@@ -374,6 +382,7 @@ class Recipe extends React.Component {
                         }
                       </div>
                       <FileUpload 
+                        passDefaultTileImage={this.setDefaultTileImage}
                         preExistingImageUrls={presignedUrls$}
                         passFilesToDelete={this.setFilesToDelete}
                         passFiles={this.setFiles}>

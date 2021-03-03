@@ -141,10 +141,9 @@ h3 {
 
  #images {
    padding: 20px 0;
-   display: flex;
-   flex-wrap: wrap;
-   @include desktop {
-     display: grid;
+   display: grid;
+   grid-template-columns: 1fr;
+   @include tablet {
      grid-template-columns: 1fr 1fr;
      grid-template-rows: auto;
      gap: 0 15px;

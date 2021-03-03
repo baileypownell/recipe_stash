@@ -66,6 +66,9 @@
     @include desktop {
         max-width: 300px;
     }
+    span {
+        color: white;
+    }
     .file-cover {
         position: absolute;
         background-color: $primary-transparent;
@@ -78,7 +81,7 @@
         transition: background-color .4s;
         border-radius: 5px;
         &:hover {
-            background-color: rgba(0,0,0,0.1);
+            background-color: rgba(0,0,0,0.5);
             i {
                 color: $primary;
             }
@@ -93,4 +96,14 @@
         right: 10px;
         transition: color .4s;
     }
+}
+
+[type="checkbox"].filled-in:checked + span:not(.lever):after {
+    border: 2px solid white!important;
+    background-color: white!important;
+}
+
+[type="checkbox"]:checked + span:not(.lever):before {
+    border-right: 3px solid $primary !important;
+    border-bottom: 3px solid $primary !important;
 }

@@ -23,7 +23,8 @@ class AddRecipe extends React.Component {
     category: this.props.category,
     recipeValid: false,
     newFiles: [],
-    tags: tags
+    tags: tags,
+    defaultTileImageKey: null
   }
 
   componentDidMount() {
@@ -115,7 +116,8 @@ class AddRecipe extends React.Component {
         isSugarFree: tags[5].selected, 
         isVegetarian: tags[6].selected, 
         isVegan: tags[7].selected,
-        isKeto: tags[8].selected
+        isKeto: tags[8].selected,
+        defaultTileImageKey: this.state.defaultTileImageKey
       })
       let uploads = this.state.newFiles
       if (uploads) {
@@ -196,6 +198,12 @@ class AddRecipe extends React.Component {
     })
   }
 
+  setDefaultTileImage = (key) => {
+    this.setState({
+      defaultTileImageKey: key
+    })
+  }
+
   render() {
     const { id, gridView } = this.props;
 
@@ -253,7 +261,7 @@ class AddRecipe extends React.Component {
                         </div>
                       </li>
                     </ul>
-                    <FileUpload passFiles={this.setFiles}></FileUpload>
+                    <FileUpload passDefaultTileImage={this.setDefaultTileImage} passFiles={this.setFiles}></FileUpload>
                   </div>
                 </div>
                 <div className="modal-close-buttons">

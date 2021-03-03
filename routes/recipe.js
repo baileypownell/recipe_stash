@@ -45,7 +45,8 @@ const formatRecipeResponse = (recipe) => {
     user_id: recipe.user_id, 
     ingredients: recipe.ingredients, 
     directions: recipe.directions, 
-    tags: constructTags(recipe)
+    tags: constructTags(recipe),
+    defaultTileImageKey: recipe.default_tile_image_key
   }
 }
 
@@ -107,7 +108,8 @@ router.post('/', (request, response, next) => {
     isSugarFree, 
     isVegetarian, 
     isVegan, 
-    isKeto 
+    isKeto,
+    defaultTileImageKey
   } = request.body;
   if (
     !!rawTitle &&
@@ -116,8 +118,8 @@ router.post('/', (request, response, next) => {
     !!ingredients && 
     !!directions
    ) {
-      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "id"',
-        [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
+      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto, default_tile_image_key) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING "id"',
+        [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, defaultTileImageKey],
         (err, res) => {
           if (err) return next(err)
           if (res.rowCount) {
@@ -151,10 +153,11 @@ router.put('/', (request, response, next) => {
     isSugarFree, 
     isVegetarian, 
     isVegan, 
-    isKeto 
+    isKeto, 
+    defaultTileImageKey
   } = request.body;
-  client.query('UPDATE recipes SET title=$1, raw_title=$16, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14 AND user_id=$15',
-  [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId, rawTitle],
+  client.query('UPDATE recipes SET title=$1, raw_title=$16, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13, default_tile_image_key=$17 WHERE id=$14 AND user_id=$15',
+  [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId, rawTitle, defaultTileImageKey],
    (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
@@ -197,7 +200,8 @@ router.get('/:recipeId', (request, response, next) => {
           user_id: recipe.user_id, 
           ingredients: recipe.ingredients, 
           directions: recipe.directions, 
-          tags: constructTags(recipe)
+          tags: constructTags(recipe),
+          defaultTileImageKey: recipe.default_tile_image_key
         }
         if (recipe.has_images) {
           let urls = await getImageAWSKeys(recipeId)
