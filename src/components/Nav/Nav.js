@@ -5,19 +5,27 @@ import './Nav.scss';
 import { withRouter } from "react-router-dom"
 import { setUserLoggedOut } from '../../auth-session'
 const axios = require('axios')
-
+import { verifyUserSession } from '../../auth-services'
 class Nav extends React.Component {
 
   state = {
-    loggedIn: !!window.localStorage.getItem('user_session_id')
+    loggedIn: !!(window.localStorage.getItem('user_logged_in'))
   }
 
-  componentDidMount() {
-    this.initializeSettingsDropdown()
-    this.props.history.listen((location, action) => {
+  async componentDidMount() {
+    let authenticated = await verifyUserSession()
+    if (authenticated) {
+      window.localStorage.setItem('user_logged_in', true)
+    } else {
+      window.localStorage.removeItem('user_logged_in')
+    }
+    this.setState({
+      loggedIn: authenticated.data.authenticated
+    }, this.initializeSettingsDropdown())
+    this.props.history.listen(async(location, action) => {
       this.setState({
-        loggedIn: !!window.localStorage.getItem('user_session_id')
-      }, () => this.initializeSettingsDropdown())
+        loggedIn: !!(window.localStorage.getItem('user_logged_in'))
+      }, this. initializeSettingsDropdown())
     })
   }
 

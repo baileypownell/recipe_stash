@@ -118,6 +118,13 @@ class FileUpload extends React.Component {
                             key={url}
                             style={{ backgroundImage: `url(${url})`  }}>
                             <div className="file-cover" >
+                            <form action="#">
+                                <label htmlFor={url}>
+                                    <input type="checkbox" class="filled-in" checked="checked" id={url} />
+                                    <span>Use as tile background image</span>
+                                </label>
+
+                                </form>
                                 <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>
                             </div>
                         </div>

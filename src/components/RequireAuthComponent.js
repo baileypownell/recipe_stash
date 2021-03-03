@@ -1,23 +1,16 @@
-import React from 'react';
-import { Redirect } from "react-router-dom";
-import axios from 'axios';
+import React from 'react'
+import { Redirect } from "react-router-dom"
+import { verifyUserSession } from '../auth-services'
 
 class RequireAuthComponent extends React.Component {
 
     state = {
-        userAuthenticated: !!(window.localStorage.getItem('user_session_id'))
+        userAuthenticated: !!(window.localStorage.getItem('user_logged_in'))
     }
 
     render() {
         const { userAuthenticated } = this.state
-        return (
-            <>
-            {
-                userAuthenticated ? this.props.children : <Redirect to="/login" />
-            }   
-            </>
-            
-        )
+        return ( userAuthenticated ? this.props.children : <Redirect to="/login" />  )
     }
 }
 
