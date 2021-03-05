@@ -12,6 +12,7 @@ import Preloader from '../../../Preloader/Preloader'
 const FormData = require('form-data')
 const tags = require('../../../../models/tags')
 const options = require('../../../../models/options')
+// import { setRecipeTileImage } from '../../../../../routes/recipe-service'
 
 class AddRecipe extends React.Component {
 
@@ -66,13 +67,14 @@ class AddRecipe extends React.Component {
     })
   }
 
+
   uploadFiles = async(recipeId) => {
     let uploads = this.state.newFiles
-    await Promise.all(uploads.map( async file => {
+    return await Promise.all(uploads.map( async file => {
       let formData = new FormData() 
       formData.append('image', file.file)
 
-      await axios.post(
+      let upload = await axios.post(
         `/file-upload/${recipeId}`, 
         formData,
         {
@@ -81,7 +83,13 @@ class AddRecipe extends React.Component {
           }
         }
       )
+
+      return { awsKey: upload.data.key, fileName: file.file.name }
     }))
+  }
+
+  setTileImageNewRecipe = async(recipeId, awsKey) => {
+    await axios.post(`/setTileImage/${awsKey}/${recipeId}`)
   }
 
   handleSuccess() {
@@ -102,6 +110,7 @@ class AddRecipe extends React.Component {
       loading: true
     })
     try {
+      await axios.get('/')
       let recipeCreated = await axios.post(`/recipe`, {
         title: DOMPurify.sanitize(this.state.recipe_title),
         rawTitle,
@@ -117,12 +126,17 @@ class AddRecipe extends React.Component {
         isVegetarian: tags[6].selected, 
         isVegan: tags[7].selected,
         isKeto: tags[8].selected,
-        defaultTileImageKey: this.state.defaultTileImageKey
       })
       let uploads = this.state.newFiles
       if (uploads) {
         try {
-          await this.uploadFiles(recipeCreated.data.recipeId)
+          // we must get the AWS KEY from this call
+          let uploadedImageKeys = await this.uploadFiles(recipeCreated.data.recipeId)
+          let defaultTileImage = uploadedImageKeys.filter(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
+          console.log(defaultTileImage)
+          // need to know which key belongs to the file that they want to use as the background image
+          await this.setTileImageNewRecipe(recipeCreated.data.recipeId, defaultTileImageKey.key)
+          // is there a default image tile? handle it here
           this.handleSuccess()
         } catch (error) {
           console.log(error)
@@ -198,9 +212,9 @@ class AddRecipe extends React.Component {
     })
   }
 
-  setDefaultTileImage = (key) => {
+  setDefaultTileImage = (fileName) => {
     this.setState({
-      defaultTileImageKey: key
+      defaultTileImageKey: fileName
     })
   }
 

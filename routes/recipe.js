@@ -109,7 +109,6 @@ router.post('/', (request, response, next) => {
     isVegetarian, 
     isVegan, 
     isKeto,
-    defaultTileImageKey
   } = request.body;
   if (
     !!rawTitle &&
@@ -118,8 +117,8 @@ router.post('/', (request, response, next) => {
     !!ingredients && 
     !!directions
    ) {
-      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto, default_tile_image_key) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING "id"',
-        [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, defaultTileImageKey],
+      client.query('INSERT INTO recipes(title, raw_title, category, user_id, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "id"',
+        [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
         (err, res) => {
           if (err) return next(err)
           if (res.rowCount) {

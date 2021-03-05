@@ -90,11 +90,31 @@ class FileUpload extends React.Component {
         }
     }
 
+    setDefaultTileImageNew = (file) => {
+        if (file.name === this.state.defaultTileImageKey?.fileName) {
+            this.setState({
+                defaultTileImageKey: null
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        } else {
+            this.setState({
+                defaultTileImageKey: {newFile: true, fileName: file.name}
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
+    }
+
     determineIfChecked = (url) => {
-        
         // compare key in url to the present key 
         let key = url.split('amazonaws.com/')[1].split('?')[0]
         if (key === this.state.defaultTileImageKey) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    determineIfCheckedNew = (file) => {
+        // compare file name to the present key 
+        if (file.name === this.state.defaultTileImageKey?.fileName) {
             return true
         } else {
             return false
@@ -128,7 +148,7 @@ class FileUpload extends React.Component {
                     </div>
                 </div>
                 <div className="file-list">
-                    {Array.from(files)?.map(file => (
+                    {Array.from(files)?.map((file, index) => (
                         <div 
                             key={file.id}
                             className="file-preview z-depth-2" 
@@ -136,9 +156,9 @@ class FileUpload extends React.Component {
                             <div className="file-cover" >
                             <label htmlFor={file.id}>
                                 <input 
-                                    checked={this.determineIfChecked(file.id)}
+                                    checked={this.determineIfCheckedNew(file.file)}
                                     type="checkbox" 
-                                    onChange={(e) => this.setDefaultTileImage(e)} 
+                                    onChange={(e) => this.setDefaultTileImageNew(file.file)} 
                                     class="filled-in" 
                                     id={file.id} />
                                     <span>Use as tile background image</span>

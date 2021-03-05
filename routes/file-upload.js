@@ -31,7 +31,8 @@ router.post('/:recipeId', authMiddleware, async(req, res) => {
                     if (response.rowCount) {
                         return res.status(200).json({ 
                             success: true, 
-                            url: awsUploadRes.downloadUrl 
+                            url: awsUploadRes.downloadUrl,
+                            key: awsUploadRes.key 
                         })
                     }
                 })
@@ -46,6 +47,39 @@ router.post('/', authMiddleware, async(req, res) => {
     const image_uuids = req.body.image_urls
     let urls = getPresignedUrls(image_uuids)
     res.status(200).json({ presignedUrls: urls})
+})
+
+router.post('/setTileImage/:defaultTileImage/:id', authMiddleware, async(req, res) => {
+
+    const { defaultTileImageKey, id } = req.params
+
+    try {
+        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
+        [defaultTileImageKey, id],
+        (error, response) => {
+        if (error) return res.status(500).json({ 
+            success: false, 
+            message: `There was an error: ${error}`
+        }) 
+        console.log(response)
+        if (response.rowCount) {
+            return res.status(200).json({ 
+                success: true, 
+                url: response.rowCount
+            })
+        } else {
+            return res.status(500).json({ 
+                success: false, 
+                message: `There was an error: ${error}`
+            }) 
+        }
+    })
+    } catch(e) {
+        return res.status(500).json({ 
+            success: false, 
+            message: `There was an error: ${e}`
+        }) 
+    }
 })
 
 router.delete('/:imageKey', authMiddleware, async(req, res) => {
