@@ -5,14 +5,20 @@ const AuthContext = React.createContext({})
 
 class AuthProvider extends Component {
     // Context state
-    state = { }
+    state = { 
+      userAuthenticated: true
+    }
   
     setUserLoggedOut = () => {
-        window.localStorage.removeItem('user_logged_in')
+        this.setState({
+          userAuthenticated: false
+        })
     }
 
     setUserLoggedIn = () => {
-        window.localStorage.setItem('user_logged_in', true);
+        this.setState({
+          userAuthenticated: true
+        })
     }
 
     verifyUserSession = async() => {
@@ -21,7 +27,7 @@ class AuthProvider extends Component {
   
     render() {
       const { children } = this.props
-      const { authState } = this.state
+      const { userAuthenticated } = this.state
       const { setUserLoggedIn } = this
       const { setUserLoggedOut } = this
       const { verifyUserSession } = this
@@ -29,7 +35,7 @@ class AuthProvider extends Component {
       return (
         <AuthContext.Provider
           value={{
-            authState,
+            userAuthenticated,
             setUserLoggedIn,
             setUserLoggedOut, 
             verifyUserSession

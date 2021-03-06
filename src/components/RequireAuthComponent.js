@@ -1,10 +1,13 @@
 import React from 'react'
 import { Redirect } from "react-router-dom"
+import AuthContext from '../auth-context'
 
 class RequireAuthComponent extends React.Component {
 
+    static contextType = AuthContext
+
     state = {
-        userAuthenticated: !!(window.localStorage.getItem('user_logged_in'))
+        userAuthenticated: this.context.userAuthenticated
     }
 
     render() {

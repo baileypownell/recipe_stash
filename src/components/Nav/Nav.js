@@ -10,27 +10,25 @@ class Nav extends React.Component {
   static contextType = AuthContext
 
   state = {
-    loggedIn: !!(window.localStorage.getItem('user_logged_in'))
+    loggedIn: this.context.userAuthenticated
   }
 
   async componentDidMount() {
     let authenticated = await this.context.verifyUserSession()
-    if (authenticated) {
-      window.localStorage.setItem('user_logged_in', true)
-    } else {
-      window.localStorage.removeItem('user_logged_in')
-    }
     this.setState({
       loggedIn: authenticated.data.authenticated
-    }, this.initializeSettingsDropdown())
+    }, () => {
+      this.initializeSettingsDropdown()
+      this.state.loggedIn ? this.context.setUserLoggedIn() : this.context.setUserLoggedOut()
+    })
     this.props.history.listen(async(location, action) => {
-      // console.log('authenticated.data.authenticated', authenticated.data.authenticated)
-      let authState = authenticated.data.authenticated ?? !!(window.localStorage.getItem('user_logged_in'))
-      console.log('authState = ', authState)
-      // so this works until the user's session expires without them logging out 
+      let authState = this.context.userAuthenticated 
       this.setState({
         loggedIn: authState
-      }, this. initializeSettingsDropdown())
+      }, () => {
+        this.initializeSettingsDropdown()
+        this.state.loggedIn ? this.context.setUserLoggedIn() : this.context.setUserLoggedOut()
+      })
     })
   }
 

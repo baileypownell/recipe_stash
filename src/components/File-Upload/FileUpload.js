@@ -159,7 +159,7 @@ class FileUpload extends React.Component {
                                     checked={this.determineIfCheckedNew(file.file)}
                                     type="checkbox" 
                                     onChange={(e) => this.setDefaultTileImageNew(file.file)} 
-                                    class="filled-in" 
+                                    className="filled-in" 
                                     id={file.id} />
                                     <span>Use as tile background image</span>
                                 </label>
@@ -178,7 +178,7 @@ class FileUpload extends React.Component {
                                         checked={this.determineIfChecked(url)}
                                         type="checkbox" 
                                         onChange={(e) => this.setDefaultTileImage(e)} 
-                                        class="filled-in" id={url} />
+                                        className="filled-in" id={url} />
                                     <span>Use as tile background image</span>
                                 </label>
                                 <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>

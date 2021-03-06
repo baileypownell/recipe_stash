@@ -3,7 +3,6 @@ const router = Router();
 const client = require('../db')
 
 router.get('/', (request, response, next) => {
-    console.log(request.sessionID)
     client.query('SELECT user_id FROM session WHERE sid=$1', 
         [request.sessionID], 
         (err, res) => {

@@ -52,7 +52,7 @@ class Settings extends React.Component {
     var elems = document.querySelectorAll('.collapsible');
     M.Collapsible.init(elems, {});
     this.updateView()
-}
+  }
 
   updateInput = (e) => {
     this.setState({
@@ -207,7 +207,7 @@ class Settings extends React.Component {
                   className="waves-effect waves-light btn" 
                   id="delete"
                   onClick={this.deleteAccount}>
-                    Delete Account <i class="fas fa-exclamation-triangle"></i>
+                    Delete Account <i className="fas fa-exclamation-triangle"></i>
                   </button>
                 </div>
             </li>
