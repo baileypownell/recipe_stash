@@ -23,7 +23,10 @@ import {
 import 'materialize-css/dist/css/materialize.min.css';
 import './scss/main.scss';
 
+import { AuthProvider } from './auth-context'
+
 ReactDOM.render(
+  <AuthProvider>
     <BrowserRouter>
       <Nav/>
       <Switch>
@@ -38,6 +41,7 @@ ReactDOM.render(
         </RequireAuthComponent>
         <Redirect to="/" />
       </Switch>
-    </BrowserRouter>,
+    </BrowserRouter>
+    </AuthProvider>,
   document.getElementById('app')
 );

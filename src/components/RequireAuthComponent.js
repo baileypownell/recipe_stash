@@ -1,6 +1,5 @@
 import React from 'react'
 import { Redirect } from "react-router-dom"
-import { verifyUserSession } from '../auth-services'
 
 class RequireAuthComponent extends React.Component {
 

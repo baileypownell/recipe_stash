@@ -4,10 +4,12 @@ import ClipLoader from "react-spinners/ClipLoader"
 import GoogleLogin from 'react-google-login'
 import './Login.scss'
 import M from 'materialize-css'
-import { setUserLoggedIn } from '../../auth-session'
 const appear = require('../../models/functions')
+import AuthContext from '../../auth-context'
 
 class Login extends React.Component {
+
+  static contextType = AuthContext
 
   state = {
     email: null,
@@ -18,10 +20,10 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    let faded = document.querySelectorAll('.fade')
-    setTimeout(appear(faded, 'fade-in'), 500);
-    M.updateTextFields()
-}
+      let faded = document.querySelectorAll('.fade')
+      setTimeout(appear(faded, 'fade-in'), 500);
+      M.updateTextFields()
+  }
 
   updateInput = (e) => {
     this.setState({
@@ -57,7 +59,7 @@ class Login extends React.Component {
           token: response.tokenId, 
       })
       if (res.data.success) {
-        setUserLoggedIn(res.data.sessionID)
+        this.context.setUserLoggedIn()
         this.props.history.push('/dashboard')
       } else {
         M.toast({ html: res.data.message })
@@ -85,7 +87,7 @@ class Login extends React.Component {
           email: this.state.email
       })
       if (res.data.success) {
-        setUserLoggedIn(res.data.sessionID)
+        this.context.setUserLoggedIn()
         this.props.history.push(`/dashboard`)
       } else {
         this.setState({

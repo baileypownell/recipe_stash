@@ -3,10 +3,13 @@ import { withRouter } from "react-router-dom"
 import axios from 'axios'
 import M from 'materialize-css'
 import './Settings.scss'
-import { setUserLoggedOut } from '../../auth-session'
 const appear = require('../../models/functions')
 
+import AuthContext from '../../auth-context'
+
 class Settings extends React.Component {
+
+  static contextType = AuthContext
 
   state = {
     password: '',
@@ -21,7 +24,7 @@ class Settings extends React.Component {
   logout = async() => {
     try {
       await axios.get('/logout')
-      setUserLoggedOut()
+      this.context.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
@@ -71,7 +74,7 @@ class Settings extends React.Component {
       M.toast({html: 'Profile updated successfully.'})
       this.updateView()
     } catch(err) {
-      setUserLoggedOut()
+      this.context.setUserLoggedOut()
       this.props.history.push('/login');
     }
   }
@@ -98,7 +101,7 @@ class Settings extends React.Component {
     try { 
       await axios.delete(`/user`)
       M.toast({html: 'Account deleted.'})
-      setUserLoggedOut()
+      this.context.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)

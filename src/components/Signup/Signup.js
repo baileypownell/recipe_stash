@@ -2,11 +2,12 @@ import React from 'react'
 import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
-import Nav from '../Nav/Nav'
-import { setUserLoggedIn } from '../../auth-session'
 const appear = require('../../models/functions')
+import AuthContext from '../../auth-context'
 
 class Signup extends React.Component {
+
+  static contextType = AuthContext
 
   state = {
     firstName: null,
@@ -43,7 +44,7 @@ class Signup extends React.Component {
       })
       if (res.data.success) {
         M.toast({html: 'Success! Logging you in now...'})
-        setUserLoggedIn(res.data.sessionID)
+        this.context.setUserLoggedIn()
         this.props.history.push('/dashboard')
       } else {
         this.setState({

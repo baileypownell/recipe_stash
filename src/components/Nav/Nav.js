@@ -3,17 +3,18 @@ import { NavLink, Link } from "react-router-dom"
 import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
 import { withRouter } from "react-router-dom"
-import { setUserLoggedOut } from '../../auth-session'
 const axios = require('axios')
-import { verifyUserSession } from '../../auth-services'
+import AuthContext from '../../auth-context'
 class Nav extends React.Component {
+
+  static contextType = AuthContext
 
   state = {
     loggedIn: !!(window.localStorage.getItem('user_logged_in'))
   }
 
   async componentDidMount() {
-    let authenticated = await verifyUserSession()
+    let authenticated = await this.context.verifyUserSession()
     if (authenticated) {
       window.localStorage.setItem('user_logged_in', true)
     } else {
@@ -23,8 +24,12 @@ class Nav extends React.Component {
       loggedIn: authenticated.data.authenticated
     }, this.initializeSettingsDropdown())
     this.props.history.listen(async(location, action) => {
+      // console.log('authenticated.data.authenticated', authenticated.data.authenticated)
+      let authState = authenticated.data.authenticated ?? !!(window.localStorage.getItem('user_logged_in'))
+      console.log('authState = ', authState)
+      // so this works until the user's session expires without them logging out 
       this.setState({
-        loggedIn: !!(window.localStorage.getItem('user_logged_in'))
+        loggedIn: authState
       }, this. initializeSettingsDropdown())
     })
   }
@@ -37,7 +42,7 @@ class Nav extends React.Component {
   logout = async() => {
     try {
       await axios.get('/logout')
-      setUserLoggedOut()
+      this.context.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
