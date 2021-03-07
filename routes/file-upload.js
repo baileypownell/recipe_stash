@@ -49,23 +49,21 @@ router.post('/', authMiddleware, async(req, res) => {
     res.status(200).json({ presignedUrls: urls})
 })
 
-router.post('/setTileImage/:defaultTileImage/:id', authMiddleware, async(req, res) => {
+router.post('/set-tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
 
-    const { defaultTileImageKey, id } = req.params
+    const { awsKey, id } = req.params
 
     try {
         client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
-        [defaultTileImageKey, id],
+        [awsKey, id],
         (error, response) => {
         if (error) return res.status(500).json({ 
             success: false, 
             message: `There was an error: ${error}`
         }) 
-        console.log(response)
         if (response.rowCount) {
             return res.status(200).json({ 
                 success: true, 
-                url: response.rowCount
             })
         } else {
             return res.status(500).json({ 

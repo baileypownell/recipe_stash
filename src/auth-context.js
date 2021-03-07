@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 const axios = require('axios')
 
-const AuthContext = React.createContext({})
+const AuthContext = React.createContext()
 
 class AuthProvider extends Component {
     // Context state
     state = { 
-      userAuthenticated: true
+      userAuthenticated: null
     }
   
     setUserLoggedOut = () => {

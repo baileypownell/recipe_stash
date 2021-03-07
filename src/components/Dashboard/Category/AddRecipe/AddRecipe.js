@@ -89,7 +89,7 @@ class AddRecipe extends React.Component {
   }
 
   setTileImageNewRecipe = async(recipeId, awsKey) => {
-    await axios.post(`/setTileImage/${awsKey}/${recipeId}`)
+    await axios.post(`/file-upload/set-tile-image/${awsKey}/${recipeId}`)
   }
 
   handleSuccess() {
@@ -132,10 +132,9 @@ class AddRecipe extends React.Component {
         try {
           // we must get the AWS KEY from this call
           let uploadedImageKeys = await this.uploadFiles(recipeCreated.data.recipeId)
-          let defaultTileImage = uploadedImageKeys.filter(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
-          console.log(defaultTileImage)
+          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
           // need to know which key belongs to the file that they want to use as the background image
-          await this.setTileImageNewRecipe(recipeCreated.data.recipeId, defaultTileImageKey.key)
+          await this.setTileImageNewRecipe(recipeCreated.data.recipeId, defaultTileImage.awsKey)
           // is there a default image tile? handle it here
           this.handleSuccess()
         } catch (error) {
