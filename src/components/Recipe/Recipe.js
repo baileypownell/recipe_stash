@@ -11,6 +11,7 @@ import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
+import { rejects } from 'assert'
 const tags = require('../../models/tags')
 const options = require('../../models/options')
 const appear = require('../../models/functions')
@@ -149,6 +150,29 @@ class Recipe extends React.Component {
     this.setState({tags}, () => this.checkValidity())
   }
 
+  handleDefaultTileImage = (recipeId, uploadedImageKeys) => {
+    return new Promise(async(resolve, reject) => {
+      if (this.state.defaultTileImageKey) {
+          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
+          let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
+          resolve(defaultTile)
+      } else {
+        resolve()
+      }
+    })
+  }
+
+  handleDefaultTileImageExisting = (recipeId) => {
+    return new Promise(async(resolve, reject) => {
+      if (this.state.defaultTileImageKey) {
+        let defaultTile = await this.setTileImage(recipeId, this.state.defaultTileImageKey)
+        resolve(defaultTile)
+      } else {
+        resolve()
+      }
+    })
+  }
+
   handleUpdate() {
     // Update recipe details to reflect the change
     this.fetchData()
@@ -161,11 +185,11 @@ class Recipe extends React.Component {
 
   uploadFiles = async(recipeId) => {
     let uploads = this.state.newFiles
-    await Promise.all(uploads.map( async file => {
+    return await Promise.all(uploads.map( async file => {
       let formData = new FormData() 
       formData.append('image', file.file)
 
-      await axios.post(
+      let upload = await axios.post(
         `/file-upload/${recipeId}`, 
         formData,
         {
@@ -174,6 +198,10 @@ class Recipe extends React.Component {
           }
         }
       )
+      return {
+        awsKey: upload.data.key, 
+        fileName: file.file.name
+      }
     }))
   }
 
@@ -183,6 +211,10 @@ class Recipe extends React.Component {
         return await axios.delete(`/file-upload/${key}`)
       })
     )
+  }
+
+  setTileImage = async(recipeId, awsKey) => {
+    return await axios.post(`/file-upload/set-tile-image/${awsKey}/${recipeId}`)
   }
 
   updateRecipe = async(e) => {
@@ -197,7 +229,7 @@ class Recipe extends React.Component {
       })
       this.closeModal()
       try {
-        await axios.put(`/recipe`, {
+        let recipeUpdated = await axios.put(`/recipe`, {
           title: this.state.recipe_title_edit,
           rawTitle,
           ingredients: this.state.ingredients_edit,
@@ -213,26 +245,33 @@ class Recipe extends React.Component {
           isVegetarian: tags[6].selected, 
           isVegan: tags[7].selected,
           isKeto: tags[8].selected, 
-          defaultTileImageKey: this.state.defaultTileImageKey
+          //defaultTileImageKey: this.state.defaultTileImageKey // will this erase this value if we don't include it on an update?
         })
         // handle image uploads
         let uploads = this.state.newFiles
         let filesToDelete = this.state.filesToDelete
         let uploading = !!uploads.length 
         let deleting = !!filesToDelete.length
+        let uploadedImageKeys
         if (uploading && deleting) {
-          await Promise.all([
-            this.uploadFiles(this.state.recipeId), 
-            this.deleteFiles()
-          ])
-          this.handleUpdate()
-        } else if (uploading) { 
-          await this.uploadFiles(this.state.recipeId)
-          this.handleUpdate()
-        } else if (deleting) {
+          // this path works for setting default tile image
+          uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+          await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
           await this.deleteFiles()
           this.handleUpdate()
+        } else if (uploading) { 
+          // this path works for setting default tile image
+          uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+          await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
+          this.handleUpdate()
+        } else if (deleting) {
+          // this works
+          await this.deleteFiles()
+          await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
+          this.handleUpdate()
         } else {        
+          // this works
+          await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
           this.handleUpdate()
         }
       } catch(err) {
@@ -382,6 +421,7 @@ class Recipe extends React.Component {
                         }
                       </div>
                       <FileUpload 
+                        defaultTileImageUUID={recipe.defaultTileImageKey}
                         passDefaultTileImage={this.setDefaultTileImage}
                         preExistingImageUrls={presignedUrls$}
                         passFilesToDelete={this.setFilesToDelete}

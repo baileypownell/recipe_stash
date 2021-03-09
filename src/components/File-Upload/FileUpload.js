@@ -105,7 +105,7 @@ class FileUpload extends React.Component {
     determineIfChecked = (url) => {
         // compare key in url to the present key 
         let key = url.split('amazonaws.com/')[1].split('?')[0]
-        if (key === this.state.defaultTileImageKey) {
+        if (key === this.state.defaultTileImageKey || key === this.props.defaultTileImageUUID) {
             return true
         } else {
             return false

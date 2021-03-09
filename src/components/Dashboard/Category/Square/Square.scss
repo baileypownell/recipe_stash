@@ -1,0 +1,52 @@
+@import '../../../../scss/mixins.scss';
+
+#default-tile-image {
+    background-blend-mode: overlay;
+  }
+  .gray-background {
+    background-color: lighten($secondary, 15%)!important;
+    h4 {
+      font-weight: bold;
+      &:hover {
+        color: white!important;
+      }
+    }
+  }
+  .recipe-card {
+    width: 120px;
+    height: 120px;
+    background-color: $primary;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    font-family: 'Roboto', sans-serif;
+    color: $white;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    @include flexColumn;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    flex-grow: 1;
+    cursor: pointer;
+    transition: all .3s;
+    border: 2px solid $primary;
+    h3 {
+      padding: 10px;
+      text-align: center;
+    }
+    h4 {
+      text-align: center;
+    }
+    &:hover {
+      background-color: $white;
+      color: $primary;
+    }
+    @include tablet {
+      width: 175px;
+      height: 100px;
+    }
+    @include desktop {
+      flex-grow: unset;
+    }
+  }
