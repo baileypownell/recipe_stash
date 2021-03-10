@@ -25,6 +25,17 @@ class FileUpload extends React.Component {
             }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
         }
     }
+
+    componentDidUpdate(prevProps) {
+        // if going from true to false, 
+        // then clear the files and defaultTileImageKey state
+        if (prevProps.open === true && this.props.open === false) {
+            this.setState({
+                files: [], 
+                defaultTileImageKey: null
+            })
+        }
+    }
     
     openFileFinder = () => this.input.click()
 
@@ -126,7 +137,8 @@ class FileUpload extends React.Component {
             }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
         } else {
             this.setState({
-                defaultTileImageKey: {newFile: true, fileName: file.name}
+                defaultTileImageKey: {newFile: true, fileName: file.name}, 
+                defaultRemoved: true 
             }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
         }
     }

@@ -25,7 +25,8 @@ class AddRecipe extends React.Component {
     recipeValid: false,
     newFiles: [],
     tags: tags,
-    defaultTileImageKey: null
+    defaultTileImageKey: null,
+    open: false
   }
 
   componentDidMount() {
@@ -60,10 +61,12 @@ class AddRecipe extends React.Component {
   }
 
   clearState = () => {
+    let prevOpenState = this.state.open
     this.setState({
       recipe_title: null,
       ingredients: null,
       directions: null,
+      open: !prevOpenState
     })
   }
 
@@ -99,6 +102,17 @@ class AddRecipe extends React.Component {
     this.props.updateDashboard()
 }
 
+  handleDefaultTileImage = (recipeId, awsKey) => {
+    return new Promise(async(resolve, reject) => {
+      try {
+        let defaultTile = await this.setTileImageNewRecipe(recipeId, awsKey)
+        resolve(defaultTile)
+      } catch(e) {
+        reject(e)
+      }
+    })
+  }
+
   createRecipe = async(e) => {
     e.preventDefault();
     let tags = this.state.tags;
@@ -132,10 +146,10 @@ class AddRecipe extends React.Component {
         try {
           // we must get the AWS KEY from this call
           let uploadedImageKeys = await this.uploadFiles(recipeCreated.data.recipeId)
-          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
-          // need to know which key belongs to the file that they want to use as the background image
-          await this.setTileImageNewRecipe(recipeCreated.data.recipeId, defaultTileImage.awsKey)
-          // is there a default image tile? handle it here
+          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey?.fileName)
+          if (defaultTileImage) {
+            await this.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
+          }
           this.handleSuccess()
         } catch (error) {
           console.log(error)
@@ -160,9 +174,13 @@ class AddRecipe extends React.Component {
   } 
 
   openModal = () => {
+    let prevOpenState = this.state.open
     let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.open();
+    this.setState({
+      open: !prevOpenState
+    })
   }
 
   updateInput = (e) => {
@@ -219,6 +237,7 @@ class AddRecipe extends React.Component {
 
   render() {
     const { id, gridView } = this.props;
+    const { open } = this.state
 
     return (
       <>
@@ -274,7 +293,11 @@ class AddRecipe extends React.Component {
                         </div>
                       </li>
                     </ul>
-                    <FileUpload passDefaultTileImage={this.setDefaultTileImage} passFiles={this.setFiles}></FileUpload>
+                    <FileUpload 
+                      open={open}
+                      passDefaultTileImage={this.setDefaultTileImage} 
+                      passFiles={this.setFiles}>
+                      </FileUpload>
                   </div>
                 </div>
                 <div className="modal-close-buttons">
