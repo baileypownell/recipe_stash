@@ -49,7 +49,7 @@ router.post('/', authMiddleware, async(req, res) => {
     res.status(200).json({ presignedUrls: urls})
 })
 
-router.post('/set-tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
+router.post('/tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
 
     const { awsKey, id } = req.params
 
@@ -57,21 +57,50 @@ router.post('/set-tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
         client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
         [awsKey, id],
         (error, response) => {
-        if (error) return res.status(500).json({ 
-            success: false, 
-            message: `There was an error: ${error}`
-        }) 
-        if (response.rowCount) {
-            return res.status(200).json({ 
-                success: true, 
-            })
-        } else {
-            return res.status(500).json({ 
+            if (error) return res.status(500).json({ 
                 success: false, 
                 message: `There was an error: ${error}`
             }) 
-        }
-    })
+            if (response.rowCount) {
+                return res.status(200).json({ 
+                    success: true, 
+                })
+            } else {
+                return res.status(500).json({ 
+                    success: false, 
+                    message: `There was an error: ${error}`
+                }) 
+            }
+        })
+    } catch(e) {
+        return res.status(500).json({ 
+            success: false, 
+            message: `There was an error: ${e}`
+        }) 
+    }
+})
+
+router.delete('/tile-image/:recipeId', authMiddleware, async(req, res) => {
+    const { recipeId } = req.params
+    try {
+        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
+        [null, recipeId],
+        (error, response) => {
+            if (error) return res.status(500).json({ 
+                success: false, 
+                message: `There was an error: ${error}`
+            }) 
+            if (response.rowCount) {
+                return res.status(200).json({ 
+                    success: true, 
+                })
+            } else {
+                return res.status(500).json({ 
+                    success: false, 
+                    message: `There was an error: ${error}`
+                }) 
+            }
+        })
     } catch(e) {
         return res.status(500).json({ 
             success: false, 

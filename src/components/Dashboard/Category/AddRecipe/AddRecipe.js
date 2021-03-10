@@ -89,7 +89,7 @@ class AddRecipe extends React.Component {
   }
 
   setTileImageNewRecipe = async(recipeId, awsKey) => {
-    await axios.post(`/file-upload/set-tile-image/${awsKey}/${recipeId}`)
+    await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
   }
 
   handleSuccess() {
@@ -128,7 +128,7 @@ class AddRecipe extends React.Component {
         isKeto: tags[8].selected,
       })
       let uploads = this.state.newFiles
-      if (uploads) {
+      if (uploads.length) {
         try {
           // we must get the AWS KEY from this call
           let uploadedImageKeys = await this.uploadFiles(recipeCreated.data.recipeId)

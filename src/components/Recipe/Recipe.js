@@ -168,7 +168,13 @@ class Recipe extends React.Component {
         let defaultTile = await this.setTileImage(recipeId, this.state.defaultTileImageKey)
         resolve(defaultTile)
       } else {
-        resolve()
+        // remove if recipe previously had a default image 
+        if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
+          await this.removeTileImage(this.state.recipe.id)
+          resolve()
+        } else {
+          resolve()
+        }
       }
     })
   }
@@ -214,7 +220,11 @@ class Recipe extends React.Component {
   }
 
   setTileImage = async(recipeId, awsKey) => {
-    return await axios.post(`/file-upload/set-tile-image/${awsKey}/${recipeId}`)
+    return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
+  }
+
+  removeTileImage = async(recipeId) => {
+    return await axios.delete(`file-upload/tile-image/${recipeId}`)
   }
 
   updateRecipe = async(e) => {
@@ -245,7 +255,6 @@ class Recipe extends React.Component {
           isVegetarian: tags[6].selected, 
           isVegan: tags[7].selected,
           isKeto: tags[8].selected, 
-          //defaultTileImageKey: this.state.defaultTileImageKey // will this erase this value if we don't include it on an update?
         })
         // handle image uploads
         let uploads = this.state.newFiles
@@ -319,7 +328,7 @@ class Recipe extends React.Component {
   setDefaultTileImage = (key) => {
     this.setState({
       defaultTileImageKey: key
-    })
+    }, () => this.checkValidity())
   }
 
   render() {

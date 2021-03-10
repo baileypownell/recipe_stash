@@ -8,7 +8,8 @@ class FileUpload extends React.Component {
         files: [],
         preExistingImageUrls: null,
         filesToDelete: [],
-        defaultTileImageKey: null
+        defaultTileImageKey: null,
+        defaultRemoved: false
     }
 
     componentDidMount() {
@@ -17,6 +18,12 @@ class FileUpload extends React.Component {
                 preExistingImageUrls: preExistingImageUrls
             })
         })
+
+        if (this.props.defaultTileImageUUID) {
+            this.setState({
+                defaultTileImageKey: this.props.defaultTileImageUUID
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
     }
     
     openFileFinder = () => this.input.click()
@@ -83,6 +90,17 @@ class FileUpload extends React.Component {
             this.setState({
                 defaultTileImageKey: null
             }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        } else if (imageKey === this.props.defaultTileImageUUID) {
+            if (!this.state.defaultRemoved) {
+                this.setState({
+                    defaultTileImageKey: null,
+                    defaultRemoved: true 
+                }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+            } else {
+                this.setState({
+                    defaultTileImageKey: imageKey,
+                }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+            }
         } else {
             this.setState({
                 defaultTileImageKey: imageKey
@@ -105,7 +123,8 @@ class FileUpload extends React.Component {
     determineIfChecked = (url) => {
         // compare key in url to the present key 
         let key = url.split('amazonaws.com/')[1].split('?')[0]
-        if (key === this.state.defaultTileImageKey || key === this.props.defaultTileImageUUID) {
+        if (key === this.state.defaultTileImageKey || (
+            key === this.props.defaultTileImageUUID && !this.state.defaultRemoved)) {
             return true
         } else {
             return false
