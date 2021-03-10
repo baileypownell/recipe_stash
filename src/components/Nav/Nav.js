@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom"
 import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
 import { withRouter } from "react-router-dom"
-import AuthenticationService from '../../auth-service'
+import AuthenticationService from '../../services/auth-service'
 const axios = require('axios')
 
 class Nav extends React.Component {

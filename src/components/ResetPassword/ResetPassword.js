@@ -4,7 +4,7 @@ const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import M from 'materialize-css'
 import './ResetPassword.scss'
-import AuthenticationService from '../../auth-service'
+import AuthenticationService from '../../services/auth-service'
 
 class ResetPassword extends React.Component {
 

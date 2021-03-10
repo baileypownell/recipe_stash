@@ -4,14 +4,12 @@ const axios = require('axios')
 import './Recipe.scss'
 import M from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
-import Nav from '../Nav/Nav'
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
-import { rejects } from 'assert'
 const tags = require('../../models/tags')
 const options = require('../../models/options')
 const appear = require('../../models/functions')
@@ -221,11 +219,21 @@ class Recipe extends React.Component {
   }
 
   setTileImage = async(recipeId, awsKey) => {
-    return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
+    try {
+      return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
+    } catch(err) {
+      console.log(err)
+      return err
+    }
   }
 
   removeTileImage = async(recipeId) => {
-    return await axios.delete(`file-upload/tile-image/${recipeId}`)
+    try {
+      return await axios.delete(`file-upload/tile-image/${recipeId}`)
+    } catch(err) {
+      console.log(err)
+      return err
+    }
   }
 
   updateRecipe = async(e) => {

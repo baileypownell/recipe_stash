@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactFragment } from 'react'
 import M from 'materialize-css'
 import './AddRecipe.scss'
 const axios = require('axios')
@@ -9,12 +9,33 @@ import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
+import { RecipeService, RecipeInput } from '../../../../services/recipe-service.ts'
+// import RecipeService, { RecipeInput } from '../../../../services/recipe-service'
+
 const FormData = require('form-data')
 const tags = require('../../../../models/tags')
 const options = require('../../../../models/options')
-// import { setRecipeTileImage } from '../../../../../routes/recipe-service'
 
-class AddRecipe extends React.Component {
+type MyProps = {
+  updateDashboard: any 
+  id: number 
+  category: string
+}
+
+type MyState = {
+  loading: boolean
+  recipe_title: string
+  ingredients: string[]
+  directions: string
+  category: string
+  recipeValid: boolean
+  newFiles: any[] 
+  tags: string[], 
+  defaultTileImageKey: string 
+  open: boolean
+}
+
+class AddRecipe extends React.Component<MyProps, MyState> {
 
   state = {
     loading: false,
@@ -71,27 +92,27 @@ class AddRecipe extends React.Component {
   }
 
 
-  uploadFiles = async(recipeId) => {
-    let uploads = this.state.newFiles
-    return await Promise.all(uploads.map( async file => {
-      let formData = new FormData() 
-      formData.append('image', file.file)
+  // uploadFiles = async(recipeId: number) => {
+  //   let uploads = this.state.newFiles
+  //   return await Promise.all(uploads.map( async file => {
+  //     let formData = new FormData() 
+  //     formData.append('image', file.file)
 
-      let upload = await axios.post(
-        `/file-upload/${recipeId}`, 
-        formData,
-        {
-          headers: {
-            'content-type': 'multipart/form-data'
-          }
-        }
-      )
+  //     let upload = await axios.post(
+  //       `/file-upload/${recipeId}`, 
+  //       formData,
+  //       {
+  //         headers: {
+  //           'content-type': 'multipart/form-data'
+  //         }
+  //       }
+  //     )
 
-      return { awsKey: upload.data.key, fileName: file.file.name }
-    }))
-  }
+  //     return { awsKey: upload.data.key, fileName: file.file.name }
+  //   }))
+  // }
 
-  setTileImageNewRecipe = async(recipeId, awsKey) => {
+  setTileImageNewRecipe = async(recipeId: number, awsKey: string) => {
     await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
   }
 
@@ -99,72 +120,99 @@ class AddRecipe extends React.Component {
     M.toast({html: 'Recipe added.'})
     this.clearState()
     this.closeModal()
+    this.setState({
+      loading: false
+    })
     this.props.updateDashboard()
 }
 
-  handleDefaultTileImage = (recipeId, awsKey) => {
-    return new Promise(async(resolve, reject) => {
-      try {
-        let defaultTile = await this.setTileImageNewRecipe(recipeId, awsKey)
-        resolve(defaultTile)
-      } catch(e) {
-        reject(e)
-      }
-    })
-  }
+  // handleDefaultTileImage = (recipeId, awsKey) => {
+  //   return new Promise(async(resolve, reject) => {
+  //     try {
+  //       let defaultTile = await this.setTileImageNewRecipe(recipeId, awsKey)
+  //       resolve(defaultTile)
+  //     } catch(e) {
+  //       reject(e)
+  //     }
+  //   })
+  // }
 
   createRecipe = async(e) => {
     e.preventDefault();
     let tags = this.state.tags;
-    let titleHTML = DOMPurify.sanitize(this.state.recipe_title)
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title, null)
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
     this.setState({
       loading: true
     })
+    // using service 
+    let recipeInput: RecipeInput = {
+      title: DOMPurify.sanitize(this.state.recipe_title, null),
+      rawTitle,
+      category: this.state.category,
+      ingredients: DOMPurify.sanitize(this.state.ingredients, null),
+      directions: DOMPurify.sanitize(this.state.directions, null),
+      isNoBake: tags[0].selected,
+      isEasy: tags[1].selected,
+      isHealthy: tags[2].selected,
+      isGlutenFree: tags[3].selected, 
+      isDairyFree: tags[4].selected,
+      isSugarFree: tags[5].selected, 
+      isVegetarian: tags[6].selected, 
+      isVegan: tags[7].selected,
+      isKeto: tags[8].selected,
+    }
     try {
-      await axios.get('/')
-      let recipeCreated = await axios.post(`/recipe`, {
-        title: DOMPurify.sanitize(this.state.recipe_title),
-        rawTitle,
-        category: this.state.category,
-        ingredients: DOMPurify.sanitize(this.state.ingredients),
-        directions: DOMPurify.sanitize(this.state.directions),
-        isNoBake: tags[0].selected,
-        isEasy: tags[1].selected,
-        isHealthy: tags[2].selected,
-        isGlutenFree: tags[3].selected, 
-        isDairyFree: tags[4].selected,
-        isSugarFree: tags[5].selected, 
-        isVegetarian: tags[6].selected, 
-        isVegan: tags[7].selected,
-        isKeto: tags[8].selected,
-      })
-      let uploads = this.state.newFiles
-      if (uploads.length) {
-        try {
-          // we must get the AWS KEY from this call
-          let uploadedImageKeys = await this.uploadFiles(recipeCreated.data.recipeId)
-          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey?.fileName)
-          if (defaultTileImage) {
-            await this.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
-          }
-          this.handleSuccess()
-        } catch (error) {
-          console.log(error)
-        }
-      } else {
-        this.handleSuccess()
-      }
-    } catch (error) {
-      console.log(error)
-      M.toast({html: 'There was an error.'})
-    } finally {
+      await RecipeService.createRecipe(recipeInput, this.state.newFiles)
+    } catch(err) {
+      console.log(err)
       this.setState({
         loading: false
       })
-    } 
+    }
+    // try {
+    //   let recipeCreated = await axios.post(`/recipe`, {
+    //     title: DOMPurify.sanitize(this.state.recipe_title, null),
+    //     rawTitle,
+    //     category: this.state.category,
+    //     ingredients: DOMPurify.sanitize(this.state.ingredients, null),
+    //     directions: DOMPurify.sanitize(this.state.directions, null),
+    //     isNoBake: tags[0].selected,
+    //     isEasy: tags[1].selected,
+    //     isHealthy: tags[2].selected,
+    //     isGlutenFree: tags[3].selected, 
+    //     isDairyFree: tags[4].selected,
+    //     isSugarFree: tags[5].selected, 
+    //     isVegetarian: tags[6].selected, 
+    //     isVegan: tags[7].selected,
+    //     isKeto: tags[8].selected,
+    //   })
+    //   let uploads = this.state.newFiles
+    //   if (uploads.length) {
+    //     try {
+    //       // we must get the AWS KEY from this call
+    //       let uploadedImageKeys = await this.uploadFiles(recipeCreated.data.recipeId)
+    //       let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey?.fileName)
+    //       if (defaultTileImage) {
+    //         await this.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
+    //       }
+    //       this.handleSuccess()
+    //     } catch (error) {
+    //       console.log(error)
+    //     }
+    //   } else {
+    //     this.handleSuccess()
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    //   M.toast({html: 'There was an error.'})
+    // } finally {
+    //   this.setState({
+    //     loading: false
+    //   })
+    // } 
   }  
 
   closeModal = () => {
@@ -236,12 +284,13 @@ class AddRecipe extends React.Component {
   }
 
   render() {
-    const { id, gridView } = this.props;
+    const { id, gridView } = this.props as any;
     const { open } = this.state
 
     return (
       <>
-        { gridView ? <div
+        { gridView ? 
+          <div
             onClick={this.openModal}
             className="addRecipe z-depth-4"
             id={id}
