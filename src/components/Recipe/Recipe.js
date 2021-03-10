@@ -152,7 +152,8 @@ class Recipe extends React.Component {
 
   handleDefaultTileImage = (recipeId, uploadedImageKeys) => {
     return new Promise(async(resolve, reject) => {
-      if (this.state.defaultTileImageKey) {
+      let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey
+      if (this.state.defaultTileImageKey && isNewDefaultTile) {
           let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
           let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
           resolve(defaultTile)
@@ -269,9 +270,12 @@ class Recipe extends React.Component {
           await this.deleteFiles()
           this.handleUpdate()
         } else if (uploading) { 
+          console.log('here')
           // this path works for setting default tile image
           uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+          console.log('uploadedImageKeys = ', uploadedImageKeys)
           await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
+          console.log('time to handle update')
           this.handleUpdate()
         } else if (deleting) {
           // this works
