@@ -2,7 +2,7 @@ import React from 'react'
 import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
-import { setUserLoggedIn } from '../../auth-session'
+import AuthenticationService from '../../auth-session'
 const appear = require('../../models/functions')
 
 class Signup extends React.Component {
@@ -42,7 +42,7 @@ class Signup extends React.Component {
       })
       if (res.data.success) {
         M.toast({html: 'Success! Logging you in now...'})
-        setUserLoggedIn(res.data.sessionID)
+        AuthenticationService.setUserLoggedIn()
         this.props.history.push('/dashboard')
       } else {
         this.setState({

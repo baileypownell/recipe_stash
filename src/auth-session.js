@@ -1,9 +1,11 @@
-export const setUserLoggedIn = (sessionID) => {
-    window.localStorage.setItem('user_session_id', sessionID);
-};
+const AuthenticationService = {
+    setUserLoggedIn: () => {
+        window.localStorage.setItem('user_logged_in', 'true')
+    },
 
-export const setUserLoggedOut = () => {
-    window.localStorage.removeItem('user_session_id')
+    setUserLoggedOut: () => {
+        window.localStorage.removeItem('user_logged_in')
+    }
 }
 
-export const userLoginStatus = !!(window.localStorage.getItem('user_session_id'))
+export default AuthenticationService

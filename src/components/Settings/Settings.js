@@ -5,7 +5,7 @@ import M from 'materialize-css'
 import './Settings.scss'
 const appear = require('../../models/functions')
 
-import { setUserLoggedOut } from '../../auth-session'
+import AuthenticationService from '../../auth-session'
 
 class Settings extends React.Component {
 
@@ -22,7 +22,7 @@ class Settings extends React.Component {
   logout = async() => {
     try {
       await axios.get('/logout')
-      setUserLoggedOut()
+      AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
@@ -72,7 +72,7 @@ class Settings extends React.Component {
       M.toast({html: 'Profile updated successfully.'})
       this.updateView()
     } catch(err) {
-      this.context.setUserLoggedOut()
+      AuthenticationService.setUserLoggedOut()
       this.props.history.push('/login');
     }
   }
@@ -99,7 +99,7 @@ class Settings extends React.Component {
     try { 
       await axios.delete(`/user`)
       M.toast({html: 'Account deleted.'})
-      this.context.setUserLoggedOut()
+      AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
