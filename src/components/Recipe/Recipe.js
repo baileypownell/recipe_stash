@@ -264,26 +264,19 @@ class Recipe extends React.Component {
         let deleting = !!filesToDelete.length
         let uploadedImageKeys
         if (uploading && deleting) {
-          // this path works for setting default tile image
           uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
           await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
           await this.deleteFiles()
           this.handleUpdate()
         } else if (uploading) { 
-          console.log('here')
-          // this path works for setting default tile image
           uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
-          console.log('uploadedImageKeys = ', uploadedImageKeys)
           await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
-          console.log('time to handle update')
           this.handleUpdate()
         } else if (deleting) {
-          // this works
           await this.deleteFiles()
           await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
           this.handleUpdate()
         } else {        
-          // this works
           await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
           this.handleUpdate()
         }

@@ -75,6 +75,16 @@ class FileUpload extends React.Component {
         let updatedFiles = this.state.preExistingImageUrls.filter(u => u !== url) 
         let filesToDelete = this.state.filesToDelete
         filesToDelete.push(url) 
+        // compare the key from the url to props.defaultTileImageKey 
+        // if they are the same, then you need to set the state to null and update the parent 
+        let imageKey = url.split('amazonaws.com/')[1].split('?')[0] 
+        let isDefaultTileImage = imageKey === this.props.defaultTileImageUUID 
+        if (isDefaultTileImage) {
+            this.setState({
+                defaultTileImageKey: null,
+                defaultRemoved: true 
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
         this.setState({
             preExistingImageUrls: updatedFiles,
             filesToDelete: filesToDelete
