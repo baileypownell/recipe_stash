@@ -5,7 +5,7 @@ import M from 'materialize-css'
 import './Settings.scss'
 const appear = require('../../models/functions')
 
-import AuthenticationService from '../../auth-session'
+import AuthenticationService from '../../auth-service'
 
 class Settings extends React.Component {
 

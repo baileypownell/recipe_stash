@@ -2,7 +2,7 @@ import React from 'react'
 import './Signup.scss'
 const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
-import AuthenticationService from '../../auth-session'
+import AuthenticationService from '../../auth-service'
 const appear = require('../../models/functions')
 
 class Signup extends React.Component {
