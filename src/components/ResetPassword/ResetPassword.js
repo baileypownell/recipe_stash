@@ -4,11 +4,9 @@ const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import M from 'materialize-css'
 import './ResetPassword.scss'
-import AuthContext from '../../auth-context'
+import { setUserLoggedIn } from '../../auth-session'
 
 class ResetPassword extends React.Component {
-
-  static contextType = AuthContext
 
   state = {
     invalidLink: false,
@@ -78,7 +76,7 @@ class ResetPassword extends React.Component {
             email: this.state.email
           })
           if (res.data.success) {
-            this.context.setUserLoggedIn()
+            setUserLoggedIn(res.data.sessionID)
             this.props.history.push(`/dashboard`)
           }
         } catch(err) {

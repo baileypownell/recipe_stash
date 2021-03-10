@@ -5,11 +5,9 @@ import M from 'materialize-css'
 import './Settings.scss'
 const appear = require('../../models/functions')
 
-import AuthContext from '../../auth-context'
+import { setUserLoggedOut } from '../../auth-session'
 
 class Settings extends React.Component {
-
-  static contextType = AuthContext
 
   state = {
     password: '',
@@ -24,7 +22,7 @@ class Settings extends React.Component {
   logout = async() => {
     try {
       await axios.get('/logout')
-      this.context.setUserLoggedOut()
+      setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)

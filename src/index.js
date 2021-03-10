@@ -20,13 +20,10 @@ import {
   Nav
 } from './components/index'
 
-import 'materialize-css/dist/css/materialize.min.css';
-import './scss/main.scss';
-
-import { AuthProvider } from './auth-context'
+import 'materialize-css/dist/css/materialize.min.css'
+import './scss/main.scss'
 
 ReactDOM.render(
-  <AuthProvider>
     <BrowserRouter>
       <Nav/>
       <Switch>
@@ -41,7 +38,6 @@ ReactDOM.render(
         </RequireAuthComponent>
         <Redirect to="/" />
       </Switch>
-    </BrowserRouter>
-    </AuthProvider>,
+    </BrowserRouter>,
   document.getElementById('app')
 );

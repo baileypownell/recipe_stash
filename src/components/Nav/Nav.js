@@ -3,32 +3,22 @@ import { NavLink, Link } from "react-router-dom"
 import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
 import { withRouter } from "react-router-dom"
+import { setUserLoggedOut } from '../../auth-session'
 const axios = require('axios')
-import AuthContext from '../../auth-context'
+
 class Nav extends React.Component {
 
-  static contextType = AuthContext
 
   state = {
-    loggedIn: this.context.userAuthenticated
+    loggedIn: !!window.localStorage.getItem('user_session_id')
   }
 
   async componentDidMount() {
-    let authenticated = await this.context.verifyUserSession()
-    this.setState({
-      loggedIn: authenticated.data.authenticated
-    }, () => {
-      this.initializeSettingsDropdown()
-      this.state.loggedIn ? this.context.setUserLoggedIn() : this.context.setUserLoggedOut()
-    })
-    this.props.history.listen(async(location, action) => {
-      let authState = this.context.userAuthenticated 
+    this.initializeSettingsDropdown()
+    this.props.history.listen((location, action) => {
       this.setState({
-        loggedIn: authState
-      }, () => {
-        this.initializeSettingsDropdown()
-        this.state.loggedIn ? this.context.setUserLoggedIn() : this.context.setUserLoggedOut()
-      })
+        loggedIn: !!window.localStorage.getItem('user_session_id')
+      }, () => this.initializeSettingsDropdown())
     })
   }
 
@@ -40,7 +30,7 @@ class Nav extends React.Component {
   logout = async() => {
     try {
       await axios.get('/logout')
-      this.context.setUserLoggedOut()
+      setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
