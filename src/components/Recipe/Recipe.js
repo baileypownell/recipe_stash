@@ -10,7 +10,7 @@ import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
-const tags = require('../../models/tags')
+ import tag, { tags } from '../../models/tags'
 const options = require('../../models/options')
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])

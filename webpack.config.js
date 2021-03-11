@@ -61,6 +61,9 @@ module.exports = (env) => {
         }
       }),
     ],
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx']
+    },
     devServer: {
       contentBase: './dist',
       historyApiFallback: true,

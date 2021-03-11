@@ -1,4 +1,5 @@
 import axios from "axios"
+const FormData = require('form-data')
 
 export interface RecipeInput {
     title: string, 
