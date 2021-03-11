@@ -13,13 +13,13 @@ import tag, { tags } from '../../../../models/tags'
 
 import options from '../../../../models/options'
 
-type MyProps = {
+type Props = {
   updateDashboard: any 
   id: number 
   category: string
 }
 
-type MyState = {
+type State = {
   loading: boolean
   recipe_title: string
   ingredients: string
@@ -33,7 +33,7 @@ type MyState = {
 }
 
 
-class AddRecipe extends React.Component<MyProps, MyState> {
+class AddRecipe extends React.Component<Props, State> {
 
   state = {
     loading: false,

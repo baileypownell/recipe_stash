@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import AddRecipe from './AddRecipe/AddRecipe.tsx'
+import AddRecipe from './AddRecipe/AddRecipe'
 import Square from './Square/Square'
 import ListItem from './ListItem/ListItem'
 const appear = require('../../../models/functions')
