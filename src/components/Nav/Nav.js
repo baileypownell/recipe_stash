@@ -29,8 +29,6 @@ class Nav extends React.Component {
       console.log(err)
     }
     
-    // console.log(authenticated)
-    // this.initializeSettingsDropdown()
     this.props.history.listen((location, action) => {
       this.setState({
         loggedIn: !!window.localStorage.getItem('user_logged_in')
