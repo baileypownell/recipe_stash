@@ -33,6 +33,9 @@ class FileUpload extends React.Component {
             this.setState({
                 files: [], 
                 defaultTileImageKey: null
+            }, () => {
+                this.props.passFiles(this.state.files)
+                this.props.passDefaultTileImage(this.state.defaultTileImageKey)
             })
         }
     }
