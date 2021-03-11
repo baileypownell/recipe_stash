@@ -150,13 +150,23 @@ class Recipe extends React.Component {
 
   handleDefaultTileImage = (recipeId, uploadedImageKeys) => {
     return new Promise(async(resolve, reject) => {
-      let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey
-      if (this.state.defaultTileImageKey && isNewDefaultTile) {
-          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
-          let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
-          resolve(defaultTile)
+      if (this.state.defaultTileImageKey) {
+          let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey 
+        if (isNewDefaultTile) {
+            let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
+            let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
+            resolve(defaultTile)
+        } else {
+          resolve()
+        }
       } else {
-        resolve()
+        // remove if recipe previously had a default image 
+        if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
+          await this.removeTileImage(this.state.recipe.id)
+          resolve()
+        } else {
+          resolve()
+        }
       }
     })
   }
