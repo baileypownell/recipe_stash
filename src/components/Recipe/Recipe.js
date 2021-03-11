@@ -341,7 +341,6 @@ class Recipe extends React.Component {
   }
 
   setDefaultTileImage = (key) => {
-    console.log('the key: ', key)
     this.setState({
       defaultTileImageKey: key
     }, () => this.checkValidity())
