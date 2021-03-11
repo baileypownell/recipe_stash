@@ -85,7 +85,8 @@ class AddRecipe extends React.Component<Props, State> {
       recipe_title: '',
       ingredients: '',
       directions: '',
-      open: !prevOpenState
+      open: !prevOpenState,
+      tags: tags
     })
   }
 
