@@ -11,7 +11,7 @@ import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
  import tag, { tags } from '../../models/tags'
-const options = require('../../models/options')
+ import options from '../../models/options'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()

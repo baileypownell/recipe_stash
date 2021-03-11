@@ -32,6 +32,7 @@
     "@babel/plugin-transform-runtime": "^7.10.5",
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.13.0",
+    "@types/dompurify": "^2.2.1",
     "@types/materialize-css": "^1.0.8",
     "aws-sdk": "^2.834.0",
     "axios": "^0.21.1",

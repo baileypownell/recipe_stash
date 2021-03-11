@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'axios'
 const FormData = require('form-data')
 
 export interface RecipeInput {
@@ -18,15 +18,37 @@ export interface RecipeInput {
     isKeto: boolean
 }
 
+export interface NewFileInterface {
+    file: {
+        lastModified: Date // unix
+        lastModifiedDate: Date
+        name: string
+        size: number
+        type: string
+        webkitRelativePath: string
+    },
+    id: string
+}
+
+export interface UploadedFileResult {
+    awsKey: string, 
+    fileName: string
+}
+
+export interface DefaultTile {
+    newFile: boolean 
+    fileName: string
+}
+
 export const RecipeService = {
-    createRecipe: (recipeInput: RecipeInput, files) => {
+    createRecipe: (recipeInput: RecipeInput, files: NewFileInterface[], defaultTile: DefaultTile | null) => {
         return new Promise(async(resolve, reject) => {
             let recipeCreated = await axios.post('/recipe', recipeInput)
             if (files.length) {
                 try {
                     // we must get the AWS KEY from this call
                     let uploadedImageKeys = await RecipeService.uploadFiles(recipeCreated.data.recipeId, files)
-                    let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey?.fileName)
+                    let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === defaultTile?.fileName)
                     if (defaultTileImage) {
                         await RecipeService.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
                     }
@@ -40,10 +62,10 @@ export const RecipeService = {
             }
         })
     },
-    handleDefaultTileImage: (recipeId, awsKey) => {
+    handleDefaultTileImage: (recipeId: number, awsKey: string) => {
         return new Promise(async(resolve, reject) => {
             try {
-                let defaultTile = await this.setTileImageNewRecipe(recipeId, awsKey)
+                let defaultTile = await RecipeService.setTileImage(recipeId, awsKey)
                 resolve(defaultTile)
             } catch(e) {
                 reject(e)
@@ -51,8 +73,8 @@ export const RecipeService = {
         })
     }, 
 
-    uploadFiles: async(recipeId: number, files: any) => {
-        return await Promise.all(files.map( async file => {
+    uploadFiles: async(recipeId: number, files: any): Promise<UploadedFileResult[]> => {
+        return await Promise.all(files.map( async (file: NewFileInterface) => {
             let formData = new FormData() 
             formData.append('image', file.file)
         
@@ -60,9 +82,9 @@ export const RecipeService = {
                 `/file-upload/${recipeId}`, 
                 formData,
                 {
-                headers: {
-                    'content-type': 'multipart/form-data'
-                }
+                    headers: {
+                        'content-type': 'multipart/form-data'
+                    }
                 }
             )
             return { 
@@ -70,6 +92,10 @@ export const RecipeService = {
                 fileName: file.file.name 
             }
         }))
+    },
+
+    setTileImage: async(recipeId: number, awsKey: string) => {
+        return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
     }
 }
 

@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import M from 'materialize-css'
 import './AddRecipe.scss'
-const axios = require('axios')
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
@@ -9,10 +8,10 @@ import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
-import { RecipeService, RecipeInput } from '../../../../services/recipe-service'
+import { RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../../../services/recipe-service'
 import tag, { tags } from '../../../../models/tags'
 
-const options = require('../../../../models/options')
+import options from '../../../../models/options'
 
 type MyProps = {
   updateDashboard: any 
@@ -29,22 +28,23 @@ type MyState = {
   recipeValid: boolean
   newFiles: any[] 
   tags: tag[], 
-  defaultTileImageKey: string 
+  defaultTile: DefaultTile | null
   open: boolean
 }
+
 
 class AddRecipe extends React.Component<MyProps, MyState> {
 
   state = {
     loading: false,
-    recipe_title: null,
-    ingredients: null,
-    directions: null,
+    recipe_title: '',
+    ingredients: '',
+    directions: '',
     category: this.props.category,
     recipeValid: false,
     newFiles: [],
     tags: tags,
-    defaultTileImageKey: null,
+    defaultTile: null,
     open: false
   }
 
@@ -82,15 +82,11 @@ class AddRecipe extends React.Component<MyProps, MyState> {
   clearState = () => {
     let prevOpenState = this.state.open
     this.setState({
-      recipe_title: null,
-      ingredients: null,
-      directions: null,
+      recipe_title: '',
+      ingredients: '',
+      directions: '',
       open: !prevOpenState
     })
-  }
-
-  setTileImageNewRecipe = async(recipeId: number, awsKey: string) => {
-    await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
   }
 
   handleSuccess() {
@@ -103,10 +99,10 @@ class AddRecipe extends React.Component<MyProps, MyState> {
     this.props.updateDashboard()
   }
 
-  createRecipe = async(e) => {
-    e.preventDefault();
-    let tags = this.state.tags;
-    let titleHTML = DOMPurify.sanitize(this.state.recipe_title, null)
+  createRecipe = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault()
+    let tags = this.state.tags
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
@@ -115,11 +111,11 @@ class AddRecipe extends React.Component<MyProps, MyState> {
     })
     // using service 
     let recipeInput: RecipeInput = {
-      title: DOMPurify.sanitize(this.state.recipe_title, null),
+      title: DOMPurify.sanitize(this.state.recipe_title, {}),
       rawTitle,
       category: this.state.category,
-      ingredients: DOMPurify.sanitize(this.state.ingredients, null),
-      directions: DOMPurify.sanitize(this.state.directions, null),
+      ingredients: DOMPurify.sanitize(this.state.ingredients, {}),
+      directions: DOMPurify.sanitize(this.state.directions, {}),
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
@@ -131,8 +127,7 @@ class AddRecipe extends React.Component<MyProps, MyState> {
       isKeto: tags[8].selected,
     }
     try {
-      console.log(this.state.newFiles)
-      await RecipeService.createRecipe(recipeInput, this.state.newFiles)
+      await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTile)
       this.handleSuccess()
     } catch(err) {
       console.log(err)
@@ -144,14 +139,14 @@ class AddRecipe extends React.Component<MyProps, MyState> {
   }  
 
   closeModal = () => {
-    let singleModalElem = document.querySelector(`#${this.props.id}_modal`)
+    let singleModalElem: Element = document.querySelector(`#${this.props.id}_modal`) as Element
     let instance = M.Modal.getInstance(singleModalElem)
     instance.close()
   } 
 
   openModal = () => {
     let prevOpenState = this.state.open
-    let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 
+    let singleModalElem: Element = document.querySelector(`#${this.props.id}_modal`) as Element 
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.open();
     this.setState({
@@ -159,7 +154,7 @@ class AddRecipe extends React.Component<MyProps, MyState> {
     })
   }
 
-  updateInput = (e) => {
+  updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkValidity());
@@ -180,40 +175,40 @@ class AddRecipe extends React.Component<MyProps, MyState> {
     this.setState({tags});
   }
 
-  handleModelChange = (html) => {
+  handleModelChange = (html: string) => {
     this.setState({
       recipe_title: html
     }, () => this.checkValidity());
   }
 
-  handleModelChangeIngredients = (html) => {
+  handleModelChangeIngredients = (html: string) => {
     this.setState({
       ingredients: html
     }, () => this.checkValidity());
   }
 
-  handleModelChangeDirections = (html) => {
+  handleModelChangeDirections = (html: string) => {
     this.setState({
       directions: html
     }, () => this.checkValidity());
   }
 
-  setFiles = (val) => {
+  setFiles = (newFiles: NewFileInterface[]) => {
     // new files 
     this.setState({
-      newFiles: val
+      newFiles: newFiles
     })
   }
 
-  setDefaultTileImage = (fileName) => {
+  setDefaultTileImage = (defaultTile: DefaultTile) => {
     this.setState({
-      defaultTileImageKey: fileName
+      defaultTile: defaultTile
     })
   }
 
   render() {
     const { id, gridView } = this.props as any;
-    const { open } = this.state
+    const { open, category, recipe_title, ingredients, directions } = this.state
 
     return (
       <>
@@ -233,17 +228,17 @@ class AddRecipe extends React.Component<MyProps, MyState> {
               <div className="modal-scroll">
                   <div className="modal-content">
                     <h3>Title</h3>
-                    <ReactQuill value={this.state.recipe_title} onChange={this.handleModelChange}/>
+                    <ReactQuill value={recipe_title} onChange={this.handleModelChange}/>
                     <h3>Ingredients</h3>
-                    <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
+                    <ReactQuill theme="snow" value={ingredients} onChange={this.handleModelChangeIngredients}/>
                     <h3>Directions</h3>
-                    <ReactQuill theme="snow" value={this.state.directions} onChange={this.handleModelChangeDirections}/>
+                    <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
                     <div>
                         <h3>Category</h3>
                         <div className="select">
-                          <select onChange={this.updateInput} id="category" value={this.state.category} >
+                          <select onChange={this.updateInput} id="category" value={category} >
                             {
-                              options.map((val, index) => {
+                              options.map((val, index: number) => {
                                 return <option key={index}>{val.label}</option>
                               })
                             }
@@ -260,7 +255,7 @@ class AddRecipe extends React.Component<MyProps, MyState> {
                               this.state.tags.map((tag, index) => {
                                 return <div 
                                   onClick={this.toggleTagSelectionStatus} 
-                                  id={index} 
+                                  id={index.toString()} 
                                   className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
                                   key={index}>
                                     {tag.label}

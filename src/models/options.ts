@@ -1,3 +1,11 @@
+
+
+export interface option {
+  value: string, 
+  label: string
+}
+
+
 const options = [
     { value: 'breakfast', label: 'Breakfast' },
     { value: 'lunch', label: 'Lunch' },
@@ -8,4 +16,4 @@ const options = [
     { value: 'other', label: 'Other' }
   ]
 
-  module.exports = options;
+export default options
