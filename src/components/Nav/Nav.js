@@ -14,7 +14,23 @@ class Nav extends React.Component {
   }
 
   async componentDidMount() {
-    this.initializeSettingsDropdown()
+    try {
+      let authenticated = await AuthenticationService.verifyUserSession()
+      let authState = authenticated.data.authenticated
+      if (authState) {
+        window.localStorage.setItem('user_logged_in', 'true')
+      } else {
+        window.localStorage.removeItem('user_logged_in')
+      }
+      this.setState({
+        loggedIn: authState
+      }, () => this.initializeSettingsDropdown())
+    } catch(err) {
+      console.log(err)
+    }
+    
+    // console.log(authenticated)
+    // this.initializeSettingsDropdown()
     this.props.history.listen((location, action) => {
       this.setState({
         loggedIn: !!window.localStorage.getItem('user_logged_in')
