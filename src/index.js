@@ -20,8 +20,8 @@ import {
   Nav
 } from './components/index'
 
-import 'materialize-css/dist/css/materialize.min.css';
-import './scss/main.scss';
+import 'materialize-css/dist/css/materialize.min.css'
+import './scss/main.scss'
 
 ReactDOM.render(
     <BrowserRouter>

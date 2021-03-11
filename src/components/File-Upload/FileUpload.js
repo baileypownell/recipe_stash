@@ -7,7 +7,9 @@ class FileUpload extends React.Component {
     state = {
         files: [],
         preExistingImageUrls: null,
-        filesToDelete: []
+        filesToDelete: [],
+        defaultTileImageKey: null,
+        defaultRemoved: false
     }
 
     componentDidMount() {
@@ -16,6 +18,23 @@ class FileUpload extends React.Component {
                 preExistingImageUrls: preExistingImageUrls
             })
         })
+
+        if (this.props.defaultTileImageUUID) {
+            this.setState({
+                defaultTileImageKey: this.props.defaultTileImageUUID
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        // if going from true to false, 
+        // then clear the files and defaultTileImageKey state
+        if (prevProps.open === true && this.props.open === false) {
+            this.setState({
+                files: [], 
+                defaultTileImageKey: null
+            })
+        }
     }
     
     openFileFinder = () => this.input.click()
@@ -67,12 +86,81 @@ class FileUpload extends React.Component {
         let updatedFiles = this.state.preExistingImageUrls.filter(u => u !== url) 
         let filesToDelete = this.state.filesToDelete
         filesToDelete.push(url) 
+        // compare the key from the url to props.defaultTileImageKey 
+        // if they are the same, then you need to set the state to null and update the parent 
+        let imageKey = url.split('amazonaws.com/')[1].split('?')[0] 
+        let isDefaultTileImage = imageKey === this.props.defaultTileImageUUID 
+        if (isDefaultTileImage) {
+            this.setState({
+                defaultTileImageKey: null,
+                defaultRemoved: true 
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
         this.setState({
             preExistingImageUrls: updatedFiles,
             filesToDelete: filesToDelete
         }, () => { 
             this.props.passFilesToDelete(filesToDelete)
         })
+    }
+
+    setDefaultTileImage = (e) => {
+        // get S3 key from id 
+        let imageKey = e.target.id.split('amazonaws.com/')[1].split('?')[0]
+        if (imageKey === this.state.defaultTileImageKey) {
+            this.setState({
+                defaultTileImageKey: null
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        } else if (imageKey === this.props.defaultTileImageUUID) {
+            if (!this.state.defaultRemoved) {
+                this.setState({
+                    defaultTileImageKey: null,
+                    defaultRemoved: true 
+                }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+            } else {
+                this.setState({
+                    defaultTileImageKey: imageKey,
+                }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+            }
+        } else {
+            this.setState({
+                defaultTileImageKey: imageKey,
+                defaultRemoved: true 
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
+    }
+
+    setDefaultTileImageNew = (file) => {
+        if (file.name === this.state.defaultTileImageKey?.fileName) {
+            this.setState({
+                defaultTileImageKey: null
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        } else {
+            this.setState({
+                defaultTileImageKey: {newFile: true, fileName: file.name}, 
+                defaultRemoved: true 
+            }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
+        }
+    }
+
+    determineIfChecked = (url) => {
+        // compare key in url to the present key 
+        let key = url.split('amazonaws.com/')[1].split('?')[0]
+        if (key === this.state.defaultTileImageKey || (
+            key === this.props.defaultTileImageUUID && !this.state.defaultRemoved)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    determineIfCheckedNew = (file) => {
+        // compare file name to the present key 
+        if (file.name === this.state.defaultTileImageKey?.fileName) {
+            return true
+        } else {
+            return false
+        }
     }
 
     input = React.createRef()
@@ -102,22 +190,39 @@ class FileUpload extends React.Component {
                     </div>
                 </div>
                 <div className="file-list">
-                    {Array.from(files)?.map(file => (
+                    {Array.from(files)?.map((file, index) => (
                         <div 
                             key={file.id}
                             className="file-preview z-depth-2" 
                             style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})`  }}>
                             <div className="file-cover" >
+                            <label htmlFor={file.id}>
+                                <input 
+                                    checked={this.determineIfCheckedNew(file.file)}
+                                    type="checkbox" 
+                                    onChange={(e) => this.setDefaultTileImageNew(file.file)} 
+                                    className="filled-in" 
+                                    id={file.id} />
+                                    <span>Use as tile background image</span>
+                                </label>
                                 <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
                             </div>
                         </div>
                     ))}
-                    {preExistingImageUrls?.map(url => (
+                    {preExistingImageUrls?.map((url, index) => (
                         <div
                             className="file-preview z-depth-2"
-                            key={url}
+                            key={index}
                             style={{ backgroundImage: `url(${url})`  }}>
                             <div className="file-cover" >
+                                <label htmlFor={url}>
+                                    <input 
+                                        checked={this.determineIfChecked(url)}
+                                        type="checkbox" 
+                                        onChange={(e) => this.setDefaultTileImage(e)} 
+                                        className="filled-in" id={url} />
+                                    <span>Use as tile background image</span>
+                                </label>
                                 <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>
                             </div>
                         </div>

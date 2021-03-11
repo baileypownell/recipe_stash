@@ -3,8 +3,9 @@ import { withRouter } from "react-router-dom"
 import axios from 'axios'
 import M from 'materialize-css'
 import './Settings.scss'
-import { setUserLoggedOut } from '../../auth-session'
 const appear = require('../../models/functions')
+
+import AuthenticationService from '../../services/auth-service'
 
 class Settings extends React.Component {
 
@@ -21,7 +22,7 @@ class Settings extends React.Component {
   logout = async() => {
     try {
       await axios.get('/logout')
-      setUserLoggedOut()
+      AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
@@ -49,7 +50,7 @@ class Settings extends React.Component {
     var elems = document.querySelectorAll('.collapsible');
     M.Collapsible.init(elems, {});
     this.updateView()
-}
+  }
 
   updateInput = (e) => {
     this.setState({
@@ -71,7 +72,7 @@ class Settings extends React.Component {
       M.toast({html: 'Profile updated successfully.'})
       this.updateView()
     } catch(err) {
-      setUserLoggedOut()
+      AuthenticationService.setUserLoggedOut()
       this.props.history.push('/login');
     }
   }
@@ -98,7 +99,7 @@ class Settings extends React.Component {
     try { 
       await axios.delete(`/user`)
       M.toast({html: 'Account deleted.'})
-      setUserLoggedOut()
+      AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
@@ -204,7 +205,7 @@ class Settings extends React.Component {
                   className="waves-effect waves-light btn" 
                   id="delete"
                   onClick={this.deleteAccount}>
-                    Delete Account <i class="fas fa-exclamation-triangle"></i>
+                    Delete Account <i className="fas fa-exclamation-triangle"></i>
                   </button>
                 </div>
             </li>

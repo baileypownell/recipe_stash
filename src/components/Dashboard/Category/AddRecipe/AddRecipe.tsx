@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import M from 'materialize-css'
 import './AddRecipe.scss'
-const axios = require('axios')
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
@@ -9,21 +8,44 @@ import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
-const FormData = require('form-data')
-const tags = require('../../../../models/tags')
-const options = require('../../../../models/options')
+import { RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../../../services/recipe-service'
+import tag, { tags } from '../../../../models/tags'
 
-class AddRecipe extends React.Component {
+import options from '../../../../models/options'
+
+type Props = {
+  updateDashboard: any 
+  id: number 
+  category: string
+}
+
+type State = {
+  loading: boolean
+  recipe_title: string
+  ingredients: string
+  directions: string
+  category: string
+  recipeValid: boolean
+  newFiles: any[] 
+  tags: tag[], 
+  defaultTile: DefaultTile | null
+  open: boolean
+}
+
+
+class AddRecipe extends React.Component<Props, State> {
 
   state = {
     loading: false,
-    recipe_title: null,
-    ingredients: null,
-    directions: null,
+    recipe_title: '',
+    ingredients: '',
+    directions: '',
     category: this.props.category,
     recipeValid: false,
     newFiles: [],
-    tags: tags
+    tags: tags,
+    defaultTile: null,
+    open: false
   }
 
   componentDidMount() {
@@ -58,99 +80,81 @@ class AddRecipe extends React.Component {
   }
 
   clearState = () => {
+    let prevOpenState = this.state.open
     this.setState({
-      recipe_title: null,
-      ingredients: null,
-      directions: null,
+      recipe_title: '',
+      ingredients: '',
+      directions: '',
+      open: !prevOpenState
     })
-  }
-
-  uploadFiles = async(recipeId) => {
-    let uploads = this.state.newFiles
-    await Promise.all(uploads.map( async file => {
-      let formData = new FormData() 
-      formData.append('image', file.file)
-
-      await axios.post(
-        `/file-upload/${recipeId}`, 
-        formData,
-        {
-          headers: {
-            'content-type': 'multipart/form-data'
-          }
-        }
-      )
-    }))
   }
 
   handleSuccess() {
     M.toast({html: 'Recipe added.'})
     this.clearState()
     this.closeModal()
+    this.setState({
+      loading: false
+    })
     this.props.updateDashboard()
-}
+  }
 
-  createRecipe = async(e) => {
-    e.preventDefault();
-    let tags = this.state.tags;
-    let titleHTML = DOMPurify.sanitize(this.state.recipe_title)
+  createRecipe = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault()
+    let tags = this.state.tags
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
     this.setState({
       loading: true
     })
+    // using service 
+    let recipeInput: RecipeInput = {
+      title: DOMPurify.sanitize(this.state.recipe_title, {}),
+      rawTitle,
+      category: this.state.category,
+      ingredients: DOMPurify.sanitize(this.state.ingredients, {}),
+      directions: DOMPurify.sanitize(this.state.directions, {}),
+      isNoBake: tags[0].selected,
+      isEasy: tags[1].selected,
+      isHealthy: tags[2].selected,
+      isGlutenFree: tags[3].selected, 
+      isDairyFree: tags[4].selected,
+      isSugarFree: tags[5].selected, 
+      isVegetarian: tags[6].selected, 
+      isVegan: tags[7].selected,
+      isKeto: tags[8].selected,
+    }
     try {
-      let recipeCreated = await axios.post(`/recipe`, {
-        title: DOMPurify.sanitize(this.state.recipe_title),
-        rawTitle,
-        category: this.state.category,
-        ingredients: DOMPurify.sanitize(this.state.ingredients),
-        directions: DOMPurify.sanitize(this.state.directions),
-        isNoBake: tags[0].selected,
-        isEasy: tags[1].selected,
-        isHealthy: tags[2].selected,
-        isGlutenFree: tags[3].selected, 
-        isDairyFree: tags[4].selected,
-        isSugarFree: tags[5].selected, 
-        isVegetarian: tags[6].selected, 
-        isVegan: tags[7].selected,
-        isKeto: tags[8].selected
-      })
-      let uploads = this.state.newFiles
-      if (uploads) {
-        try {
-          await this.uploadFiles(recipeCreated.data.recipeId)
-          this.handleSuccess()
-        } catch (error) {
-          console.log(error)
-        }
-      } else {
-        this.handleSuccess()
-      }
-    } catch (error) {
-      console.log(error)
-      M.toast({html: 'There was an error.'})
-    } finally {
+      await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTile)
+      this.handleSuccess()
+    } catch(err) {
+      console.log(err)
       this.setState({
         loading: false
       })
-    } 
+      M.toast({html: 'There was an error.'})
+    }
   }  
 
   closeModal = () => {
-    let singleModalElem = document.querySelector(`#${this.props.id}_modal`)
+    let singleModalElem: Element = document.querySelector(`#${this.props.id}_modal`) as Element
     let instance = M.Modal.getInstance(singleModalElem)
     instance.close()
   } 
 
   openModal = () => {
-    let singleModalElem = document.querySelector(`#${this.props.id}_modal`); 
+    let prevOpenState = this.state.open
+    let singleModalElem: Element = document.querySelector(`#${this.props.id}_modal`) as Element 
     let instance = M.Modal.getInstance(singleModalElem); 
     instance.open();
+    this.setState({
+      open: !prevOpenState
+    })
   }
 
-  updateInput = (e) => {
+  updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkValidity());
@@ -171,37 +175,45 @@ class AddRecipe extends React.Component {
     this.setState({tags});
   }
 
-  handleModelChange = (html) => {
+  handleModelChange = (html: string) => {
     this.setState({
       recipe_title: html
     }, () => this.checkValidity());
   }
 
-  handleModelChangeIngredients = (html) => {
+  handleModelChangeIngredients = (html: string) => {
     this.setState({
       ingredients: html
     }, () => this.checkValidity());
   }
 
-  handleModelChangeDirections = (html) => {
+  handleModelChangeDirections = (html: string) => {
     this.setState({
       directions: html
     }, () => this.checkValidity());
   }
 
-  setFiles = (val) => {
+  setFiles = (newFiles: NewFileInterface[]) => {
     // new files 
     this.setState({
-      newFiles: val
+      newFiles: newFiles
+    })
+  }
+
+  setDefaultTileImage = (defaultTile: DefaultTile) => {
+    this.setState({
+      defaultTile: defaultTile
     })
   }
 
   render() {
-    const { id, gridView } = this.props;
+    const { id, gridView } = this.props as any;
+    const { open, category, recipe_title, ingredients, directions } = this.state
 
     return (
       <>
-        { gridView ? <div
+        { gridView ? 
+          <div
             onClick={this.openModal}
             className="addRecipe z-depth-4"
             id={id}
@@ -216,17 +228,17 @@ class AddRecipe extends React.Component {
               <div className="modal-scroll">
                   <div className="modal-content">
                     <h3>Title</h3>
-                    <ReactQuill value={this.state.recipe_title} onChange={this.handleModelChange}/>
+                    <ReactQuill value={recipe_title} onChange={this.handleModelChange}/>
                     <h3>Ingredients</h3>
-                    <ReactQuill theme="snow" value={this.state.ingredients} onChange={this.handleModelChangeIngredients}/>
+                    <ReactQuill theme="snow" value={ingredients} onChange={this.handleModelChangeIngredients}/>
                     <h3>Directions</h3>
-                    <ReactQuill theme="snow" value={this.state.directions} onChange={this.handleModelChangeDirections}/>
+                    <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
                     <div>
                         <h3>Category</h3>
                         <div className="select">
-                          <select onChange={this.updateInput} id="category" value={this.state.category} >
+                          <select onChange={this.updateInput} id="category" value={category} >
                             {
-                              options.map((val, index) => {
+                              options.map((val, index: number) => {
                                 return <option key={index}>{val.label}</option>
                               })
                             }
@@ -243,7 +255,7 @@ class AddRecipe extends React.Component {
                               this.state.tags.map((tag, index) => {
                                 return <div 
                                   onClick={this.toggleTagSelectionStatus} 
-                                  id={index} 
+                                  id={index.toString()} 
                                   className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
                                   key={index}>
                                     {tag.label}
@@ -253,7 +265,11 @@ class AddRecipe extends React.Component {
                         </div>
                       </li>
                     </ul>
-                    <FileUpload passFiles={this.setFiles}></FileUpload>
+                    <FileUpload 
+                      open={open}
+                      passDefaultTileImage={this.setDefaultTileImage} 
+                      passFiles={this.setFiles}>
+                      </FileUpload>
                   </div>
                 </div>
                 <div className="modal-close-buttons">

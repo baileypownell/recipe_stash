@@ -1,6 +1,11 @@
 
+export default interface tag {
+  selected: boolean, 
+  recipeTagPropertyName: string, 
+  label: string
+}
 
-const tags = [
+export const tags = [
     {
       selected: false, 
       recipeTagPropertyName: 'no_bake',
@@ -48,4 +53,3 @@ const tags = [
     }
   ]
 
-  module.exports = tags

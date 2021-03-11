@@ -4,15 +4,14 @@ const axios = require('axios')
 import './Recipe.scss'
 import M from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
-import Nav from '../Nav/Nav'
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
-const tags = require('../../models/tags')
-const options = require('../../models/options')
+ import tag, { tags } from '../../models/tags'
+ import options from '../../models/options'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -38,7 +37,8 @@ class Recipe extends React.Component {
     recipe: null,
     newFiles: [],
     filesToDelete: [],
-    tags: tags
+    tags: tags,
+    defaultTileImageKey: null
   }
 
   goBack = () => {
@@ -148,6 +148,36 @@ class Recipe extends React.Component {
     this.setState({tags}, () => this.checkValidity())
   }
 
+  handleDefaultTileImage = (recipeId, uploadedImageKeys) => {
+    return new Promise(async(resolve, reject) => {
+      let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey
+      if (this.state.defaultTileImageKey && isNewDefaultTile) {
+          let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
+          let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
+          resolve(defaultTile)
+      } else {
+        resolve()
+      }
+    })
+  }
+
+  handleDefaultTileImageExisting = (recipeId) => {
+    return new Promise(async(resolve, reject) => {
+      if (this.state.defaultTileImageKey) {
+        let defaultTile = await this.setTileImage(recipeId, this.state.defaultTileImageKey)
+        resolve(defaultTile)
+      } else {
+        // remove if recipe previously had a default image 
+        if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
+          await this.removeTileImage(this.state.recipe.id)
+          resolve()
+        } else {
+          resolve()
+        }
+      }
+    })
+  }
+
   handleUpdate() {
     // Update recipe details to reflect the change
     this.fetchData()
@@ -160,11 +190,11 @@ class Recipe extends React.Component {
 
   uploadFiles = async(recipeId) => {
     let uploads = this.state.newFiles
-    await Promise.all(uploads.map( async file => {
+    return await Promise.all(uploads.map( async file => {
       let formData = new FormData() 
       formData.append('image', file.file)
 
-      await axios.post(
+      let upload = await axios.post(
         `/file-upload/${recipeId}`, 
         formData,
         {
@@ -173,6 +203,10 @@ class Recipe extends React.Component {
           }
         }
       )
+      return {
+        awsKey: upload.data.key, 
+        fileName: file.file.name
+      }
     }))
   }
 
@@ -182,6 +216,24 @@ class Recipe extends React.Component {
         return await axios.delete(`/file-upload/${key}`)
       })
     )
+  }
+
+  setTileImage = async(recipeId, awsKey) => {
+    try {
+      return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
+    } catch(err) {
+      console.log(err)
+      return err
+    }
+  }
+
+  removeTileImage = async(recipeId) => {
+    try {
+      return await axios.delete(`file-upload/tile-image/${recipeId}`)
+    } catch(err) {
+      console.log(err)
+      return err
+    }
   }
 
   updateRecipe = async(e) => {
@@ -196,7 +248,7 @@ class Recipe extends React.Component {
       })
       this.closeModal()
       try {
-        await axios.put(`/recipe`, {
+        let recipeUpdated = await axios.put(`/recipe`, {
           title: this.state.recipe_title_edit,
           rawTitle,
           ingredients: this.state.ingredients_edit,
@@ -211,26 +263,29 @@ class Recipe extends React.Component {
           isSugarFree: tags[5].selected, 
           isVegetarian: tags[6].selected, 
           isVegan: tags[7].selected,
-          isKeto: tags[8].selected
+          isKeto: tags[8].selected, 
         })
         // handle image uploads
         let uploads = this.state.newFiles
         let filesToDelete = this.state.filesToDelete
         let uploading = !!uploads.length 
         let deleting = !!filesToDelete.length
+        let uploadedImageKeys
         if (uploading && deleting) {
-          await Promise.all([
-            this.uploadFiles(this.state.recipeId), 
-            this.deleteFiles()
-          ])
+          uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+          await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
+          await this.deleteFiles()
           this.handleUpdate()
         } else if (uploading) { 
-          await this.uploadFiles(this.state.recipeId)
+          uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+          await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
           this.handleUpdate()
         } else if (deleting) {
           await this.deleteFiles()
+          await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
           this.handleUpdate()
         } else {        
+          await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
           this.handleUpdate()
         }
       } catch(err) {
@@ -272,6 +327,12 @@ class Recipe extends React.Component {
   setFilesToDelete = (files) => {
     this.setState({
       filesToDelete: files
+    }, () => this.checkValidity())
+  }
+
+  setDefaultTileImage = (key) => {
+    this.setState({
+      defaultTileImageKey: key
     }, () => this.checkValidity())
   }
 
@@ -374,6 +435,8 @@ class Recipe extends React.Component {
                         }
                       </div>
                       <FileUpload 
+                        defaultTileImageUUID={recipe.defaultTileImageKey}
+                        passDefaultTileImage={this.setDefaultTileImage}
                         preExistingImageUrls={presignedUrls$}
                         passFilesToDelete={this.setFilesToDelete}
                         passFiles={this.setFiles}>

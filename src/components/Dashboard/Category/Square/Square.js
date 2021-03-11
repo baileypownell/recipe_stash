@@ -1,5 +1,6 @@
 import React from 'react';
 import { withRouter } from "react-router-dom";
+import './Square.scss'
 
 class Square extends React.Component {
 
@@ -9,10 +10,12 @@ class Square extends React.Component {
   }
 
   render() {
-    const { data, key, rawTitle } = this.props;
+    const { data, key, rawTitle, awsUrl } = this.props;
     return (
       <div
-        className="recipeCard z-depth-4"
+        style={{ backgroundImage: `url(${awsUrl})`}}
+        id={ !!awsUrl ? 'default-tile-image' : null}
+        className={ !!awsUrl ? 'recipe-card z-depth-4 gray-background' : 'recipe-card z-depth-4'}
         key={key}
         data={data}
         onClick={this.viewRecipe}

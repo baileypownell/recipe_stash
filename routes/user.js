@@ -195,6 +195,7 @@ router.put('/', authMiddleware, (request, response, next) => {
   } 
 })
 
+// TO-DO: ensure that this function truly deletes AWS files (it should)
 router.delete('/', authMiddleware, (request, response, next) => {
   let id = request.userID
   client.query('DELETE FROM users WHERE id=$1',

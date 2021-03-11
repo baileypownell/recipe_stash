@@ -2,7 +2,7 @@ const { Router } = require('express')
 const client = require('../db')
 const router = Router()
 const authMiddleware = require('./authMiddleware.js')
-const  { getPresignedUrls, deleteAWSFiles } = require('./aws-s3')
+const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
 const constructTags = (recipe) => {
   let tagArray = []
@@ -45,7 +45,9 @@ const formatRecipeResponse = (recipe) => {
     user_id: recipe.user_id, 
     ingredients: recipe.ingredients, 
     directions: recipe.directions, 
-    tags: constructTags(recipe)
+    tags: constructTags(recipe),
+    defaultTileImageKey: recipe.default_tile_image_key,
+    preSignedDefaultTileImageUrl: recipe.preSignedDefaultTileImageUrl
   }
 }
 
@@ -67,7 +69,18 @@ router.get('/', authMiddleware, (request, response, next) => {
       drinks: []
     }
     if (res.rows.length) {
-        res.rows.forEach((recipe) => {
+        let results = res.rows.map( recipe => {
+          if (recipe.default_tile_image_key) {
+            let preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
+            return {
+              ...recipe, 
+              preSignedDefaultTileImageUrl: preSignedDefaultTileImageUrl,
+            }
+          } else {
+            return recipe
+          }
+        })
+        results.forEach((recipe) => {
           if (recipe.category === 'Dinner') {
             responseObject.dinner.push(formatRecipeResponse(recipe))
           } else if (recipe.category === 'Dessert') {
@@ -107,7 +120,7 @@ router.post('/', (request, response, next) => {
     isSugarFree, 
     isVegetarian, 
     isVegan, 
-    isKeto 
+    isKeto,
   } = request.body;
   if (
     !!rawTitle &&
@@ -151,14 +164,14 @@ router.put('/', (request, response, next) => {
     isSugarFree, 
     isVegetarian, 
     isVegan, 
-    isKeto 
+    isKeto, 
   } = request.body;
-  client.query('UPDATE recipes SET title=$1, raw_title=$16, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14 AND user_id=$15',
+  client.query('UPDATE recipes SET title=$1, raw_title=$16, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE id=$14 AND user_id=$15 RETURNING "id"',
   [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId, rawTitle],
    (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
-      return response.status(200).json({success: true})
+      return response.status(200).json({success: true, recipeId: res.rows[0].id})
     } else {
       return response.status(500).json({success: false, message: 'Could not update recipe.'})
     }
@@ -197,7 +210,8 @@ router.get('/:recipeId', (request, response, next) => {
           user_id: recipe.user_id, 
           ingredients: recipe.ingredients, 
           directions: recipe.directions, 
-          tags: constructTags(recipe)
+          tags: constructTags(recipe),
+          defaultTileImageKey: recipe.default_tile_image_key
         }
         if (recipe.has_images) {
           let urls = await getImageAWSKeys(recipeId)

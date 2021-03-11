@@ -31,7 +31,8 @@ router.post('/:recipeId', authMiddleware, async(req, res) => {
                     if (response.rowCount) {
                         return res.status(200).json({ 
                             success: true, 
-                            url: awsUploadRes.downloadUrl 
+                            url: awsUploadRes.downloadUrl,
+                            key: awsUploadRes.key 
                         })
                     }
                 })
@@ -46,6 +47,66 @@ router.post('/', authMiddleware, async(req, res) => {
     const image_uuids = req.body.image_urls
     let urls = getPresignedUrls(image_uuids)
     res.status(200).json({ presignedUrls: urls})
+})
+
+router.post('/tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
+
+    const { awsKey, id } = req.params
+
+    try {
+        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
+        [awsKey, id],
+        (error, response) => {
+            if (error) return res.status(500).json({ 
+                success: false, 
+                message: `There was an error: ${error}`
+            }) 
+            if (response.rowCount) {
+                return res.status(200).json({ 
+                    success: true, 
+                })
+            } else {
+                return res.status(500).json({ 
+                    success: false, 
+                    message: `There was an error: ${error}`
+                }) 
+            }
+        })
+    } catch(e) {
+        return res.status(500).json({ 
+            success: false, 
+            message: `There was an error: ${e}`
+        }) 
+    }
+})
+
+router.delete('/tile-image/:recipeId', authMiddleware, async(req, res) => {
+    const { recipeId } = req.params
+    try {
+        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
+        [null, recipeId],
+        (error, response) => {
+            if (error) return res.status(500).json({ 
+                success: false, 
+                message: `There was an error: ${error}`
+            }) 
+            if (response.rowCount) {
+                return res.status(200).json({ 
+                    success: true, 
+                })
+            } else {
+                return res.status(500).json({ 
+                    success: false, 
+                    message: `There was an error: ${error}`
+                }) 
+            }
+        })
+    } catch(e) {
+        return res.status(500).json({ 
+            success: false, 
+            message: `There was an error: ${e}`
+        }) 
+    }
 })
 
 router.delete('/:imageKey', authMiddleware, async(req, res) => {

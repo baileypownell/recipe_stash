@@ -52,15 +52,25 @@ uploadSingleAWSFile = (req, res) => {
 }
 
 getPresignedUrls = (image_uuids) => {
-    return (image_uuids.map(url => {
+    return (image_uuids.map(uuid => {
         return s3.getSignedUrl(
             'getObject', 
             {
                 Bucket: process.env.S3_BUCKET, 
-                Key: url
+                Key: uuid
             }
         )
     }))
+}
+
+getPresignedUrl = (uuid) => {
+    return s3.getSignedUrl(
+        'getObject', 
+        {
+            Bucket: process.env.S3_BUCKET, 
+            Key: uuid
+        }
+    )
 }
 
 const deleteAWSFiles = (awsKeys) => {
@@ -94,6 +104,7 @@ deleteSingleAWSFile = (imageKey) => {
 
 module.exports = {
     getPresignedUrls, 
+    getPresignedUrl,
     uploadSingleAWSFile,
     deleteAWSFiles,
     deleteSingleAWSFile

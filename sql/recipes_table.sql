@@ -40,3 +40,5 @@ ALTER TABLE session ADD COLUMN IF NOT EXISTS user_id character varying(50);
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS raw_title character varying(100);
 
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS has_images BOOLEAN;
+
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS default_tile_image_key character varying(50);

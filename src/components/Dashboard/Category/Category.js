@@ -25,6 +25,7 @@ const Category = (props) => {
                 return (
                   gridView ? <Square 
                     key={recipe.id} 
+                    awsUrl={recipe.preSignedDefaultTileImageUrl}
                     data={recipe} 
                     rawTitle={recipe.rawTitle}/> : 
                   <ListItem 
