@@ -10,8 +10,9 @@ import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
- import tag, { tags } from '../../models/tags'
- import options from '../../models/options'
+import tag, { tags } from '../../models/tags'
+import options from '../../models/options'
+import DeleteModal from './DeleteModal/DeleteModal'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -99,6 +100,11 @@ class Recipe extends React.Component {
     this.fetchData()
     let faded = document.querySelectorAll('.fade')
     setTimeout(appear(faded, 'fade-in'), 700)
+
+  
+    var modals = document.querySelectorAll('.modal');
+    M.Modal.init(modals, {});
+    
   }
 
   openModal = () => {
@@ -453,13 +459,19 @@ class Recipe extends React.Component {
                         passFilesToDelete={this.setFilesToDelete}
                         passFiles={this.setFiles}>
                       </FileUpload>  
+                      {/* delete confirmation modal */}
+                      <div id="delete-modal" className="modal">
+                          <DeleteModal deleteRecipe={this.deleteRecipe}></DeleteModal>
+                      </div>
                   </div>
               </div>
                 <div className="modal-close-buttons">
                   <button 
                     id="primary-color" 
-                    className="waves-effect waves-light btn" 
-                    onClick={this.deleteRecipe}>
+                    className="waves-effect waves-light btn modal-trigger" 
+                    
+                    data-target="delete-modal"
+                    >
                     Delete Recipe <i className="fas fa-trash"></i>
                   </button>
                   <div>
