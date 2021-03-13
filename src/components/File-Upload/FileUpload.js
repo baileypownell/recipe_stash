@@ -21,7 +21,7 @@ class FileUpload extends React.Component {
 
         if (this.props.defaultTileImageUUID) {
             this.setState({
-                defaultTileImageKey: this.props.defaultTileImageUUID
+                defaultTileImageKey: this.props.defaultTileImageUUID,
             }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
         }
     }

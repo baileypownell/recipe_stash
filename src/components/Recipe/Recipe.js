@@ -60,7 +60,8 @@ class Recipe extends React.Component {
         directions_edit: recipe.directions,
         category: recipe.category,
         category_edit: recipe.category,
-        loading: false
+        loading: false,
+        defaultTileImageKey: recipe.defaultTileImageKey
       }, () => {
           presignedUrlsSubject.next(res.data.recipe.preSignedUrls)
           const images = document.querySelectorAll('.materialboxed')
@@ -151,7 +152,7 @@ class Recipe extends React.Component {
   handleDefaultTileImage = (recipeId, uploadedImageKeys) => {
     return new Promise(async(resolve, reject) => {
       if (this.state.defaultTileImageKey) {
-          let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey 
+        let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey 
         if (isNewDefaultTile) {
             let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
             let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
@@ -195,7 +196,7 @@ class Recipe extends React.Component {
     this.setState({
       filesToDelete: [],
       newFiles: []
-    }) 
+    }, () => this.forceUpdate()) 
   }
 
   uploadFiles = async(recipeId) => {
@@ -355,7 +356,8 @@ class Recipe extends React.Component {
       recipe, 
       directions, 
       ingredients, 
-      recipe_title_raw 
+      recipe_title_raw, 
+      defaultTileImageKey
     } = this.state;
 
     return (
@@ -445,7 +447,7 @@ class Recipe extends React.Component {
                         }
                       </div>
                       <FileUpload 
-                        defaultTileImageUUID={recipe.defaultTileImageKey}
+                        defaultTileImageUUID={defaultTileImageKey}
                         passDefaultTileImage={this.setDefaultTileImage}
                         preExistingImageUrls={presignedUrls$}
                         passFilesToDelete={this.setFilesToDelete}
