@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { withRouter } from "react-router-dom"
 const axios = require('axios')
 import './Recipe.scss'
-import M from 'materialize-css'
+import M, { Modal } from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
 import DOMPurify from 'dompurify'
 const { htmlToText } = require('html-to-text')
@@ -13,24 +13,52 @@ import { BehaviorSubject } from 'rxjs'
 import tag, { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from './DeleteModal/DeleteModal'
+import { RecipeInterface, UpdateRecipeInput, EditRecipeService } from '../../services/edit-recipe-service'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
-let modalInstance
+let modalInstance: Modal
 
-class Recipe extends React.Component {
+type Props = {
+  location: any
+  history: any
+}
+
+type State = {
+  loading: boolean 
+  recipe_title: string 
+  ingredients: string
+  directions: string 
+  recipe_title_edit: string 
+  recipe_title_raw: string 
+  recipe_title_raw_edit: string
+  ingredients_edit: string 
+  directions_edit: string
+  recipeId: number
+  showConfirmation: boolean
+  category: string
+  category_edit: string 
+  recipe: RecipeInterface | null
+  newFiles: any[]
+  filesToDelete: any[]
+  tags: tag[]
+  defaultTileImageKey: string | null
+  recipeValid: boolean | null
+}
+
+class Recipe extends React.Component<Props, State> {
 
   state = {
     loading: true,
-    recipe_title: null,
-    ingredients: null,
-    directions: null,
-    recipe_title_edit: null, 
-    recipe_title_raw: null,
-    recipe_title_raw_edit: null,
-    ingredients_edit: null, 
-    directions_edit: null,
+    recipe_title: '',
+    ingredients: '',
+    directions: '',
+    recipe_title_edit: '', 
+    recipe_title_raw: '',
+    recipe_title_raw_edit: '',
+    ingredients_edit: '', 
+    directions_edit: '',
     recipeId: parseInt(this.props.location.pathname.split('/')[2]),
     showConfirmation: false,
     category: '',
@@ -39,7 +67,8 @@ class Recipe extends React.Component {
     newFiles: [],
     filesToDelete: [],
     tags: tags,
-    defaultTileImageKey: null
+    defaultTileImageKey: null,
+    recipeValid: null
   }
 
   goBack = () => {
@@ -50,6 +79,7 @@ class Recipe extends React.Component {
     try {
       let res = await axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
       let recipe = res.data.recipe
+      console.log(recipe)
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
@@ -72,7 +102,7 @@ class Recipe extends React.Component {
             opacity: 0.5
           })
           const singleModalElem = document.getElementById(`modal_${this.state.recipeId}`)
-          modalInstance = M.Modal.getInstance(singleModalElem)
+          modalInstance = M.Modal.getInstance(singleModalElem as HTMLElement)
           const select = document.querySelectorAll('select')
           M.FormSelect.init(select, {})
           const elems = document.querySelectorAll('.fixed-action-btn')
@@ -116,7 +146,7 @@ class Recipe extends React.Component {
 
   checkValidity = () => {
     const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
-    if (directions_edit && ingredients_edit && recipe_title_edit, category_edit) {
+    if (directions_edit && ingredients_edit && recipe_title_edit && category_edit) {
       this.setState({
         recipeValid: true
       })
@@ -139,7 +169,7 @@ class Recipe extends React.Component {
     }
   }
 
-  updateInput = (e) => {
+  updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkValidity());
@@ -155,45 +185,45 @@ class Recipe extends React.Component {
     this.setState({tags}, () => this.checkValidity())
   }
 
-  handleDefaultTileImage = (recipeId, uploadedImageKeys) => {
-    return new Promise(async(resolve, reject) => {
-      if (this.state.defaultTileImageKey) {
-        let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey 
-        if (isNewDefaultTile) {
-            let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
-            let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
-            resolve(defaultTile)
-        } else {
-          resolve()
-        }
-      } else {
-        // remove if recipe previously had a default image 
-        if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
-          await this.removeTileImage(this.state.recipe.id)
-          resolve()
-        } else {
-          resolve()
-        }
-      }
-    })
-  }
+  // handleDefaultTileImage = (recipeId: number, uploadedImageKeys) => {
+  //   return new Promise(async(resolve, reject) => {
+  //     if (this.state.defaultTileImageKey) {
+  //       let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey 
+  //       if (isNewDefaultTile) {
+  //           let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
+  //           let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
+  //           resolve(defaultTile)
+  //       } else {
+  //         resolve()
+  //       }
+  //     } else {
+  //       // remove if recipe previously had a default image 
+  //       if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
+  //         await this.removeTileImage(this.state.recipe.id)
+  //         resolve()
+  //       } else {
+  //         resolve()
+  //       }
+  //     }
+  //   })
+  // }
 
-  handleDefaultTileImageExisting = (recipeId) => {
-    return new Promise(async(resolve, reject) => {
-      if (this.state.defaultTileImageKey) {
-        let defaultTile = await this.setTileImage(recipeId, this.state.defaultTileImageKey)
-        resolve(defaultTile)
-      } else {
-        // remove if recipe previously had a default image 
-        if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
-          await this.removeTileImage(this.state.recipe.id)
-          resolve()
-        } else {
-          resolve()
-        }
-      }
-    })
-  }
+  // handleDefaultTileImageExisting = (recipeId) => {
+  //   return new Promise(async(resolve, reject) => {
+  //     if (this.state.defaultTileImageKey) {
+  //       let defaultTile = await this.setTileImage(recipeId, this.state.defaultTileImageKey)
+  //       resolve(defaultTile)
+  //     } else {
+  //       // remove if recipe previously had a default image 
+  //       if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
+  //         await this.removeTileImage(this.state.recipe.id)
+  //         resolve()
+  //       } else {
+  //         resolve()
+  //       }
+  //     }
+  //   })
+  // }
 
   handleUpdate() {
     // Update recipe details to reflect the change
@@ -205,53 +235,53 @@ class Recipe extends React.Component {
     }, () => this.forceUpdate()) 
   }
 
-  uploadFiles = async(recipeId) => {
-    let uploads = this.state.newFiles
-    return await Promise.all(uploads.map( async file => {
-      let formData = new FormData() 
-      formData.append('image', file.file)
+  // uploadFiles = async(recipeId) => {
+  //   let uploads = this.state.newFiles
+  //   return await Promise.all(uploads.map( async file => {
+  //     let formData = new FormData() 
+  //     formData.append('image', file.file)
 
-      let upload = await axios.post(
-        `/file-upload/${recipeId}`, 
-        formData,
-        {
-          headers: {
-            'content-type': 'multipart/form-data'
-          }
-        }
-      )
-      return {
-        awsKey: upload.data.key, 
-        fileName: file.file.name
-      }
-    }))
-  }
+  //     let upload = await axios.post(
+  //       `/file-upload/${recipeId}`, 
+  //       formData,
+  //       {
+  //         headers: {
+  //           'content-type': 'multipart/form-data'
+  //         }
+  //       }
+  //     )
+  //     return {
+  //       awsKey: upload.data.key, 
+  //       fileName: file.file.name
+  //     }
+  //   }))
+  // }
 
-  deleteFiles = async() => {
-    return await Promise.all(this.state.filesToDelete.map( async url => {
-        let key = url.split('amazonaws.com/')[1].split('?')[0]
-        return await axios.delete(`/file-upload/${key}`)
-      })
-    )
-  }
+  // deleteFiles = async() => {
+  //   return await Promise.all(this.state.filesToDelete.map( async url => {
+  //       let key = url.split('amazonaws.com/')[1].split('?')[0]
+  //       return await axios.delete(`/file-upload/${key}`)
+  //     })
+  //   )
+  // }
 
-  setTileImage = async(recipeId, awsKey) => {
-    try {
-      return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
-    } catch(err) {
-      console.log(err)
-      return err
-    }
-  }
+  // setTileImage = async(recipeId, awsKey) => {
+  //   try {
+  //     return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
+  //   } catch(err) {
+  //     console.log(err)
+  //     return err
+  //   }
+  // }
 
-  removeTileImage = async(recipeId) => {
-    try {
-      return await axios.delete(`file-upload/tile-image/${recipeId}`)
-    } catch(err) {
-      console.log(err)
-      return err
-    }
-  }
+  // removeTileImage = async(recipeId) => {
+  //   try {
+  //     return await axios.delete(`file-upload/tile-image/${recipeId}`)
+  //   } catch(err) {
+  //     console.log(err)
+  //     return err
+  //   }
+  // }
 
   updateRecipe = async(e) => {
       e.preventDefault();
@@ -264,8 +294,7 @@ class Recipe extends React.Component {
         loading: true
       })
       this.closeModal()
-      try {
-        let recipeUpdated = await axios.put(`/recipe`, {
+      let recipeUpdateInput: UpdateRecipeInput = {
           title: this.state.recipe_title_edit,
           rawTitle,
           ingredients: this.state.ingredients_edit,
@@ -281,73 +310,100 @@ class Recipe extends React.Component {
           isVegetarian: tags[6].selected, 
           isVegan: tags[7].selected,
           isKeto: tags[8].selected, 
-        })
-        // handle image uploads
-        let uploads = this.state.newFiles
-        let filesToDelete = this.state.filesToDelete
-        let uploading = !!uploads.length 
-        let deleting = !!filesToDelete.length
-        let uploadedImageKeys
-        if (uploading && deleting) {
-          uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
-          await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
-          await this.deleteFiles()
-          this.handleUpdate()
-        } else if (uploading) { 
-          uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
-          await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
-          this.handleUpdate()
-        } else if (deleting) {
-          await this.deleteFiles()
-          await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
-          this.handleUpdate()
-        } else {        
-          await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
-          this.handleUpdate()
-        }
+      }
+      try {
+        await EditRecipeService.updateRecipe(
+          recipeUpdateInput, 
+          this.state.newFiles, 
+          this.state.defaultTileImageKey,
+          this.state.filesToDelete,
+          this.state.recipeId
+        )
+        this.handleUpdate()
       } catch(err) {
         console.log(err)
-        M.toast({html: 'There was an error updating the recipe.'})
-      } finally {
         this.setState({
           loading: false
         })
+        M.toast({html: 'There was an error updating the recipe.'})
       }
+      // try {
+      //   let recipeUpdated = await axios.put(`/recipe`, {
+      //     title: this.state.recipe_title_edit,
+      //     rawTitle,
+      //     ingredients: this.state.ingredients_edit,
+      //     directions: this.state.directions_edit,
+      //     recipeId: this.state.recipeId,
+      //     category: this.state.category,
+      //     isNoBake: tags[0].selected,
+      //     isEasy: tags[1].selected,
+      //     isHealthy: tags[2].selected,
+      //     isGlutenFree: tags[3].selected, 
+      //     isDairyFree: tags[4].selected,
+      //     isSugarFree: tags[5].selected, 
+      //     isVegetarian: tags[6].selected, 
+      //     isVegan: tags[7].selected,
+      //     isKeto: tags[8].selected, 
+      //   })
+      //   // handle image uploads
+      //   let uploads = this.state.newFiles
+      //   let filesToDelete = this.state.filesToDelete
+      //   let uploading = !!uploads.length 
+      //   let deleting = !!filesToDelete.length
+      //   let uploadedImageKeys
+      //   if (uploading && deleting) {
+      //     uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+      //     await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
+      //     await this.deleteFiles()
+      //     this.handleUpdate()
+      //   } else if (uploading) { 
+      //     uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
+      //     await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
+      //     this.handleUpdate()
+      //   } else if (deleting) {
+      //     await this.deleteFiles()
+      //     await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
+      //     this.handleUpdate()
+      //   } else {        
+      //     await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
+      //     this.handleUpdate()
+      //   }
   }
 
-  handleModelChange = (content, delta, source, editor) => {
+  handleModelChange = (content: string, delta, source, editor) => {
     this.setState({
       recipe_title_edit: content,
       recipe_title_raw_edit: editor.getText()
     }, () => this.checkValidity())
   }
 
-  handleModelChangeIngredients = (html) => {
+  handleModelChangeIngredients = (html: string) => {
     this.setState({
       ingredients_edit: html
     }, () => this.checkValidity())
   }
 
-  handleModelChangeDirections = (html) => {
+  handleModelChangeDirections = (html: string) => {
     this.setState({
       directions_edit: html
     }, () => this.checkValidity())
   }
 
-  setFiles = (val) => {
+  setFiles = (files) => {
     // new files 
     this.setState({
-      newFiles: val
+      newFiles: files
     }, () => this.checkValidity())
   }
 
   setFilesToDelete = (files) => {
+    console.log('files to delete: ', files)
     this.setState({
       filesToDelete: files
     }, () => this.checkValidity())
   }
 
-  setDefaultTileImage = (key) => {
+  setDefaultTileImage = (key: string) => {
     this.setState({
       defaultTileImageKey: key
     }, () => this.checkValidity())
@@ -401,7 +457,7 @@ class Recipe extends React.Component {
                   )}
                 </div>
                 <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                  {recipe.preSignedUrls?.map((url, i) => ( 
+                  {recipe.preSignedUrls?.map((url: string, i: number) => ( 
                     <img 
                       key={i}
                       className="materialboxed z-depth-2 faded"
@@ -432,7 +488,7 @@ class Recipe extends React.Component {
                           <select onChange={this.updateInput} id="category" value={this.state.category} >
                             {
                               options.map((val, index) => {
-                                return <option val={val.label} key={index}>{val.label}</option>
+                                return <option key={index}>{val.label}</option>
                               })
                             }
                           </select>
@@ -444,7 +500,7 @@ class Recipe extends React.Component {
                           tags.map((tag, index) => {
                             return <div 
                               onClick={this.toggleTagSelectionStatus} 
-                              id={index} 
+                              id={index.toString()} 
                               className={`chip z-depth-2 ${recipe && tags[index].selected  ? "selectedTag" : "null"}`}
                               key={index}>
                                 {tag.label}
