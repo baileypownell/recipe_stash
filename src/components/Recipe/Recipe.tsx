@@ -13,7 +13,8 @@ import { BehaviorSubject } from 'rxjs'
 import tag, { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from './DeleteModal/DeleteModal'
-import { RecipeInterface, UpdateRecipeInput, EditRecipeService } from '../../services/edit-recipe-service'
+import { RecipeInterface, UpdateRecipeInput, EditRecipeService, ExistingFile } from '../../services/edit-recipe-service'
+import { NewFileInterface } from '../../services/add-recipe-service'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -317,7 +318,8 @@ class Recipe extends React.Component<Props, State> {
           this.state.newFiles, 
           this.state.defaultTileImageKey,
           this.state.filesToDelete,
-          this.state.recipeId
+          this.state.recipeId,
+          this.state.recipe as unknown as RecipeInterface
         )
         this.handleUpdate()
       } catch(err) {
@@ -327,47 +329,6 @@ class Recipe extends React.Component<Props, State> {
         })
         M.toast({html: 'There was an error updating the recipe.'})
       }
-      // try {
-      //   let recipeUpdated = await axios.put(`/recipe`, {
-      //     title: this.state.recipe_title_edit,
-      //     rawTitle,
-      //     ingredients: this.state.ingredients_edit,
-      //     directions: this.state.directions_edit,
-      //     recipeId: this.state.recipeId,
-      //     category: this.state.category,
-      //     isNoBake: tags[0].selected,
-      //     isEasy: tags[1].selected,
-      //     isHealthy: tags[2].selected,
-      //     isGlutenFree: tags[3].selected, 
-      //     isDairyFree: tags[4].selected,
-      //     isSugarFree: tags[5].selected, 
-      //     isVegetarian: tags[6].selected, 
-      //     isVegan: tags[7].selected,
-      //     isKeto: tags[8].selected, 
-      //   })
-      //   // handle image uploads
-      //   let uploads = this.state.newFiles
-      //   let filesToDelete = this.state.filesToDelete
-      //   let uploading = !!uploads.length 
-      //   let deleting = !!filesToDelete.length
-      //   let uploadedImageKeys
-      //   if (uploading && deleting) {
-      //     uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
-      //     await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
-      //     await this.deleteFiles()
-      //     this.handleUpdate()
-      //   } else if (uploading) { 
-      //     uploadedImageKeys = await this.uploadFiles(this.state.recipeId)
-      //     await this.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
-      //     this.handleUpdate()
-      //   } else if (deleting) {
-      //     await this.deleteFiles()
-      //     await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
-      //     this.handleUpdate()
-      //   } else {        
-      //     await this.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
-      //     this.handleUpdate()
-      //   }
   }
 
   handleModelChange = (content: string, delta, source, editor) => {
@@ -389,15 +350,14 @@ class Recipe extends React.Component<Props, State> {
     }, () => this.checkValidity())
   }
 
-  setFiles = (files) => {
+  setFiles = (newFiles: NewFileInterface[]) => {
     // new files 
     this.setState({
-      newFiles: files
+      newFiles: newFiles
     }, () => this.checkValidity())
   }
 
-  setFilesToDelete = (files) => {
-    console.log('files to delete: ', files)
+  setFilesToDelete = (files: ExistingFile[]) => {
     this.setState({
       filesToDelete: files
     }, () => this.checkValidity())

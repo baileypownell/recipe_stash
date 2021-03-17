@@ -37,38 +37,46 @@ export interface DefaultTileExisting {
     key: string
 }
 
-export const EditRecipeService = {
+export interface ExistingFile {
 
+}
+
+export const EditRecipeService = {
 
     updateRecipe: (
         recipeInput: UpdateRecipeInput, 
         files: NewFileInterface[], 
-        defaultTile: DefaultTile | DefaultTileExisting,
-        filesToDelete: ExistingFile[],
-        recipeId: number
+        defaultTile: DefaultTile | DefaultTileExisting | null,
+        filesToDeleteKeys: string[],
+        recipeId: number,
+        recipe: RecipeInterface
         ) => {
         return new Promise(async(resolve, reject) => {
             let recipeUpdated = await axios.put(`/recipe`, recipeInput)
             let uploads = files
             //let filesToDelete = filesToDelete
             let uploading = !!uploads.length 
-            let deleting = !!filesToDelete?.length
+            let deleting = !!filesToDeleteKeys?.length
             let uploadedImageKeys
             if (uploading && deleting) {
+              // this works but not for setting default tile image simultaneously... 
                 uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
-                await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile)
-                await EditRecipeService.deleteFiles(filesToDelete)
+                await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
+                await EditRecipeService.deleteFiles(filesToDeleteKeys)
                 resolve({ recipeUpdate: true })
             } else if (uploading) { 
+                // this works but not for setting default tile image simultaneously... 
                 uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
-                await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys)
+                await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
                 resolve({ recipeUpdate: true })
             } else if (deleting) {
-                await EditRecipeService.deleteFiles(filesToDelete)
-                await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
+                // this works
+                await EditRecipeService.deleteFiles(filesToDeleteKeys)
+                await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
                 resolve({ recipeUpdate: true })
             } else {        
-                await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId)
+                // this works 
+                await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
                 resolve({ recipeUpdate: true })
             }
         })        
@@ -78,7 +86,7 @@ export const EditRecipeService = {
         let uploads = newFiles
         return await Promise.all(uploads.map( async file => {
             let formData = new FormData() 
-            formData.append('image', file.file)
+            formData.append('image', file.file as any)
 
             let upload = await axios.post(
                 `/file-upload/${recipeId}`, 
@@ -100,11 +108,11 @@ export const EditRecipeService = {
         recipeId: number, 
         uploadedImageKeys: {awsKey: string, fileName: string}[],
         defaultTileImage,
-        defaultTileImageKey
+        defaultTileImageKey: string
     ) => {
         return new Promise(async(resolve, reject) => {
           if (defaultTileImageKey) {
-            let isNewDefaultTile = defaultTileImageKey !== recipe.defaultTileImageKey 
+            let isNewDefaultTile = defaultTileImageKey !== defaultTileImageKey 
             if (isNewDefaultTile) {
                 let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === defaultTileImageKey.fileName)
                 let defaultTile = await EditRecipeService.setTileImage(recipeId, defaultTileImage.awsKey)
@@ -114,7 +122,7 @@ export const EditRecipeService = {
             }
           } else {
             // remove if recipe previously had a default image 
-            if (!tdefaultTileImageKey && recipe.defaultTileImageKey) {
+            if (!defaultTileImageKey && defaultTileImageKey) {
               await EditRecipeService.removeTileImage(recipeId)
               resolve()
             } else {
@@ -126,8 +134,8 @@ export const EditRecipeService = {
 
 
 
-    deleteFiles: async(filesToDelete: ExitingFile[]) => {
-        return await Promise.all(filesToDelete.map( async url => {
+    deleteFiles: async(filesToDeleteKeys: string[]) => {
+        return await Promise.all(filesToDeleteKeys.map( async url => {
             let key = url.split('amazonaws.com/')[1].split('?')[0]
             return await axios.delete(`/file-upload/${key}`)
         })
@@ -152,14 +160,17 @@ export const EditRecipeService = {
         }
       },
 
-      handleDefaultTileImageExisting: (recipeId: number) => {
+      handleDefaultTileImageExisting: (recipeId: number, defaultTileImageKey: any, recipeDefaultTileImageKey: string) => {
         return new Promise(async(resolve, reject) => {
           if (defaultTileImageKey) {
-            let defaultTile = await EditRecipeService.setTileImage(recipeId, defaultTileImageKey)
-            resolve(defaultTile)
+            try {
+              let defaultTile = await EditRecipeService.setTileImage(recipeId, defaultTileImageKey)
+              resolve(defaultTile)
+            } catch(err) {
+              reject(err)
+            }
           } else {
-            // remove if recipe previously had a default image 
-            if (!defaultTileImageKey && recipe.defaultTileImageKey) {
+            if (!defaultTileImageKey && recipeDefaultTileImageKey) {
               await EditRecipeService.removeTileImage(recipeId)
               resolve()
             } else {
