@@ -14,7 +14,7 @@ import tag, { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from './DeleteModal/DeleteModal'
 import { RecipeInterface, UpdateRecipeInput, EditRecipeService, ExistingFile } from '../../services/edit-recipe-service'
-import { NewFileInterface } from '../../services/add-recipe-service'
+import { NewFileInterface, DefaultTile } from '../../services/add-recipe-service'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -44,7 +44,7 @@ type State = {
   newFiles: any[]
   filesToDelete: any[]
   tags: tag[]
-  defaultTileImageKey: string | null
+  defaultTileImageKey: string | null | {newFile: boolean, fileName: string}
   recipeValid: boolean | null
 }
 
@@ -80,7 +80,6 @@ class Recipe extends React.Component<Props, State> {
     try {
       let res = await axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
       let recipe = res.data.recipe
-      console.log(recipe)
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
@@ -186,46 +185,6 @@ class Recipe extends React.Component<Props, State> {
     this.setState({tags}, () => this.checkValidity())
   }
 
-  // handleDefaultTileImage = (recipeId: number, uploadedImageKeys) => {
-  //   return new Promise(async(resolve, reject) => {
-  //     if (this.state.defaultTileImageKey) {
-  //       let isNewDefaultTile = this.state.defaultTileImageKey !== this.state.recipe.defaultTileImageKey 
-  //       if (isNewDefaultTile) {
-  //           let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === this.state.defaultTileImageKey.fileName)
-  //           let defaultTile = await this.setTileImage(recipeId, defaultTileImage.awsKey)
-  //           resolve(defaultTile)
-  //       } else {
-  //         resolve()
-  //       }
-  //     } else {
-  //       // remove if recipe previously had a default image 
-  //       if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
-  //         await this.removeTileImage(this.state.recipe.id)
-  //         resolve()
-  //       } else {
-  //         resolve()
-  //       }
-  //     }
-  //   })
-  // }
-
-  // handleDefaultTileImageExisting = (recipeId) => {
-  //   return new Promise(async(resolve, reject) => {
-  //     if (this.state.defaultTileImageKey) {
-  //       let defaultTile = await this.setTileImage(recipeId, this.state.defaultTileImageKey)
-  //       resolve(defaultTile)
-  //     } else {
-  //       // remove if recipe previously had a default image 
-  //       if (!this.state.defaultTileImageKey && this.state.recipe.defaultTileImageKey) {
-  //         await this.removeTileImage(this.state.recipe.id)
-  //         resolve()
-  //       } else {
-  //         resolve()
-  //       }
-  //     }
-  //   })
-  // }
-
   handleUpdate() {
     // Update recipe details to reflect the change
     this.fetchData()
@@ -235,54 +194,6 @@ class Recipe extends React.Component<Props, State> {
       newFiles: []
     }, () => this.forceUpdate()) 
   }
-
-  // uploadFiles = async(recipeId) => {
-  //   let uploads = this.state.newFiles
-  //   return await Promise.all(uploads.map( async file => {
-  //     let formData = new FormData() 
-  //     formData.append('image', file.file)
-
-  //     let upload = await axios.post(
-  //       `/file-upload/${recipeId}`, 
-  //       formData,
-  //       {
-  //         headers: {
-  //           'content-type': 'multipart/form-data'
-  //         }
-  //       }
-  //     )
-  //     return {
-  //       awsKey: upload.data.key, 
-  //       fileName: file.file.name
-  //     }
-  //   }))
-  // }
-
-  // deleteFiles = async() => {
-  //   return await Promise.all(this.state.filesToDelete.map( async url => {
-  //       let key = url.split('amazonaws.com/')[1].split('?')[0]
-  //       return await axios.delete(`/file-upload/${key}`)
-  //     })
-  //   )
-  // }
-
-  // setTileImage = async(recipeId, awsKey) => {
-  //   try {
-  //     return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
-  //   } catch(err) {
-  //     console.log(err)
-  //     return err
-  //   }
-  // }
-
-  // removeTileImage = async(recipeId) => {
-  //   try {
-  //     return await axios.delete(`file-upload/tile-image/${recipeId}`)
-  //   } catch(err) {
-  //     console.log(err)
-  //     return err
-  //   }
-  // }
 
   updateRecipe = async(e) => {
       e.preventDefault();
@@ -363,7 +274,7 @@ class Recipe extends React.Component<Props, State> {
     }, () => this.checkValidity())
   }
 
-  setDefaultTileImage = (key: string) => {
+  setDefaultTileImage = (key: string | DefaultTile ) => {
     this.setState({
       defaultTileImageKey: key
     }, () => this.checkValidity())

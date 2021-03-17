@@ -54,28 +54,23 @@ export const EditRecipeService = {
         return new Promise(async(resolve, reject) => {
             let recipeUpdated = await axios.put(`/recipe`, recipeInput)
             let uploads = files
-            //let filesToDelete = filesToDelete
             let uploading = !!uploads.length 
             let deleting = !!filesToDeleteKeys?.length
             let uploadedImageKeys
             if (uploading && deleting) {
-              // this works but not for setting default tile image simultaneously... 
                 uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
                 await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
                 await EditRecipeService.deleteFiles(filesToDeleteKeys)
                 resolve({ recipeUpdate: true })
             } else if (uploading) { 
-                // this works but not for setting default tile image simultaneously... 
                 uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
                 await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
                 resolve({ recipeUpdate: true })
             } else if (deleting) {
-                // this works
                 await EditRecipeService.deleteFiles(filesToDeleteKeys)
                 await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
                 resolve({ recipeUpdate: true })
             } else {        
-                // this works 
                 await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
                 resolve({ recipeUpdate: true })
             }
@@ -107,16 +102,22 @@ export const EditRecipeService = {
     handleDefaultTileImage: (
         recipeId: number, 
         uploadedImageKeys: {awsKey: string, fileName: string}[],
-        defaultTileImage,
-        defaultTileImageKey: string
+        defaultTileImage: DefaultTileExisting | null | DefaultTile,
+        defaultTileImageKey: string | null 
     ) => {
         return new Promise(async(resolve, reject) => {
           if (defaultTileImageKey) {
-            let isNewDefaultTile = defaultTileImageKey !== defaultTileImageKey 
+            let isNewDefaultTile = (typeof defaultTileImage === 'string' && defaultTileImage !== defaultTileImageKey) || typeof defaultTileImage !== 'string'
             if (isNewDefaultTile) {
-                let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === defaultTileImageKey.fileName)
-                let defaultTile = await EditRecipeService.setTileImage(recipeId, defaultTileImage.awsKey)
-                resolve(defaultTile)
+                let uploadThatIsDefault: { awsKey: string, fileName: string } | undefined = uploadedImageKeys.find(obj => obj.fileName === (defaultTileImage as DefaultTile).fileName)
+                if (uploadThatIsDefault) {
+                  try {
+                    let defaultTile = await EditRecipeService.setTileImage(recipeId, uploadThatIsDefault.awsKey)
+                    resolve(defaultTile)
+                  } catch(err) {
+                    reject(err)
+                  }
+                }
             } else {
               resolve()
             }
