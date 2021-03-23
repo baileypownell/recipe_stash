@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { UploadedFileResult } from '../models/images'
 const FormData = require('form-data')
 
 export interface RecipeInput {
@@ -28,11 +29,6 @@ export interface NewFileInterface {
         webkitRelativePath: string
     },
     id: string
-}
-
-export interface UploadedFileResult {
-    awsKey: string, 
-    fileName: string
 }
 
 export interface DefaultTile {

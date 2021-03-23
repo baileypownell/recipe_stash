@@ -1,7 +1,7 @@
 import tag from "../models/tags";
 import { NewFileInterface, DefaultTile } from "./add-recipe-service";
 import axios from 'axios'
-
+import { UploadedFileResult } from '../models/images'
 export interface RecipeInterface {
     id: number
     title: string
@@ -51,35 +51,34 @@ export const EditRecipeService = {
         recipeId: number,
         recipe: RecipeInterface
         ) => {
-        return new Promise(async(resolve, reject) => {
-            let recipeUpdated = await axios.put(`/recipe`, recipeInput)
-            let uploads = files
-            let uploading = !!uploads.length 
-            let deleting = !!filesToDeleteKeys?.length
-            let uploadedImageKeys
-            if (uploading && deleting) {
-                uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
-                await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
-                await EditRecipeService.deleteFiles(filesToDeleteKeys)
-                resolve({ recipeUpdate: true })
-            } else if (uploading) { 
-                uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
-                await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
-                resolve({ recipeUpdate: true })
-            } else if (deleting) {
-                await EditRecipeService.deleteFiles(filesToDeleteKeys)
-                await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
-                resolve({ recipeUpdate: true })
-            } else {        
-                await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
-                resolve({ recipeUpdate: true })
-            }
-        })        
+          return new Promise(async(resolve, reject) => {
+              let recipeUpdated = await axios.put(`/recipe`, recipeInput)
+              let uploads: NewFileInterface[] = files
+              let uploading: boolean = !!uploads.length 
+              let deleting: boolean = !!filesToDeleteKeys?.length
+              let uploadedImageKeys: UploadedFileResult[]
+              if (uploading && deleting) {
+                  uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
+                  await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
+                  await EditRecipeService.deleteFiles(filesToDeleteKeys)
+                  resolve({ recipeUpdate: true })
+              } else if (uploading) { 
+                  uploadedImageKeys = await EditRecipeService.uploadFiles(uploads, recipeId)
+                  await EditRecipeService.handleDefaultTileImage(recipeUpdated.data.recipeId, uploadedImageKeys, defaultTile, recipe.defaultTileImageKey)
+                  resolve({ recipeUpdate: true })
+              } else if (deleting) {
+                  await EditRecipeService.deleteFiles(filesToDeleteKeys)
+                  await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
+                  resolve({ recipeUpdate: true })
+              } else {        
+                  await EditRecipeService.handleDefaultTileImageExisting(recipeUpdated.data.recipeId, defaultTile, recipe.defaultTileImageKey)
+                  resolve({ recipeUpdate: true })
+              }
+          })        
     },
 
     uploadFiles: async(newFiles: NewFileInterface[], recipeId: number) => {
-        let uploads = newFiles
-        return await Promise.all(uploads.map( async file => {
+        return await Promise.all(newFiles.map( async file => {
             let formData = new FormData() 
             formData.append('image', file.file as any)
 
@@ -87,9 +86,9 @@ export const EditRecipeService = {
                 `/file-upload/${recipeId}`, 
                 formData,
                 {
-                headers: {
-                    'content-type': 'multipart/form-data'
-                }
+                  headers: {
+                      'content-type': 'multipart/form-data'
+                  }
                 }
             )
             return {
@@ -106,10 +105,10 @@ export const EditRecipeService = {
         defaultTileImageKey: string | null 
     ) => {
         return new Promise(async(resolve, reject) => {
-          if (defaultTileImageKey) {
+          if (defaultTileImageKey || defaultTileImage) {
             let isNewDefaultTile = (typeof defaultTileImage === 'string' && defaultTileImage !== defaultTileImageKey) || typeof defaultTileImage !== 'string'
             if (isNewDefaultTile) {
-                let uploadThatIsDefault: { awsKey: string, fileName: string } | undefined = uploadedImageKeys.find(obj => obj.fileName === (defaultTileImage as DefaultTile).fileName)
+                let uploadThatIsDefault: UploadedFileResult | undefined = uploadedImageKeys.find(obj => obj.fileName === (defaultTileImage as DefaultTile).fileName)
                 if (uploadThatIsDefault) {
                   try {
                     let defaultTile = await EditRecipeService.setTileImage(recipeId, uploadThatIsDefault.awsKey)
@@ -122,7 +121,7 @@ export const EditRecipeService = {
               resolve()
             }
           } else {
-            // remove if recipe previously had a default image 
+            // removing default tile image if recipe previously had a default image 
             if (!defaultTileImageKey && defaultTileImageKey) {
               await EditRecipeService.removeTileImage(recipeId)
               resolve()
@@ -180,8 +179,5 @@ export const EditRecipeService = {
           }
         })
       },
-
-
-
     
 }
