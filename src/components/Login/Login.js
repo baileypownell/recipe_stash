@@ -53,9 +53,7 @@ class Login extends React.Component {
 
   responseGoogle = async(response) => {
     try {
-      let res = await axios.post(`/signinWithGoogle`, {
-          token: response.tokenId, 
-      })
+      let res = await AuthenticationService.signInWithGoogle(response.tokenId)
       if (res.data.success) {
         AuthenticationService.setUserLoggedIn()
         this.props.history.push('/dashboard')
