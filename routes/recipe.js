@@ -216,7 +216,7 @@ router.get('/:recipeId', (request, response, next) => {
         if (recipe.has_images) {
           let urls = await getImageAWSKeys(recipeId)
           if (urls) {
-            recipe_response.image_uuids = urls
+            //recipe_response.image_uuids = urls
             recipe_response.preSignedUrls = getPresignedUrls(urls)
             response.status(200).json({ success: true, recipe: recipe_response })
           } 

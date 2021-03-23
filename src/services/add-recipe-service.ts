@@ -40,17 +40,17 @@ export interface DefaultTile {
     fileName: string
 }
 
-export const RecipeService = {
+export const AddRecipeService = {
     createRecipe: (recipeInput: RecipeInput, files: NewFileInterface[], defaultTile: DefaultTile | null) => {
         return new Promise(async(resolve, reject) => {
             let recipeCreated = await axios.post('/recipe', recipeInput)
             if (files.length) {
                 try {
                     // we must get the AWS KEY from this call
-                    let uploadedImageKeys = await RecipeService.uploadFiles(recipeCreated.data.recipeId, files)
+                    let uploadedImageKeys = await AddRecipeService.uploadFiles(recipeCreated.data.recipeId, files)
                     let defaultTileImage = uploadedImageKeys.find(obj => obj.fileName === defaultTile?.fileName)
                     if (defaultTileImage) {
-                        await RecipeService.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
+                        await AddRecipeService.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
                     }
                     resolve({recipeAdded: true})
                 } catch (error) {
@@ -65,7 +65,7 @@ export const RecipeService = {
     handleDefaultTileImage: (recipeId: number, awsKey: string) => {
         return new Promise(async(resolve, reject) => {
             try {
-                let defaultTile = await RecipeService.setTileImage(recipeId, awsKey)
+                let defaultTile = await AddRecipeService.setTileImage(recipeId, awsKey)
                 resolve(defaultTile)
             } catch(e) {
                 reject(e)
