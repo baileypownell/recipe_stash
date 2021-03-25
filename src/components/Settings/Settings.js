@@ -1,11 +1,11 @@
 import React from 'react'
 import { withRouter } from "react-router-dom"
-import axios from 'axios'
 import M from 'materialize-css'
 import './Settings.scss'
 const appear = require('../../models/functions')
 
 import AuthenticationService from '../../services/auth-service'
+import UserService from '../../services/user-service'
 
 class Settings extends React.Component {
 
@@ -21,7 +21,7 @@ class Settings extends React.Component {
 
   logout = async() => {
     try {
-      await axios.get('/logout')
+      await AuthenticationService.logout()
       AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
@@ -31,9 +31,7 @@ class Settings extends React.Component {
 
   resetPassword = async() => {
     try {
-      let res = await axios.post(`/sendResetEmail`, {
-        email: this.state.email
-      })
+      let res = await AuthenticationService.getPasswordResetLink(this.state.email)
       if (!res.data.success) {
         M.toast({html: 'There was an error.'})
       } else {
@@ -63,12 +61,13 @@ class Settings extends React.Component {
     const { id } = this.props;
     e.preventDefault();
     try {
+      // TO-DO: type these inputs, make separate endpoints for whatever aspect we are updating?
       let payload = {
         first_name: firstName,
         last_name: lastName,
         id: id
       }
-      await axios.put(`/user`, payload)
+      await UserService.updateUser(payload)
       M.toast({html: 'Profile updated successfully.'})
       this.updateView()
     } catch(err) {
@@ -80,10 +79,11 @@ class Settings extends React.Component {
   updateEmail = async(e) => {
     e.preventDefault();
     try {
-      let res = await axios.put(`/user`, {
+      let payload = {
         new_email: this.state.new_email,
         password: this.state.password,
-      })
+      }
+      let res = await UserService.updateUser(payload)
       M.toast({ html: res.data.message })
       if (res.data.success) {
         this.updateView()
@@ -97,9 +97,9 @@ class Settings extends React.Component {
   deleteAccount = async(e) => {
     e.preventDefault()
     try { 
-      await axios.delete(`/user`)
+      await UserService.deleteUser()
       M.toast({html: 'Account deleted.'})
-      AuthenticationService.setUserLoggedOut()
+      // AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
@@ -108,11 +108,9 @@ class Settings extends React.Component {
   }
 
   updatePassword = async(e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      let res = await axios.post('/sendResetEmail', {
-        email: this.state.email
-      })
+      let res = await AuthenticationService.getPasswordResetLink(this.state.email)
       M.toast({html: res.data.message})
       if (res.data.success) {
         // log out 
@@ -126,7 +124,7 @@ class Settings extends React.Component {
 
   updateView = async() => {
     try {
-      let res = await axios.get(`/user`)
+      let res = await UserService.getUser()
       let user = res.data.userData
       this.setState({
         firstName: user.firstName, 

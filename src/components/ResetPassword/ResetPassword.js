@@ -1,6 +1,5 @@
 import React from 'react'
 import { withRouter } from "react-router-dom"
-const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import M from 'materialize-css'
 import './ResetPassword.scss'
@@ -19,7 +18,7 @@ class ResetPassword extends React.Component {
     // verify token matches AND hasn't expired
     let token = this.props.location.pathname.split('/')[2];
     try {
-      let res = await axios.get(`/sendResetEmail/${token}`)
+      let res = await AuthenticationService.verifyEmailResetToken(token)
       if (!res.data.success) {
         this.setState({
           invalidLink: true
@@ -64,17 +63,13 @@ class ResetPassword extends React.Component {
       loading: true
     })
     try {
-      await axios.put(`/user/reset-password`, {
-        password: this.state.password,
-        reset_password_token: this.props.location.pathname.split('/')[2]
-      })
+      // TO-DO: consolidate all of this into one function!
+      let reset_password_token = this.props.location.pathname.split('/')[2]
+      await AuthenticationService.updatePassword(this.state.password, reset_password_token)
       M.toast({html: 'Password updated!'})
         // log the user in here
         try {
-          let res = await axios.post(`/signin`, {
-            password: this.state.password, 
-            email: this.state.email
-          })
+          let res = await AuthenticationService.signIn(this.state.password, this.state.email)
           if (res.data.success) {
             AuthenticationService.setUserLoggedIn()
             this.props.history.push(`/dashboard`)

@@ -42,9 +42,7 @@ class Login extends React.Component {
   sendPasswordResetLink = async(e) => {
     e.preventDefault()
     try {
-      let res = await axios.post(`/sendResetEmail`, {
-        email: this.state.email
-      })
+      let res = AuthenticationService.getPasswordResetLink(this.state.email)
       res.data.success ? M.toast({html: 'Check your email for a link to reset your password.'}) : M.toast({html: 'There was an error.'}) 
     } catch(err) {
       M.toast({html: 'There was an error.'})
@@ -78,10 +76,7 @@ class Login extends React.Component {
       loading: true
     })
     try {
-      let res = await axios.post(`/signin`, {
-          password: this.state.password,
-          email: this.state.email
-      })
+      let res = await AuthenticationService.signIn(this.state.password, this.state.email)
       if (res.data.success) {
         AuthenticationService.setUserLoggedIn()
         this.props.history.push(`/dashboard`)

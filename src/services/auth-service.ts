@@ -17,6 +17,32 @@ const AuthenticationService = {
         return await axios.post(`/signinWithGoogle`, {
             token: tokenId, 
         })
+    },
+
+    signIn: async(password: string, email: string): Promise<any> => {
+        return await axios.post(`/signin`, {
+            password,
+            email 
+        })
+    },
+
+    logout: async(): Promise<any> => {
+        return await axios.get('/logout') 
+    },
+
+    getPasswordResetLink: async(email: string): Promise<any> => {
+        return await axios.post(`/sendResetEmail`, { email })
+    },
+
+    updatePassword: async(password: string, token: string): Promise<any> => {
+        return await axios.put(`/user/reset-password`, {
+            password,
+            reset_password_token: token
+        })
+    }, 
+
+    verifyEmailResetToken: async(token: string): Promise<any> => {
+        return await axios.get(`/sendResetEmail/${token}`)
     }
 }
 
