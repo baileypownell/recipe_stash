@@ -99,7 +99,6 @@ class Settings extends React.Component {
     try { 
       await UserService.deleteUser()
       M.toast({html: 'Account deleted.'})
-      // AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
       console.log(err)
