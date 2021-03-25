@@ -1,18 +1,36 @@
-import React from 'react'
+import React, { FormEvent } from 'react'
 import './Signup.scss'
-const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import AuthenticationService from '../../services/auth-service'
+import UserService, { UserInputInterface } from '../../services/user-service'
 const appear = require('../../models/functions')
 
-class Signup extends React.Component {
+type Props = {
+  history: any
+}
+
+type State = {
+    firstName: string
+    lastName: string
+    password: string
+    confirmPassword: string
+    email: string
+    confirmPasswordMessage: boolean
+    insufficientPasswordMessage: boolean
+    formValid: boolean
+    loading: boolean
+    submissionError: string
+    error: boolean
+}
+
+class Signup extends React.Component<Props, State> {
 
   state = {
-    firstName: null,
-    lastName: null,
-    password: null,
-    confirmPassword: null,
-    email: null,
+    firstName: '',
+    lastName: '',
+    password: '',
+    confirmPassword: '',
+    email: '',
     confirmPasswordMessage: false,
     insufficientPasswordMessage: false,
     formValid: false,
@@ -27,19 +45,20 @@ class Signup extends React.Component {
     setTimeout(appear(faded, 'fade-in'), 500);
   }
 
-  signup = async(e) => {
+  signup = async(e: FormEvent) => {
     e.preventDefault();
     const { email, password, firstName, lastName } = this.state;
     this.setState({
       loading: true
     })
     try {
-      let res = await axios.post(`/user`, {
-        firstName: firstName,
-        lastName: lastName,
-        password: password,
-        email: email
-      })
+      let userInput: UserInputInterface = {
+        firstName,
+        lastName,
+        password,
+        email
+      }
+      let res = await UserService.createUser(userInput)
       if (res.data.success) {
         M.toast({html: 'Success! Logging you in now...'})
         AuthenticationService.setUserLoggedIn()
@@ -61,7 +80,7 @@ class Signup extends React.Component {
 
   checkFormValidation = () => {
     const { firstName, lastName, password, email, confirmPassword } = this.state;
-    if ( firstName, lastName, password, email, confirmPassword) {
+    if ( firstName && lastName && password && email && confirmPassword) {
       if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || confirmPassword.length === 0) {
         this.setState({
           formValid: false
@@ -74,7 +93,7 @@ class Signup extends React.Component {
     }
   }
 
-  updateInput = (e) => {
+  updateInput = (e: any) => {
     this.setState({
       [e.target.id]: e.target.value
     }, () => this.checkFormValidation()
@@ -87,7 +106,7 @@ class Signup extends React.Component {
     }
   }
 
-  validatePassword = (e) => {
+  validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     // password must be at least 8 digits long, with at least one uppercase, one lowercase, and one digit
     // (?=.*\d)(?=.*[a-z])(?=.*[A-Z])
     if (e.target.value.length < 8 || !(/([A-Z]+)/g.test(e.target.value)) || !(/([a-z]+)/g.test(e.target.value)) || !(/([0-9]+)/g.test(e.target.value)) ) {
@@ -114,7 +133,7 @@ class Signup extends React.Component {
     }
   }
 
-  confirmPassword = (e) => {
+  confirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === this.state.password) {
       this.setState({
         confirmPassword: e.target.value,

@@ -4,7 +4,6 @@ import icon from '../../images/apple-touch-icon.png'
 import './Nav.scss';
 import { withRouter } from "react-router-dom"
 import AuthenticationService from '../../services/auth-service'
-const axios = require('axios')
 
 class Nav extends React.Component {
 
@@ -43,7 +42,7 @@ class Nav extends React.Component {
 
   logout = async() => {
     try {
-      await axios.get('/logout')
+      await AuthenticationService.logout()
       AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
     } catch(err) {
