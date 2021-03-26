@@ -1,10 +1,10 @@
-import React, { SyntheticEvent } from 'react'
+import React from 'react'
 import BounceLoader from "react-spinners/BounceLoader"
 import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
+import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
 import { RecipeService, SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
-import tag from '../../models/tags'
 const appear = require('../../models/functions')
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
@@ -28,7 +28,7 @@ const mealCategories: MealCategoriesInterface = {
   other: 'Other',
 }
 
-let userInputSubject = new BehaviorSubject('')
+let userInputSubject: BehaviorSubject<string> = new BehaviorSubject('')
 let userInput$ = userInputSubject.asObservable()
 
 interface FilterInterface extends BaseStringAccessibleObjectBoolean {
@@ -151,9 +151,12 @@ class Dashboard extends React.Component<Props, State> {
       appliedCategory$,
       userInput$,
       unfilteredRecipes$
-    ]).subscribe(([filters, _, input, recipes]) => {
+    ])
+    .pipe(tap(([filters, _, input, recipes]) => {
       window.sessionStorage.setItem('filters', JSON.stringify(filters))
       window.sessionStorage.setItem('userInput', input)
+    }))
+    .subscribe(([filters, _, input, recipes]) => {
       let newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
         let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
@@ -175,15 +178,11 @@ class Dashboard extends React.Component<Props, State> {
           .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
           newFilteredRecipesState[category] = filteredCategory
         }
+      } 
 
-        this.setState({
-          filteredRecipes: newFilteredRecipesState
-        })
-      } else {
-        this.setState({
-          filteredRecipes: newFilteredRecipesState
-        })
-      }
+      this.setState({
+        filteredRecipes: newFilteredRecipesState
+      })
     })
   }
 
@@ -223,9 +222,8 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   updateDashboard = () => {
-    this.fetchRecipes();
+    this.fetchRecipes()
   }
-
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {
     let input = e.target.value.toLowerCase().trim()

@@ -70,7 +70,7 @@ export interface RecipeInterface {
     directions: string
     tags: tag[]
     defaultTileImageKey: string
-    preSignedUrls?: string[]
+    preSignedUrls: string[]
 }
 
 export interface UpdateRecipeInput {

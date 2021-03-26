@@ -34,6 +34,7 @@
     "@babel/preset-typescript": "^7.13.0",
     "@types/dompurify": "^2.2.1",
     "@types/materialize-css": "^1.0.8",
+    "@types/react-router-dom": "^5.1.7",
     "aws-sdk": "^2.834.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
