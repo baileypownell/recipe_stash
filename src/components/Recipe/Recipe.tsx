@@ -54,7 +54,7 @@ class Recipe extends React.Component<any, State> {
     recipe_title_raw_edit: '',
     ingredients_edit: '', 
     directions_edit: '',
-    recipeId: parseInt(this.props.location.pathname.split('/')[2]),
+    recipeId: parseInt(this.props.match.params.id),
     showConfirmation: false,
     category: '',
     category_edit: '', 
@@ -72,7 +72,7 @@ class Recipe extends React.Component<any, State> {
 
   fetchData = async() => {
     try {
-      let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.location.pathname.split('/')[2])
+      let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,

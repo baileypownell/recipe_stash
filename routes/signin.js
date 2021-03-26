@@ -23,15 +23,16 @@ router.post('/', (request, response, next) => {
           if (res) {
               request.session.regenerate(() => {
                 request.session.save()
+                const sessionIdentifier = request.sessionID
                 // update the session table with the user's sessionID 
                 client.query('UPDATE session SET user_id=$1 WHERE sid=$2',
-                [id, request.sessionID],
+                [id, sessionIdentifier],
                 (err, res) => {
                   if (err) return next(err)
                   if (res.rowCount) {
                     return response.status(200).json({
                       success: true,
-                      sessionID: request.sessionID,
+                      sessionID: sessionIdentifier,
                       userData: {
                         id: id,
                         first_name: first_name,
@@ -39,6 +40,9 @@ router.post('/', (request, response, next) => {
                         email: email
                       }
                     })
+                  } else {
+                    console.log(`There was an error: No user found to update with SID: ${sessionIdentifier}`) // so how does it end up undefined, or even a different string entirely, here? when it's the same, why doesn't it work?
+                    return response.status(500).json({ error: `There was an error.` }) 
                   }
                 })
               })
