@@ -1,13 +1,24 @@
-import React from 'react'
-const axios = require('axios')
+import React, { SyntheticEvent } from 'react'
 import BounceLoader from "react-spinners/BounceLoader"
 import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import './Dashboard.scss'
+import { RecipeService, SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
+import tag from '../../models/tags'
 const appear = require('../../models/functions')
 
+interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
+  breakfast: string
+  lunch: string
+  dinner: string
+  side_dish: string
+  dessert: string
+  drinks: string
+  other: string
+}
+
 // object for iterating through meal cateogries 
-const mealCategories = {
+const mealCategories: MealCategoriesInterface = {
   breakfast: 'Breakfast',
   lunch: 'Lunch', 
   dinner: 'Dinner',
@@ -20,7 +31,29 @@ const mealCategories = {
 let userInputSubject = new BehaviorSubject('')
 let userInput$ = userInputSubject.asObservable()
 
-const appliedFiltersSubject = new BehaviorSubject({
+interface FilterInterface extends BaseStringAccessibleObjectBoolean {
+    dairy_free: boolean
+    easy: boolean
+    gluten_free: boolean
+    healthy: boolean
+    keto: boolean
+    no_bake: boolean
+    sugar_free: boolean
+    vegan: boolean
+    vegetarian: boolean 
+}
+
+interface CategoryInterface extends BaseStringAccessibleObjectBoolean {
+  breakfast: boolean
+  lunch: boolean
+  dinner: boolean
+  side_dish: boolean
+  dessert: boolean 
+  drinks: boolean 
+  other: boolean
+}
+
+const appliedFiltersSubject: BehaviorSubject<FilterInterface> = new BehaviorSubject<FilterInterface>({
   dairy_free: false, 
   easy: false, 
   gluten_free: false, 
@@ -32,7 +65,7 @@ const appliedFiltersSubject = new BehaviorSubject({
   vegetarian: false, 
 })
 let appliedFilters$ = appliedFiltersSubject.asObservable()
-const appliedCategorySubject = new BehaviorSubject({
+const appliedCategorySubject: BehaviorSubject<CategoryInterface> = new BehaviorSubject<CategoryInterface>({
   breakfast: false, 
   lunch: false, 
   dinner: false, 
@@ -43,12 +76,23 @@ const appliedCategorySubject = new BehaviorSubject({
 })
 let appliedCategory$ = appliedCategorySubject.asObservable()
 
-let unfilteredRecipesSubject = new BehaviorSubject(null)
+let unfilteredRecipesSubject: BehaviorSubject<null | SortedRecipeInterface> = new BehaviorSubject<null | SortedRecipeInterface>(null)
 let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 
 let selectedFilterSubject = new BehaviorSubject(0)
 
-class Dashboard extends React.Component {
+type Props = {
+  history: any
+}
+
+type State = {
+    recipes_loaded: boolean 
+    filteredRecipes: SortedRecipeInterface | null
+    gridView: boolean
+}
+
+
+class Dashboard extends React.Component<Props, State> {
 
   state = {
     recipes_loaded: false,
@@ -58,12 +102,8 @@ class Dashboard extends React.Component {
 
   fetchRecipes = async() => {
     try {
-      let recipe = await axios.get(`/recipe`)
-      for (const category in recipe.data) {
-        let sortedCategory = recipe.data[category].sort(this.sortByTitle)
-        recipe.data[category] = sortedCategory
-      }
-      unfilteredRecipesSubject.next(recipe.data)
+      let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
+      unfilteredRecipesSubject.next(recipes)
     } catch (error) {
       if (error.response?.status === 401) {
         // unathenticated; redirect to log in 
@@ -76,15 +116,6 @@ class Dashboard extends React.Component {
     }
   }
 
-  sortByTitle(a, b) {
-    if (a.title.toLowerCase() > b.title.toLowerCase()) {
-      return 1
-    } else if (a.title.toLowerCase() < b.title.toLowerCase() ) {
-      return -1
-    }
-    return 0 
-  }
-
   componentDidMount() {
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
@@ -93,7 +124,7 @@ class Dashboard extends React.Component {
 
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger')
-    M.Dropdown.init(dropdown, {
+    M.Dropdown.init(dropdown as Element, {
       closeOnClick: false,
     })
 
@@ -102,14 +133,14 @@ class Dashboard extends React.Component {
       userInputSubject.next(userInputSaved)
     }
     
-    let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters'))
+    let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters') as string)
     if (userFiltersSaved) {
       this.calculateSelectedFiltersNumber()
       appliedFiltersSubject.next(userFiltersSaved)  
     }
 
     // set gridView 
-    let gridView = JSON.parse(window.sessionStorage.getItem('gridView'))
+    let gridView = JSON.parse(window.sessionStorage.getItem('gridView') as string)
     this.setState({
       gridView
     })
@@ -120,16 +151,16 @@ class Dashboard extends React.Component {
       appliedCategory$,
       userInput$,
       unfilteredRecipes$
-    ]).subscribe(([filters, categoryFilters, input, recipes]) => {
+    ]).subscribe(([filters, _, input, recipes]) => {
       window.sessionStorage.setItem('filters', JSON.stringify(filters))
       window.sessionStorage.setItem('userInput', input)
-      let newFilteredRecipesState = {}
+      let newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
         let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
         newFilteredRecipesState[category] = filteredCategory
       }
 
-      let selectedTags = []
+      let selectedTags: string[] = []
       for (const tag in filters) {
         if (filters[tag]) {
           selectedTags.push(tag)
@@ -141,7 +172,7 @@ class Dashboard extends React.Component {
         for (const category in newFilteredRecipesState) {
           let filteredCategory = newFilteredRecipesState[category]
           .filter(recipe => recipe.tags.length >= 1)
-          .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag)))
+          .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
           newFilteredRecipesState[category] = filteredCategory
         }
 
@@ -171,21 +202,21 @@ class Dashboard extends React.Component {
     selectedFilterSubject.next(selectedFilters)
   }
 
-  filter = (e) => {
-    let currentState = appliedFiltersSubject.getValue()[e.target.id]
+  filter = (e: React.MouseEvent<HTMLElement>) => {
+    let currentState = appliedFiltersSubject.getValue()[(e.target as Element).id]
     let filter = {
       ...appliedFiltersSubject.getValue(),
-      [e.target.id]: !currentState,
+      [(e.target as Element).id]: !currentState,
     }
     appliedFiltersSubject.next(filter)
     this.calculateSelectedFiltersNumber()
   }
 
-  filterByCategory = (e) => {
-    let currentState = appliedCategorySubject.getValue()[e.target.id]
+  filterByCategory = (e: React.MouseEvent<HTMLElement>) => {
+    let currentState = appliedCategorySubject.getValue()[(e.target as HTMLInputElement).id]
     let filter = {
       ...appliedCategorySubject.getValue(), 
-      [e.target.id]: !currentState
+      [(e.target as Element).id]: !currentState
     }
     appliedCategorySubject.next(filter)
     this.calculateSelectedFiltersNumber()
@@ -196,17 +227,17 @@ class Dashboard extends React.Component {
   }
 
 
-  handleSearchChange = (e) => {
+  handleSearchChange = (e: { target: HTMLInputElement }) => {
     let input = e.target.value.toLowerCase().trim()
     userInputSubject.next(input)
   }
 
-  toggleView = (e) => {    
-    let val = !!(e.target.id === 'grid')
+  toggleView = (e: React.MouseEvent<HTMLElement>) => {    
+    let val: boolean = !!((e.target as Element).id === 'grid')
     this.setState({
       gridView: val
     }, () => {
-      window.sessionStorage.setItem('gridView', val)
+      window.sessionStorage.setItem('gridView', val.toString())
     })
   }
 
@@ -258,7 +289,7 @@ class Dashboard extends React.Component {
                 </input>
                 <i className="fas fa-search"></i>
 
-                <button className='dropdown-trigger btn' href='#' data-target='dropdown' id="filter-button">
+                <button className='dropdown-trigger btn' data-target='dropdown' id="filter-button">
                   <span>Filter</span>
                   {
                     selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
@@ -323,7 +354,7 @@ class Dashboard extends React.Component {
                         key={mealCat}
                         visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
                         gridView={gridView}
-                        recipes={filteredRecipes[mealCat]}
+                        recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
                         updateDashboard={this.updateDashboard}
                       >
                       </Category>                       

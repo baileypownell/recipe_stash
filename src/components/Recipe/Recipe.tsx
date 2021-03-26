@@ -13,8 +13,7 @@ import { BehaviorSubject } from 'rxjs'
 import tag, { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from './DeleteModal/DeleteModal'
-import { RecipeInterface, UpdateRecipeInput, EditRecipeService, ExistingFile } from '../../services/edit-recipe-service'
-import { NewFileInterface, DefaultTile } from '../../services/add-recipe-service'
+import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile } from '../../services/recipe-services'
 const appear = require('../../models/functions')
 let presignedUrlsSubject = new BehaviorSubject([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -224,7 +223,7 @@ class Recipe extends React.Component<Props, State> {
           isKeto: tags[8].selected, 
       }
       try {
-        await EditRecipeService.updateRecipe(
+        await RecipeService.updateRecipe(
           recipeUpdateInput, 
           this.state.newFiles, 
           this.state.defaultTileImageKey,
