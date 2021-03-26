@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from 'react'
 import { withRouter } from "react-router-dom"
-const axios = require('axios')
 import './Recipe.scss'
 import M, { Modal } from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
@@ -77,8 +76,7 @@ class Recipe extends React.Component<Props, State> {
 
   fetchData = async() => {
     try {
-      let res = await axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
-      let recipe = res.data.recipe
+      let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.location.pathname.split('/')[2])
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
@@ -93,7 +91,7 @@ class Recipe extends React.Component<Props, State> {
         loading: false,
         defaultTileImageKey: recipe.defaultTileImageKey
       }, () => {
-          presignedUrlsSubject.next(res.data.recipe.preSignedUrls)
+          presignedUrlsSubject.next(recipe.preSignedUrls)
           const images = document.querySelectorAll('.materialboxed')
           M.Materialbox.init(images, {})
           const modal = document.querySelectorAll('.modal')
@@ -158,7 +156,7 @@ class Recipe extends React.Component<Props, State> {
 
   deleteRecipe = async() => {
     try {
-      await axios.delete(`/recipe/${this.state.recipeId}`)
+      await RecipeService.deleteRecipe(this.state.recipeId)
       M.toast({html: 'Recipe deleted.'})
       this.closeModal()
       this.props.history.push('/dashboard')

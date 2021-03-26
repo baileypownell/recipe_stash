@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { UploadedFileResult } from '../models/images'
 import tag from '../models/tags'
+import { async } from 'rxjs'
 
 export interface BaseStringAccessibleObjectBoolean {
     [key: string]: boolean
@@ -117,6 +118,15 @@ export const RecipeService = {
             recipes.data[category] = sortedCategory
           }
         return recipes.data
+    },
+
+    getRecipe: async(recipeId: string): Promise<RecipeInterface> => {
+      let recipeResponse = await axios.get(`/recipe/${recipeId}`)
+      return recipeResponse.data.recipe
+    },
+
+    deleteRecipe: async(recipeId: number): Promise<any> => {
+      return await axios.delete(`/recipe/${recipeId}`)
     },
 
     createRecipe: (recipeInput: RecipeInput, files: NewFileInterface[], defaultTile: DefaultTile | null) => {
