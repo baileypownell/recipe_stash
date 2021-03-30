@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom"
 import M from 'materialize-css'
 import './Settings.scss'
 import { appear } from '../../models/functions'
+import DeleteModal from '../DeleteModal/DeleteModal'
 
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
@@ -55,10 +56,12 @@ class Settings extends React.Component<any, State> {
   }
 
   componentDidMount() {
-    let faded = document.querySelectorAll('.fade');
-    setTimeout(() => appear(faded, 'fade-in'), 500);
-    var elems = document.querySelectorAll('.collapsible');
-    M.Collapsible.init(elems, {});
+    let faded = document.querySelectorAll('.fade')
+    setTimeout(() => appear(faded, 'fade-in'), 500)
+    var elems = document.querySelectorAll('.collapsible')
+    M.Collapsible.init(elems, {})
+    var modals = document.querySelectorAll('.modal')
+    M.Modal.init(modals, {})
     this.updateView()
   }
 
@@ -216,14 +219,20 @@ class Settings extends React.Component<any, State> {
               <div className="collapsible-body">
               <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
                 <button 
-                  className="waves-effect waves-light btn" 
+                  className="waves-effect waves-light btn modal-trigger" 
                   id="delete"
-                  onClick={this.deleteAccount}>
-                    Delete Account <i className="fas fa-exclamation-triangle"></i>
+                  data-target="confirmation-modal">
+                  Delete Account <i className="fas fa-exclamation-triangle"></i>
                   </button>
                 </div>
             </li>
           </ul>
+        </div>
+
+
+        {/* delete confirmation modal */}
+        <div id="confirmation-modal" className="modal">
+            <DeleteModal deleteFunction={this.deleteAccount}></DeleteModal>
         </div>
       </div>
     )
