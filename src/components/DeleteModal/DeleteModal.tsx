@@ -6,11 +6,11 @@ const DeleteModal = (props: any) => {
         <div id="deletion-modal">
             <div className="modal-content">
                 <h4>Are you sure?</h4>
-                <p>Deleting this recipe cannot be undone.</p>
+                <p>This action cannot be undone.</p>
             </div>
             <div className="modal-footer">
                 <a id="primary-color" className="modal-close waves-effect waves-green btn">Cancel</a>
-                <a className="modal-close waves-effect waves-green btn-flat" onClick={props.deleteRecipe}>Continue</a>
+                <a className="modal-close waves-effect waves-green btn-flat" onClick={props.deleteFunction}>Continue</a>
             </div>
         </div>
     )

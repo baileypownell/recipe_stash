@@ -11,10 +11,10 @@ import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
 import { tags } from '../../models/tags'
 import options from '../../models/options'
-import DeleteModal from './DeleteModal/DeleteModal'
+import DeleteModal from '../DeleteModal/DeleteModal'
 import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile } from '../../services/recipe-services'
 import Tag from '../../models/tags'
-const appear = require('../../models/functions')
+import { appear } from '../../models/functions'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -122,10 +122,10 @@ class Recipe extends React.Component<any, State> {
   componentDidMount() {
     this.fetchData()
     let faded = document.querySelectorAll('.fade')
-    setTimeout(appear(faded, 'fade-in'), 700)
+    setTimeout(() => appear(faded, 'fade-in'), 700)
 
   
-    var modals = document.querySelectorAll('.modal');
+    const modals = document.querySelectorAll('.modal');
     M.Modal.init(modals, {});
     
   }
@@ -165,11 +165,11 @@ class Recipe extends React.Component<any, State> {
   updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
-    }, () => this.checkValidity())
+    } as any, () => this.checkValidity())
   }
 
   toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
-    let index = e.target.id 
+    let index: number = (e.target as Element).id as unknown as number
     let tags = [...this.state.tags]
     let item = {...tags[index]}
     let priorSelectedValue = item.selected
@@ -380,8 +380,8 @@ class Recipe extends React.Component<any, State> {
                         passFiles={this.setFiles}>
                       </FileUpload>  
                       {/* delete confirmation modal */}
-                      <div id="delete-modal" className="modal">
-                          <DeleteModal deleteRecipe={this.deleteRecipe}></DeleteModal>
+                      <div id="confirmation-modal" className="modal">
+                          <DeleteModal deleteFunction={this.deleteRecipe}></DeleteModal>
                       </div>
                   </div>
               </div>
@@ -389,8 +389,7 @@ class Recipe extends React.Component<any, State> {
                   <button 
                     id="primary-color" 
                     className="waves-effect waves-light btn modal-trigger" 
-                    
-                    data-target="delete-modal"
+                    data-target="confirmation-modal"
                     >
                     Delete Recipe <i className="fas fa-trash"></i>
                   </button>

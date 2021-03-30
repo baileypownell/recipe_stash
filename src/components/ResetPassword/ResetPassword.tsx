@@ -1,21 +1,22 @@
-import React from 'react'
+import React, { FormEvent } from 'react'
 import { withRouter } from "react-router-dom"
 import ClipLoader from "react-spinners/ClipLoader"
 import M from 'materialize-css'
 import './ResetPassword.scss'
 import AuthenticationService from '../../services/auth-service'
+import { isPasswordInvalid } from '../../models/functions'
 
-class ResetPassword extends React.Component {
+class ResetPassword extends React.Component<any, any> {
 
   state = {
     invalidLink: false,
     password: '',
     passwordInvalid: true,
-    loading: false
+    loading: false,
+    email: '',
   }
 
   async componentDidMount() {
-    // verify token matches AND hasn't expired
     let token = this.props.match.params.token;
     try {
       let res = await AuthenticationService.verifyEmailResetToken(token)
@@ -41,10 +42,9 @@ class ResetPassword extends React.Component {
     this.props.history.push('/')
   }
 
-  updatePasswordState = (e) => {
-    // password must be at least 8 digits long, with at least one uppercase, one lowercase, and one digit
-    // (?=.*\d)(?=.*[a-z])(?=.*[A-Z])
-    if (e.target.value.length < 8 || !(/([A-Z]+)/g.test(e.target.value)) || !(/([a-z]+)/g.test(e.target.value)) || !(/([0-9]+)/g.test(e.target.value)) ) {
+  updatePasswordState = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let password: string = e.target.value
+    if (isPasswordInvalid(password)) {
       this.setState({
           passwordInvalid: true,
           password: e.target.value
@@ -57,30 +57,19 @@ class ResetPassword extends React.Component {
   }
 }
 
-  updatePassword = async(e) => {
+  updatePassword = async(e: FormEvent) => {
     e.preventDefault();
     this.setState({
       loading: true
     })
     try {
-      // TO-DO: consolidate all of this into one function!
       let reset_password_token = this.props.match.params.token
-      await AuthenticationService.updatePassword(this.state.password, reset_password_token)
+      await AuthenticationService.updatePassword(this.state.password, reset_password_token, this.state.email)
       M.toast({html: 'Password updated!'})
       this.setState({
         loading: false
       })
-      // log the user in here
-      try {
-        // the same bug that happens occasionally when logging in can happen here
-        let res = await AuthenticationService.signIn(this.state.password, this.state.email)
-        if (res.data.success) {
-          AuthenticationService.setUserLoggedIn()
-          this.props.history.push(`/dashboard`)
-        }
-      } catch(err) {
-        console.log(err)
-      }
+      this.props.history.push(`/dashboard`)
     } catch(err) {
       M.toast({html: 'There was an error.'})
       this.setState({
@@ -106,7 +95,11 @@ class ResetPassword extends React.Component {
             <h4>New Password</h4>
             <form onSubmit={this.updatePassword}>
             <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
-            {this.state.passwordInvalid && this.state.password.lengh > 0 ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> : null}
+            { 
+              this.state.passwordInvalid && this.state.password.length > 0 ? 
+              <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+              : null
+            }
             <button
               disabled={this.state.passwordInvalid} 
               className="waves-effect waves-light btn"

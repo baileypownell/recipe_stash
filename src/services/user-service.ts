@@ -9,24 +9,58 @@ export interface UserInputInterface {
     email: string
 }
 
-// TO-DO: return types here (not just res.data.whatever)
+export interface UpdateUserNamePayload {
+    first_name: string 
+    last_name: string 
+    id: string
+}
+
+export interface UpdateUserEmailPayload { 
+    new_email: string 
+    password: string
+}
+
+export interface UserData {
+    email: string 
+    firstName: string 
+    lastName: string
+}
+
+export interface GenericResponse {
+    success: boolean 
+    message?: string
+}
+
+export interface UserCreatedResponse extends GenericResponse {
+    sessionID: string 
+    userData: {
+        id: string 
+        email: string 
+        firstName: string 
+        lastName: string 
+    }
+}
+
+// TO-DO: return types here
 const UserService = {
-    getUser: async(): Promise<any> => {
-        return await axios.get(`/user`)
+    getUser: async(): Promise<UserData> => {
+        let user = await axios.get(`/user`)
+        return user.data.userData
     },
 
-    updateUser: async(payload): Promise<any> => {
+    updateUser: async(payload: UpdateUserNamePayload | UpdateUserEmailPayload): Promise<any> => {
         return await axios.put(`/user`, payload)
     },
 
-    deleteUser: async(): Promise<any> => {
-        await axios.delete(`/user`)
+    deleteUser: async(): Promise<GenericResponse> => {
+        let deletion = await axios.delete(`/user`)
         AuthenticationService.setUserLoggedOut()
-        return 
+        return deletion.data
     },
 
-    createUser: async(userInput: UserInputInterface): Promise<any> => {
-        return await axios.post(`/user`, userInput)
+    createUser: async(userInput: UserInputInterface): Promise<UserCreatedResponse> => {
+        let newUser = await axios.post(`/user`, userInput)
+        return newUser.data
     }
 
 }

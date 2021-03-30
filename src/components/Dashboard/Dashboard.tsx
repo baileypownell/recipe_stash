@@ -5,7 +5,7 @@ import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
 import { RecipeService, SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
-const appear = require('../../models/functions')
+import { appear } from  '../../models/functions'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -119,7 +119,7 @@ class Dashboard extends React.Component<Props, State> {
   componentDidMount() {
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
-    setTimeout(appear(faded, 'fade-in'), 300);
+    setTimeout(() => appear(faded, 'fade-in'), 300);
 
 
     // filter dropdown
