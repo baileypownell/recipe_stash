@@ -36,8 +36,10 @@ class Nav extends React.Component {
   }
 
   initializeSettingsDropdown = () => {
-    const settingsDropdown = document.querySelector('#dropdown-trigger-settings')
-    M.Dropdown.init(settingsDropdown, {})
+    const elems = document.querySelectorAll('.sidenav');
+    const instances = M.Sidenav.init(elems, {
+      edge: 'right'
+    });
   }
 
   logout = async() => {
@@ -52,17 +54,18 @@ class Nav extends React.Component {
 
   render() {
     return (
+      <>
         <nav>
           <Link to="/"><img src={icon} alt="logo" /></Link>
           <div>            
             { this.state.loggedIn ?
               <>
                   <NavLink to="/dashboard" activeclassname="active">Dashboard</NavLink>
-                  <a activeclassname="active" id="dropdown-trigger-settings" data-target='settings-dropdown'><i className="fas fa-user-cog"></i></a> 
-                  <ul id='settings-dropdown' className='dropdown-content'>
-                    <li><a href="/settings">Settings</a></li>
-                    <li><a onClick={this.logout}>Logout</a></li>
-                  </ul>
+                  <a 
+                    activeclassname="active"
+                    data-target="slide-out" 
+                    className="sidenav-trigger"><i className="fas fa-user-cog"></i>
+                  </a>
               </>
             : <>
                 <NavLink to="/login" activeClassName="active">Login</NavLink>
@@ -71,6 +74,15 @@ class Nav extends React.Component {
             }
           </div>
         </nav>
+    
+        <ul id="slide-out" className="sidenav">     
+            <li><a className="waves-effect" href="/settings">Settings</a></li>
+            <li><a className="waves-effect" onClick={this.logout}>Logout</a></li>
+            <li><div className="divider"></div></li>
+            {/* <li><a className="waves-effect" href="/terms-of-service">Terms of Service</a></li> */}
+            {/* <li><a className="waves-effect" href="/developer-contact">Report a Bug</a></li> */}
+        </ul>
+      </>
     )
   }
 }

@@ -34,6 +34,7 @@ nav {
       line-height: 75px;
       padding: 0 20px;
       text-decoration: none;
+      height: 100%;
       font-size: 20px;
       transition: background-color .3s;
       cursor: pointer;
@@ -47,7 +48,24 @@ nav {
   }
 }
 
+.sidenav {
+  padding-top: 35px;
+}
 
-#settings-dropdown {
-  top: -77px;
+.sidenav-trigger  i {
+  display: flex;
+  align-items: center;
+}
+
+// overriding strange Materialize rule.... 
+@media only screen and (min-width: 993px) {
+ nav a.sidenav-trigger {
+    display: block!important;
+ }
+}
+
+nav a.sidenav-trigger,
+a.sidenav-trigger i  {
+  height: 100%!important;
+  margin: 0;
 }
