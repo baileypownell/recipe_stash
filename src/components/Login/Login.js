@@ -71,13 +71,13 @@ class Login extends React.Component {
   }
 
   signin = async(event) => {
-    event.preventDefault();
+    event.preventDefault()
     this.setState({
       loading: true
     })
     try {
       let res = await AuthenticationService.signIn(this.state.password, this.state.email)
-      if (res.data.success) {
+      if (res.data?.success) {
         AuthenticationService.setUserLoggedIn()
         this.props.history.push(`/dashboard`)
       } else {
@@ -88,6 +88,7 @@ class Login extends React.Component {
         M.toast({html: res.data.message})
       }
     } catch(err) {
+      console.log(err)
       M.toast({html: err.response.data?.error || 'There was an error.'})
       this.setState({
         signInError: true,
@@ -153,7 +154,10 @@ class Login extends React.Component {
                 />
 
               {signInError ? 
-                    <button className="waves-effect waves-light btn" onClick={this.sendPasswordResetLink}>Reset Password</button>
+                  <button 
+                    className="waves-effect waves-light btn" 
+                    onClick={this.sendPasswordResetLink}>Reset Password
+                  </button>
               : null}
               </div>
             </form>

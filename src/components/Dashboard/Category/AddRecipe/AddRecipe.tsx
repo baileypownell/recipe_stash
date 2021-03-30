@@ -8,10 +8,10 @@ import 'react-quill/dist/quill.snow.css'
 import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
-import { AddRecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../../../services/add-recipe-service'
 import tag, { tags } from '../../../../models/tags'
 
 import options from '../../../../models/options'
+import { RecipeService, RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
 
 type Props = {
   updateDashboard: any 
@@ -127,7 +127,7 @@ class AddRecipe extends React.Component<Props, State> {
       isKeto: tags[8].selected,
     }
     try {
-      await AddRecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTile)
+      await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTile)
       this.handleSuccess()
     } catch(err) {
       console.log(err)

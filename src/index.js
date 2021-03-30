@@ -30,7 +30,7 @@ ReactDOM.render(
         <Route exact={true} path="/" component={Home}/>
         <Route path="/login" component={Login}/>
         <Route path="/signup" component={Signup}/>
-        <Route path="/reset" component={ResetPassword}/>
+        <Route path="/reset/:token" component={ResetPassword}/>
         <RequireAuthComponent>
           <Route path="/dashboard" exact={true} component={Dashboard}/> 
           <Route path="/settings" component={Settings}/>

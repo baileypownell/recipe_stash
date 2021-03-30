@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from 'react'
 import { withRouter } from "react-router-dom"
-const axios = require('axios')
 import './Recipe.scss'
 import M, { Modal } from 'materialize-css'
 import BounceLoader from "react-spinners/BounceLoader"
@@ -10,21 +9,16 @@ import ReactQuill from 'react-quill'
 import FileUpload from '../File-Upload/FileUpload'
 import Preloader from '../Preloader/Preloader'
 import { BehaviorSubject } from 'rxjs'
-import tag, { tags } from '../../models/tags'
+import { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from './DeleteModal/DeleteModal'
-import { RecipeInterface, UpdateRecipeInput, EditRecipeService, ExistingFile } from '../../services/edit-recipe-service'
-import { NewFileInterface, DefaultTile } from '../../services/add-recipe-service'
+import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile } from '../../services/recipe-services'
+import Tag from '../../models/tags'
 const appear = require('../../models/functions')
-let presignedUrlsSubject = new BehaviorSubject([])
+let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
 let modalInstance: Modal
-
-type Props = {
-  location: any
-  history: any
-}
 
 type State = {
   loading: boolean 
@@ -43,12 +37,12 @@ type State = {
   recipe: RecipeInterface | null
   newFiles: any[]
   filesToDelete: any[]
-  tags: tag[]
-  defaultTileImageKey: string | null | {newFile: boolean, fileName: string}
+  tags: Tag[]
+  defaultTileImageKey: string | null | DefaultTile
   recipeValid: boolean | null
 }
 
-class Recipe extends React.Component<Props, State> {
+class Recipe extends React.Component<any, State> {
 
   state = {
     loading: true,
@@ -60,7 +54,7 @@ class Recipe extends React.Component<Props, State> {
     recipe_title_raw_edit: '',
     ingredients_edit: '', 
     directions_edit: '',
-    recipeId: parseInt(this.props.location.pathname.split('/')[2]),
+    recipeId: parseInt(this.props.match.params.id),
     showConfirmation: false,
     category: '',
     category_edit: '', 
@@ -78,8 +72,7 @@ class Recipe extends React.Component<Props, State> {
 
   fetchData = async() => {
     try {
-      let res = await axios.get(`/recipe/${this.props.location.pathname.split('/')[2]}`)
-      let recipe = res.data.recipe
+      let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
       this.setState({
         recipe: recipe,
         recipe_title: recipe.title,
@@ -94,7 +87,7 @@ class Recipe extends React.Component<Props, State> {
         loading: false,
         defaultTileImageKey: recipe.defaultTileImageKey
       }, () => {
-          presignedUrlsSubject.next(res.data.recipe.preSignedUrls)
+          if (recipe.preSignedUrls) presignedUrlsSubject.next(recipe.preSignedUrls)
           const images = document.querySelectorAll('.materialboxed')
           M.Materialbox.init(images, {})
           const modal = document.querySelectorAll('.modal')
@@ -108,8 +101,8 @@ class Recipe extends React.Component<Props, State> {
           const elems = document.querySelectorAll('.fixed-action-btn')
           M.FloatingActionButton.init(elems, {})
       })
-      this.state.tags.forEach((tag, index) => {
-        if (recipe.tags.includes(tag.recipeTagPropertyName)) {
+      this.state.tags.forEach((tag: Tag, index: number) => {
+        if (recipe.tags.includes(tag.recipeTagPropertyName as any)) {
             let tags = [...this.state.tags]
             let item = {...tags[index]}
             item.selected = true
@@ -159,7 +152,7 @@ class Recipe extends React.Component<Props, State> {
 
   deleteRecipe = async() => {
     try {
-      await axios.delete(`/recipe/${this.state.recipeId}`)
+      await RecipeService.deleteRecipe(this.state.recipeId)
       M.toast({html: 'Recipe deleted.'})
       this.closeModal()
       this.props.history.push('/dashboard')
@@ -172,10 +165,10 @@ class Recipe extends React.Component<Props, State> {
   updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
-  toggleTagSelectionStatus = (e) => {
+  toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
     let index = e.target.id 
     let tags = [...this.state.tags]
     let item = {...tags[index]}
@@ -195,7 +188,7 @@ class Recipe extends React.Component<Props, State> {
     }, () => this.forceUpdate()) 
   }
 
-  updateRecipe = async(e) => {
+  updateRecipe = async(e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       let tags = this.state.tags
       let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
@@ -224,7 +217,7 @@ class Recipe extends React.Component<Props, State> {
           isKeto: tags[8].selected, 
       }
       try {
-        await EditRecipeService.updateRecipe(
+        await RecipeService.updateRecipe(
           recipeUpdateInput, 
           this.state.newFiles, 
           this.state.defaultTileImageKey,
@@ -327,8 +320,8 @@ class Recipe extends React.Component<Props, State> {
                       : null )
                   )}
                 </div>
-                <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                  {recipe.preSignedUrls?.map((url: string, i: number) => ( 
+                <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
+                  {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => ( 
                     <img 
                       key={i}
                       className="materialboxed z-depth-2 faded"
