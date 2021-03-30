@@ -165,11 +165,11 @@ class Recipe extends React.Component<any, State> {
   updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
-    }, () => this.checkValidity())
+    } as any, () => this.checkValidity())
   }
 
   toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
-    let index = e.target.id 
+    let index: number = (e.target as Element).id as unknown as number
     let tags = [...this.state.tags]
     let item = {...tags[index]}
     let priorSelectedValue = item.selected

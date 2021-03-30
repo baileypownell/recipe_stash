@@ -5,9 +5,20 @@ import './Settings.scss'
 const appear = require('../../models/functions')
 
 import AuthenticationService from '../../services/auth-service'
-import UserService from '../../services/user-service'
+import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload } from '../../services/user-service'
 
-class Settings extends React.Component {
+type State = {
+  password: string 
+  firstName: string 
+  firstNameReceived: string 
+  lastName: string 
+  lastNameReceived: string 
+  new_email: string 
+  emailReceived: string
+  email: string
+}
+
+class Settings extends React.Component<any, State> {
 
   state = {
     password: '',
@@ -16,7 +27,8 @@ class Settings extends React.Component {
     lastName: '',
     lastNameReceived: '',
     new_email: '',
-    emailReceived: ''
+    emailReceived: '',
+    email: ''
   }
 
   logout = async() => {
@@ -50,19 +62,18 @@ class Settings extends React.Component {
     this.updateView()
   }
 
-  updateInput = (e) => {
+  updateInput = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({
-      [e.target.id]: e.target.value
-    })
+      [e.currentTarget.id]: e.currentTarget.value
+    } as any)
   }
 
-  updateProfile = async(e) => {
+  updateProfile = async(e: React.MouseEvent<HTMLButtonElement>) => {
     const { firstName, lastName } = this.state;
     const { id } = this.props;
     e.preventDefault();
     try {
-      // TO-DO: type these inputs, make separate endpoints for whatever aspect we are updating?
-      let payload = {
+      let payload: UpdateUserNamePayload = {
         first_name: firstName,
         last_name: lastName,
         id: id
@@ -76,10 +87,10 @@ class Settings extends React.Component {
     }
   }
 
-  updateEmail = async(e) => {
+  updateEmail = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      let payload = {
+      let payload: UpdateUserEmailPayload = {
         new_email: this.state.new_email,
         password: this.state.password,
       }
@@ -94,7 +105,7 @@ class Settings extends React.Component {
     }
   }
 
-  deleteAccount = async(e) => {
+  deleteAccount = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     try { 
       await UserService.deleteUser()
@@ -106,7 +117,7 @@ class Settings extends React.Component {
     }
   }
 
-  updatePassword = async(e) => {
+  updatePassword = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     try {
       let res = await AuthenticationService.getPasswordResetLink(this.state.email)
@@ -184,14 +195,20 @@ class Settings extends React.Component {
                       <input id="lastName" type="text" value={this.state.lastName} onChange={this.updateInput}></input>
                       <label htmlFor="lastName">New Last Name</label>
                   </div>
-                  <button className="waves-effect waves-light btn" onClick={this.updateProfile}>Save</button>
+                  <button 
+                    className="waves-effect waves-light btn" 
+                    onClick={this.updateProfile}>Save
+                  </button>
               </div>
             </li>
             <li>
                 <div className="collapsible-header"><i className="material-icons">security</i>Update Password</div>
                 <div className="collapsible-body">
                 <p>Click the button below to receive an email with a link to reset your password.</p>
-                <button className="waves-effect waves-light btn" onClick={this.updatePassword} >Send Email</button>
+                <button 
+                  className="waves-effect waves-light btn" 
+                  onClick={this.updatePassword} >Send Email
+                </button>
               </div>
             </li>
             <li>
