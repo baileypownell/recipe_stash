@@ -119,7 +119,7 @@ class Dashboard extends React.Component<Props, State> {
   componentDidMount() {
     this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
-    setTimeout(appear(faded, 'fade-in'), 300);
+    setTimeout(() => appear(faded, 'fade-in'), 300);
 
 
     // filter dropdown

@@ -122,7 +122,7 @@ class Recipe extends React.Component<any, State> {
   componentDidMount() {
     this.fetchData()
     let faded = document.querySelectorAll('.fade')
-    setTimeout(appear(faded, 'fade-in'), 700)
+    setTimeout(() => appear(faded, 'fade-in'), 700)
 
   
     var modals = document.querySelectorAll('.modal');

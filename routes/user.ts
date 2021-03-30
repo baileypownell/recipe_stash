@@ -18,13 +18,14 @@ router.get('/', authMiddleware, (request, response, next) => {
    (err, res) => {
     if (err) return next(err)
     if (res.rows.length) {
+      let userData = {
+        email: res.rows[0].email, 
+        firstName: res.rows[0].first_name, 
+        lastName: res.rows[0].last_name
+      }
       response.status(200).json({
         success: true, 
-        userData: {
-          email: res.rows[0].email, 
-          firstName: res.rows[0].first_name, 
-          lastName: res.rows[0].last_name
-        }
+        userData
       })
     } else {
       response.status(500)
@@ -211,15 +212,21 @@ router.delete('/', authMiddleware, (request, response, next) => {
           client.query('DELETE FROM files WHERE user_id=$1 RETURNING key', 
           [id],
           async(error, res) => {
-              if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}`})
+              if (error) return response.status(500).json({ 
+                success: false, 
+                message: `There was an error: ${error}`
+              })
               let awsKeys = res.rows.map(val => val.key)
               try {
                 let awsDeletions = await deleteAWSFiles(awsKeys)
                 if (awsDeletions) {
-                  return response.status(200).json({success: true})
+                  return response.status(200).json({ success: true })
                 }
               } catch(error) {
-                response.status(500).json({ success: false, message: `There was an error: ${error}`})
+                response.status(500).json({ 
+                  success: false, 
+                  message: `There was an error: ${error}`
+                })
               }
           })
         } else {
@@ -230,4 +237,4 @@ router.delete('/', authMiddleware, (request, response, next) => {
   })
 })
 
-module.exports = router;
+module.exports = router; 

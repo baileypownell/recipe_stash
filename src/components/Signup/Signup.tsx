@@ -2,7 +2,7 @@ import React, { FormEvent } from 'react'
 import './Signup.scss'
 import ClipLoader from "react-spinners/ClipLoader"
 import AuthenticationService from '../../services/auth-service'
-import UserService, { UserInputInterface } from '../../services/user-service'
+import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
 import { appear } from '../../models/functions'
 
@@ -43,7 +43,7 @@ class Signup extends React.Component<Props, State> {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    setTimeout(appear(faded, 'fade-in'), 500);
+    setTimeout(() => appear(faded, 'fade-in'), 500);
   }
 
   signup = async(e: FormEvent) => {
@@ -59,8 +59,8 @@ class Signup extends React.Component<Props, State> {
         password,
         email
       }
-      let res = await UserService.createUser(userInput)
-      if (res.data.success) {
+      let user: UserCreatedResponse = await UserService.createUser(userInput)
+      if (user.success) {
         M.toast({html: 'Success! Logging you in now...'})
         AuthenticationService.setUserLoggedIn()
         this.props.history.push('/dashboard')
@@ -69,7 +69,7 @@ class Signup extends React.Component<Props, State> {
           error: true, 
           loading: false
         })
-        M.toast({html: res.data.message})
+        M.toast({html: user.message})
       }
     } catch(err) {
       this.setState({
@@ -108,11 +108,6 @@ class Signup extends React.Component<Props, State> {
   }
 
   validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // if (e.target.value.length < 8 || 
-    //     !(/([A-Z]+)/g.test(e.target.value)) ||
-    //     !(/([a-z]+)/g.test(e.target.value)) || 
-    //     !(/([0-9]+)/g.test(e.target.value))
-    //   ) {
     let password: string = e.target.value
     if (isPasswordInvalid(password)) {
       this.setState({

@@ -13,8 +13,8 @@ const router = Router();
 // middleware 
 
 router.use('/signin', signin)
-router.use('/sendResetEmail', sendResetEmail)
-router.use('/signinWithGoogle', signinWithGoogle)
+router.use('/send-reset-email', sendResetEmail)
+router.use('/signin-with-google', signinWithGoogle)
 router.use('/logout', logout)
 router.use('/user', user)
 router.use('/recipe', recipe)

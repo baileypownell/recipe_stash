@@ -5,7 +5,7 @@ import './Settings.scss'
 import { appear } from '../../models/functions'
 
 import AuthenticationService from '../../services/auth-service'
-import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload } from '../../services/user-service'
+import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
 
 type State = {
   password: string 
@@ -56,7 +56,7 @@ class Settings extends React.Component<any, State> {
 
   componentDidMount() {
     let faded = document.querySelectorAll('.fade');
-    setTimeout(appear(faded, 'fade-in'), 500);
+    setTimeout(() => appear(faded, 'fade-in'), 500);
     var elems = document.querySelectorAll('.collapsible');
     M.Collapsible.init(elems, {});
     this.updateView()
@@ -107,6 +107,7 @@ class Settings extends React.Component<any, State> {
 
   deleteAccount = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
+    // TO-DO: add confirmation modal
     try { 
       await UserService.deleteUser()
       M.toast({html: 'Account deleted.'})
@@ -134,8 +135,7 @@ class Settings extends React.Component<any, State> {
 
   updateView = async() => {
     try {
-      let res = await UserService.getUser()
-      let user = res.data.userData
+      let user: UserData = await UserService.getUser()
       this.setState({
         firstName: user.firstName, 
         firstNameReceived: user.firstName, 
