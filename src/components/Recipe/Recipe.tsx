@@ -14,7 +14,7 @@ import options from '../../models/options'
 import DeleteModal from './DeleteModal/DeleteModal'
 import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile } from '../../services/recipe-services'
 import Tag from '../../models/tags'
-const appear = require('../../models/functions')
+import { appear } from '../../models/functions'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 

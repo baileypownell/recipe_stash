@@ -2,7 +2,7 @@ import React from 'react'
 import mobileView from '../../images/mobile_dashboard_edited.png'
 import { withRouter } from 'react-router'
 import './Home.scss';
-const appear = require('../../models/functions')
+import { appear } from '../../models/functions'
 
 class Home extends React.Component {
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter } from "react-router-dom"
 import M from 'materialize-css'
 import './Settings.scss'
-const appear = require('../../models/functions')
+import { appear } from '../../models/functions'
 
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload } from '../../services/user-service'

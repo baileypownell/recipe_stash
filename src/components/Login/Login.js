@@ -5,7 +5,7 @@ import GoogleLogin from 'react-google-login'
 import './Login.scss'
 import M from 'materialize-css'
 import AuthenticationService from '../../services/auth-service'
-const appear = require('../../models/functions')
+import { appear } from '../../models/functions'
 
 class Login extends React.Component {
 

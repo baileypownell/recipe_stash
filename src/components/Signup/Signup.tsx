@@ -3,7 +3,8 @@ import './Signup.scss'
 import ClipLoader from "react-spinners/ClipLoader"
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface } from '../../services/user-service'
-const appear = require('../../models/functions')
+import { isPasswordInvalid } from '../../models/functions'
+import { appear } from '../../models/functions'
 
 type Props = {
   history: any
@@ -96,7 +97,7 @@ class Signup extends React.Component<Props, State> {
   updateInput = (e: any) => {
     this.setState({
       [e.target.id]: e.target.value
-    }, () => this.checkFormValidation()
+    } as any, () => this.checkFormValidation()
     );
     // remove email error if it exists
     if (e.target.id === 'email' && this.state.submissionError === 'An account already exists for this email.') {
@@ -107,15 +108,17 @@ class Signup extends React.Component<Props, State> {
   }
 
   validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // password must be at least 8 digits long, with at least one uppercase, one lowercase, and one digit
-    // (?=.*\d)(?=.*[a-z])(?=.*[A-Z])
-    if (e.target.value.length < 8 || !(/([A-Z]+)/g.test(e.target.value)) || !(/([a-z]+)/g.test(e.target.value)) || !(/([0-9]+)/g.test(e.target.value)) ) {
-
+    // if (e.target.value.length < 8 || 
+    //     !(/([A-Z]+)/g.test(e.target.value)) ||
+    //     !(/([a-z]+)/g.test(e.target.value)) || 
+    //     !(/([0-9]+)/g.test(e.target.value))
+    //   ) {
+    let password: string = e.target.value
+    if (isPasswordInvalid(password)) {
       this.setState({
           insufficientPasswordMessage: true,
           formValid: false
       })
-
     } else {
       this.setState({
           insufficientPasswordMessage: false,
