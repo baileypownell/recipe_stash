@@ -69,3 +69,18 @@ a.sidenav-trigger i  {
   height: 100%!important;
   margin: 0;
 }
+
+.sidenav {
+  width: 250px!important; 
+  @include tablet {
+    width: auto;
+  }
+  img {
+    width: 50px;
+  }
+  .icon {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+  }
+}
