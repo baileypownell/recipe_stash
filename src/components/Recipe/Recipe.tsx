@@ -67,7 +67,7 @@ class Recipe extends React.Component<any, State> {
   }
 
   goBack = () => {
-    this.props.history.push('/dashboard')
+    this.props.history.push('/recipes')
   }
 
   fetchData = async() => {
@@ -155,7 +155,7 @@ class Recipe extends React.Component<any, State> {
       await RecipeService.deleteRecipe(this.state.recipeId)
       M.toast({html: 'Recipe deleted.'})
       this.closeModal()
-      this.props.history.push('/dashboard')
+      this.props.history.push('/recipes')
     } catch(err) {
       console.log(err)
       M.toast({html: 'There was an error.'})

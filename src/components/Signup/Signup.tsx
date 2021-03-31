@@ -63,7 +63,7 @@ class Signup extends React.Component<Props, State> {
       if (user.success) {
         M.toast({html: 'Success! Logging you in now...'})
         AuthenticationService.setUserLoggedIn()
-        this.props.history.push('/dashboard')
+        this.props.history.push('/recipes')
       } else {
         this.setState({
           error: true, 

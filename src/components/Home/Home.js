@@ -7,7 +7,7 @@ import { appear } from '../../models/functions'
 class Home extends React.Component {
 
   start = () => {
-    this.props.history.push('/dashboard')
+    this.props.history.push('/recipes')
   }
 
   componentDidMount() {
