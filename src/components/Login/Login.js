@@ -54,7 +54,7 @@ class Login extends React.Component {
       let res = await AuthenticationService.signInWithGoogle(response.tokenId)
       if (res.data.success) {
         AuthenticationService.setUserLoggedIn()
-        this.props.history.push('/dashboard')
+        this.props.history.push('/recipes')
       } else {
         M.toast({ html: res.data.message })
         this.setState({
@@ -79,7 +79,7 @@ class Login extends React.Component {
       let res = await AuthenticationService.signIn(this.state.password, this.state.email)
       if (res.data?.success) {
         AuthenticationService.setUserLoggedIn()
-        this.props.history.push(`/dashboard`)
+        this.props.history.push(`/recipes`)
       } else {
         this.setState({
           loading: false,

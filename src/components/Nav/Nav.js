@@ -60,11 +60,11 @@ class Nav extends React.Component {
           <div>            
             { this.state.loggedIn ?
               <>
-                  <NavLink to="/dashboard" activeclassname="active">Dashboard</NavLink>
+                  <NavLink to="/recipes" activeclassname="active">Recipes</NavLink>
                   <a 
                     activeclassname="active"
                     data-target="slide-out" 
-                    className="sidenav-trigger"><i className="fas fa-user-cog"></i>
+                    className="sidenav-trigger"><i class="fas fa-bars"></i>
                   </a>
               </>
             : <>
@@ -79,9 +79,9 @@ class Nav extends React.Component {
             <div className="icon">
               <img src={icon} alt="logo" /> 
             </div>
-            <li><a className="waves-effect" href="/settings"><i class="fas fa-cogs"></i>Settings</a></li>
-            <li><a className="waves-effect" href="/"><i class="fas fa-house-user"></i>Home</a></li>
-            <li><a className="waves-effect" href="/dashboard"><i class="fas fa-utensils"></i>Dashboard</a></li>
+            <li><a className="waves-effect" href="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
+            <li><a className="waves-effect" href="/"><i className="fas fa-house-user"></i>Home</a></li>
+            <li><a className="waves-effect" href="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
             <li><div className="divider"></div></li>
             <li><a className="waves-effect" onClick={this.logout}><i class="fas fa-arrow-right"></i>Logout</a></li>
             {/* <li><div className="divider"></div></li> */}

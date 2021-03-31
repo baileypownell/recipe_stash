@@ -69,7 +69,7 @@ class ResetPassword extends React.Component<any, any> {
       this.setState({
         loading: false
       })
-      this.props.history.push(`/dashboard`)
+      this.props.history.push(`/recipes`)
     } catch(err) {
       M.toast({html: 'There was an error.'})
       this.setState({
