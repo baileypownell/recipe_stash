@@ -75,4 +75,12 @@ a.sidenav-trigger i  {
   @include tablet {
     width: auto;
   }
+  img {
+    width: 50px;
+  }
+  .icon {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+  }
 }

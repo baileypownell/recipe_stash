@@ -75,10 +75,16 @@ class Nav extends React.Component {
           </div>
         </nav>
     
-        <ul id="slide-out" className="sidenav">     
-            <li><a className="waves-effect" href="/settings"><i class="fas fa-cogs"></i>Settings </a> </li>
-            <li><a className="waves-effect" onClick={this.logout}><i class="fas fa-arrow-right"></i> Logout </a></li>
+        <ul id="slide-out" className="sidenav">    
+            <div className="icon">
+              <img src={icon} alt="logo" /> 
+            </div>
+            <li><a className="waves-effect" href="/settings"><i class="fas fa-cogs"></i>Settings</a></li>
+            <li><a className="waves-effect" href="/"><i class="fas fa-house-user"></i>Home</a></li>
+            <li><a className="waves-effect" href="/dashboard"><i class="fas fa-utensils"></i>Dashboard</a></li>
             <li><div className="divider"></div></li>
+            <li><a className="waves-effect" onClick={this.logout}><i class="fas fa-arrow-right"></i>Logout</a></li>
+            {/* <li><div className="divider"></div></li> */}
             {/* <li><a className="waves-effect" href="/terms-of-service">Terms of Service</a> <i class="fas fa-book"></i></li> */}
             {/* <li><a className="waves-effect" href="/developer-contact">Report a Bug</a>  <i class="large material-icons">bug_report</i></li> */}
             {/* <li><a className="waves-effect" href="/developer-contact">Request a Feature</a> <i class="fas fa-smile"></i></li> */}
