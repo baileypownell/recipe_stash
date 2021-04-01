@@ -6,7 +6,7 @@ class ListItem extends React.Component {
 
 
   viewRecipe = () => {
-    this.props.history.push(`/view-recipe/${this.props.data.id}`);
+    this.props.history.push(`/recipes/${this.props.data.id}`);
   }
 
   render() {

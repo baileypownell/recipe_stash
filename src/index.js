@@ -34,7 +34,7 @@ ReactDOM.render(
         <RequireAuthComponent>
           <Route path="/recipes" exact={true} component={Dashboard}/> 
           <Route path="/settings" component={Settings}/>
-          <Route path="/view-recipe/:id" component={Recipe}/>
+          <Route path="/recipes/:id" component={Recipe}/>
         </RequireAuthComponent>
         <Redirect to="/" />
       </Switch>

@@ -158,21 +158,21 @@ class Signup extends React.Component<Props, State> {
               <h1>Signup</h1>
               <div className="input-field">
                 <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
-                <label htmlFor="firstName" className="active">
+                <label htmlFor="firstName" >
                   First Name
                 </label>
               </div>
               <div className="input-field">
                 <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
-              <label htmlFor="lastName" className="active">Last Name</label>
+              <label htmlFor="lastName" >Last Name</label>
               </div>
               <div className="input-field">
                   <input onChange={this.updateInput} id="email" type="email" name="email" />
-                <label htmlFor="email" className="active">Email</label>
+                <label htmlFor="email" >Email</label>
               </div>
               <div className="input-field">
                 <input onChange={this.validatePassword} id="password" type="password" name="password"  />
-                <label htmlFor="password" className="active">Password</label>
+                <label htmlFor="password" >Password</label>
                 {
                   insufficientPasswordMessage ? 
                     <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
