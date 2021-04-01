@@ -135,8 +135,8 @@ class Dashboard extends React.Component<Props, State> {
     
     let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters') as string)
     if (userFiltersSaved) {
-      this.calculateSelectedFiltersNumber()
       appliedFiltersSubject.next(userFiltersSaved)  
+      this.calculateSelectedFiltersNumber()
     }
 
     // set gridView 
@@ -186,7 +186,7 @@ class Dashboard extends React.Component<Props, State> {
     })
   }
 
-  calculateSelectedFiltersNumber() {
+  calculateSelectedFiltersNumber(): void {
     let selectedFilters = 0
     for (const property in appliedFiltersSubject.getValue()) {
       if (appliedFiltersSubject.getValue()[property]) {
