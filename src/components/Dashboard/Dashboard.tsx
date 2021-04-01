@@ -133,9 +133,17 @@ class Dashboard extends React.Component<Props, State> {
       userInputSubject.next(userInputSaved)
     }
     
-    let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('filters') as string)
+    // using saved features filter
+    let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('feature_filters') as string)
     if (userFiltersSaved) {
       appliedFiltersSubject.next(userFiltersSaved)  
+      this.calculateSelectedFiltersNumber()
+    }
+
+    // using saved categories filter
+    let userCategoryFiltersSaved: CategoryInterface = JSON.parse(window.sessionStorage.getItem('category_filters') as string)
+    if (userCategoryFiltersSaved) {
+      appliedCategorySubject.next(userCategoryFiltersSaved)
       this.calculateSelectedFiltersNumber()
     }
 
@@ -152,8 +160,9 @@ class Dashboard extends React.Component<Props, State> {
       userInput$,
       unfilteredRecipes$
     ])
-    .pipe(tap(([filters, _, input, recipes]) => {
-      window.sessionStorage.setItem('filters', JSON.stringify(filters))
+    .pipe(tap(([filters, category, input, recipes]) => {
+      window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
+      window.sessionStorage.setItem('category_filters', JSON.stringify(category))
       window.sessionStorage.setItem('userInput', input)
     }))
     .subscribe(([filters, _, input, recipes]) => {
@@ -189,15 +198,17 @@ class Dashboard extends React.Component<Props, State> {
   calculateSelectedFiltersNumber(): void {
     let selectedFilters = 0
     for (const property in appliedFiltersSubject.getValue()) {
-      if (appliedFiltersSubject.getValue()[property]) {
+      if (appliedFiltersSubject.getValue()[property]) { 
         selectedFilters++
       }
     }
+
     for (const property in appliedCategorySubject.getValue()) {
       if (appliedCategorySubject.getValue()[property]) {
         selectedFilters++
       }
     }
+
     selectedFilterSubject.next(selectedFilters)
   }
 
@@ -213,7 +224,7 @@ class Dashboard extends React.Component<Props, State> {
 
   filterByCategory = (e: React.MouseEvent<HTMLElement>) => {
     let currentState = appliedCategorySubject.getValue()[(e.target as HTMLInputElement).id]
-    let filter = {
+    let filter: CategoryInterface = {
       ...appliedCategorySubject.getValue(), 
       [(e.target as Element).id]: !currentState
     }
