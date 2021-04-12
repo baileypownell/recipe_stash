@@ -42,3 +42,14 @@ ALTER TABLE recipes ADD COLUMN IF NOT EXISTS raw_title character varying(100);
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS has_images BOOLEAN;
 
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS default_tile_image_key character varying(50);
+
+-- /* scripts to convert using integer ID to UUID */ 
+
+-- /* first, add a column for UUID on recipes and user tables */
+-- ALTER TABLE recipes ADD COLUMN uuid UUID;
+-- ALTER TABLE users ADD COLUMN uuid UUID;
+
+-- ALTER TABLE users ALTER COLUMN uuid NOT NULL DEFAULT UUID uuid_generate_v1(), CONSTRAINT usersß PRIMARY KEY (uuid);
+-- /* give all pre-existing rows a value for this new column */ 
+
+-- /* update the other tables (files) to account for this change */
