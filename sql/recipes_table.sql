@@ -63,14 +63,12 @@ ALTER TABLE recipes ADD COLUMN user_uuid UUID REFERENCES users(user_uuid) ON DEL
 -- script to get and set the user_uuid from the recipes table 
 UPDATE recipes SET user_uuid = users.user_uuid FROM users WHERE recipes.user_id = users.id;
 
--- TO-DO:
--- delete the user_id column
-
 -- make the recipes.user_uuid column primary 
 ALTER TABLE recipes ALTER COLUMN user_uuid CONSTRAINT PRIMARY KEY;
 
-
-
+-- delete old columns 
+ALTER TABLE recipes DROP COLUMN id;
+ALTER TABLE recipes DROP COLUMN user_id;
 
 
 
@@ -90,38 +88,3 @@ ALTER TABLE recipes DROP COLUMN user_uuid;
 ALTER TABLE recipes ADD COLUMN user_uuid UUID REFERENCES users(user_uuid) ON DELETE CASCADE;
 -- now update again... 
 UPDATE recipes SET user_uuid = users.user_uuid FROM users WHERE recipes.user_id = users.id;
-
--- delete the id column 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- /* scripts to convert using integer ID to UUID */ 
-
--- /* first, add a column for UUID on recipes and user tables */
--- ALTER TABLE recipes ADD COLUMN uuid UUID;
--- ALTER TABLE users ADD COLUMN uuid UUID;
-
--- ALTER TABLE users ALTER COLUMN uuid NOT NULL DEFAULT UUID uuid_generate_v1(), CONSTRAINT usersß PRIMARY KEY (uuid);
--- /* give all pre-existing rows a value for this new column */ 
-
--- /* update the other tables (files) to account for this change */

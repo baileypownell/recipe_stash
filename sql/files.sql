@@ -20,8 +20,10 @@ ALTER TABLE files ADD COLUMN recipe_uuid UUID;
 -- script to get and set the recipe_uuid from the recipes table 
 UPDATE files SET recipe_uuid = recipes.recipe_uuid FROM recipes WHERE files.recipe_id = recipes.id;
 
--- TO-DO: delete the id, user_id, and recipe_id columsn; establish primary key relationship
-
+-- delete the id, user_id, and recipe_id columsn
+ALTER TABLE files DROP COLUMN user_id;
+ALTER TABLE files DROP COLUMN recipe_id;
+ALTER TABLE files DROP COLUMN id;
 
 
 
