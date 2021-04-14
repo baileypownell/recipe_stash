@@ -196,25 +196,47 @@ router.put('/', authMiddleware, (request, response, next) => {
   } 
 })
 
-// TO-DO: delete in AWS....
 router.delete('/', authMiddleware, (request, response, next) => {
   let id = request.userID
-  // query all file keys for this user, and delete in AWS
-  // client.query('DELETE FROM files WHERE user_uuid=$1 RETURNING key', 
-  // let awsKeys = res.rows.map(val => val.key)
-  // try {
-  // let awsDeletions = await deleteAWSFiles(awsKeys)
-  // if (awsDeletions) {
-  client.query('DELETE FROM users WHERE user_uuid=$1',
+  client.query('SELECT key FROM files WHERE user_uuid=$1', 
   [id],
-    (err, res) => {
+  async(err, res) => {
     if (err) return next(err)
-    if (res) {
-        return response.status(200).json({ success: true })
-      } else {
-        return response.status(500)
+    if (res.rows.length) {
+      let awsKeys = res.rows.map(val => val.key)
+      try {
+        let awsDeletions = await deleteAWSFiles(awsKeys)
+        if (awsDeletions) {
+          client.query('DELETE FROM users WHERE user_uuid=$1',
+          [id],
+          (err, res) => {
+          if (err) return next(err)
+          if (res) {
+              return response.status(200).json({ success: true })
+            } else {
+              return response.status(500)
+            }
+        })
+        } else {
+          return response.status(500).json({ success: false, message: 'Could not delete user files.'})
+        }
+      } catch(err) {
+        return response.status(500).json({ success: false, message: err })
       }
+    } else {
+      client.query('DELETE FROM users WHERE user_uuid=$1',
+        [id],
+        (err, res) => {
+        if (err) return next(err)
+        if (res) {
+            return response.status(200).json({ success: true })
+          } else {
+            return response.status(500)
+          }
+      })
+    }
   })
-}) 
+})
+
 
 module.exports = router; 
