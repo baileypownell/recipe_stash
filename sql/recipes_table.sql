@@ -43,6 +43,78 @@ ALTER TABLE recipes ADD COLUMN IF NOT EXISTS has_images BOOLEAN;
 
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS default_tile_image_key character varying(50);
 
+
+
+
+
+
+
+
+
+
+
+
+-- needs to ultimately be a primary key... 
+ALTER TABLE recipes ADD COLUMN recipe_uuid UUID DEFAULT uuid_generate_v4 ();
+
+-- create the user_uuid column to replace the user_id column 
+ALTER TABLE recipes ADD COLUMN user_uuid UUID REFERENCES users(user_uuid) ON DELETE CASCADE;
+
+-- script to get and set the user_uuid from the recipes table 
+UPDATE recipes SET user_uuid = users.user_uuid FROM users WHERE recipes.user_id = users.id;
+
+-- TO-DO:
+-- delete the user_id column
+
+-- make the recipes.user_uuid column primary 
+ALTER TABLE recipes ALTER COLUMN user_uuid CONSTRAINT PRIMARY KEY;
+
+
+
+
+
+
+
+
+
+
+
+
+--- NOT FOR PRODUCTION!!
+-- at this point, I should have specified on delete behavior, so I had to drop the constraint and re-add it:
+ALTER TABLE recipes DROP CONSTRAINT recipes_user_uuid_fkey;
+
+-- now DROP the column 
+ALTER TABLE recipes DROP COLUMN user_uuid;
+-- now re-add the column 
+ALTER TABLE recipes ADD COLUMN user_uuid UUID REFERENCES users(user_uuid) ON DELETE CASCADE;
+-- now update again... 
+UPDATE recipes SET user_uuid = users.user_uuid FROM users WHERE recipes.user_id = users.id;
+
+-- delete the id column 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- /* scripts to convert using integer ID to UUID */ 
 
 -- /* first, add a column for UUID on recipes and user tables */

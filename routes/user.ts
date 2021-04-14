@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 router.get('/', authMiddleware, (request, response, next) => {
   let userId = request.userID
-  client.query('SELECT email, first_name, last_name FROM users WHERE id=$1',
+  client.query('SELECT email, first_name, last_name FROM users WHERE user_uuid=$1',
   [userId],
    (err, res) => {
     if (err) return next(err)
@@ -54,15 +54,15 @@ router.post('/', (request, response, next) => {
           (err, res) => {
             if (err) return next(err)
             if (res.rows.length) {
-              let id=res.rows[0].id;
+              let user_uuid=res.rows[0].user_uuid;
               let email=res.rows[0].email;
               let firstName=res.rows[0].first_name;
               let lastName=res.rows[0].last_name;
               request.session.regenerate(() => {
                 request.session.save()
                 // update the session table with the user's sessionID 
-                client.query('UPDATE session SET user_id=$1 WHERE sid=$2',
-                [id, request.sessionID],
+                client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
+                [user_uuid, request.sessionID],
                 (err, res) => {
                   if (err) return next(err)
                   if (res.rowCount) {
@@ -71,7 +71,7 @@ router.post('/', (request, response, next) => {
                       message: 'User created',
                       sessionID: request.sessionID,
                       userData: {
-                        id: id, 
+                        id: user_uuid, 
                         email: email, 
                         firstName: firstName, 
                         lastName: lastName
@@ -119,7 +119,7 @@ router.put('/', authMiddleware, (request, response, next) => {
   const { first_name, last_name, password, new_email } = request.body
   let userId = request.userID
   if ( first_name && last_name ) {
-      client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE id=$3',
+      client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
       [first_name, last_name, userId],
       (err, res) => {
         if (err) return next(err)
@@ -132,7 +132,7 @@ router.put('/', authMiddleware, (request, response, next) => {
   } 
   if (new_email) {
       // make sure password is correct, if not, reject
-      client.query('SELECT * FROM users WHERE id=$1',
+      client.query('SELECT * FROM users WHERE user_uuid=$1',
         [userId],
         (err, res) => {
           if (err) return next(err)
@@ -153,7 +153,7 @@ router.put('/', authMiddleware, (request, response, next) => {
                     message: 'Email is not unique.'
                   })
                 } else {
-                  client.query('UPDATE users SET email=$1 WHERE id=$2',
+                  client.query('UPDATE users SET email=$1 WHERE user_uuid=$2',
                   [new_email, userId],
                   (err, res) => {
                     if (err) return next(err);
@@ -196,45 +196,25 @@ router.put('/', authMiddleware, (request, response, next) => {
   } 
 })
 
+// TO-DO: delete in AWS....
 router.delete('/', authMiddleware, (request, response, next) => {
   let id = request.userID
-  client.query('DELETE FROM users WHERE id=$1',
+  // query all file keys for this user, and delete in AWS
+  // client.query('DELETE FROM files WHERE user_uuid=$1 RETURNING key', 
+  // let awsKeys = res.rows.map(val => val.key)
+  // try {
+  // let awsDeletions = await deleteAWSFiles(awsKeys)
+  // if (awsDeletions) {
+  client.query('DELETE FROM users WHERE user_uuid=$1',
   [id],
     (err, res) => {
     if (err) return next(err)
     if (res) {
-      client.query('DELETE FROM recipes WHERE user_id=$1',
-      [id],
-      (err, res) => {
-        if (err) return next(err)
-        if (res) {
-          // remove image files
-          client.query('DELETE FROM files WHERE user_id=$1 RETURNING key', 
-          [id],
-          async(error, res) => {
-              if (error) return response.status(500).json({ 
-                success: false, 
-                message: `There was an error: ${error}`
-              })
-              let awsKeys = res.rows.map(val => val.key)
-              try {
-                let awsDeletions = await deleteAWSFiles(awsKeys)
-                if (awsDeletions) {
-                  return response.status(200).json({ success: true })
-                }
-              } catch(error) {
-                response.status(500).json({ 
-                  success: false, 
-                  message: `There was an error: ${error}`
-                })
-              }
-          })
-        } else {
-          return response.status(500)
-        }
-      })
-    } 
+        return response.status(200).json({ success: true })
+      } else {
+        return response.status(500)
+      }
   })
-})
+}) 
 
 module.exports = router; 

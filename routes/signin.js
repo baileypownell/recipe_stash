@@ -13,10 +13,10 @@ router.post('/', (request, response, next) => {
     (err, res) => {
       if (err) return next(err)
       if (res.rows.length) {
-        let first_name, last_name, id;
+        let first_name, last_name, user_uuid;
         first_name = res.rows[0].first_name;
         last_name = res.rows[0].last_name;
-        id = res.rows[0].id;
+        user_uuid = res.rows[0].user_uuid;
         let hashedPassword = res.rows[0].password;
         bcrypt.compare(password, hashedPassword, (err, res) => {
           if (err) return next(err)
@@ -25,8 +25,8 @@ router.post('/', (request, response, next) => {
                 request.session.save()
                 const sessionIdentifier = request.sessionID
                 // update the session table with the user's sessionID 
-                client.query('UPDATE session SET user_id=$1 WHERE sid=$2',
-                [id, sessionIdentifier],
+                client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
+                [user_uuid, sessionIdentifier],
                 (err, res) => {
                   if (err) return next(err)
                   if (res.rowCount) {
@@ -34,7 +34,7 @@ router.post('/', (request, response, next) => {
                       success: true,
                       sessionID: sessionIdentifier,
                       userData: {
-                        id: id,
+                        id: user_uuid,
                         first_name: first_name,
                         last_name: last_name,
                         email: email

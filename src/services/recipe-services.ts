@@ -61,7 +61,7 @@ export interface DefaultTile {
 }
 
 export interface RecipeInterface {
-    id: number
+    id: string
     title: string
     rawTitle: string
     category: string
@@ -78,7 +78,7 @@ export interface UpdateRecipeInput {
     rawTitle: string
     ingredients: string
     directions: string
-    recipeId: number
+    recipeId: string
     category: string
     isNoBake: boolean
     isEasy: boolean
@@ -182,11 +182,6 @@ export const RecipeService = {
         }))
     },
 
-    // setTileImage: async(recipeId: number, awsKey: string) => {
-    //     return await axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
-    // },
-
-
     // update
 
     updateRecipe: (
@@ -222,27 +217,6 @@ export const RecipeService = {
               }
           })        
     },
-
-    // uploadFiles: async(newFiles: NewFileInterface[], recipeId: number): Promise<UploadedFileResult[]> => {
-    //     return await Promise.all(newFiles.map( async file => {
-    //         let formData = new FormData() 
-    //         formData.append('image', file.file as any)
-
-    //         let upload = await axios.post(
-    //             `/file-upload/${recipeId}`, 
-    //             formData,
-    //             {
-    //               headers: {
-    //                   'content-type': 'multipart/form-data'
-    //               }
-    //             }
-    //         )
-    //         return {
-    //             awsKey: upload.data.key, 
-    //             fileName: file.file.name
-    //         }
-    //     }))
-    // },
 
     handleDefaultTileImageNew: (
         recipeId: number, 

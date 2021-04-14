@@ -14,12 +14,12 @@ router.post('/', (request, response, next) => {
     (err, res) => {
       if (err) return next(err)
       if (res.rows.length) {
-        id = res.rows[0].id;
+        let user_uuid = res.rows[0].user_uuid;
         request.session.regenerate(() => {
           request.session.save()
           // update the session table with the user's sessionID 
-          client.query('UPDATE session SET user_id=$1 WHERE sid=$2',
-          [id, request.sessionID],
+          client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
+          [user_uuid, request.sessionID],
           (err, res) => {
             if (err) return next(err)
             if (res.rowCount) {
