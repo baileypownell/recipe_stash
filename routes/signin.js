@@ -51,7 +51,7 @@ router.post('/', (request, response, next) => {
           }
         })
       } else {
-        return response.status(403).json({error: 'No user exists with that email address.'})
+        return response.status(403).json({error: 'An email cannot be sent to that address.'})
       }
     })
 })
