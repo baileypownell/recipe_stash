@@ -25,9 +25,11 @@ ALTER TABLE files DROP COLUMN user_id;
 ALTER TABLE files DROP COLUMN recipe_id;
 ALTER TABLE files DROP COLUMN id;
 
+-- make the recipe_uuid column reference the recipes table 
+ALTER TABLE files ADD CONSTRAINT fk_file_recipe_uuid FOREIGN KEY (recipe_uuid) REFERENCES recipes (recipe_uuid);
 
-
-
+-- add a file_uuid column, make it primary key 
+ALTER TABLE files ADD COLUMN file_uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4();
 
 
 -- NOT FOR PRODUCTION 

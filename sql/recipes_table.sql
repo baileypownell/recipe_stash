@@ -70,9 +70,11 @@ ALTER TABLE recipes ALTER COLUMN user_uuid CONSTRAINT PRIMARY KEY;
 ALTER TABLE recipes DROP COLUMN id;
 ALTER TABLE recipes DROP COLUMN user_id;
 
+-- make recipe_uuid unique 
+ALTER TABLE recipes ADD CONSTRAINT recipe_unique UNIQUE (recipe_uuid);
 
-
-
+ALTER TABLE recipes
+    ADD CONSTRAINT unique_recipe PRIMARY KEY (recipe_uuid);
 
 
 
