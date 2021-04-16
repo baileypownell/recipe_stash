@@ -30,7 +30,7 @@ type State = {
   recipe_title_raw_edit: string
   ingredients_edit: string 
   directions_edit: string
-  recipeId: number
+  recipeId: string
   showConfirmation: boolean
   category: string
   category_edit: string 
@@ -54,7 +54,7 @@ class Recipe extends React.Component<any, State> {
     recipe_title_raw_edit: '',
     ingredients_edit: '', 
     directions_edit: '',
-    recipeId: parseInt(this.props.match.params.id),
+    recipeId: this.props.match.params.id,
     showConfirmation: false,
     category: '',
     category_edit: '', 

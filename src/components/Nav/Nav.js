@@ -64,7 +64,7 @@ class Nav extends React.Component {
                   <a 
                     activeclassname="active"
                     data-target="slide-out" 
-                    className="sidenav-trigger"><i class="fas fa-bars"></i>
+                    className="sidenav-trigger"><i className="fas fa-bars"></i>
                   </a>
               </>
             : <>

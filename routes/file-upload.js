@@ -16,12 +16,12 @@ router.post('/:recipeId', authMiddleware, async(req, res) => {
     let userId = req.userID
     try {
         let awsUploadRes = await uploadSingleAWSFile(req, res)
-        client.query('INSERT INTO files(aws_download_url, recipe_id, user_id, key) VALUES($1, $2, $3, $4)', 
+        client.query('INSERT INTO files(aws_download_url, recipe_uuid, user_uuid, key) VALUES($1, $2, $3, $4)', 
         [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
         (error, response) => {
             if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
             if (response.rowCount) {
-                client.query('UPDATE recipes SET has_images = TRUE WHERE id = $1', 
+                client.query('UPDATE recipes SET has_images = TRUE WHERE recipe_uuid = $1', 
                 [recipeId], 
                 (error, response) => {
                     if (error) return res.status(500).json({ 
@@ -54,7 +54,7 @@ router.post('/tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
     const { awsKey, id } = req.params
 
     try {
-        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
+        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
         [awsKey, id],
         (error, response) => {
             if (error) return res.status(500).json({ 
@@ -83,7 +83,7 @@ router.post('/tile-image/:awsKey/:id', authMiddleware, async(req, res) => {
 router.delete('/tile-image/:recipeId', authMiddleware, async(req, res) => {
     const { recipeId } = req.params
     try {
-        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE id=$2',
+        client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
         [null, recipeId],
         (error, response) => {
             if (error) return res.status(500).json({ 
@@ -113,13 +113,13 @@ router.delete('/:imageKey', authMiddleware, async(req, res) => {
     const { imageKey } = req.params
     try {
         await deleteSingleAWSFile(imageKey)
-        client.query('DELETE FROM files WHERE key=$1 RETURNING recipe_id', 
+        client.query('DELETE FROM files WHERE key=$1 RETURNING recipe_uuid', 
         [imageKey],
         (error, response) => {
             if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
             // set recipe's "has_images" property to false if necessary
-            let recipeId = response.rows[0].recipe_id 
-            client.query('SELECT * FROM files WHERE recipe_id=$1', 
+            let recipeId = response.rows[0].recipe_uuid 
+            client.query('SELECT * FROM files WHERE recipe_uuid=$1', 
             [recipeId],
             (error, response) => {
                 if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`})
@@ -127,7 +127,7 @@ router.delete('/:imageKey', authMiddleware, async(req, res) => {
                     return res.status(200).json({ success: true, message: 'File deleted.' })
                 } else {
                     // mark has_images to false 
-                    client.query('UPDATE recipes SET has_images = FALSE WHERE id = $1', 
+                    client.query('UPDATE recipes SET has_images = FALSE WHERE recipe_uuid = $1', 
                     [recipeId], 
                     (error, response) => {
                         if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}`}) 

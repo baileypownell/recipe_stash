@@ -42,7 +42,7 @@ class Login extends React.Component {
   sendPasswordResetLink = async(e) => {
     e.preventDefault()
     try {
-      let res = AuthenticationService.getPasswordResetLink(this.state.email)
+      let res = await AuthenticationService.getPasswordResetLink(this.state.email)
       res.data.success ? M.toast({html: 'Check your email for a link to reset your password.'}) : M.toast({html: 'There was an error.'}) 
     } catch(err) {
       M.toast({html: 'There was an error.'})

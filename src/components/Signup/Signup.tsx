@@ -181,7 +181,7 @@ class Signup extends React.Component<Props, State> {
               <div className="input-field">
                 <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
                 {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
-              <label htmlFor="confirmPassword" className="active">Confirm Password</label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
               </div>
               <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
               <button
