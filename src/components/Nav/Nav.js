@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink, Link } from "react-router-dom"
-import icon from '../../images/apple-touch-icon.png'
+import whiteLogo from '../../images/white-logo.png'
+import blackLogo from '../../images/black-logo.png'
 import './Nav.scss';
 import { withRouter } from "react-router-dom"
 import AuthenticationService from '../../services/auth-service'
@@ -56,7 +57,7 @@ class Nav extends React.Component {
     return (
       <>
         <nav>
-          <Link to="/"><img src={icon} alt="logo" /></Link>
+          <Link to="/"><img src={blackLogo} alt="logo" /></Link>
           <div>            
             { this.state.loggedIn ?
               <>
@@ -77,7 +78,7 @@ class Nav extends React.Component {
     
         <ul id="slide-out" className="sidenav">    
             <div className="icon">
-              <img src={icon} alt="logo" /> 
+              <img src={whiteLogo} alt="logo" /> 
             </div>
             <li><a className="waves-effect" href="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
             <li><a className="waves-effect" href="/"><i className="fas fa-house-user"></i>Home</a></li>

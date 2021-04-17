@@ -169,7 +169,7 @@ router.put('/', authMiddleware, (request, response, next) => {
                         from: 'virtualcookbook@outlook.com',
                         to: `${oldEmail}`,
                         subject: 'Your Email Address Has Been Changed',
-                        html: `<h1>Virtual Cookbook</h1><p>The email address for your Virtual Cookbook account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
+                        html: `<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
                       }
                       mailer.sendMail(email, function(err, res) {
                         if (err) {
