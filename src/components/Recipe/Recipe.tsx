@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs'
 import { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from '../DeleteModal/DeleteModal'
-import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile } from '../../services/recipe-services'
+import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile, RecipeInput } from '../../services/recipe-services'
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -40,6 +40,7 @@ type State = {
   tags: Tag[]
   defaultTileImageKey: string | null | DefaultTile
   recipeValid: boolean | null
+  cloning: boolean
 }
 
 class Recipe extends React.Component<any, State> {
@@ -63,7 +64,8 @@ class Recipe extends React.Component<any, State> {
     filesToDelete: [],
     tags: tags,
     defaultTileImageKey: null,
-    recipeValid: null
+    recipeValid: null,
+    cloning: false
   }
 
   goBack = () => {
@@ -71,6 +73,7 @@ class Recipe extends React.Component<any, State> {
   }
 
   fetchData = async() => {
+    console.log('fetching for: ', this.props.match.params.id)
     try {
       let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
       this.setState({
@@ -185,11 +188,63 @@ class Recipe extends React.Component<any, State> {
     this.setState({
       filesToDelete: [],
       newFiles: []
-    }, () => this.forceUpdate()) 
+    }) 
   }
 
-  updateRecipe = async(e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
+  addRecipe = async() => {
+    let tags = this.state.tags
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+    const rawTitle = htmlToText(titleHTML, {
+      wordwrap: 130
+    })
+    this.setState({
+      loading: true
+    })
+    this.closeModal()
+    let recipeInput: RecipeInput = {
+      title: this.state.recipe_title_edit,
+      rawTitle,
+      category: this.state.category,
+      ingredients: this.state.ingredients_edit,
+      directions: this.state.directions_edit,
+      isNoBake: tags[0].selected,
+      isEasy: tags[1].selected,
+      isHealthy: tags[2].selected,
+      isGlutenFree: tags[3].selected, 
+      isDairyFree: tags[4].selected,
+      isSugarFree: tags[5].selected, 
+      isVegetarian: tags[6].selected, 
+      isVegan: tags[7].selected,
+      isKeto: tags[8].selected,
+    }
+    try {
+      const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
+      M.toast({html: 'Recipe added.'})
+      this.setState({
+        filesToDelete: [],
+        newFiles: [],
+        loading: false
+      }, () => {
+        this.props.history.push(`/recipes/${recipe.recipeId}`)
+        //this.fetchData()
+        window.location.reload(false);
+
+      }) 
+    } catch(err) {
+      console.log(err)
+      this.setState({
+        loading: false
+      })
+      M.toast({html: 'There was an error.'})
+    }
+  }
+
+  saveRecipe = async(e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      if (this.state.cloning) {
+        this.addRecipe()
+        return
+      }
       let tags = this.state.tags
       let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
       const rawTitle = htmlToText(titleHTML, {
@@ -273,6 +328,13 @@ class Recipe extends React.Component<any, State> {
     }, () => this.checkValidity())
   }
 
+  cloneRecipe = (e: Event) => {
+    e.stopPropagation()
+    this.setState({
+      cloning: true
+    }, () => this.openModal())
+  }
+
   render() {
     const { 
       recipeId, 
@@ -283,7 +345,8 @@ class Recipe extends React.Component<any, State> {
       directions, 
       ingredients, 
       recipe_title_raw, 
-      defaultTileImageKey
+      defaultTileImageKey,
+      cloning
     } = this.state;
 
     return (
@@ -332,6 +395,10 @@ class Recipe extends React.Component<any, State> {
                   <a className="btn-floating btn-large" id="primary-color">
                     <i className="large material-icons">mode_edit</i>
                   </a>
+
+                  <ul>
+                      <li onClick={this.cloneRecipe}><a className="btn-floating green-icon"><i className="far fa-clone"></i></a></li>
+                    </ul>
                 </div>
               </div>
           </div>
@@ -386,23 +453,23 @@ class Recipe extends React.Component<any, State> {
                   </div>
               </div>
                 <div className="modal-close-buttons">
-                  <button 
+                  {!cloning ? <button 
                     id="primary-color" 
                     className="waves-effect waves-light btn modal-trigger" 
                     data-target="confirmation-modal"
                     >
                     Delete Recipe <i className="fas fa-trash"></i>
-                  </button>
+                  </button> : null}
                   <div>
                     <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                     <button 
                       className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                       disabled={!this.state.recipeValid} 
-                      onClick={this.updateRecipe}>
+                      onClick={this.saveRecipe}>
                         {loading ? 
                           <Preloader/> : 
                           <>
-                            Update Recipe
+                            {!cloning ? 'Update Recipe' : 'Add Recipe' }
                             <i className="fas fa-check-square"></i>
                           </>
                           }
