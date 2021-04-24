@@ -191,6 +191,7 @@ class Recipe extends React.Component<any, State> {
     }) 
   }
 
+  // function for duplicating a recipe
   addRecipe = async() => {
     let tags = this.state.tags
     let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
@@ -218,6 +219,7 @@ class Recipe extends React.Component<any, State> {
       isKeto: tags[8].selected,
     }
     try {
+      console.log(this.state.newFiles)
       const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
       M.toast({html: 'Recipe added.'})
       this.setState({
@@ -226,7 +228,6 @@ class Recipe extends React.Component<any, State> {
         loading: false
       }, () => {
         this.props.history.push(`/recipes/${recipe.recipeId}`)
-        //this.fetchData()
         window.location.reload(false);
 
       }) 
@@ -330,6 +331,7 @@ class Recipe extends React.Component<any, State> {
 
   cloneRecipe = (e: Event) => {
     e.stopPropagation()
+    presignedUrlsSubject.next([])
     this.setState({
       cloning: true
     }, () => this.openModal())
