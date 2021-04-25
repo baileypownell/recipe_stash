@@ -281,7 +281,7 @@ class AddRecipe extends React.Component<Props, State> {
                     {this.state.loading ? 
                       <Preloader/> : 
                       <>
-                        Save
+                        Add Recipe
                         <i className="fas fa-check-square"></i>
                       </>
                       }

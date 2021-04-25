@@ -140,13 +140,13 @@ export const RecipeService = {
                     if (defaultTileImage) {
                         await RecipeService.handleDefaultTileImage(recipeCreated.data.recipeId, defaultTileImage.awsKey)
                     }
-                    resolve({recipeAdded: true})
+                    resolve({recipeAdded: true, recipeId: recipeCreated.data.recipeId})
                 } catch (error) {
                     console.log(error)
                     reject({err: true, error})
                 }
             } else {
-                resolve({recipeAdded: true})
+                resolve({recipeAdded: true, recipeId: recipeCreated.data.recipeId})
             }
         })
     },

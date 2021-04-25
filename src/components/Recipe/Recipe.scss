@@ -77,7 +77,7 @@ h3 {
 .view-recipe {
   margin: 0 auto;
   padding: 20px;
-  ul {
+  .section ul {
     padding-left: revert!important;
   }
   h2 {
@@ -135,7 +135,7 @@ h3 {
   }
  }
 
-.view-recipe ul li {
+.view-recipe > div .section ul li {
    list-style-type: initial!important;
  }
 
@@ -166,4 +166,15 @@ h3 {
    > div {
      margin: 0 auto;
    }
+ }
+
+
+ .fixed-action-button {
+   li {
+     list-style-type: none;
+   }
+ }
+
+ .green-icon {
+   background-color: $green!important;
  }
