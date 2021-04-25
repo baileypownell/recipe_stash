@@ -73,7 +73,6 @@ class Recipe extends React.Component<any, State> {
   }
 
   fetchData = async() => {
-    console.log('fetching for: ', this.props.match.params.id)
     try {
       let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
       this.setState({
@@ -138,7 +137,11 @@ class Recipe extends React.Component<any, State> {
     M.updateTextFields()
   }
 
-  closeModal = () => modalInstance.close() 
+  closeModal = () => {
+    this.setState({
+      cloning: false
+    }, () => modalInstance.close() )
+  }
 
   checkValidity = () => {
     const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
@@ -219,7 +222,6 @@ class Recipe extends React.Component<any, State> {
       isKeto: tags[8].selected,
     }
     try {
-      console.log(this.state.newFiles)
       const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
       M.toast({html: 'Recipe added.'})
       this.setState({
@@ -461,7 +463,7 @@ class Recipe extends React.Component<any, State> {
                     data-target="confirmation-modal"
                     >
                     Delete Recipe <i className="fas fa-trash"></i>
-                  </button> : null}
+                  </button> : <div></div>}
                   <div>
                     <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                     <button 
