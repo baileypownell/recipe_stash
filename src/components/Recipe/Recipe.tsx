@@ -408,7 +408,7 @@ class Recipe extends React.Component<any, State> {
           </div>
             <div id={`modal_${recipeId}`} className="modal recipe-modal">
               <div className="recipe">
-                <h1 className="title">Edit Recipe</h1>
+                <h1 className="title">{cloning ? 'Add Recipe' : 'Edit Recipe'}</h1>
                 <div className="modal-scroll">
                   <div className="modal-content">
                       <h3>Title</h3>
