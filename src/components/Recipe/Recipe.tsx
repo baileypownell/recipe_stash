@@ -366,16 +366,12 @@ class Recipe extends React.Component<any, State> {
                   <div id="recipe-title" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.state.recipe_title)}}/>
                 </div>
                 <div className="section">
-                  <h3 className="default">Ingredients</h3>
+                  {/* <h3 className="default">Ingredients</h3> */}
                   <div dangerouslySetInnerHTML={{__html: ingredients}} />
                 </div>
                 <div className="section">
-                  <h3 className="default">Directions </h3>
+                  {/* <h3 className="default">Directions </h3> */}
                   <div dangerouslySetInnerHTML={{__html: directions}}/>
-                </div>
-                <div className="section">
-                  <h3 className="default">Category</h3>
-                  <h2>{category}</h2>
                 </div>
                 <div className="section">
                   {tags.map((tag) => ( tag.selected ? 
