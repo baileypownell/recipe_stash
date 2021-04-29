@@ -478,27 +478,29 @@ class Recipe extends React.Component<any, State> {
                   </div>
               </div>
                 <div className="modal-close-buttons">
-                  {!cloning ? <button 
-                    id="primary-color" 
-                    className="waves-effect waves-light btn modal-trigger" 
-                    data-target="confirmation-modal"
-                    >
-                    Delete Recipe <i className="fas fa-trash"></i>
-                  </button> : <div></div>}
+                  { !cloning ? 
+                  <button 
+                  className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
+                  disabled={!this.state.recipeValid} 
+                  onClick={this.saveRecipe}>
+                    {loading ? 
+                      <Preloader/> : 
+                      <>
+                        {!cloning ? 'Update Recipe' : 'Add Recipe' }
+                        <i className="fas fa-check-square"></i>
+                      </>
+                      }
+                </button>
+                  : null }
                   <div>
-                    <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                     <button 
-                      className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
-                      disabled={!this.state.recipeValid} 
-                      onClick={this.saveRecipe}>
-                        {loading ? 
-                          <Preloader/> : 
-                          <>
-                            {!cloning ? 'Update Recipe' : 'Add Recipe' }
-                            <i className="fas fa-check-square"></i>
-                          </>
-                          }
-                    </button>
+                      id="primary-color" 
+                      className="waves-effect waves-light btn modal-trigger" 
+                      data-target="confirmation-modal"
+                      >
+                      Delete Recipe <i className="fas fa-trash"></i>
+                    </button> 
+                    <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                   </div>
                 </div>
             </div> 

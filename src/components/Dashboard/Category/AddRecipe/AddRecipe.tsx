@@ -273,7 +273,6 @@ class AddRecipe extends React.Component<Props, State> {
                   </div>
                 </div>
                 <div className="modal-close-buttons">
-                <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
                 <button 
                   className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
                   disabled={!this.state.recipeValid} 
@@ -286,6 +285,7 @@ class AddRecipe extends React.Component<Props, State> {
                       </>
                       }
                  </button>
+                 <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
               </div>
             </div>
           </div> 
