@@ -84,7 +84,7 @@ class Nav extends React.Component {
             <li><a className="waves-effect" href="/"><i className="fas fa-house-user"></i>Home</a></li>
             <li><a className="waves-effect" href="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
             <li><div className="divider"></div></li>
-            <li><a className="waves-effect" onClick={this.logout}><i class="fas fa-arrow-right"></i>Logout</a></li>
+            <li><a className="waves-effect" onClick={this.logout}><i className="fas fa-arrow-right"></i>Logout</a></li>
             {/* <li><div className="divider"></div></li> */}
             {/* <li><a className="waves-effect" href="/terms-of-service">Terms of Service</a> <i class="fas fa-book"></i></li> */}
             {/* <li><a className="waves-effect" href="/developer-contact">Report a Bug</a>  <i class="large material-icons">bug_report</i></li> */}

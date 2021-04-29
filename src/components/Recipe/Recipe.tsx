@@ -41,6 +41,7 @@ type State = {
   defaultTileImageKey: string | null | DefaultTile
   recipeValid: boolean | null
   cloning: boolean
+  width: number 
 }
 
 class Recipe extends React.Component<any, State> {
@@ -65,7 +66,8 @@ class Recipe extends React.Component<any, State> {
     tags: tags,
     defaultTileImageKey: null,
     recipeValid: null,
-    cloning: false
+    cloning: false,
+    width: window.innerWidth
   }
 
   goBack = () => {
@@ -126,10 +128,25 @@ class Recipe extends React.Component<any, State> {
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 700)
 
-  
-    const modals = document.querySelectorAll('.modal');
-    M.Modal.init(modals, {});
-    
+    const modals = document.querySelectorAll('.modal')
+    M.Modal.init(modals, {})
+
+    window.addEventListener('resize', this.handleWindowSizeChange)
+  }
+
+  componentDidUpdate() {
+    const elems = document.querySelectorAll('.dropdown-trigger')
+    M.Dropdown.init(elems, {})
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleWindowSizeChange)
+  }
+
+  handleWindowSizeChange = () => {
+    this.setState({
+      width: window.innerWidth
+    })
   }
 
   openModal = () => {
@@ -350,27 +367,33 @@ class Recipe extends React.Component<any, State> {
       ingredients, 
       recipe_title_raw, 
       defaultTileImageKey,
-      cloning
+      cloning,
+      width
     } = this.state;
 
     return (
           !loading  ? 
-          <div>
+          <div id="mobile-recipe-container">
             <h1 className="title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
               <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: recipe_title_raw}}/>
-            </h1>
+            </h1> 
             <div className="view-recipe" >
+            <div id="recipe-mobile-toolbar" className={width > 700 ? "hidden" : ''}>
+                <a className='dropdown-trigger' data-target='dropdown1'><i className="fas fa-ellipsis-v"></i></a>
+                <ul id='dropdown1' className='dropdown-content'>
+                  <li onClick={this.openModal}><a>Edit</a></li>
+                  <li onClick={this.cloneRecipe}><a>Duplicate</a></li>
+                </ul>
+            </div>
               <div>
                 <div className="section">
                   <div id="recipe-title" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.state.recipe_title)}}/>
                 </div>
                 <div className="section">
-                  {/* <h3 className="default">Ingredients</h3> */}
                   <div dangerouslySetInnerHTML={{__html: ingredients}} />
                 </div>
                 <div className="section">
-                  {/* <h3 className="default">Directions </h3> */}
                   <div dangerouslySetInnerHTML={{__html: directions}}/>
                 </div>
                 <div className="section">
@@ -391,17 +414,19 @@ class Recipe extends React.Component<any, State> {
                       src={url}/>
                   ))}
                 </div>
-                <div onClick={this.openModal} className="fixed-action-btn">
-                  <a className="btn-floating btn-large" id="primary-color">
-                    <i className="large material-icons">mode_edit</i>
-                  </a>
+                { width > 700 ?                 
+                  <div onClick={this.openModal} className="fixed-action-btn">
+                    <a className="btn-floating btn-large" id="primary-color">
+                      <i className="large material-icons">mode_edit</i>
+                    </a>
 
-                  <ul>
-                      <li onClick={this.cloneRecipe}><a className="btn-floating green-icon"><i className="far fa-clone"></i></a></li>
-                    </ul>
-                </div>
+                    <ul>
+                        <li onClick={this.cloneRecipe} className="tooltipped" data-position="left" data-tooltip="Duplicate this recipe"><a className="btn-floating green-icon"><i className="far fa-clone"></i></a></li>
+                      </ul>
+                  </div>
+                  : null }
               </div>
-          </div>
+            </div>
             <div id={`modal_${recipeId}`} className="modal recipe-modal">
               <div className="recipe">
                 <h1 className="title">{cloning ? 'Add Recipe' : 'Edit Recipe'}</h1>
@@ -416,7 +441,7 @@ class Recipe extends React.Component<any, State> {
                       <div className="options">
                         <h3>Category</h3>
                         <div className="select">
-                          <select onChange={this.updateInput} id="category" value={this.state.category} >
+                          <select onChange={this.updateInput} id="category" value={category} >
                             {
                               options.map((val, index) => {
                                 return <option key={index}>{val.label}</option>
@@ -478,7 +503,7 @@ class Recipe extends React.Component<any, State> {
                 </div>
             </div> 
           </div>
-          </div> :  
+            </div> :  
           <div className="BounceLoader">
             <BounceLoader
                 size={100}
