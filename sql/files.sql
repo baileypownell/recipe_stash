@@ -26,7 +26,9 @@ ALTER TABLE files DROP COLUMN recipe_id;
 ALTER TABLE files DROP COLUMN id;
 
 -- make the recipe_uuid column reference the recipes table 
-ALTER TABLE files ADD CONSTRAINT fk_file_recipe_uuid FOREIGN KEY (recipe_uuid) REFERENCES recipes (recipe_uuid);
+ALTER TABLE files ADD CONSTRAINT fk_file_recipe_uuid FOREIGN KEY (recipe_uuid) REFERENCES recipes (recipe_uuid); 
+ALTER TABLE FILES DROP CONSTRAINT fk_file_recipe_uuid; 
+ALTER TABLE files ADD CONSTRAINT fk_file_recipe_uuid FOREIGN KEY (recipe_uuid) REFERENCES recipes (recipe_uuid) ON DELETE CASCADE; 
 
 -- add a file_uuid column, make it primary key 
 ALTER TABLE files ADD COLUMN file_uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4();
