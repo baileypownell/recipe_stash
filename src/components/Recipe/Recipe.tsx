@@ -421,7 +421,13 @@ class Recipe extends React.Component<any, State> {
                     </a>
 
                     <ul>
-                        <li onClick={this.cloneRecipe} className="tooltipped" data-position="left" data-tooltip="Duplicate this recipe"><a className="btn-floating green-icon"><i className="far fa-clone"></i></a></li>
+                        <li 
+                          onClick={this.cloneRecipe} 
+                          className="tooltipped" 
+                          data-position="left" 
+                          data-tooltip="Duplicate this recipe">
+                            <a className="btn-floating green-icon"><i className="far fa-clone"></i></a>
+                        </li>
                       </ul>
                   </div>
                   : null }
@@ -478,20 +484,19 @@ class Recipe extends React.Component<any, State> {
                   </div>
               </div>
                 <div className="modal-close-buttons">
-                  { !cloning ? 
                   <button 
-                  className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
-                  disabled={!this.state.recipeValid} 
-                  onClick={this.saveRecipe}>
-                    {loading ? 
+                    className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
+                    disabled={!this.state.recipeValid} 
+                    onClick={this.saveRecipe}>
+                    { loading ? 
                       <Preloader/> : 
                       <>
                         {!cloning ? 'Update Recipe' : 'Add Recipe' }
                         <i className="fas fa-check-square"></i>
                       </>
-                      }
+                    }
                 </button>
-                  : null }
+               
                   <div>
                     <button 
                       id="primary-color" 
