@@ -91,7 +91,11 @@ class Recipe extends React.Component<any, State> {
         loading: false,
         defaultTileImageKey: recipe.defaultTileImageKey
       }, () => {
-          if (recipe.preSignedUrls) presignedUrlsSubject.next(recipe.preSignedUrls)
+          if (recipe.preSignedUrls) {
+            presignedUrlsSubject.next(recipe.preSignedUrls)
+          } else {
+            presignedUrlsSubject.next([])
+          }
           const images = document.querySelectorAll('.materialboxed')
           M.Materialbox.init(images, {})
           const modal = document.querySelectorAll('.modal')

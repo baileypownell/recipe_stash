@@ -4,7 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader"
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
-import { appear } from '../../models/functions'
+import Fade from 'react-reveal/Fade'
 
 type Props = {
   history: any
@@ -41,10 +41,7 @@ class Signup extends React.Component<Props, State> {
   }
 
 
-  componentDidMount() {
-    let faded = document.querySelectorAll('.fade');
-    setTimeout(() => appear(faded, 'fade-in'), 500);
-  }
+  componentDidMount() { }
 
   signup = async(e: FormEvent) => {
     e.preventDefault();
@@ -154,49 +151,51 @@ class Signup extends React.Component<Props, State> {
     return (
         <div className="auth">
           <div className="gradient">
-            <form className="fade" onSubmit={this.signup}>
-              <h1>Signup</h1>
-              <div className="input-field">
-                <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
-                <label htmlFor="firstName" >
-                  First Name
-                </label>
-              </div>
-              <div className="input-field">
-                <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
-              <label htmlFor="lastName" >Last Name</label>
-              </div>
-              <div className="input-field">
-                  <input onChange={this.updateInput} id="email" type="email" name="email" />
-                <label htmlFor="email" >Email</label>
-              </div>
-              <div className="input-field">
-                <input onChange={this.validatePassword} id="password" type="password" name="password"  />
-                <label htmlFor="password" >Password</label>
-                {
-                  insufficientPasswordMessage ? 
-                    <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
-                : null}
-              </div>
-              <div className="input-field">
-                <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
-                {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              </div>
-              <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
-              <button
-                disabled={!formValid}
-                className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
-                {loading?
-                  <ClipLoader
-                    css={`border-color: white;`}
-                    size={30}
-                    color={"white"}
-                    loading={this.state.loading}
-                  />
-              : 'Submit'}
-              </button>
-            </form>
+            <Fade top>
+              <form onSubmit={this.signup}>
+                <h1>Signup</h1>
+                <div className="input-field">
+                  <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
+                  <label htmlFor="firstName" >
+                    First Name
+                  </label>
+                </div>
+                <div className="input-field">
+                  <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
+                <label htmlFor="lastName" >Last Name</label>
+                </div>
+                <div className="input-field">
+                    <input onChange={this.updateInput} id="email" type="email" name="email" />
+                  <label htmlFor="email" >Email</label>
+                </div>
+                <div className="input-field">
+                  <input onChange={this.validatePassword} id="password" type="password" name="password"  />
+                  <label htmlFor="password" >Password</label>
+                  {
+                    insufficientPasswordMessage ? 
+                      <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+                  : null}
+                </div>
+                <div className="input-field">
+                  <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
+                  {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                </div>
+                <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
+                <button
+                  disabled={!formValid}
+                  className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
+                  {loading?
+                    <ClipLoader
+                      css={`border-color: white;`}
+                      size={30}
+                      color={"white"}
+                      loading={this.state.loading}
+                    />
+                : 'Submit'}
+                </button>
+              </form>
+            </Fade>
           </div>
         </div>
     )
