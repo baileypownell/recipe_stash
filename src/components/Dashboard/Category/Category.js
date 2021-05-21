@@ -3,7 +3,6 @@ import AddRecipe from './AddRecipe/AddRecipe'
 import Square from './Square/Square'
 import ListItem from './ListItem/ListItem'
 import { appear } from '../../../models/functions'
-import Fade from 'react-reveal/Fade'
 
 const Category = (props) => {
   useEffect(() => {
@@ -12,7 +11,6 @@ const Category = (props) => {
   })
   const { title, id, recipes, visibility, gridView } = props;
     return (
-      <Fade bottom>
         <div className={visibility === 'true' ? 'visible category' : 'invisible category'}>
           <h3 className="opacity">{title}</h3>
           <div className="recipeBox opacity">
@@ -41,7 +39,6 @@ const Category = (props) => {
             }
           </div>
         </div>
-      </Fade>
     )
 }
 
