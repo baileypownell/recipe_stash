@@ -4,8 +4,10 @@ import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
+// import { RecipeLoader } from './RecipeLoader/RecipeLoader'
 import { RecipeService, SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
+import { RecipeLoader } from '..'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -82,11 +84,12 @@ let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 let selectedFilterSubject = new BehaviorSubject(0)
 
 type Props = {
-  history: any
+  history?: any
+  recipes: any[]
 }
 
 type State = {
-    recipes_loaded: boolean 
+    // recipes_loaded: boolean 
     filteredRecipes: SortedRecipeInterface | null
     gridView: boolean
 }
@@ -95,29 +98,11 @@ type State = {
 class Dashboard extends React.Component<Props, State> {
 
   state = {
-    recipes_loaded: false,
     filteredRecipes: null,
     gridView: true,
   }
 
-  fetchRecipes = async() => {
-    try {
-      let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
-      unfilteredRecipesSubject.next(recipes)
-    } catch (error) {
-      if (error.response?.status === 401) {
-        // unathenticated; redirect to log in 
-        this.props.history.push('/login')
-      }
-    } finally {
-      this.setState({
-        recipes_loaded: !!unfilteredRecipesSubject.getValue()
-      })
-    }
-  }
-
   componentDidMount() {
-    this.fetchRecipes();
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
@@ -233,7 +218,6 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   updateDashboard = () => {
-    this.fetchRecipes()
   }
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {
@@ -251,7 +235,8 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   render() {
-    const { filteredRecipes, recipes_loaded, gridView } = this.state;
+    const { gridView } = this.state;
+    const filteredRecipes = this.props.recipes
     const appliedFilt = appliedFiltersSubject.getValue();
     const appliedCat = appliedCategorySubject.getValue();
 
@@ -284,6 +269,8 @@ class Dashboard extends React.Component<Props, State> {
       {key: "drinks", name: mealCategories['drinks']}, 
       {key: "other", name: mealCategories['other']}
     ];
+
+    // console.log(this.props)
 
     return (
       <div>
@@ -343,7 +330,7 @@ class Dashboard extends React.Component<Props, State> {
         </div>
         
         <div className="dashboard">
-          {!recipes_loaded ?
+          {!this.props.recipes ?
             <div className="BounceLoader">
               <BounceLoader
                 size={100}
@@ -352,6 +339,7 @@ class Dashboard extends React.Component<Props, State> {
             </div>
             :
             <>
+            {/* <RecipeLoader></RecipeLoader> */}
               <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
               <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
               {
