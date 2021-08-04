@@ -1,13 +1,11 @@
 import React from 'react'
-import BounceLoader from "react-spinners/BounceLoader"
 import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
-// import { RecipeLoader } from './RecipeLoader/RecipeLoader'
-import { RecipeService, SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
+import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
-import { RecipeLoader } from '..'
+import { queryClient } from '../..'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -218,6 +216,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   updateDashboard = () => {
+    queryClient.refetchQueries(['recipes'])
   }
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {
@@ -268,9 +267,7 @@ class Dashboard extends React.Component<Props, State> {
       {key: "dessert", name: mealCategories['dessert']},
       {key: "drinks", name: mealCategories['drinks']}, 
       {key: "other", name: mealCategories['other']}
-    ];
-
-    // console.log(this.props)
+    ]
 
     return (
       <div>
@@ -329,17 +326,8 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         </div>
         
-        <div className="dashboard">
-          {!this.props.recipes ?
-            <div className="BounceLoader">
-              <BounceLoader
-                size={100}
-                color={"#689943"}
-              />
-            </div>
-            :
+        <div className="dashboard">       
             <>
-            {/* <RecipeLoader></RecipeLoader> */}
               <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
               <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
               {
@@ -358,8 +346,7 @@ class Dashboard extends React.Component<Props, State> {
                   )
                 })
               }
-            </>
-          }
+          </>
       </div>
      </div>
     )

@@ -26,7 +26,7 @@ import {
 import 'materialize-css/dist/css/materialize.min.css'
 import './scss/main.scss'
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 ReactDOM.render(
   <QueryClientProvider client={queryClient}>

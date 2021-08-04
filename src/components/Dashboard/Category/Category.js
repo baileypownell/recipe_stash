@@ -7,7 +7,7 @@ import { appear } from '../../../models/functions'
 const Category = (props) => {
   useEffect(() => {
       let opacity = document.querySelectorAll('.opacity')
-      setTimeout(appear(opacity, 'maxOpacity'), 300);
+      setTimeout(appear(opacity, 'maxOpacity'), 100);
   })
   const { title, id, recipes, visibility, gridView } = props;
     return (
