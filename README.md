@@ -12,7 +12,7 @@ What you need is a single place for all of your recipes that isn't subject to th
 
 #### Built with React, MaterializeCSS, RxJS, Node, & PostgreSQL.
 
-## [Visit the web app](https://virtual-cookbook-1.herokuapp.com/)
+## [Visit the web app](https://recipe-stash-1.herokuapp.com/)
 
 <img src="src/images/mobile_dashboard.png" width="300">
 <img src="src/images/recipe_mobile.png" width="300">
