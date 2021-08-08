@@ -15,6 +15,7 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile, RecipeInput } from '../../services/recipe-services'
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
+import { queryClient } from '../..'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -180,6 +181,7 @@ class Recipe extends React.Component<any, State> {
   deleteRecipe = async() => {
     try {
       await RecipeService.deleteRecipe(this.state.recipeId)
+      queryClient.refetchQueries(['recipes'])
       M.toast({html: 'Recipe deleted.'})
       this.closeModal()
       this.props.history.push('/recipes')
@@ -208,6 +210,7 @@ class Recipe extends React.Component<any, State> {
   handleUpdate() {
     // Update recipe details to reflect the change
     this.fetchData()
+    queryClient.refetchQueries(['recipes'])
     M.toast({html: 'Recipe updated.'})
     this.setState({
       filesToDelete: [],

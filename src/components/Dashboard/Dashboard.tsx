@@ -216,6 +216,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   updateDashboard = () => {
+    // this approach is fine only because there is only one place we are using this query
     queryClient.refetchQueries(['recipes'])
   }
 

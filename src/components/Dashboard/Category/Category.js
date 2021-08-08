@@ -6,14 +6,14 @@ import { appear } from '../../../models/functions'
 
 const Category = (props) => {
   useEffect(() => {
-      let opacity = document.querySelectorAll('.opacity')
-      setTimeout(appear(opacity, 'maxOpacity'), 100);
+      // let opacity = document.querySelectorAll('.opacity')
+      // setTimeout(appear(opacity, 'maxOpacity'), 100);
   })
   const { title, id, recipes, visibility, gridView } = props;
     return (
-        <div className={visibility === 'true' ? 'visible category' : 'invisible category'}>
-          <h3 className="opacity">{title}</h3>
-          <div className="recipeBox opacity">
+        <div className={visibility === 'true' ? 'category' : 'category'}>
+          <h3 >{title}</h3>
+          <div className="recipeBox">
             <AddRecipe
               id={id}
               gridView={gridView}
