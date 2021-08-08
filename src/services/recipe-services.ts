@@ -103,21 +103,21 @@ export interface ExistingFile {
 export const RecipeService = {
 
     sortByTitle(a: RecipeInterface, b: RecipeInterface) {
-        if (a.title.toLowerCase() > b.title.toLowerCase()) {
-            return 1
-        } else if (a.title.toLowerCase() < b.title.toLowerCase() ) {
-            return -1
-        }
-        return 0 
+      return a.rawTitle.localeCompare(b.rawTitle)
     },
 
     getRecipes: async(): Promise<SortedRecipeInterface> => {
+      try {
         let recipes = await axios.get(`/recipe`)
         for (const category in recipes.data) {
             let sortedCategory = recipes.data[category].sort(RecipeService.sortByTitle)
             recipes.data[category] = sortedCategory
           }
         return recipes.data
+      } catch(error) {
+        console.log(error)
+        return error
+      }
     },
 
     getRecipe: async(recipeId: string): Promise<RecipeInterface> => {

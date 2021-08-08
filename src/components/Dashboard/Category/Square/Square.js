@@ -51,24 +51,23 @@ class Square extends React.Component {
   // then, render the div 
   render() {
     const { data, key, rawTitle, awsUrl } = this.props;
-    const { skeletonHeight, skeletonWidth } = this.state;
+    const { skeletonHeight, skeletonWidth, imageLoaded } = this.state;
     return (
       <>
       { !!awsUrl ? 
         <>
-          { this.state.imageLoaded ? 
-          <Fade>
+          { imageLoaded ? 
+
             <div
-            style={{ backgroundImage: `url(${awsUrl})`}}
-            id={'default-tile-image'}
-            className={'recipe-card z-depth-4 red-background'}
-            key={key}
-            data={data}
-            onClick={this.viewRecipe}
-          >
+              style={{ backgroundImage: `url(${awsUrl})`}}
+              id={'default-tile-image'}
+              className={'recipe-card z-depth-4 red-background'}
+              key={key}
+              data={data}
+              onClick={this.viewRecipe}>
             <h4>{rawTitle}</h4>
           </div>
-          </Fade>
+
            : 
            <>
               <img
@@ -81,7 +80,7 @@ class Square extends React.Component {
           }
         </>
       : 
-        <Fade>
+ 
             <div
                 className={'recipe-card z-depth-4'}
                 key={key}
@@ -90,8 +89,7 @@ class Square extends React.Component {
               >
             <h4>{rawTitle}</h4>
           </div>
-        </Fade>
-      }
+        }
       </>
     )
   }

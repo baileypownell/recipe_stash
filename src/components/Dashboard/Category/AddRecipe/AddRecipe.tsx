@@ -219,7 +219,13 @@ class AddRecipe extends React.Component<Props, State> {
             id={id}
              >
             <i className="fas fa-plus-circle"></i>
-        </div> : <a onClick={this.openModal} className="waves-effect waves-light btn add-button">Add Recipe<i className="fas fa-plus-circle"></i></a>
+        </div> : 
+        <a 
+          onClick={this.openModal} 
+          className="waves-effect waves-light btn add-button">
+          Add Recipe
+          <i className="fas fa-plus-circle"></i>
+        </a>
       }
 
         <div id={`${this.props.id}_modal`} className="modal recipe-modal">
