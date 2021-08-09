@@ -16,6 +16,7 @@ import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, De
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
 import { queryClient } from '../..'
+import Fade from 'react-reveal/Fade'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -385,61 +386,65 @@ class Recipe extends React.Component<any, State> {
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
               <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: recipe_title_raw}}/>
             </h1> 
-            <div className="view-recipe" >
-            <div id="recipe-mobile-toolbar" className={width > 700 ? "hidden" : ''}>
-                <a className='dropdown-trigger' data-target='dropdown1'><i className="fas fa-ellipsis-v"></i></a>
-                <ul id='dropdown1' className='dropdown-content'>
-                  <li onClick={this.openModal}><a>Edit</a></li>
-                  <li onClick={this.cloneRecipe}><a>Duplicate</a></li>
-                </ul>
-            </div>
-              <div>
-                <div className="section">
-                  <div id="recipe-title" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.state.recipe_title)}}/>
+            <Fade>
+              <div className="view-recipe" >
+                <div id="recipe-mobile-toolbar" className={width > 700 ? "hidden" : ''}>
+                    <a className='dropdown-trigger' data-target='dropdown1'><i className="fas fa-ellipsis-v"></i></a>
+                    <ul id='dropdown1' className='dropdown-content'>
+                      <li onClick={this.openModal}><a>Edit</a></li>
+                      <li onClick={this.cloneRecipe}><a>Duplicate</a></li>
+                    </ul>
                 </div>
-                <div className="section">
-                  <div dangerouslySetInnerHTML={{__html: ingredients}} />
-                </div>
-                <div className="section">
-                  <div dangerouslySetInnerHTML={{__html: directions}}/>
-                </div>
-                <div className="section">
-                  {tags.map((tag) => ( tag.selected ? 
-                      <div 
-                        key={tag.label}
-                        className="chip z-depth-2 selectedTag">
-                        { tag.label }
-                      </div> 
-                      : null )
-                  )}
-                </div>
-                <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                  {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => ( 
-                    <img 
-                      key={i}
-                      className="materialboxed z-depth-2 faded"
-                      src={url}/>
-                  ))}
-                </div>
-                { width > 700 ?                 
-                  <div onClick={this.openModal} className="fixed-action-btn">
-                    <a className="btn-floating btn-large" id="primary-color">
-                      <i className="large material-icons">mode_edit</i>
-                    </a>
-
-                    <ul>
-                        <li 
-                          onClick={this.cloneRecipe} 
-                          className="tooltipped" 
-                          data-position="left" 
-                          data-tooltip="Duplicate this recipe">
-                            <a className="btn-floating green-icon"><i className="far fa-clone"></i></a>
-                        </li>
-                      </ul>
+                <div id="width-setter">
+                  <div className="section">
+                    <div id="recipe-title" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.state.recipe_title)}}/>
                   </div>
-                  : null }
+                  <div className="section">
+                    <div dangerouslySetInnerHTML={{__html: ingredients}} />
+                  </div>
+                  <div className="section">
+                    <div dangerouslySetInnerHTML={{__html: directions}}/>
+                  </div>
+                  <div className="section">
+                    {tags.map((tag) => ( tag.selected ? 
+                        <div 
+                          key={tag.label}
+                          className="chip z-depth-2 selectedTag">
+                          { tag.label }
+                        </div> 
+                        : null )
+                    )}
+                  </div>
+                  <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
+                    {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => ( 
+                      <img 
+                        key={i}
+                        className="materialboxed z-depth-2 faded"
+                        src={url}/>
+                    ))}
+                  </div>
+                  { width > 700 ?                 
+                    <div onClick={this.openModal} className="fixed-action-btn">
+                      <a className="btn-floating btn-large" id="primary-color">
+                        <i className="large material-icons">mode_edit</i>
+                      </a>
+
+                      <ul>
+                          <li 
+                            onClick={this.cloneRecipe} 
+                            className="tooltipped" 
+                            data-position="left" 
+                            data-tooltip="Duplicate this recipe">
+                              <a className="btn-floating green-icon"><i className="far fa-clone"></i></a>
+                          </li>
+                        </ul>
+                    </div>
+                    : null }
+                </div>
               </div>
-            </div>
+            </Fade>
+
+
             <div id={`modal_${recipeId}`} className="modal recipe-modal">
               <div className="recipe">
                 <h1 className="title">{cloning ? 'Add Recipe' : 'Edit Recipe'}</h1>
