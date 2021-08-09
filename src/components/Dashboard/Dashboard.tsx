@@ -148,7 +148,8 @@ class Dashboard extends React.Component<Props, State> {
       window.sessionStorage.setItem('category_filters', JSON.stringify(category))
       window.sessionStorage.setItem('userInput', input)
     }))
-    .subscribe(([filters, _, input, recipes]) => {
+    .subscribe(([filters, category, input, recipes]) => {
+      console.log(category)
       let newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
         let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
