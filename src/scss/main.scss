@@ -110,7 +110,7 @@ button {
 .BounceLoader {
   @include flexColumn;
   align-items: center;
-  height: 65vh;
+  height: 100%;
   justify-content: center;
 }
 
