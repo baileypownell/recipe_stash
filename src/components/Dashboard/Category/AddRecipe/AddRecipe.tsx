@@ -9,9 +9,24 @@ import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
 import tag, { tags } from '../../../../models/tags'
-
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import Slide from '@material-ui/core/Slide';
 import options from '../../../../models/options'
 import { RecipeService, RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 type Props = {
   updateDashboard: any 
@@ -48,23 +63,7 @@ class AddRecipe extends React.Component<Props, State> {
     open: false
   }
 
-  componentDidMount() {
-    const modal = document.querySelectorAll('.modal');
-    M.Modal.init(modal, {
-      opacity: 0.5
-    });
-
-    const select = document.querySelectorAll('select');
-    M.FormSelect.init(select, {});
-
-    // category selector 
-    const categorySelector = document.querySelectorAll('.collapsible');
-    M.Collapsible.init(categorySelector, {});
-
-    // recipe category chip tags 
-    const chips = document.querySelectorAll('.chips');
-    M.Chips.init(chips, {});
-  }
+  componentDidMount() { }
 
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state;
@@ -146,11 +145,24 @@ class AddRecipe extends React.Component<Props, State> {
 
   openModal = () => {
     let prevOpenState = this.state.open
-    let singleModalElem: Element = document.querySelector(`#${this.props.id}_modal`) as Element 
-    let instance = M.Modal.getInstance(singleModalElem); 
-    instance.open();
+    // let singleModalElem: Element = document.querySelector(`#${this.props.id}_modal`) as Element 
+    // let instance = M.Modal.getInstance(singleModalElem); 
+    // instance.open();
     this.setState({
       open: !prevOpenState
+    }, () => {
+      if (this.state.open) {
+        const select = document.querySelectorAll('select');
+        M.FormSelect.init(select, {});
+    
+        // category selector 
+        const categorySelector = document.querySelectorAll('.collapsible');
+        M.Collapsible.init(categorySelector, {});
+    
+        // recipe category chip tags 
+        const chips = document.querySelectorAll('.chips');
+        M.Chips.init(chips, {});
+      }
     })
   }
 
@@ -228,7 +240,99 @@ class AddRecipe extends React.Component<Props, State> {
         </a>
       }
 
-        <div id={`${this.props.id}_modal`} className="modal recipe-modal">
+      <Dialog fullScreen open={open} onClose={this.openModal} TransitionComponent={Transition as any}>
+      <div className="recipe-modal">
+            <div className="recipe">
+              <h1 className="title">New Recipe</h1>
+              <div className="modal-scroll">
+                  <div className="modal-content">
+                    <h3>Title</h3>
+                    <ReactQuill value={recipe_title} onChange={this.handleModelChange}/>
+                    <h3>Ingredients</h3>
+                    <ReactQuill theme="snow" value={ingredients} onChange={this.handleModelChangeIngredients}/>
+                    <h3>Directions</h3>
+                    <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
+                    <div>
+                        <h3>Category</h3>
+                        <div className="select">
+                          <select onChange={this.updateInput} id="category" value={category} >
+                            {
+                              options.map((val, index: number) => {
+                                return <option key={index}>{val.label}</option>
+                              })
+                            }
+                          </select>
+                            
+                        </div>
+                    </div>
+
+                    <ul className="collapsible">
+                      <li>
+                        <div className="collapsible-header"><p>Recipe Tags</p></div>
+                        <div className="collapsible-body">
+                            {
+                              this.state.tags.map((tag, index) => {
+                                return <div 
+                                  onClick={this.toggleTagSelectionStatus} 
+                                  id={index.toString()} 
+                                  className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
+                                  key={index}>
+                                    {tag.label}
+                                  </div>
+                              })
+                            }
+                        </div>
+                      </li>
+                    </ul>
+                    <FileUpload 
+                      open={open}
+                      passDefaultTileImage={this.setDefaultTileImage} 
+                      passFiles={this.setFiles}>
+                      </FileUpload>
+                  </div>
+                </div>
+                <div className="modal-close-buttons">
+                <button 
+                  className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
+                  disabled={!this.state.recipeValid} 
+                  onClick={this.createRecipe}>
+                    {this.state.loading ? 
+                      <Preloader/> : 
+                      <>
+                        Add Recipe
+                        <i className="fas fa-check-square"></i>
+                      </>
+                      }
+                 </button>
+                 <button onClick={this.openModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
+              </div>
+            </div>
+          </div> 
+        {/* <AppBar className={classes.appBar}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" className={classes.title}>
+              Sound
+            </Typography>
+            <Button autoFocus color="inherit" onClick={handleClose}>
+              save
+            </Button>
+          </Toolbar>
+        </AppBar> */}
+        {/* <List>
+          <ListItem button>
+            <ListItemText primary="Phone ringtone" secondary="Titania" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Default notification ringtone" secondary="Tethys" />
+          </ListItem>
+        </List> */}
+      </Dialog>
+
+        {/* <div id={`${this.props.id}_modal`} className="modal recipe-modal">
             <div className="recipe">
               <h1 className="title">New Recipe</h1>
               <div className="modal-scroll">
@@ -294,7 +398,7 @@ class AddRecipe extends React.Component<Props, State> {
                  <button className="modal-close btn waves-effect waves-light grayBtn">Cancel</button>
               </div>
             </div>
-          </div> 
+          </div>  */}
       </>
       
     )
