@@ -83,11 +83,10 @@ let selectedFilterSubject = new BehaviorSubject(0)
 
 type Props = {
   history?: any
-  recipes: any[]
+  recipes: SortedRecipeInterface
 }
 
 type State = {
-    // recipes_loaded: boolean 
     filteredRecipes: SortedRecipeInterface | null
     gridView: boolean
 }
@@ -101,6 +100,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    unfilteredRecipesSubject.next(this.props.recipes)
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
@@ -221,7 +221,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {
-    let input = e.target.value.toLowerCase().trim()
+    let input = e.target.value.toLowerCase()
     userInputSubject.next(input)
   }
 
@@ -235,8 +235,10 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   render() {
-    const { gridView } = this.state;
-    const filteredRecipes = this.props.recipes
+    const { gridView, filteredRecipes } = this.state;
+    if (!filteredRecipes) {
+      return null
+    }
     const appliedFilt = appliedFiltersSubject.getValue();
     const appliedCat = appliedCategorySubject.getValue();
 
