@@ -236,9 +236,6 @@ class Dashboard extends React.Component<Props, State> {
 
   render() {
     const { gridView, filteredRecipes } = this.state;
-    if (!filteredRecipes) {
-      return null
-    }
     const appliedFilt = appliedFiltersSubject.getValue();
     const appliedCat = appliedCategorySubject.getValue();
 
@@ -333,7 +330,7 @@ class Dashboard extends React.Component<Props, State> {
             <>
               <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
               <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
-              {
+              { filteredRecipes !== null ? 
                 Object.keys(mealCategories).map(mealCat => {
                   return (
                       <Category
@@ -347,7 +344,7 @@ class Dashboard extends React.Component<Props, State> {
                       >
                       </Category>                       
                   )
-                })
+                }) : null 
               }
           </>
       </div>
