@@ -24,7 +24,7 @@ class Square extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleWindowSizeChange)
-    this.handleWindowSizeChange()
+    this.handleWindowSizeChange() 
   }
 
   componentWillUnmount() {
