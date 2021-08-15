@@ -53,6 +53,11 @@ class Nav extends React.Component {
     }
   }
 
+  // doing this funcationally instead of setting the href, because for reasons unkown, the href was causing a hard refresh... 
+  navigate = (e) => {
+    this.props.history.push(e.target.id)
+  }
+
   render() {
     return (
       <>
@@ -80,9 +85,9 @@ class Nav extends React.Component {
             <div className="icon">
               <img src={whiteLogo} alt="logo" /> 
             </div>
-            <li><a className="waves-effect" href="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
-            <li><a className="waves-effect" href="/"><i className="fas fa-house-user"></i>Home</a></li>
-            <li><a className="waves-effect" href="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
+            <li><a className="waves-effect" onClick={this.navigate} id="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
+            <li><a className="waves-effect" onClick={this.navigate} id="/"><i className="fas fa-house-user"></i>Home</a></li>
+            <li><a className="waves-effect" onClick={this.navigate} id="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
             <li><div className="divider"></div></li>
             <li><a className="waves-effect" onClick={this.logout}><i className="fas fa-arrow-right"></i>Logout</a></li>
             {/* <li><div className="divider"></div></li> */}
