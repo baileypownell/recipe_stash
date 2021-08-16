@@ -15,6 +15,8 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile, RecipeInput } from '../../services/recipe-services'
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
+import Skeleton from 'react-loading-skeleton'
+import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -411,12 +413,10 @@ class Recipe extends React.Component<any, State> {
                   )}
                 </div>
                 <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                  {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => ( 
-                    <img 
-                      key={i}
-                      className="materialboxed z-depth-2 faded"
-                      src={url}/>
-                  ))}
+                  {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => (
+                    <ImageSkeletonLoader url={url} key={i}></ImageSkeletonLoader>
+                    )
+                  )}
                 </div>
                 { width > 700 ?                 
                   <div onClick={this.openModal} className="fixed-action-btn">
