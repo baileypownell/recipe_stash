@@ -15,6 +15,7 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile, RecipeInput } from '../../services/recipe-services'
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
+import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 import Fade from 'react-reveal/Fade'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -414,10 +415,7 @@ class Recipe extends React.Component<any, State> {
                   </div>
                   <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
                     {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => ( 
-                      <img 
-                        key={i}
-                        className="materialboxed z-depth-2 faded"
-                        src={url}/>
+                       <ImageSkeletonLoader url={url} key={i}></ImageSkeletonLoader>
                     ))}
                   </div>
                   { width > 700 ?                 
