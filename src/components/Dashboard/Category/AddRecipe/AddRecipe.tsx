@@ -15,6 +15,7 @@ import options from '../../../../models/options'
 import { RecipeService, RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
 import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { queryClient } from '../../../..'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -24,6 +25,7 @@ type Props = {
   updateDashboard: any 
   id: number 
   category: string
+  addRecipe: Function
 }
 
 type State = {
@@ -47,7 +49,7 @@ class AddRecipe extends React.Component<Props, State> {
     recipe_title: '',
     ingredients: '',
     directions: '',
-    category: this.props.category,
+    category: options.find(option => option.label === this.props.category).value,
     recipeValid: false,
     newFiles: [],
     tags: tags,
@@ -55,7 +57,9 @@ class AddRecipe extends React.Component<Props, State> {
     open: false
   }
 
-  componentDidMount() { }
+  componentDidMount() {
+    // console.log(this.props.category, options)
+   }
 
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state;
@@ -117,8 +121,16 @@ class AddRecipe extends React.Component<Props, State> {
       isKeto: tags[8].selected,
     }
     try {
-      await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTile)
-      this.handleSuccess()
+      await this.props.addRecipe({
+        recipeInput, 
+        newFiles: this.state.newFiles, 
+        defaultTile: this.state.defaultTile
+      })
+      M.toast({html: 'Recipe added.'})
+      this.clearState()
+      this.setState({
+        loading: false
+      })
     } catch(err) {
       console.log(err)
       this.setState({
@@ -234,7 +246,7 @@ class AddRecipe extends React.Component<Props, State> {
               <h3>Directions</h3>
               <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
               <div>
-                <h3>Category</h3>
+                {/* <h3>Category</h3>
                   <div className="select">
                     <select onChange={this.updateInput} id="category" value={category} >
                       {
@@ -244,8 +256,8 @@ class AddRecipe extends React.Component<Props, State> {
                       }
                     </select>
                       
-                  </div>
-                {/* <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
+                  </div> */}
+                <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
                   <InputLabel id="demo-simple-select-filled-label">Category</InputLabel>
                   <Select
                     labelId="demo-simple-select-filled-label"
@@ -259,7 +271,7 @@ class AddRecipe extends React.Component<Props, State> {
                       })
                     }
                   </Select>
-                </FormControl> */}
+                </FormControl>
               </div>
 
               <Accordion style={{'margin': '10px 0'}}>

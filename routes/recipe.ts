@@ -4,6 +4,16 @@ const router = Router()
 const authMiddleware = require('./authMiddleware.js')
 const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
+// enum RecipeCategories {
+//   Breakfast = 'breakfast', 
+//   Lunch = 'lunch',
+//   Dinner = 'dinner', 
+//   SideDish = 'side_dish', 
+//   Dessert = 'dessert', 
+//   Drinks = 'drinks', 
+//   Other = 'other',
+// }
+
 const constructTags = (recipe) => {
   let tagArray = []
     if (recipe.no_bake) {
@@ -81,19 +91,19 @@ router.get('/', authMiddleware, (request, response, next) => {
           }
         })
         results.forEach((recipe) => {
-          if (recipe.category === 'Dinner') {
+          if (recipe.category === 'Dinner' || recipe.category === 'dinner') {
             responseObject.dinner.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Dessert') {
+          } else if (recipe.category === 'Dessert' || recipe.category === 'dessert') {
             responseObject.dessert.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Drinks') {
+          } else if (recipe.category === 'Drinks' || recipe.category === 'drinks') {
             responseObject.drinks.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Lunch') {
+          } else if (recipe.category === 'Lunch' || recipe.category === 'lunch') {
             responseObject.lunch.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Breakfast') {
+          } else if (recipe.category === 'Breakfast' || recipe.category === 'breakfast') {
             responseObject.breakfast.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Other') {
+          } else if (recipe.category === 'Other' || recipe.category === 'other') {
             responseObject.other.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Side Dish') {
+          } else if (recipe.category === 'Side Dish' || recipe.category === 'side_dish') {
             responseObject.side_dish.push(formatRecipeResponse(recipe))
           }
         })
@@ -129,12 +139,44 @@ router.post('/', (request, response, next) => {
     !!ingredients && 
     !!directions
    ) {
-      client.query('INSERT INTO recipes(title, raw_title, category, user_uuid, ingredients, directions, no_bake, easy, healthy, gluten_free, dairy_free, sugar_free, vegetarian, vegan, keto) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "recipe_uuid"',
-        [title, rawTitle, category, userId, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto],
+      client.query(`INSERT INTO recipes(
+        title, 
+        raw_title, 
+        category, 
+        user_uuid, 
+        ingredients, 
+        directions, 
+        no_bake, 
+        easy, 
+        healthy, 
+        gluten_free, 
+        dairy_free, 
+        sugar_free, 
+        vegetarian, 
+        vegan, 
+        keto
+      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
+        [
+          title, 
+          rawTitle, 
+          category, 
+          userId, 
+          ingredients, 
+          directions, 
+          isNoBake, 
+          isEasy, 
+          isHealthy, 
+          isGlutenFree, 
+          isDairyFree, 
+          isSugarFree, 
+          isVegetarian, 
+          isVegan, 
+          isKeto
+        ],
         (err, res) => {
           if (err) return next(err)
           if (res.rowCount) {
-            return response.status(200).json({ success: true, message: 'Recipe created.', recipeId: res.rows[0].recipe_uuid })
+            return response.status(200).json({ success: true, message: 'Recipe created.', recipe: res.rows[0] })
           } else {
             return response.status(500).json({ success: false, message: 'Could not create recipe.' })
           }

@@ -15,7 +15,7 @@ const Category = (props) => {
               id={id}
               gridView={gridView}
               category={title}
-              updateDashboard={props.updateDashboard}
+              addRecipe={props.addRecipe}
             />
             {
                 recipes ? recipes.map((recipe) => {

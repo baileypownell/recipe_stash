@@ -3,8 +3,9 @@ import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
-import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService } from '../../services/recipe-services'
+import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
+import { queryClient } from '../..'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -14,6 +15,16 @@ interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   dessert: string
   drinks: string
   other: string
+}
+
+export type MealCategoriesType = {
+    breakfast: 'Breakfast',
+    lunch: 'Lunch', 
+    dinner: 'Dinner',
+    side_dish: 'Side Dish',
+    dessert: 'Dessert', 
+    drinks: 'Drinks', 
+    other: 'Other',
 }
 
 // object for iterating through meal cateogries 
@@ -82,6 +93,8 @@ let selectedFilterSubject = new BehaviorSubject(0)
 
 type Props = {
   history?: any
+  addRecipeMutation: any
+  fetchRecipes: Function
 }
 
 type State = {
@@ -114,9 +127,33 @@ class Dashboard extends React.Component<Props, State> {
     }
   }
 
+  addRecipe = async(recipeInput: {
+    recipeInput: RecipeInput, 
+    files: NewFileInterface[], 
+    defaultTile: DefaultTile | null
+  }) => {
+    await this.props.addRecipeMutation(recipeInput)
+    // TO-DO: eliminate this 
+    const current = queryClient.getQueryData('recipes')
+    unfilteredRecipesSubject.next(current)
+    // this.props.fetchRecipes()
+    // .then((recipes: SortedRecipeInterface) => {
+    //   unfilteredRecipesSubject.next(recipes)
+    //   this.setState({
+    //     recipes_loaded: true
+    //   })
+    // })
+  }
+
   componentDidMount() {
-    this.fetchRecipes();
-    // unfilteredRecipesSubject.next(this.props.recipes)
+    this.props.fetchRecipes()
+    .then((recipes: SortedRecipeInterface) => {
+      unfilteredRecipesSubject.next(recipes)
+      this.setState({
+        recipes_loaded: true
+      })
+    })
+    .catch(e => console.log(e))
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
@@ -188,6 +225,7 @@ class Dashboard extends React.Component<Props, State> {
         }
       } 
 
+      console.log('new state: ', newFilteredRecipesState)
       this.setState({
         filteredRecipes: newFilteredRecipesState
       })
@@ -355,7 +393,7 @@ class Dashboard extends React.Component<Props, State> {
                         visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
                         gridView={gridView}
                         recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
-                        updateDashboard={this.updateDashboard}
+                        addRecipe={this.addRecipe}
                       >
                       </Category>                       
                   )
