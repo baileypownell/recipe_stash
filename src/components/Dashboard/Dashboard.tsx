@@ -3,9 +3,8 @@ import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
-import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
+import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
-import { queryClient } from '../..'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -83,7 +82,6 @@ let selectedFilterSubject = new BehaviorSubject(0)
 
 type Props = {
   history?: any
-  recipes: SortedRecipeInterface
 }
 
 type State = {
@@ -95,12 +93,30 @@ type State = {
 class Dashboard extends React.Component<Props, State> {
 
   state = {
+    recipes_loaded: false,
     filteredRecipes: null,
     gridView: true,
   }
 
+  fetchRecipes = async() => {
+    try {
+      let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
+      unfilteredRecipesSubject.next(recipes)
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // unathenticated; redirect to log in 
+        this.props.history.push('/login')
+      }
+    } finally {
+      this.setState({
+        recipes_loaded: !!unfilteredRecipesSubject.getValue()
+      })
+    }
+  }
+
   componentDidMount() {
-    unfilteredRecipesSubject.next(this.props.recipes)
+    this.fetchRecipes();
+    // unfilteredRecipesSubject.next(this.props.recipes)
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
@@ -216,8 +232,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   updateDashboard = () => {
-    // this approach is fine only because there is only one place we are using this query
-    queryClient.refetchQueries(['recipes'])
+    this.fetchRecipes()
   }
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {

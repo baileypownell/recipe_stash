@@ -47,7 +47,7 @@ class AddRecipe extends React.Component<Props, State> {
     recipe_title: '',
     ingredients: '',
     directions: '',
-    category: options.find(el => el.label === this.props.category).value,
+    category: this.props.category,
     recipeValid: false,
     newFiles: [],
     tags: tags,
@@ -234,21 +234,32 @@ class AddRecipe extends React.Component<Props, State> {
               <h3>Directions</h3>
               <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
               <div>
-              <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
-                <InputLabel id="demo-simple-select-filled-label">Category</InputLabel>
-                <Select
-                  labelId="demo-simple-select-filled-label"
-                  id="category"
-                  value={category}
-                  onChange={this.updateCategory}
-                >
-                  {
-                    options.map((val, index: number) => {
-                      return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
-                    })
-                  }
-                </Select>
-              </FormControl>
+                <h3>Category</h3>
+                  <div className="select">
+                    <select onChange={this.updateInput} id="category" value={category} >
+                      {
+                        options.map((val, index: number) => {
+                          return <option key={index}>{val.label}</option>
+                        })
+                      }
+                    </select>
+                      
+                  </div>
+                {/* <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
+                  <InputLabel id="demo-simple-select-filled-label">Category</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-filled-label"
+                    id="category"
+                    value={category}
+                    onChange={this.updateCategory}
+                  >
+                    {
+                      options.map((val, index: number) => {
+                        return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
+                      })
+                    }
+                  </Select>
+                </FormControl> */}
               </div>
 
               <Accordion style={{'margin': '10px 0'}}>

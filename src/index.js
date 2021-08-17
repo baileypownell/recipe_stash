@@ -1,8 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
-
 import {
   BrowserRouter,
   Route,
@@ -17,7 +15,6 @@ import {
   Dashboard,
   Recipe,
   Settings,
-  RecipeLoader,
   ResetPassword,
   RequireAuthComponent,
   Nav
@@ -26,10 +23,7 @@ import {
 import 'materialize-css/dist/css/materialize.min.css'
 import './scss/main.scss'
 
-export const queryClient = new QueryClient()
-
 ReactDOM.render(
-  <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Nav/>
       <Switch>
@@ -38,13 +32,12 @@ ReactDOM.render(
         <Route path="/signup" component={Signup}/>
         <Route path="/reset/:token" component={ResetPassword}/>
         <RequireAuthComponent>
-          <Route path="/recipes" exact={true} component={RecipeLoader}/> 
+          <Route path="/recipes" exact={true} component={Dashboard}/> 
           <Route path="/settings" component={Settings}/>
           <Route path="/recipes/:id" component={Recipe}/>
         </RequireAuthComponent>
         <Redirect to="/" />
       </Switch>
-    </BrowserRouter>
-  </QueryClientProvider>,
+    </BrowserRouter>,
   document.getElementById('app')
 );
