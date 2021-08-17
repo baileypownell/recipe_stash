@@ -77,8 +77,16 @@ h3 {
 .view-recipe {
   margin: 0 auto;
   padding: 20px;
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
   .section ul {
     padding-left: revert!important;
+  }
+  #width-setter {
+    @include desktop {
+      width: 60%;
+    }
   }
   h2 {
     font-size: 18px;
@@ -94,9 +102,6 @@ h3 {
       width: 75%;
       margin: 20px auto;
     }
-  }
-  @include desktop {
-    width: 60%;
   }
   .section {
     padding: 0;
@@ -185,6 +190,8 @@ h3 {
  #mobile-recipe-container {
   height: calc(100% - 50px);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
   @include tablet {
     height: auto;
     overflow: auto;

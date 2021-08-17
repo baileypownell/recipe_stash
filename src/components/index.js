@@ -17,5 +17,5 @@ export {
   Settings,
   ResetPassword,
   RequireAuthComponent,
-  Nav
+  Nav,
 };

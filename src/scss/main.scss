@@ -65,10 +65,6 @@ label {
   margin: 8px 2px!important;
 }
 
-.maxOpacity {
-  opacity: 1;
-}
-
 .auth {
   .input-field input {
     border-bottom: 1px solid white!important;
@@ -114,7 +110,7 @@ button {
 .BounceLoader {
   @include flexColumn;
   align-items: center;
-  height: 65vh;
+  height: 100%;
   justify-content: center;
 }
 

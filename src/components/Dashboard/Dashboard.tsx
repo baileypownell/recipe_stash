@@ -1,10 +1,9 @@
 import React from 'react'
-import BounceLoader from "react-spinners/BounceLoader"
 import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
-import { RecipeService, SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
+import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
@@ -82,11 +81,10 @@ let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 let selectedFilterSubject = new BehaviorSubject(0)
 
 type Props = {
-  history: any
+  history?: any
 }
 
 type State = {
-    recipes_loaded: boolean 
     filteredRecipes: SortedRecipeInterface | null
     gridView: boolean
 }
@@ -118,6 +116,7 @@ class Dashboard extends React.Component<Props, State> {
 
   componentDidMount() {
     this.fetchRecipes();
+    // unfilteredRecipesSubject.next(this.props.recipes)
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
@@ -165,7 +164,7 @@ class Dashboard extends React.Component<Props, State> {
       window.sessionStorage.setItem('category_filters', JSON.stringify(category))
       window.sessionStorage.setItem('userInput', input)
     }))
-    .subscribe(([filters, _, input, recipes]) => {
+    .subscribe(([filters, category, input, recipes]) => {
       let newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
         let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
@@ -237,7 +236,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {
-    let input = e.target.value.toLowerCase().trim()
+    let input = e.target.value.toLowerCase()
     userInputSubject.next(input)
   }
 
@@ -251,7 +250,7 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   render() {
-    const { filteredRecipes, recipes_loaded, gridView } = this.state;
+    const { gridView, filteredRecipes } = this.state;
     const appliedFilt = appliedFiltersSubject.getValue();
     const appliedCat = appliedCategorySubject.getValue();
 
@@ -283,7 +282,7 @@ class Dashboard extends React.Component<Props, State> {
       {key: "dessert", name: mealCategories['dessert']},
       {key: "drinks", name: mealCategories['drinks']}, 
       {key: "other", name: mealCategories['other']}
-    ];
+    ]
 
     return (
       <div>
@@ -342,19 +341,11 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         </div>
         
-        <div className="dashboard">
-          {!recipes_loaded ?
-            <div className="BounceLoader">
-              <BounceLoader
-                size={100}
-                color={"#689943"}
-              />
-            </div>
-            :
+        <div className="dashboard">       
             <>
               <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
               <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
-              {
+              { filteredRecipes !== null ? 
                 Object.keys(mealCategories).map(mealCat => {
                   return (
                       <Category
@@ -368,10 +359,9 @@ class Dashboard extends React.Component<Props, State> {
                       >
                       </Category>                       
                   )
-                })
+                }) : null 
               }
-            </>
-          }
+          </>
       </div>
      </div>
     )
