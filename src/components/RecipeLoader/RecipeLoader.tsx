@@ -54,17 +54,28 @@ const determineRecipeCategory = (recipeCategory: string): string => {
       onSuccess: (newRecipe: {recipeAdded: boolean, recipe: any}) => {
         queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
           let recipeCategory: string = newRecipe.recipe.category || determineRecipeCategory(newRecipe.recipe.category)
-          const recipe = newRecipe.recipe 
-          recipe.rawTitle = recipe.raw_title
-          const updatedQueryState: SortedRecipeInterface = {
-            ...currentRecipes, 
-            [recipeCategory]: [...currentRecipes[recipeCategory], newRecipe.recipe]
+          const recipe: RecipeInput = {
+            title: newRecipe.recipe.title, 
+            rawTitle: newRecipe.recipe.raw_title, 
+            category: newRecipe.recipe.category, 
+            ingredients: newRecipe.recipe.ingredients, 
+            directions: newRecipe.recipe.directions, 
+            isNoBake: newRecipe.recipe.no_bake, 
+            isEasy: newRecipe.recipe.easy, 
+            isHealthy: newRecipe.recipe.healthy, 
+            isGlutenFree: newRecipe.recipe.gluten_free, 
+            isDairyFree: newRecipe.recipe.dairy_free, 
+            isSugarFree: newRecipe.recipe.sugar_free, 
+            isVegetarian: newRecipe.recipe.vegetarian, 
+            isVegan: newRecipe.recipe.vegan, 
+            isKeto: newRecipe.recipe.keto
           }
-          // console.log('updatedQueryState = ', updatedQueryState)
+          const updatedQueryState = {
+            ...currentRecipes, 
+            [recipeCategory]: [...currentRecipes[recipeCategory], recipe].sort(RecipeService.sortByTitle)
+          }
           return updatedQueryState
         })
-
-        // console.log('THER AFTERMATH: = ', queryClient.getQueryData('recipes'))
       }
     })
 

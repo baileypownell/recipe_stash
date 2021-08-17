@@ -4,16 +4,6 @@ const router = Router()
 const authMiddleware = require('./authMiddleware.js')
 const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
-// enum RecipeCategories {
-//   Breakfast = 'breakfast', 
-//   Lunch = 'lunch',
-//   Dinner = 'dinner', 
-//   SideDish = 'side_dish', 
-//   Dessert = 'dessert', 
-//   Drinks = 'drinks', 
-//   Other = 'other',
-// }
-
 const constructTags = (recipe) => {
   let tagArray = []
     if (recipe.no_bake) {

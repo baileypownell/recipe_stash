@@ -15,6 +15,24 @@ export interface BaseStringAccessibleObjectRecipeInterface {
     [key: string]: RecipeInterface[]
 }
 
+export interface RecipeInterface {
+  title: string
+  raw_title: string
+  category: string
+  user_uuid: string
+  ingredients: string
+  directions: string
+  no_bake: boolean
+  easy: boolean 
+  healthy: boolean 
+  gluten_free: boolean
+  dairy_free: boolean
+  sugar_free: boolean
+  vegetarian: boolean
+  vegan: boolean
+  keto: boolean
+}
+
 export interface SortedRecipeInterface extends BaseStringAccessibleObjectRecipeInterface {
     breakfast: RecipeInterface[]
     dessert: RecipeInterface[]
@@ -102,7 +120,7 @@ export interface ExistingFile {
 
 export const RecipeService = {
 
-    sortByTitle(a: RecipeInterface, b: RecipeInterface) {
+    sortByTitle(a: RecipeInterface | RecipeInput, b: RecipeInterface | RecipeInput) {
       return a.rawTitle.localeCompare(b.rawTitle)
     },
 

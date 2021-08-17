@@ -27,7 +27,7 @@ import RecipeLoader from './components/RecipeLoader/RecipeLoader';
 export const queryClient = new QueryClient()
 ReactDOM.render(
   <QueryClientProvider client={queryClient}>
-    <ReactQueryDevtools initialIsOpen={true} />
+    {/* <ReactQueryDevtools initialIsOpen={true} /> */}
     <BrowserRouter>
       <Nav/>
       <Switch>

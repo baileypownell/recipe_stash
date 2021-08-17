@@ -111,22 +111,6 @@ class Dashboard extends React.Component<Props, State> {
     gridView: true,
   }
 
-  fetchRecipes = async() => {
-    try {
-      let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
-      unfilteredRecipesSubject.next(recipes)
-    } catch (error) {
-      if (error.response?.status === 401) {
-        // unathenticated; redirect to log in 
-        this.props.history.push('/login')
-      }
-    } finally {
-      this.setState({
-        recipes_loaded: !!unfilteredRecipesSubject.getValue()
-      })
-    }
-  }
-
   addRecipe = async(recipeInput: {
     recipeInput: RecipeInput, 
     files: NewFileInterface[], 
@@ -136,13 +120,6 @@ class Dashboard extends React.Component<Props, State> {
     // TO-DO: eliminate this 
     const current = queryClient.getQueryData('recipes')
     unfilteredRecipesSubject.next(current)
-    // this.props.fetchRecipes()
-    // .then((recipes: SortedRecipeInterface) => {
-    //   unfilteredRecipesSubject.next(recipes)
-    //   this.setState({
-    //     recipes_loaded: true
-    //   })
-    // })
   }
 
   componentDidMount() {
@@ -225,7 +202,6 @@ class Dashboard extends React.Component<Props, State> {
         }
       } 
 
-      console.log('new state: ', newFilteredRecipesState)
       this.setState({
         filteredRecipes: newFilteredRecipesState
       })
@@ -267,10 +243,6 @@ class Dashboard extends React.Component<Props, State> {
     }
     appliedCategorySubject.next(filter)
     this.calculateSelectedFiltersNumber()
-  }
-
-  updateDashboard = () => {
-    this.fetchRecipes()
   }
 
   handleSearchChange = (e: { target: HTMLInputElement }) => {

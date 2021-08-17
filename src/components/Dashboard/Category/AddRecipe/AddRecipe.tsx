@@ -22,7 +22,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 type Props = {
-  updateDashboard: any 
   id: number 
   category: string
   addRecipe: Function
@@ -91,7 +90,6 @@ class AddRecipe extends React.Component<Props, State> {
     this.setState({
       loading: false
     })
-    this.props.updateDashboard()
   }
 
   createRecipe = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
