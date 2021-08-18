@@ -22,7 +22,7 @@ import {
 
 import 'materialize-css/dist/css/materialize.min.css'
 import './scss/main.scss'
-import RecipeLoader from './components/RecipeLoader/RecipeLoader';
+import RecipeCache from './components/RecipeCache/RecipeCache';
 
 export const queryClient = new QueryClient()
 ReactDOM.render(
@@ -35,7 +35,7 @@ ReactDOM.render(
         <Route path="/signup" component={Signup}/>
         <Route path="/reset/:token" component={ResetPassword}/>
         <RequireAuthComponent>
-          <Route path="/recipes" exact={true} component={RecipeLoader}/> 
+          <Route path="/recipes" exact={true} component={RecipeCache}/> 
           <Route path="/settings" component={Settings}/>
           <Route path="/recipes/:id" component={Recipe}/>
         </RequireAuthComponent>

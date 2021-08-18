@@ -41,7 +41,7 @@ const determineRecipeCategory = (recipeCategory: string): string => {
   }
 }
 
- function RecipeLoader() {
+ function RecipeCache() {
     const { mutateAsync } = useMutation('recipes', async(recipeInput: AddRecipeMutationParam) => {
       try {
         return await RecipeService.createRecipe(recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile)
@@ -112,4 +112,4 @@ const determineRecipeCategory = (recipeCategory: string): string => {
     )
   }
  
-  export default RecipeLoader;
+  export default RecipeCache;
