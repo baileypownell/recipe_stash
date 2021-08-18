@@ -84,14 +84,6 @@ class AddRecipe extends React.Component<Props, State> {
     })
   }
 
-  handleSuccess() {
-    M.toast({html: 'Recipe added.'})
-    this.clearState()
-    this.setState({
-      loading: false
-    })
-  }
-
   createRecipe = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     let tags = this.state.tags

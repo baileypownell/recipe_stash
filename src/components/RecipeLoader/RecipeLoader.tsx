@@ -1,7 +1,6 @@
 
 import React from 'react'
 import { useQuery, useMutation } from 'react-query'
-const { htmlToText } = require('html-to-text')
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
   lunch: 'Lunch', 
@@ -19,11 +18,10 @@ export interface AddRecipeMutationParam {
 }
 import BounceLoader from "react-spinners/BounceLoader"
 import { Redirect } from 'react-router-dom'
-import { Dashboard, Recipe } from '..'
-import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile, RecipeInterface } from '../../services/recipe-services'
-import AddRecipe from '../Dashboard/Category/AddRecipe/AddRecipe'
+import { Dashboard } from '..'
+import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { queryClient } from '../..'
-import DOMPurify from 'dompurify'
+
  
 const determineRecipeCategory = (recipeCategory: string): string => {
   if (recipeCategory === 'Other') {
@@ -79,13 +77,16 @@ const determineRecipeCategory = (recipeCategory: string): string => {
       }
     })
 
-    const { refetch, isLoading, error } = useQuery('recipes', async() => {
+    const { refetch, isLoading, error, data } = useQuery('recipes', async() => {
       try {
           let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
+          console.log('just got ', recipes)
           return recipes
         } catch (error) {
           return error
         }
+      }, {
+        staleTime: Infinity
       })
 
     const fetchRecipes = async() => {
@@ -104,6 +105,7 @@ const determineRecipeCategory = (recipeCategory: string): string => {
   
     return (
       <Dashboard 
+        recipes={data}
         fetchRecipes={() => fetchRecipes()} 
         addRecipeMutation={async(recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
       </Dashboard>

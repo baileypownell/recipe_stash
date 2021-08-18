@@ -12,11 +12,13 @@ import { BehaviorSubject } from 'rxjs'
 import { tags } from '../../models/tags'
 import options from '../../models/options'
 import DeleteModal from '../DeleteModal/DeleteModal'
-import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile, RecipeInput } from '../../services/recipe-services'
+import { RecipeService, RecipeInterface, UpdateRecipeInput, NewFileInterface, DefaultTile, ExistingFile, RecipeInput, SortedRecipeInterface } from '../../services/recipe-services'
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
 import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 import Fade from 'react-reveal/Fade'
+import { useMutation } from 'react-query'
+import { queryClient } from '../..'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -182,6 +184,16 @@ class Recipe extends React.Component<any, State> {
   deleteRecipe = async() => {
     try {
       await RecipeService.deleteRecipe(this.state.recipeId)
+      const current: SortedRecipeInterface = queryClient.getQueryData('recipes')
+      queryClient.setQueryData('recipes', () => {
+        const updatedArray = current[this.state.category].filter(el => el.id !== this.state.recipeId)
+        const updatedCategory = updatedArray
+        const updatedQueryState = {
+          ...current, 
+          [this.state.category]: updatedCategory
+        }
+        return updatedQueryState
+      })
       M.toast({html: 'Recipe deleted.'})
       this.closeModal()
       this.props.history.push('/recipes')
@@ -245,8 +257,14 @@ class Recipe extends React.Component<any, State> {
       isKeto: tags[8].selected,
     }
     try {
-      const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
-      M.toast({html: 'Recipe added.'})
+      // const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
+      // TO-DO: redirect to add view??
+      await this.props.addRecipe({
+        recipeInput, 
+        newFiles: this.state.newFiles, 
+        defaultTile: this.state.defaultTileImageKey
+      })
+      M.toast({html: 'Recipe added.'}) 
       this.setState({
         filesToDelete: [],
         newFiles: [],
@@ -266,54 +284,59 @@ class Recipe extends React.Component<any, State> {
   }
 
   saveRecipe = async(e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault()
-      if (this.state.cloning) {
-        this.addRecipe()
-        return
-      }
-      let tags = this.state.tags
-      let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
-      const rawTitle = htmlToText(titleHTML, {
-        wordwrap: 130
-      })
+    // TO-DO: update
+    e.preventDefault()
+    if (this.state.cloning) {
+      this.addRecipe()
+      return
+    }
+    let tags = this.state.tags
+    let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+    const rawTitle = htmlToText(titleHTML, {
+      wordwrap: 130
+    })
+    this.setState({
+      loading: true
+    })
+    this.closeModal()
+    let recipeUpdateInput: UpdateRecipeInput = {
+      title: this.state.recipe_title_edit,
+      rawTitle,
+      ingredients: this.state.ingredients_edit,
+      directions: this.state.directions_edit,
+      recipeId: this.state.recipeId,
+      category: this.state.category,
+      isNoBake: tags[0].selected,
+      isEasy: tags[1].selected,
+      isHealthy: tags[2].selected,
+      isGlutenFree: tags[3].selected, 
+      isDairyFree: tags[4].selected,
+      isSugarFree: tags[5].selected, 
+      isVegetarian: tags[6].selected, 
+      isVegan: tags[7].selected,
+      isKeto: tags[8].selected, 
+    }
+    try {
+      await RecipeService.updateRecipe(
+        recipeUpdateInput, 
+        this.state.newFiles, 
+        this.state.defaultTileImageKey,
+        this.state.filesToDelete,
+        this.state.recipeId,
+        this.state.recipe as unknown as RecipeInterface
+      )
+      queryClient.refetchQueries('recipes')
+      this.handleUpdate()
       this.setState({
-        loading: true
+        loading: false
       })
-      this.closeModal()
-      let recipeUpdateInput: UpdateRecipeInput = {
-          title: this.state.recipe_title_edit,
-          rawTitle,
-          ingredients: this.state.ingredients_edit,
-          directions: this.state.directions_edit,
-          recipeId: this.state.recipeId,
-          category: this.state.category,
-          isNoBake: tags[0].selected,
-          isEasy: tags[1].selected,
-          isHealthy: tags[2].selected,
-          isGlutenFree: tags[3].selected, 
-          isDairyFree: tags[4].selected,
-          isSugarFree: tags[5].selected, 
-          isVegetarian: tags[6].selected, 
-          isVegan: tags[7].selected,
-          isKeto: tags[8].selected, 
-      }
-      try {
-        await RecipeService.updateRecipe(
-          recipeUpdateInput, 
-          this.state.newFiles, 
-          this.state.defaultTileImageKey,
-          this.state.filesToDelete,
-          this.state.recipeId,
-          this.state.recipe as unknown as RecipeInterface
-        )
-        this.handleUpdate()
-      } catch(err) {
-        console.log(err)
-        this.setState({
-          loading: false
-        })
-        M.toast({html: 'There was an error updating the recipe.'})
-      }
+    } catch(err) {
+      console.log(err)
+      this.setState({
+        loading: false
+      })
+      M.toast({html: 'There was an error updating the recipe.'})
+    }
   }
 
   handleModelChange = (content: string, delta, source, editor) => {

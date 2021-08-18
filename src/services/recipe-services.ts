@@ -143,7 +143,7 @@ export const RecipeService = {
       return recipeResponse.data.recipe
     },
 
-    deleteRecipe: async(recipeId: number): Promise<any> => {
+    deleteRecipe: async(recipeId: string): Promise<any> => {
       return await axios.delete(`/recipe/${recipeId}`)
     },
 

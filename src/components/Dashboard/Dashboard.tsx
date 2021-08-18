@@ -95,6 +95,7 @@ type Props = {
   history?: any
   addRecipeMutation: any
   fetchRecipes: Function
+  recipes: SortedRecipeInterface
 }
 
 type State = {
@@ -117,20 +118,15 @@ class Dashboard extends React.Component<Props, State> {
     defaultTile: DefaultTile | null
   }) => {
     await this.props.addRecipeMutation(recipeInput)
-    // TO-DO: eliminate this 
     const current = queryClient.getQueryData('recipes')
     unfilteredRecipesSubject.next(current)
   }
 
   componentDidMount() {
-    this.props.fetchRecipes()
-    .then((recipes: SortedRecipeInterface) => {
-      unfilteredRecipesSubject.next(recipes)
-      this.setState({
-        recipes_loaded: true
-      })
+    unfilteredRecipesSubject.next(this.props.recipes)
+    this.setState({
+      recipes_loaded: true
     })
-    .catch(e => console.log(e))
     let faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
@@ -366,6 +362,7 @@ class Dashboard extends React.Component<Props, State> {
                         gridView={gridView}
                         recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
                         addRecipe={this.addRecipe}
+                        
                       >
                       </Category>                       
                   )
