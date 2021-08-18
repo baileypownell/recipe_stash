@@ -259,11 +259,9 @@ class Recipe extends React.Component<any, State> {
     try {
       // const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
       // TO-DO: redirect to add view??
-      await this.props.addRecipe({
-        recipeInput, 
-        newFiles: this.state.newFiles, 
-        defaultTile: this.state.defaultTileImageKey
-      })
+      await this.props.addRecipeMutation(recipeInput)
+      const current = queryClient.getQueryData('recipes')
+      // unfilteredRecipesSubject.next(current)
       M.toast({html: 'Recipe added.'}) 
       this.setState({
         filesToDelete: [],

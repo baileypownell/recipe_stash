@@ -35,9 +35,19 @@ ReactDOM.render(
         <Route path="/signup" component={Signup}/>
         <Route path="/reset/:token" component={ResetPassword}/>
         <RequireAuthComponent>
-          <Route path="/recipes" exact={true} component={RecipeCache}/> 
+          <Route 
+            path="/recipes" 
+            exact={true}
+            render={(props) => (
+              <RecipeCache dashboard={true}></RecipeCache>
+            )} /> 
           <Route path="/settings" component={Settings}/>
-          <Route path="/recipes/:id" component={Recipe}/>
+          <Route 
+            path="/recipes/:id" 
+            render={(props) => (
+              <RecipeCache individualRecipe={true}></RecipeCache>
+            )}
+            />
         </RequireAuthComponent>
         <Redirect to="/" />
       </Switch>

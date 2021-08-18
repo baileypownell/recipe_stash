@@ -4,6 +4,18 @@ const router = Router()
 const authMiddleware = require('./authMiddleware.js')
 const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
+// interface DashboardReadyRecipe {
+//   category: string 
+//   defaultTileImageKey: boolean 
+//   directions: string 
+//   id: string 
+//   ingredients: string 
+//   preSignedDefaultTileImageUrl?: string 
+//   rawTitle: string 
+//   tags: string[] 
+//   title: string
+// }
+
 const constructTags = (recipe) => {
   let tagArray = []
     if (recipe.no_bake) {

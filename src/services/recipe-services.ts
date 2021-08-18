@@ -2,6 +2,7 @@ import axios from 'axios'
 import { UploadedFileResult } from '../models/images'
 import tag from '../models/tags'
 import { async } from 'rxjs'
+import { DashboardReadyRecipe } from '../components/RecipeCache/RecipeCache'
 
 export interface BaseStringAccessibleObjectBoolean {
     [key: string]: boolean
@@ -120,7 +121,7 @@ export interface ExistingFile {
 
 export const RecipeService = {
 
-    sortByTitle(a: RecipeInterface | RecipeInput, b: RecipeInterface | RecipeInput) {
+    sortByTitle(a: RecipeInterface | RecipeInput | DashboardReadyRecipe, b: RecipeInterface | RecipeInput | DashboardReadyRecipe) {
       return a.rawTitle.localeCompare(b.rawTitle)
     },
 
