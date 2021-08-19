@@ -20,6 +20,7 @@ import Fade from 'react-reveal/Fade'
 import { useMutation } from 'react-query'
 import { queryClient } from '../..'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
+import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -204,10 +205,16 @@ class Recipe extends React.Component<any, State> {
     }
   }
 
-  updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
+  updateInput = (e: ChangeEvent<HTMLSelectElement> | any) => {
     this.setState({
       [e.target.id]: e.target.value
     } as any, () => this.checkValidity())
+  }
+
+  updateCategory = (e) => {
+    this.setState({
+      category: e.target.value
+    }, () => this.checkValidity())
   }
 
   toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -473,16 +480,20 @@ class Recipe extends React.Component<any, State> {
                       <h3>Directions</h3>
                       <ReactQuill  value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
                       <div className="options">
-                        <h3>Category</h3>
-                        <div className="select">
-                          <select onChange={this.updateInput} id="category" value={category} >
-                            {
-                              options.map((val, index) => {
-                                return <option key={index}>{val.label}</option>
-                              })
-                            }
-                          </select>
-                        </div>
+                      <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
+                        <InputLabel>Category</InputLabel>
+                        <Select
+                          id="category"
+                          value={category}
+                          onChange={this.updateCategory}
+                        >
+                          {
+                            options.map((val, index: number) => {
+                              return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
+                            })
+                          }
+                        </Select>
+                      </FormControl>
                       </div>
                       <div className="options">
                         <h3>Recipe Tags</h3>

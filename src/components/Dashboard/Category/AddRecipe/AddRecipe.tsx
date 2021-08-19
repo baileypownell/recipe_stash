@@ -57,10 +57,6 @@ class AddRecipe extends React.Component<Props, State> {
     open: false
   }
 
-  componentDidMount() {
-    // console.log(this.props.category, options)
-   }
-
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state;
     if (directions && ingredients && recipe_title) {
@@ -238,21 +234,9 @@ class AddRecipe extends React.Component<Props, State> {
               <h3>Directions</h3>
               <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
               <div>
-                {/* <h3>Category</h3>
-                  <div className="select">
-                    <select onChange={this.updateInput} id="category" value={category} >
-                      {
-                        options.map((val, index: number) => {
-                          return <option key={index}>{val.label}</option>
-                        })
-                      }
-                    </select>
-                      
-                  </div> */}
                 <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
-                  <InputLabel id="demo-simple-select-filled-label">Category</InputLabel>
+                  <InputLabel>Category</InputLabel>
                   <Select
-                    labelId="demo-simple-select-filled-label"
                     id="category"
                     value={category}
                     onChange={this.updateCategory}
