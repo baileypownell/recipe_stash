@@ -210,8 +210,42 @@ router.put('/', (request, response, next) => {
     isVegan, 
     isKeto, 
   } = request.body;
-  client.query('UPDATE recipes SET title=$1, raw_title=$16, ingredients=$2, directions=$3, category=$4, no_bake=$5, easy=$6, healthy=$7, gluten_free=$8, dairy_free=$9, sugar_free=$10, vegetarian=$11, vegan=$12, keto=$13 WHERE recipe_uuid=$14 AND user_uuid=$15 RETURNING "recipe_uuid"',
-  [title, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, recipeId, userId, rawTitle],
+  client.query(`UPDATE recipes SET 
+    title=$1, 
+    raw_title=$16, 
+    ingredients=$2, 
+    directions=$3, 
+    category=$4, 
+    no_bake=$5, 
+    easy=$6, 
+    healthy=$7, 
+    gluten_free=$8, 
+    dairy_free=$9, 
+    sugar_free=$10, 
+    vegetarian=$11, 
+    vegan=$12, 
+    keto=$13 WHERE 
+    recipe_uuid=$14 AND 
+    user_uuid=$15 
+    RETURNING "recipe_uuid"`,
+  [
+    title, 
+    ingredients, 
+    directions, 
+    category, 
+    isNoBake, 
+    isEasy, 
+    isHealthy, 
+    isGlutenFree, 
+    isDairyFree, 
+    isSugarFree, 
+    isVegetarian, 
+    isVegan, 
+    isKeto, 
+    recipeId, 
+    userId, 
+    rawTitle
+  ],
    (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
@@ -261,8 +295,12 @@ router.get('/:recipeId', (request, response, next) => {
           let urls = await getImageAWSKeys(recipeId)
           if (urls) {
             recipe_response.preSignedUrls = getPresignedUrls(urls)
-            response.status(200).json({ success: true, recipe: recipe_response })
-          } 
+            if (recipe.default_tile_image_key) {
+              let preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
+              recipe_response.preSignedDefaultTileImageUrl = preSignedDefaultTileImageUrl
+            }
+          }
+          response.status(200).json({ success: true, recipe: recipe_response })
         } else {
           response.status(200).json({ success: true, recipe: recipe_response })
         }        

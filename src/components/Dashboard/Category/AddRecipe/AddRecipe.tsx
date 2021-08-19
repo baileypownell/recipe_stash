@@ -16,6 +16,7 @@ import { RecipeService, RecipeInput, DefaultTile, NewFileInterface } from '../..
 import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { queryClient } from '../../../..'
+import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -111,11 +112,12 @@ class AddRecipe extends React.Component<Props, State> {
       isKeto: tags[8].selected,
     }
     try {
-      await this.props.addRecipe({
+      const param: AddRecipeMutationParam = {
         recipeInput, 
-        newFiles: this.state.newFiles, 
+        files: this.state.newFiles, 
         defaultTile: this.state.defaultTile
-      })
+      }
+      await this.props.addRecipe(param)
       M.toast({html: 'Recipe added.'})
       this.clearState()
       this.setState({

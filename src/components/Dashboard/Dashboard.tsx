@@ -6,6 +6,7 @@ import './Dashboard.scss'
 import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
 import { queryClient } from '../..'
+import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -112,11 +113,7 @@ class Dashboard extends React.Component<Props, State> {
     gridView: true,
   }
 
-  addRecipe = async(recipeInput: {
-    recipeInput: RecipeInput, 
-    files: NewFileInterface[], 
-    defaultTile: DefaultTile | null
-  }) => {
+  addRecipe = async(recipeInput: AddRecipeMutationParam) => {
     await this.props.addRecipeMutation(recipeInput)
     const current = queryClient.getQueryData('recipes')
     unfilteredRecipesSubject.next(current)

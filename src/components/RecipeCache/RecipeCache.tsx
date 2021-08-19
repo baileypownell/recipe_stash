@@ -17,7 +17,7 @@ export interface DashboardReadyRecipe {
   directions: string 
   id: string 
   ingredients: string 
-  preSignedDefaultTileImageUrl?: string 
+  preSignedDefaultTileImageUrl: string 
   rawTitle: string 
   tags: string[] 
   title: string
@@ -65,13 +65,12 @@ const determineRecipeCategory = (recipeCategory: string): string => {
           recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile
         )
         const recipe: DashboardReadyRecipe = await RecipeService.getRecipe(newRecipe.recipe.recipe_uuid)
-        console.log(recipe) 
         return recipe
       } catch(err) {
         console.log(err)
         M.toast({html: 'There was an error.'})
     }}, {
-      onSuccess: (newRecipe: any) => {
+      onSuccess: (newRecipe: DashboardReadyRecipe) => {
         queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
           let recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)          
           const updatedQueryState = {

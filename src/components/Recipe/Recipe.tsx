@@ -19,6 +19,7 @@ import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 import Fade from 'react-reveal/Fade'
 import { useMutation } from 'react-query'
 import { queryClient } from '../..'
+import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 let presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -257,20 +258,20 @@ class Recipe extends React.Component<any, State> {
       isKeto: tags[8].selected,
     }
     try {
-      // const recipe = await RecipeService.createRecipe(recipeInput, this.state.newFiles, this.state.defaultTileImageKey)
-      // TO-DO: redirect to add view??
-      await this.props.addRecipeMutation(recipeInput)
-      const current = queryClient.getQueryData('recipes')
-      // unfilteredRecipesSubject.next(current)
+      const param: AddRecipeMutationParam = {
+        recipeInput,
+        files: this.state.newFiles, 
+        defaultTile: this.state.defaultTileImageKey
+      }
+      const recipe = await this.props.addRecipeMutation(param)
       M.toast({html: 'Recipe added.'}) 
       this.setState({
         filesToDelete: [],
         newFiles: [],
         loading: false
       }, () => {
-        this.props.history.push(`/recipes/${recipe.recipeId}`)
-        window.location.reload(false);
-
+        this.props.history.push(`/recipes/${recipe.id}`)
+        window.location.reload(false)
       }) 
     } catch(err) {
       console.log(err)
@@ -282,7 +283,6 @@ class Recipe extends React.Component<any, State> {
   }
 
   saveRecipe = async(e: React.MouseEvent<HTMLButtonElement>) => {
-    // TO-DO: update
     e.preventDefault()
     if (this.state.cloning) {
       this.addRecipe()
