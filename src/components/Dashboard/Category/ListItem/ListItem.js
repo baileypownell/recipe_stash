@@ -4,7 +4,6 @@ import './ListItem.scss'
 
 class ListItem extends React.Component {
 
-
   viewRecipe = () => {
     this.props.history.push(`/recipes/${this.props.data.id}`);
   }

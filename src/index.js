@@ -65,4 +65,4 @@ ReactDOM.render(
     </ThemeProvider>
   </QueryClientProvider>,
   document.getElementById('app')
-);
+)

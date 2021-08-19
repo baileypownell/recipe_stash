@@ -95,7 +95,6 @@ class Login extends React.Component {
     }
   }
   
-
   render() {
     const { formValid, loading, signInError } = this.state;
     return (

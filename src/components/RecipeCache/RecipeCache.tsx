@@ -3,29 +3,29 @@ import React from 'react'
 import { useQuery, useMutation } from 'react-query'
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
-  lunch: 'Lunch', 
+  lunch: 'Lunch',
   dinner: 'Dinner',
   side_dish: 'Side Dish',
-  dessert: 'Dessert', 
-  drinks: 'Drinks', 
+  dessert: 'Dessert',
+  drinks: 'Drinks',
   other: 'Other',
 }
 
 export interface DashboardReadyRecipe {
-  category: string 
-  defaultTileImageKey: boolean 
-  directions: string 
-  id: string 
-  ingredients: string 
-  preSignedDefaultTileImageUrl: string 
-  rawTitle: string 
-  tags: string[] 
+  category: string
+  defaultTileImageKey: boolean
+  directions: string
+  id: string
+  ingredients: string
+  preSignedDefaultTileImageUrl: string
+  rawTitle: string
+  tags: string[]
   title: string
 }
 
 export interface AddRecipeMutationParam {
-  recipeInput: RecipeInput, 
-  files: NewFileInterface[], 
+  recipeInput: RecipeInput,
+  files: NewFileInterface[],
   defaultTile: DefaultTile | null
 }
 import BounceLoader from "react-spinners/BounceLoader"
@@ -39,7 +39,7 @@ interface RecipeCacheProps {
   dashboard?: boolean
   individualRecipe?: boolean
 }
- 
+
 const determineRecipeCategory = (recipeCategory: string): string => {
   if (recipeCategory === 'Other') {
     return 'other'
@@ -72,9 +72,9 @@ const determineRecipeCategory = (recipeCategory: string): string => {
     }}, {
       onSuccess: (newRecipe: DashboardReadyRecipe) => {
         queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
-          let recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)          
+          const recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)
           const updatedQueryState = {
-            ...currentRecipes, 
+            ...currentRecipes,
             [recipeCategory]: [...currentRecipes[recipeCategory], newRecipe].sort(RecipeService.sortByTitle)
           }
           return updatedQueryState
@@ -84,7 +84,7 @@ const determineRecipeCategory = (recipeCategory: string): string => {
 
     const { refetch, isLoading, error, data } = useQuery('recipes', async() => {
       try {
-          let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
+          const recipes: SortedRecipeInterface = await RecipeService.getRecipes()
           return recipes
         } catch (error) {
           return error
@@ -94,23 +94,23 @@ const determineRecipeCategory = (recipeCategory: string): string => {
       })
 
     const fetchRecipes = async() => {
-      const result = await refetch() 
+      const result = await refetch()
       return result.data
     }
-  
+
     if (isLoading) return <div className="BounceLoader">
       <BounceLoader
         size={100}
         color={"#689943"}
       />
     </div>
-  
+
     if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
-  
+
     if (props.dashboard) return (
-      <Dashboard 
+      <Dashboard
         recipes={data}
-        fetchRecipes={() => fetchRecipes()} 
+        fetchRecipes={() => fetchRecipes()}
         addRecipeMutation={async(recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
       </Dashboard>
     )
@@ -119,5 +119,5 @@ const determineRecipeCategory = (recipeCategory: string): string => {
       <Recipe addRecipeMutation={async(recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}></Recipe>
     )
   }
- 
+
   export default RecipeCache;

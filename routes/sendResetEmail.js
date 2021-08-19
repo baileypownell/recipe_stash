@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const client = require('../db');
+const client = require('../client')
 const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
@@ -61,7 +61,6 @@ router.post('/', (request, response, next) => {
       }
     })
   })
-
 
 router.get('/:token', (request, response, next) => {
   let token = request.params.token;

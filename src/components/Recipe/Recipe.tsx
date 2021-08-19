@@ -21,25 +21,25 @@ import { useMutation } from 'react-query'
 import { queryClient } from '../..'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
-let presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
-let presignedUrls$ = presignedUrlsSubject.asObservable()
+const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
+const presignedUrls$ = presignedUrlsSubject.asObservable()
 
 let modalInstance: Modal
 
 type State = {
-  loading: boolean 
-  recipe_title: string 
+  loading: boolean
+  recipe_title: string
   ingredients: string
-  directions: string 
-  recipe_title_edit: string 
-  recipe_title_raw: string 
+  directions: string
+  recipe_title_edit: string
+  recipe_title_raw: string
   recipe_title_raw_edit: string
-  ingredients_edit: string 
+  ingredients_edit: string
   directions_edit: string
   recipeId: string
   showConfirmation: boolean
   category: string
-  category_edit: string 
+  category_edit: string
   recipe: RecipeInterface | null
   newFiles: any[]
   filesToDelete: any[]
@@ -47,7 +47,7 @@ type State = {
   defaultTileImageKey: string | null | DefaultTile
   recipeValid: boolean | null
   cloning: boolean
-  width: number 
+  width: number
 }
 
 class Recipe extends React.Component<any, State> {
@@ -57,19 +57,19 @@ class Recipe extends React.Component<any, State> {
     recipe_title: '',
     ingredients: '',
     directions: '',
-    recipe_title_edit: '', 
+    recipe_title_edit: '',
     recipe_title_raw: '',
     recipe_title_raw_edit: '',
-    ingredients_edit: '', 
+    ingredients_edit: '',
     directions_edit: '',
     recipeId: this.props.match.params.id,
     showConfirmation: false,
     category: '',
-    category_edit: '', 
+    category_edit: '',
     recipe: null,
     newFiles: [],
     filesToDelete: [],
-    tags: tags,
+    tags,
     defaultTileImageKey: null,
     recipeValid: null,
     cloning: false,
@@ -82,9 +82,9 @@ class Recipe extends React.Component<any, State> {
 
   fetchData = async() => {
     try {
-      let recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
+      const recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
       this.setState({
-        recipe: recipe,
+        recipe,
         recipe_title: recipe.title,
         recipe_title_raw: recipe.rawTitle,
         recipe_title_edit: recipe.title,
@@ -115,8 +115,8 @@ class Recipe extends React.Component<any, State> {
       })
       this.state.tags.forEach((tag: Tag, index: number) => {
         if (recipe.tags.includes(tag.recipeTagPropertyName as any)) {
-            let tags = [...this.state.tags]
-            let item = {...tags[index]}
+            const tags = [...this.state.tags]
+            const item = {...tags[index]}
             item.selected = true
             tags[index] = item
             this.setState({tags})
@@ -125,7 +125,7 @@ class Recipe extends React.Component<any, State> {
     } catch(err) {
       console.log(err)
       if (err.response?.status === 401) {
-        // unathenticated; redirect to log in 
+        // unathenticated; redirect to log in
         this.props.history.push('/login')
       }
     }
@@ -133,7 +133,7 @@ class Recipe extends React.Component<any, State> {
 
   componentDidMount() {
     this.fetchData()
-    let faded = document.querySelectorAll('.fade')
+    const faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 700)
 
     const modals = document.querySelectorAll('.modal')
@@ -189,7 +189,7 @@ class Recipe extends React.Component<any, State> {
         const updatedArray = current[this.state.category].filter(el => el.id !== this.state.recipeId)
         const updatedCategory = updatedArray
         const updatedQueryState = {
-          ...current, 
+          ...current,
           [this.state.category]: updatedCategory
         }
         return updatedQueryState
@@ -216,10 +216,10 @@ class Recipe extends React.Component<any, State> {
   }
 
   toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
-    let index: number = (e.target as Element).id as unknown as number
-    let tags = [...this.state.tags]
-    let item = {...tags[index]}
-    let priorSelectedValue = item.selected
+    const index: number = (e.target as Element).id as unknown as number
+    const tags = [...this.state.tags]
+    const item = {...tags[index]}
+    const priorSelectedValue = item.selected
     item.selected = !priorSelectedValue
     tags[index] = item;
     this.setState({tags}, () => this.checkValidity())
@@ -232,13 +232,13 @@ class Recipe extends React.Component<any, State> {
      this.setState({
        filesToDelete: [],
        newFiles: []
-     }) 
+     })
   }
 
   // function for duplicating a recipe
   addRecipe = async() => {
-    let tags = this.state.tags
-    let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+    const tags = this.state.tags
+    const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
@@ -246,7 +246,7 @@ class Recipe extends React.Component<any, State> {
       loading: true
     })
     this.closeModal()
-    let recipeInput: RecipeInput = {
+    const recipeInput: RecipeInput = {
       title: this.state.recipe_title_edit,
       rawTitle,
       category: this.state.category,
@@ -255,21 +255,21 @@ class Recipe extends React.Component<any, State> {
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
-      isGlutenFree: tags[3].selected, 
+      isGlutenFree: tags[3].selected,
       isDairyFree: tags[4].selected,
-      isSugarFree: tags[5].selected, 
-      isVegetarian: tags[6].selected, 
+      isSugarFree: tags[5].selected,
+      isVegetarian: tags[6].selected,
       isVegan: tags[7].selected,
       isKeto: tags[8].selected,
     }
     try {
       const param: AddRecipeMutationParam = {
         recipeInput,
-        files: this.state.newFiles, 
+        files: this.state.newFiles,
         defaultTile: this.state.defaultTileImageKey
       }
       const recipe = await this.props.addRecipeMutation(param)
-      M.toast({html: 'Recipe added.'}) 
+      M.toast({html: 'Recipe added.'})
       this.setState({
         filesToDelete: [],
         newFiles: [],
@@ -277,7 +277,7 @@ class Recipe extends React.Component<any, State> {
       }, () => {
         this.props.history.push(`/recipes/${recipe.id}`)
         window.location.reload(false)
-      }) 
+      })
     } catch(err) {
       console.log(err)
       this.setState({
@@ -293,8 +293,8 @@ class Recipe extends React.Component<any, State> {
       this.addRecipe()
       return
     }
-    let tags = this.state.tags
-    let titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+    const tags = this.state.tags
+    const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
@@ -302,7 +302,7 @@ class Recipe extends React.Component<any, State> {
       loading: true
     })
     this.closeModal()
-    let recipeUpdateInput: UpdateRecipeInput = {
+    const recipeUpdateInput: UpdateRecipeInput = {
       title: this.state.recipe_title_edit,
       rawTitle,
       ingredients: this.state.ingredients_edit,
@@ -312,17 +312,17 @@ class Recipe extends React.Component<any, State> {
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
-      isGlutenFree: tags[3].selected, 
+      isGlutenFree: tags[3].selected,
       isDairyFree: tags[4].selected,
-      isSugarFree: tags[5].selected, 
-      isVegetarian: tags[6].selected, 
+      isSugarFree: tags[5].selected,
+      isVegetarian: tags[6].selected,
       isVegan: tags[7].selected,
-      isKeto: tags[8].selected, 
+      isKeto: tags[8].selected,
     }
     try {
       await RecipeService.updateRecipe(
-        recipeUpdateInput, 
-        this.state.newFiles, 
+        recipeUpdateInput,
+        this.state.newFiles,
         this.state.defaultTileImageKey,
         this.state.filesToDelete,
         this.state.recipeId,
@@ -362,9 +362,9 @@ class Recipe extends React.Component<any, State> {
   }
 
   setFiles = (newFiles: NewFileInterface[]) => {
-    // new files 
+    // new files
     this.setState({
-      newFiles: newFiles
+      newFiles
     }, () => this.checkValidity())
   }
 
@@ -389,27 +389,27 @@ class Recipe extends React.Component<any, State> {
   }
 
   render() {
-    const { 
-      recipeId, 
-      category, 
+    const {
+      recipeId,
+      category,
       loading,
-      tags, 
-      recipe, 
-      directions, 
-      ingredients, 
-      recipe_title_raw, 
+      tags,
+      recipe,
+      directions,
+      ingredients,
+      recipe_title_raw,
       defaultTileImageKey,
       cloning,
       width
     } = this.state;
 
     return (
-          !loading  ? 
+          !loading  ?
           <div id="mobile-recipe-container">
             <h1 className="title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
               <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: recipe_title_raw}}/>
-            </h1> 
+            </h1>
             <Fade>
               <div className="view-recipe" >
                 <div id="recipe-mobile-toolbar" className={width > 700 ? "hidden" : ''}>
@@ -430,31 +430,31 @@ class Recipe extends React.Component<any, State> {
                     <div dangerouslySetInnerHTML={{__html: directions}}/>
                   </div>
                   <div className="section">
-                    {tags.map((tag) => ( tag.selected ? 
-                        <div 
+                    {tags.map((tag) => ( tag.selected ?
+                        <div
                           key={tag.label}
                           className="chip z-depth-2 selectedTag">
                           { tag.label }
-                        </div> 
+                        </div>
                         : null )
                     )}
                   </div>
                   <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                    {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => ( 
+                    {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => (
                        <ImageSkeletonLoader url={url} key={i}></ImageSkeletonLoader>
                     ))}
                   </div>
-                  { width > 700 ?                 
+                  { width > 700 ?
                     <div onClick={this.openModal} className="fixed-action-btn">
                       <a className="btn-floating btn-large" id="primary-color">
                         <i className="large material-icons">mode_edit</i>
                       </a>
 
                       <ul>
-                          <li 
-                            onClick={this.cloneRecipe} 
-                            className="tooltipped" 
-                            data-position="left" 
+                          <li
+                            onClick={this.cloneRecipe}
+                            className="tooltipped"
+                            data-position="left"
                             data-tooltip="Duplicate this recipe">
                               <a className="btn-floating green-icon"><i className="far fa-clone"></i></a>
                           </li>
@@ -497,9 +497,9 @@ class Recipe extends React.Component<any, State> {
                         <h3>Recipe Tags</h3>
                         {
                           tags.map((tag, index) => {
-                            return <div 
-                              onClick={this.toggleTagSelectionStatus} 
-                              id={index.toString()} 
+                            return <div
+                              onClick={this.toggleTagSelectionStatus}
+                              id={index.toString()}
                               className={`chip z-depth-2 ${recipe && tags[index].selected  ? "selectedTag" : "null"}`}
                               key={index}>
                                 {tag.label}
@@ -507,13 +507,13 @@ class Recipe extends React.Component<any, State> {
                           })
                         }
                       </div>
-                      <FileUpload 
+                      <FileUpload
                         defaultTileImageUUID={defaultTileImageKey}
                         passDefaultTileImage={this.setDefaultTileImage}
                         preExistingImageUrls={presignedUrls$}
                         passFilesToDelete={this.setFilesToDelete}
                         passFiles={this.setFiles}>
-                      </FileUpload>  
+                      </FileUpload>
                       {/* delete confirmation modal */}
                       <div id="confirmation-modal" className="modal">
                           <DeleteModal deleteFunction={this.deleteRecipe}></DeleteModal>
@@ -521,33 +521,33 @@ class Recipe extends React.Component<any, State> {
                   </div>
               </div>
                 <div className="modal-close-buttons">
-                  <button 
+                  <button
                     className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
-                    disabled={!this.state.recipeValid} 
+                    disabled={!this.state.recipeValid}
                     onClick={this.saveRecipe}>
-                    { loading ? 
-                      <Preloader/> : 
+                    { loading ?
+                      <Preloader/> :
                       <>
                         {!cloning ? 'Update Recipe' : 'Add Recipe' }
                         <i className="fas fa-check-square"></i>
                       </>
                     }
                 </button>
-               
+
                   <div>
-                    <button 
-                      id="primary-color" 
-                      className="waves-effect waves-light btn modal-trigger" 
+                    <button
+                      id="primary-color"
+                      className="waves-effect waves-light btn modal-trigger"
                       data-target="confirmation-modal"
                       >
                       Delete Recipe <i className="fas fa-trash"></i>
-                    </button> 
+                    </button>
                     <button onClick={this.closeModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
                   </div>
                 </div>
-            </div> 
+            </div>
           </div>
-            </div> :  
+            </div> :
           <div className="BounceLoader">
             <BounceLoader
                 size={100}

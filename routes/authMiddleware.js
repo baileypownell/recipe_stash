@@ -1,4 +1,4 @@
-const client = require('../db');
+const client = require('../client')
 
 module.exports = function(req, response, next) {
     if (req.sessionID) {

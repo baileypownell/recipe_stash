@@ -23,7 +23,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 type Props = {
-  id: number 
+  id: number
   category: string
   addRecipe: Function
 }
@@ -35,8 +35,8 @@ type State = {
   directions: string
   category: string
   recipeValid: boolean
-  newFiles: any[] 
-  tags: tag[], 
+  newFiles: any[]
+  tags: tag[],
   defaultTile: DefaultTile | null
   open: boolean
 }
@@ -52,7 +52,7 @@ class AddRecipe extends React.Component<Props, State> {
     category: options.find(option => option.label === this.props.category).value,
     recipeValid: false,
     newFiles: [],
-    tags: tags,
+    tags,
     defaultTile: null,
     open: false
   }
@@ -71,27 +71,27 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   clearState = () => {
-    let prevOpenState = this.state.open
+    const prevOpenState = this.state.open
     this.setState({
       recipe_title: '',
       ingredients: '',
       directions: '',
       open: !prevOpenState,
-      tags: tags
+      tags
     })
   }
 
   createRecipe = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    let tags = this.state.tags
-    let titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
+    const tags = this.state.tags
+    const titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
     const rawTitle = htmlToText(titleHTML, {
       wordwrap: 130
     })
     this.setState({
       loading: true
     })
-    let recipeInput: RecipeInput = {
+    const recipeInput: RecipeInput = {
       title: DOMPurify.sanitize(this.state.recipe_title, {}),
       rawTitle,
       category: this.state.category,
@@ -100,17 +100,17 @@ class AddRecipe extends React.Component<Props, State> {
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
-      isGlutenFree: tags[3].selected, 
+      isGlutenFree: tags[3].selected,
       isDairyFree: tags[4].selected,
-      isSugarFree: tags[5].selected, 
-      isVegetarian: tags[6].selected, 
+      isSugarFree: tags[5].selected,
+      isVegetarian: tags[6].selected,
       isVegan: tags[7].selected,
       isKeto: tags[8].selected,
     }
     try {
       const param: AddRecipeMutationParam = {
-        recipeInput, 
-        files: this.state.newFiles, 
+        recipeInput,
+        files: this.state.newFiles,
         defaultTile: this.state.defaultTile
       }
       await this.props.addRecipe(param)
@@ -129,12 +129,12 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   toggleModal = () => {
-    let prevOpenState = this.state.open
+    const prevOpenState = this.state.open
     this.setState({
       open: !prevOpenState
     }, () => {
-      if (this.state.open) {        
-        // recipe category chip tags 
+      if (this.state.open) {
+        // recipe category chip tags
         const chips = document.querySelectorAll('.chips');
         M.Chips.init(chips, {});
       }
@@ -154,13 +154,13 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   toggleTagSelectionStatus = (e) => {
-    let index = e.target.id 
+    const index = e.target.id
     // 1. Make a shallow copy of the items
-    let tags = [...this.state.tags];
+    const tags = [...this.state.tags];
     // 2. Make a shallow copy of the item you want to mutate
-    let item = {...tags[index]};
+    const item = {...tags[index]};
     // 3. Replace the property you're intested in
-    let priorSelectedValue = item.selected
+    const priorSelectedValue = item.selected
     item.selected = !priorSelectedValue;
     // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
     tags[index] = item;
@@ -187,15 +187,15 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   setFiles = (newFiles: NewFileInterface[]) => {
-    // new files 
+    // new files
     this.setState({
-      newFiles: newFiles
+      newFiles
     })
   }
 
   setDefaultTileImage = (defaultTile: DefaultTile) => {
     this.setState({
-      defaultTile: defaultTile
+      defaultTile
     })
   }
 
@@ -205,16 +205,16 @@ class AddRecipe extends React.Component<Props, State> {
 
     return (
       <>
-        { gridView ? 
+        { gridView ?
           <div
             onClick={this.toggleModal}
             className="addRecipe z-depth-4"
             id={id}
              >
             <i className="fas fa-plus-circle"></i>
-        </div> : 
-        <a 
-          onClick={this.toggleModal} 
+        </div> :
+        <a
+          onClick={this.toggleModal}
           className="waves-effect waves-light btn add-button">
           Add Recipe
           <i className="fas fa-plus-circle"></i>
@@ -262,9 +262,9 @@ class AddRecipe extends React.Component<Props, State> {
                   <Typography>
                     {
                       this.state.tags.map((tag, index) => {
-                        return <div 
-                          onClick={this.toggleTagSelectionStatus} 
-                          id={index.toString()} 
+                        return <div
+                          onClick={this.toggleTagSelectionStatus}
+                          id={index.toString()}
                           className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
                           key={index}>
                             {tag.label}
@@ -274,20 +274,20 @@ class AddRecipe extends React.Component<Props, State> {
                   </Typography>
                 </AccordionDetails>
               </Accordion>
-              <FileUpload 
+              <FileUpload
                 open={open}
-                passDefaultTileImage={this.setDefaultTileImage} 
+                passDefaultTileImage={this.setDefaultTileImage}
                 passFiles={this.setFiles}>
                 </FileUpload>
             </div>
           </div>
           <div className="modal-close-buttons">
-          <button 
+          <button
             className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
-            disabled={!this.state.recipeValid} 
+            disabled={!this.state.recipeValid}
             onClick={this.createRecipe}>
-              {this.state.loading ? 
-                <Preloader/> : 
+              {this.state.loading ?
+                <Preloader/> :
                 <>
                   Add Recipe
                   <i className="fas fa-check-square"></i>
@@ -297,7 +297,7 @@ class AddRecipe extends React.Component<Props, State> {
             <button onClick={this.toggleModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
         </div>
         </div>
-        </div> 
+        </div>
       </Dialog>
     </>
     )

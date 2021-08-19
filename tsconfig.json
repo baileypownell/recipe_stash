@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-      "target": "es2015", // Specify ECMAScript target version
-      "noImplicitAny": true,
+      "target": "esnext", // Specify ECMAScript target version
+      "noImplicitAny": false,
       "lib": [
         "dom",
         "dom.iterable",
@@ -13,7 +13,7 @@
       "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
       "strict": true, // Enable all strict type checking options
       "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
-      "module": "esnext", // Specify module code generation
+      "module": "commonjs", // Specify module code generation
       "moduleResolution": "node", // Resolve modules using Node.js style
       "isolatedModules": true, // Unconditionally emit imports for unresolved files
       "resolveJsonModule": true, // Include modules imported with .json extension
@@ -23,11 +23,10 @@
       "declaration": true, // Generate corresponding .d.ts file
       "noUnusedLocals": true, // Report errors on unused locals
       "noUnusedParameters": true, // Report errors on unused parameters
-      "incremental": true, // Enable incremental compilation by reading/writing information from prior compilations to a file on disk
       "noFallthroughCasesInSwitch": true // Report errors for fallthrough cases in switch statement
     },
     "include": [
-      "src/**/*" // *** The files TypeScript should type check ***
+      "routes/**/*" // *** The files TypeScript should type check ***
     ],
     "exclude": ["node_modules", "build"] // *** The files to not type check ***
   }

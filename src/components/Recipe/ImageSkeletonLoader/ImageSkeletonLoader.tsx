@@ -9,10 +9,10 @@ function ImageSkeletonLoader(props) {
         M.Materialbox.init(images, {})
     })
 
-    return ( 
-        imageLoaded ? 
+    return (
+        imageLoaded ?
             <div>
-                <img 
+                <img
                 key={props.url}
                 className="materialboxed z-depth-2 faded"
                 src={props.url}/>
@@ -24,7 +24,7 @@ function ImageSkeletonLoader(props) {
                     onLoad={() => setImageLoaded(true)}
                     />
                 <Skeleton width={200} height={200} className="recipe-image-skeleton" />
-            </> 
+            </>
     )
 }
 

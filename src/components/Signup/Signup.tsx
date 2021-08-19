@@ -50,20 +50,20 @@ class Signup extends React.Component<Props, State> {
       loading: true
     })
     try {
-      let userInput: UserInputInterface = {
+      const userInput: UserInputInterface = {
         firstName,
         lastName,
         password,
         email
       }
-      let user: UserCreatedResponse = await UserService.createUser(userInput)
+      const user: UserCreatedResponse = await UserService.createUser(userInput)
       if (user.success) {
         M.toast({html: 'Success! Logging you in now...'})
         AuthenticationService.setUserLoggedIn()
         this.props.history.push('/recipes')
       } else {
         this.setState({
-          error: true, 
+          error: true,
           loading: false
         })
         M.toast({html: user.message})
@@ -105,7 +105,7 @@ class Signup extends React.Component<Props, State> {
   }
 
   validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let password: string = e.target.value
+    const password: string = e.target.value
     if (isPasswordInvalid(password)) {
       this.setState({
           insufficientPasswordMessage: true,
@@ -172,8 +172,8 @@ class Signup extends React.Component<Props, State> {
                   <input onChange={this.validatePassword} id="password" type="password" name="password"  />
                   <label htmlFor="password" >Password</label>
                   {
-                    insufficientPasswordMessage ? 
-                      <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+                    insufficientPasswordMessage ?
+                      <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
                   : null}
                 </div>
                 <div className="input-field">
