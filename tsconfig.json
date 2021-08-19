@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "target": "es2015", // Specify ECMAScript target version
+      "noImplicitAny": true,
       "lib": [
         "dom",
         "dom.iterable",

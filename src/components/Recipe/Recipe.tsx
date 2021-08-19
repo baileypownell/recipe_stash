@@ -102,8 +102,6 @@ class Recipe extends React.Component<any, State> {
           } else {
             presignedUrlsSubject.next([])
           }
-          const images = document.querySelectorAll('.materialboxed')
-          M.Materialbox.init(images, {})
           const modal = document.querySelectorAll('.modal')
           M.Modal.init(modal, {
             opacity: 0.5
@@ -126,7 +124,7 @@ class Recipe extends React.Component<any, State> {
       })
     } catch(err) {
       console.log(err)
-      if (err.response.status === 401) {
+      if (err.response?.status === 401) {
         // unathenticated; redirect to log in 
         this.props.history.push('/login')
       }

@@ -153,8 +153,8 @@ h3 {
      grid-template-rows: auto;
      gap: 0 15px;
    }
-   img, .recipe-image-skeleton {
-     width: 100%!important;
+   img {
+    //  width: 100%!important;
      margin: 15px 0;
      border-radius: 5px;
    }
@@ -165,11 +165,16 @@ h3 {
    padding: 30px 0;
    span {
      width: 100%;
+     display: flex;
+     justify-content: center;
    }
-   img, .recipe-image-skeleton {
-     width: 100%!important;
+   img, 
+   .recipe-image-skeleton {
      max-width: 400px;
      border-radius: 5px;
+   }
+   .recipe-image-skeleton {
+     width: 100%!important;
    }
    > div {
      margin: 0 auto;
