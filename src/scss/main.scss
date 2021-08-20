@@ -136,3 +136,7 @@ html, body {
 #confirmation-modal {
   max-width: 400px;
 }
+
+button:focus {
+  background-color: inherit!important;
+}

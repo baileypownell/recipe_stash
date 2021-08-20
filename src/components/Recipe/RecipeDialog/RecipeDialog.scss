@@ -1,0 +1,10 @@
+
+
+.button-alignment {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    > div button:last-of-type {
+        margin-left: 10px;
+    }
+}

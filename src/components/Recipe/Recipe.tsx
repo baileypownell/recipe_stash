@@ -129,10 +129,8 @@ class Recipe extends React.Component<any, State> {
                 defaultTileImageKey={recipe.defaultTileImageKey}
                 presignedUrls$={presignedUrls$}
                 fetchData={this.fetchData}
-                category={this.state.recipe.category}
-                recipeId={recipe.id}
                 addRecipeMutation={this.props.addRecipeMutation}
-                trigerDialog={this.triggerDialog}>
+                triggerDialog={this.triggerDialog}>
               </RecipeDialog>
               <div className="view-recipe" >
                 <div id="recipe-mobile-toolbar" className={width > 700 ? "hidden" : ''}>
