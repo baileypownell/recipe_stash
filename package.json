@@ -7,8 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "dev-server": "nodemon ./server.ts node --trace-warnings",
-    "start": "NODE_ENV=production && node ./server.js",
+    "dev-server": "nodemon ./server.ts node --trace-warnings --skipLibCheck",
+    "start": "NODE_ENV=production && node ./server.ts",
     "build": "webpack -p --config ./webpack.config.js",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build ts": "tsc",

@@ -1,4 +1,4 @@
-const { Router } = require('express')
+import { Router } from 'express'
 
 const signin = require('./signin')
 const sendResetEmail = require('./sendResetEmail')

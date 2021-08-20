@@ -1,7 +1,7 @@
 import { Router } from 'express'
 const client = require('../client')
 const router = Router()
-const authMiddleware = require('./authMiddleware.js')
+import { authMiddleware } from './authMiddleware'
 const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
 // interface DashboardReadyRecipe {
@@ -343,4 +343,4 @@ router.delete('/:recipeId', (request: any, response, next) => {
   })
 })
 
-module.exports = router;
+module.exports = router

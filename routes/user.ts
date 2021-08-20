@@ -4,7 +4,7 @@ const router = Router.Router()
 import nodemailer from 'nodemailer'
 import sgTransport from 'nodemailer-sendgrid-transport'
 import bcrypt from 'bcryptjs'
-import authMiddleware from './authMiddleware'
+import { authMiddleware } from './authMiddleware'
 const  { deleteAWSFiles } = require('./aws-s3')
 import * as dotenv from "dotenv"
 if (process.env.NODE_ENV !== 'production') {

@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+      "types": [],
       "target": "esnext", // Specify ECMAScript target version
       "noImplicitAny": false,
       "lib": [
