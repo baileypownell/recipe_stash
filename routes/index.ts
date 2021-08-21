@@ -10,7 +10,7 @@ const fileUpload  = require('./file-upload')
 const auth = require('./auth')
 const router = Router();
 
-// middleware 
+// middleware
 
 router.use('/signin', signin)
 router.use('/send-reset-email', sendResetEmail)
