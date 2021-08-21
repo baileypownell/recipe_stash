@@ -7,6 +7,9 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import Fade from 'react-reveal/Fade'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
+import { Button } from '@material-ui/core'
+
+let modalInstance
 
 type State = {
   password: string
@@ -58,8 +61,9 @@ class Settings extends React.Component<any, State> {
   componentDidMount() {
     const elems = document.querySelectorAll('.collapsible')
     M.Collapsible.init(elems, {})
-    const modals = document.querySelectorAll('.modal')
-    M.Modal.init(modals, {})
+    const modal = document.querySelector('.modal')
+    modalInstance = modal
+    M.Modal.init(modal, {})
     this.updateView()
   }
 
@@ -108,7 +112,6 @@ class Settings extends React.Component<any, State> {
 
   deleteAccount = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    // TO-DO: add confirmation modal
     try {
       await UserService.deleteUser()
       M.toast({html: 'Account deleted.'})
@@ -152,6 +155,11 @@ class Settings extends React.Component<any, State> {
     }
   }
 
+  openDeleteModal = () => {
+    let modal = M.Modal.getInstance(modalInstance)
+    modal.open()
+  }
+
   render() {
     return (
       <Fade>
@@ -183,7 +191,7 @@ class Settings extends React.Component<any, State> {
                     <label htmlFor="password">Password</label>
                     <input id="password" type="password" value={this.state.password} onChange={this.updateInput} ></input>
                   </div>
-                  <button className="waves-effect waves-light btn" onClick={this.updateEmail} >Save</button>
+                  <Button color="secondary" onClick={this.updateEmail} variant="contained">Save</Button>
                   </div>
               </li>
               <li>
@@ -197,37 +205,29 @@ class Settings extends React.Component<any, State> {
                         <input id="lastName" type="text" value={this.state.lastName} onChange={this.updateInput}></input>
                         <label htmlFor="lastName">New Last Name</label>
                     </div>
-                    <button
-                      className="waves-effect waves-light btn"
-                      onClick={this.updateProfile}>Save
-                    </button>
+                    <Button color="secondary" onClick={this.updateProfile} variant="contained">Save</Button>
                 </div>
               </li>
               <li>
                   <div className="collapsible-header"><i className="material-icons">security</i>Update Password</div>
                   <div className="collapsible-body">
                   <p>Click the button below to receive an email with a link to reset your password.</p>
-                  <button
-                    className="waves-effect waves-light btn"
-                    onClick={this.updatePassword} >Send Email
-                  </button>
+                  <Button color="secondary" onClick={this.updatePassword} variant="contained">Send Email</Button>
                 </div>
               </li>
               <li>
                 <div className="collapsible-header"><i className="material-icons">delete</i>Delete Account</div>
                 <div className="collapsible-body">
                 <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
-                  <button
-                    className="waves-effect waves-light btn modal-trigger"
-                    id="delete"
-                    data-target="confirmation-modal">
-                    Delete Account <i className="fas fa-exclamation-triangle"></i>
-                    </button>
+                    <Button 
+                      color="secondary" 
+                      onClick={this.openDeleteModal} 
+                      variant="contained">Delete Account <i className="fas fa-exclamation-triangle"></i>
+                    </Button>
                   </div>
               </li>
             </ul>
           </div>
-
 
           {/* delete confirmation modal */}
           <div id="confirmation-modal" className="modal">

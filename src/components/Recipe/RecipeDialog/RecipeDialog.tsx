@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react'
-import { Dialog, FormControl, InputLabel, Select, MenuItem, Button, DialogContent, DialogTitle, DialogActions } from '@material-ui/core';
+import { Dialog, FormControl, InputLabel, Select, MenuItem, Button, DialogContent, DialogTitle, DialogActions, CircularProgress } from '@material-ui/core';
 import Slide from '@material-ui/core/Slide'
 import ReactQuill from 'react-quill';
 import FileUpload from '../../File-Upload/FileUpload';
@@ -203,9 +203,9 @@ class RecipeDialog extends React.Component<any, any> {
             wordwrap: 130
         })
         this.setState({
-            loading: true
+            loading: true,
         })
-
+        // this.props.removeImages()
         const recipeUpdateInput: UpdateRecipeInput = {
             title: this.state.recipe_title_edit,
             rawTitle,
@@ -252,8 +252,8 @@ class RecipeDialog extends React.Component<any, any> {
         this.props.fetchData()
         M.toast({html: 'Recipe updated.'})
         this.setState({
-        filesToDelete: [],
-        newFiles: []
+            filesToDelete: [],
+            newFiles: []
         })
     }
 
@@ -326,17 +326,21 @@ class RecipeDialog extends React.Component<any, any> {
                 <DialogActions>
                     <div className="button-alignment">
                         <div>
-                            <Button variant="contained" color="secondary" onClick={this.deleteRecipe}>
+                            <Button variant="contained" onClick={this.deleteRecipe}>
                                 Delete Recipe <i className="fas fa-trash"></i>
                             </Button>
-                            <Button onClick={() => this.props.triggerDialog()} variant="outlined" color="info">
+                            <Button onClick={() => this.props.triggerDialog()} variant="contained" color="primary">
                                 Cancel
                             </Button>
                         </div>
 
-                        <Button onClick={this.saveRecipe} disabled={!recipeValid} variant="contained" color="primary">
+                        <Button 
+                        onClick={this.saveRecipe} 
+                        disabled={!recipeValid} 
+                        variant="contained" 
+                        color="secondary">
                             { loading ?
-                                <Preloader/> :
+                                <CircularProgress style={{'color': 'white', 'height': '26px', 'width': '26px'}} /> :
                             <>
                                 {!cloning ? 'Update Recipe' : 'Add Recipe' }
                                 <i className="fas fa-check-square"></i>

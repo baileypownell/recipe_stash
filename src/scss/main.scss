@@ -137,6 +137,13 @@ html, body {
   max-width: 400px;
 }
 
-button:focus {
-  background-color: inherit!important;
+// .MuiButton-outlined:focus,
+// .MuiButton-contained:focus {
+//   background-color: inherit!important;
+// }
+
+.ril__builtinButton,
+.ril-zoom-out,
+.ril-close {
+  background-color: transparent!important;
 }

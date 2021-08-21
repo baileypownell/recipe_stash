@@ -12,6 +12,7 @@ import { appear } from '../../models/functions'
 import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
+import { Divider } from '@material-ui/core'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -61,14 +62,13 @@ class Recipe extends React.Component<any, State> {
           const elems = document.querySelectorAll('.fixed-action-btn')
           M.FloatingActionButton.init(elems, {})
       })
-      this.state.tags.forEach((tag: Tag, index: number) => {
-        if (recipe.tags.includes(tag.recipeTagPropertyName as any)) {
-            const tags = [...this.state.tags]
-            const item = {...tags[index]}
-            item.selected = true
-            tags[index] = item
-            this.setState({tags})
-        }
+
+      const tagState = tags.map(tag => {
+        tag.selected = !!recipe.tags.includes(tag.recipeTagPropertyName)
+        return tag
+      })
+      this.setState({
+        tags: tagState
       })
     } catch(err) {
       console.log(err)
@@ -160,6 +160,7 @@ class Recipe extends React.Component<any, State> {
                         : null )
                     )}
                   </div>
+                  <Divider style={{'margin': '20px 0 10px 0'}} />
                   <div id={(recipe as unknown as RecipeInterface).preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
                     {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => (
                        <ImageSkeletonLoader url={url} key={i}></ImageSkeletonLoader>

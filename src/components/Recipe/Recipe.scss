@@ -84,6 +84,7 @@ h3 {
     padding-left: revert!important;
   }
   #width-setter {
+    width: 100%;
     @include desktop {
       width: 60%;
     }
@@ -158,11 +159,18 @@ h3 {
      margin: 15px 0;
      border-radius: 5px;
    }
+   span {
+     width: 100%;
+     > span {
+       width: 100%!important;
+     }
+   }
  }
 
  #noGrid {
    display: flex;
    padding: 30px 0;
+   justify-content: center;
    span {
      width: 100%;
      display: flex;

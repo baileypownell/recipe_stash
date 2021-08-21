@@ -1,11 +1,11 @@
 import React from 'react'
-const axios = require('axios')
 import ClipLoader from "react-spinners/ClipLoader"
 import GoogleLogin from 'react-google-login'
 import './Login.scss'
 import M from 'materialize-css'
 import AuthenticationService from '../../services/auth-service'
 import Fade from 'react-reveal/Fade'
+import { Button } from '@material-ui/core'
 
 class Login extends React.Component {
 
@@ -127,20 +127,16 @@ class Login extends React.Component {
                 </div>
 
                 <div className="buttons">
-                <button
-                  disabled={!formValid}
-                  className={formValid ? 'enabled' : 'disabled'}
-                  className="waves-effect waves-light btn"
-                  >
+                  <Button type="submit" variant="outlined" color="secondary" disabled={!formValid}>
                   {loading?
-                    <ClipLoader
-                      css={`border-color: white;`}
-                      size={30}
-                      color={"#689943"}
-                      loading={loading}
-                    />
-                : 'Submit'}
-                </button>
+                      <ClipLoader
+                        css={`border-color: white;`}
+                        size={30}
+                        color={"#689943"}
+                        loading={loading}
+                      />
+                  : 'Submit'}
+                  </Button>
                 
                   <GoogleLogin
                     className="googleButton"
@@ -152,10 +148,7 @@ class Login extends React.Component {
                   />
 
                 {signInError ? 
-                    <button 
-                      className="waves-effect waves-light btn" 
-                      onClick={this.sendPasswordResetLink}>Reset Password
-                    </button>
+                    <Button variant="contained" onClick={this.sendPasswordResetLink} color="primary">Reset Password</Button>
                 : null}
                 </div>
               </form>

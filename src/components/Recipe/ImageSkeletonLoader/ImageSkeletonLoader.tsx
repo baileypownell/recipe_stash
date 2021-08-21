@@ -1,30 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import Skeleton from 'react-loading-skeleton';
+import React, { useState } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import Lightbox from 'react-image-lightbox'
+import 'react-image-lightbox/style.css'
 
 function ImageSkeletonLoader(props) {
     const [imageLoaded, setImageLoaded] = useState(false)
+    const [ imageOpen, setImageOpen] = useState(false)
 
-    useEffect(() => {
-        const images = document.querySelectorAll('.materialboxed')
-        M.Materialbox.init(images, {})
-    })
+    const images = [
+        props.url,
+      ];
 
-    return (
-        imageLoaded ?
-            <div>
-                <img
+    return ( imageLoaded ?
+        <> {
+            imageOpen ? 
+            <>
+            <Lightbox
+                mainSrc={images[0]}
+                onCloseRequest={() => setImageOpen(false)}
+            />
+            <img 
+                onClick={() => setImageOpen(true)}
+                className="z-depth-3"
+                style={{'cursor': 'pointer'}}
                 key={props.url}
-                className="materialboxed z-depth-2 faded"
                 src={props.url}/>
-            </div>
-            : <>
-                <img
-                    src={props.url}
-                    style={{ display: `none`}}
-                    onLoad={() => setImageLoaded(true)}
-                    />
-                <Skeleton width={200} height={200} className="recipe-image-skeleton" />
-            </>
+            </> :  
+            <img 
+                onClick={() => setImageOpen(true)}
+                className="z-depth-3"
+                style={{'cursor': 'pointer'}}
+                key={props.url}
+                src={props.url}/>
+        }
+        </>
+        : <>
+            <img
+                src={props.url}
+                style={{ display: `none`}}
+                onLoad={() => setImageLoaded(true)}
+                />
+            <Skeleton width={200} height={200} className="recipe-image-skeleton" />
+        </> 
     )
 }
 

@@ -5,6 +5,7 @@ import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
+import { Button } from '@material-ui/core'
 
 type Props = {
   history: any
@@ -182,18 +183,16 @@ class Signup extends React.Component<Props, State> {
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 </div>
                 <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
-                <button
-                  disabled={!formValid}
-                  className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
+                <Button variant="contained" color="secondary" disabled={!formValid} type="submit">
                   {loading?
-                    <ClipLoader
-                      css={`border-color: white;`}
-                      size={30}
-                      color={"white"}
-                      loading={this.state.loading}
-                    />
-                : 'Submit'}
-                </button>
+                      <ClipLoader
+                        css={`border-color: white;`}
+                        size={30}
+                        color={"white"}
+                        loading={this.state.loading}
+                      />
+                  : 'Submit'}
+                </Button>
               </form>
             </Fade>
           </div>
