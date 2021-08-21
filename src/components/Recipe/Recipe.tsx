@@ -9,11 +9,10 @@ import { tags } from '../../models/tags'
 import { RecipeService, RecipeInterface } from '../../services/recipe-services'
 import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
-import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
 import { Divider } from '@material-ui/core'
-import Lightbox from 'react-image-lightbox'
+import LightboxComponent from './LightboxComponent/LightboxComponent'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -24,8 +23,6 @@ type State = {
   cloning: boolean
   width: number
   dialogOpen: boolean
-  photoIndex: number 
-  isOpen: boolean
 }
 
 class Recipe extends React.Component<any, State> {
@@ -37,8 +34,6 @@ class Recipe extends React.Component<any, State> {
     cloning: false,
     width: window.innerWidth,
     dialogOpen: false,
-    photoIndex: 0,
-      isOpen: false,
   }
 
   goBack = () => {
@@ -121,8 +116,6 @@ class Recipe extends React.Component<any, State> {
       recipe,
       cloning,
       width,
-      photoIndex, 
-      isOpen
     } = this.state;
 
     return (
@@ -174,26 +167,7 @@ class Recipe extends React.Component<any, State> {
                   </div>
                   <Divider style={{'margin': '20px 0 10px 0'}} />
                   <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                    {(recipe as unknown as RecipeInterface).preSignedUrls?.map((url: string, i: number) => (
-                       <ImageSkeletonLoader openLightBox={() => this.setState({ isOpen: true, photoIndex: i })} url={url} key={i}></ImageSkeletonLoader>
-                    ))}
-                    {isOpen && (
-                    <Lightbox
-                      mainSrc={recipe.preSignedUrls[photoIndex]}
-                      nextSrc={recipe.preSignedUrls[(photoIndex + 1) % recipe.preSignedUrls.length]}
-                      prevSrc={recipe.preSignedUrls[(photoIndex + recipe.preSignedUrls.length - 1) % recipe.preSignedUrls.length]}
-                      onCloseRequest={() => this.setState({ isOpen: false })}
-                      onMovePrevRequest={() =>
-                        this.setState({
-                          photoIndex: (photoIndex + recipe.preSignedUrls.length - 1) % recipe.preSignedUrls.length,
-                        })
-                      }
-                      onMoveNextRequest={() =>
-                        this.setState({
-                          photoIndex: (photoIndex + 1) % recipe.preSignedUrls.length,
-                        })
-                      }
-                    /> )}
+                    <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
                   </div>
                   { width > 700 ?
                     <div onClick={this.triggerDialog} className="fixed-action-btn">
