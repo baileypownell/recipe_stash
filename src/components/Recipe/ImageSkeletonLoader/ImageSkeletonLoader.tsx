@@ -12,28 +12,12 @@ function ImageSkeletonLoader(props) {
       ];
 
     return ( imageLoaded ?
-        <> {
-            imageOpen ? 
-            <>
-            <Lightbox
-                mainSrc={images[0]}
-                onCloseRequest={() => setImageOpen(false)}
-            />
             <img 
-                onClick={() => setImageOpen(true)}
+                onClick={() => props.openLightBox()}
                 className="z-depth-3"
                 style={{'cursor': 'pointer'}}
                 key={props.url}
                 src={props.url}/>
-            </> :  
-            <img 
-                onClick={() => setImageOpen(true)}
-                className="z-depth-3"
-                style={{'cursor': 'pointer'}}
-                key={props.url}
-                src={props.url}/>
-        }
-        </>
         : <>
             <img
                 src={props.url}
