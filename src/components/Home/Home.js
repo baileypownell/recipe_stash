@@ -34,9 +34,9 @@ class Home extends React.Component {
                 </div>
               </Fade>
               <Fade bottom>
-                <div id="skew">
+                <div id="phone-image">
                   <img className="fade" src={mobileView} alt="whisk" />
-                  <Button variant="outlined" onClick={this.start}>Get Started <i class="fas fa-arrow-circle-right"></i></Button>
+                  <Button variant="contained" color="secondary" onClick={this.start}>Get Started <i class="fas fa-arrow-circle-right"></i></Button>
                 </div>
               </Fade>
               </div>

@@ -1,15 +1,33 @@
 import React, { ChangeEvent } from 'react'
-import { Dialog, FormControl, InputLabel, Select, MenuItem, Button, DialogContent, DialogTitle, DialogActions, CircularProgress } from '@material-ui/core';
+import { 
+    Dialog, 
+    FormControl, 
+    InputLabel, 
+    Select, 
+    MenuItem, 
+    Button, 
+    DialogContent, 
+    DialogTitle, 
+    DialogActions, 
+    CircularProgress 
+} from '@material-ui/core';
 import Slide from '@material-ui/core/Slide'
-import ReactQuill from 'react-quill';
-import FileUpload from '../../File-Upload/FileUpload';
-import DeleteModal from '../../DeleteModal/DeleteModal';
-import Preloader from '../../Preloader/Preloader';
-import options from '../../../models/options';
-import { RecipeService, SortedRecipeInterface, UpdateRecipeInput, DefaultTile, RecipeInterface, ExistingFile, NewFileInterface, RecipeInput } from '../../../services/recipe-services';
+import ReactQuill from 'react-quill'
+import FileUpload from '../../File-Upload/FileUpload'
+import options from '../../../models/options'
+import { 
+    RecipeService, 
+    SortedRecipeInterface, 
+    UpdateRecipeInput, 
+    DefaultTile, 
+    RecipeInterface, 
+    ExistingFile, 
+    NewFileInterface, 
+    RecipeInput 
+} from '../../../services/recipe-services';
 import { queryClient } from '../../..'
 import DOMPurify from 'dompurify'
-import Tag, { tags } from '../../../models/tags'
+import { tags } from '../../../models/tags'
 import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache'
 import './RecipeDialog.scss'
 import { withRouter } from 'react-router-dom';
@@ -22,7 +40,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 class RecipeDialog extends React.Component<any, any> {
 
     state = {
-        deleteModalOpen: false,
         loading: false,
         recipe_title: this.props.recipe.title,
         ingredients: this.props.recipe.ingredients,
@@ -205,7 +222,6 @@ class RecipeDialog extends React.Component<any, any> {
         this.setState({
             loading: true,
         })
-        // this.props.removeImages()
         const recipeUpdateInput: UpdateRecipeInput = {
             title: this.state.recipe_title_edit,
             rawTitle,
@@ -264,7 +280,7 @@ class RecipeDialog extends React.Component<any, any> {
     }
 
     render() {
-        const { loading, deleteModalOpen, recipeValid, tags, category } = this.state
+        const { loading, recipeValid, tags, category } = this.state
         const { edit, cloning, recipe, open } = this.props
 
         return (
@@ -321,15 +337,14 @@ class RecipeDialog extends React.Component<any, any> {
                         passFilesToDelete={this.setFilesToDelete}
                         passFiles={this.setFiles}>
                     </FileUpload>
-                    {/* <DeleteModal open={deleteModalOpen} deleteFunction={this.deleteRecipe}></DeleteModal> */}
                 </DialogContent>
                 <DialogActions>
                     <div className="button-alignment">
                         <div>
-                            <Button variant="contained" onClick={this.deleteRecipe}>
+                            <Button color="primary" variant="contained" onClick={this.deleteRecipe}>
                                 Delete Recipe <i className="fas fa-trash"></i>
                             </Button>
-                            <Button onClick={() => this.props.triggerDialog()} variant="contained" color="primary">
+                            <Button onClick={() => this.props.triggerDialog()} variant="contained" >
                                 Cancel
                             </Button>
                         </div>

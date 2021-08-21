@@ -86,6 +86,11 @@ class Recipe extends React.Component<any, State> {
     window.addEventListener('resize', this.handleWindowSizeChange)
   }
 
+  componentDidUpdate() {
+    const elems = document.querySelectorAll('.dropdown-trigger')
+    M.Dropdown.init(elems, {})
+  }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleWindowSizeChange)
   }

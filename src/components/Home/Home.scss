@@ -38,12 +38,10 @@
       color: white;
     }
   }
-  #skew {
-    width: 100vw;
-    padding: 20px;
+  #phone-image {
     button {
       position: absolute;
-      bottom: 100px;
+      bottom: 50px;
       right: 15px;
       @include tablet {
         position: unset;
@@ -63,14 +61,6 @@
       @include tablet {
         width: 250px;
       }
-    }
-    h1, h2, h3 {
-      color: white;
-      text-align: left;
-      width: 90%;
-      margin: 0 auto 0 0;
-      padding: 5vw;
-      font-family: 'Roboto', sans-serif;
     }
     @include desktop {
       > div {
