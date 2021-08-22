@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const router = Router()
-const client = require('../client')
+const client = require('./client')
 
 router.get('/', (request, response, next) => {
     client.query('SELECT user_uuid FROM session WHERE sid=$1', 

@@ -4,8 +4,10 @@ const signin = require('./signin')
 const sendResetEmail = require('./sendResetEmail')
 const signinWithGoogle = require('./signinWithGoogle')
 const logout = require('./logout')
-const user = require('./user.ts')
-const recipe = require('./recipe.ts')
+// const user = require('./user.ts')
+import user from './user'
+// const recipe = require('./recipe.ts')
+import recipe from './recipe'
 const fileUpload  = require('./file-upload')
 const auth = require('./auth')
 const router = Router();

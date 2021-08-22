@@ -1,6 +1,6 @@
 
 const { Router } = require('express')
-const client = require('../client')
+const client = require('./client')
 const router = Router()
 import { authMiddleware } from './authMiddleware'
 const  { getPresignedUrls, uploadSingleAWSFile, deleteSingleAWSFile } = require('./aws-s3')

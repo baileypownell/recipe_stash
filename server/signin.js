@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const client = require('../client')
+const client = require('./client')
 const bcrypt = require('bcryptjs')
 const router = Router()
 

@@ -1,5 +1,5 @@
 import * as Router from 'express'
-import client from '../client.js'
+import client from './client.js'
 const router = Router.Router()
 import nodemailer from 'nodemailer'
 import sgTransport from 'nodemailer-sendgrid-transport'

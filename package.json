@@ -2,17 +2,13 @@
   "name": "virtual-cookbook",
   "version": "1.0.0",
   "description": "It's a common problem for many internet chefs; you find a recipe you want to try, pin it on Pinterest.com, come back 6 months later and find that the domain for the recipe no longer exists. Or you try something you really love, write it down on a recipe card to put in your recipe box, and then think to yourself \"What if my house burned down? I wouldn't even have this anymore.\" Or maybe you got halfway through and thought \"This is too much work\".",
-  "main": "index.ts",
+  "main": "server.js",
   "proxy": "http://localhost:3000",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --config ./webpack.config.js --mode development",
     "dev-server": "nodemon ./server.ts node --trace-warnings --skipLibCheck",
-    "start": "NODE_ENV=production && node ./server.ts",
-    "build": "webpack -p --config ./webpack.config.js",
-    "build ts": "tsc",
-    "prestart": "npm run build",
-    "start ts": "node NODE_ENV=production && node ./server.ts"
+    "start": "NODE_ENV=production && node ./public/server.js",
+    "build": "tsc -p ."
   },
   "repository": {
     "type": "git",

@@ -1,9 +1,9 @@
 // import path from 'path'
-import express from 'express'
+import express, { Response } from 'express'
 const bodyParser = require('body-parser');
 const app = express();
-const routes = require('./routes');
-const client = require('./client.js');
+const routes = require('./server/index.js');
+const client = require('./server/client.js');
 // var pg = require('pg'), 
 var session = require('express-session'), 
 pgSession = require('connect-pg-simple')(session);
@@ -49,8 +49,14 @@ app.use(express.static(__dirname + '/dist'))
 // because I'm too cheap to pay $7/month for TLS (never do this for legit app)
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0'
 
-app.get('*', (_, res) => {
-  res.sendFile(__dirname + '/dist/index.html')
+app.get('*', (_, res: Response) => {
+  if (process.env.NODE_ENV === 'development') {
+    res.sendFile(__dirname + '/dist/index.html')
+  } else {
+    res.sendFile('index.html', { root: './dist'})
+  }
+  
+  // res.sendFile('index.html', { root: './dist' })
 });
 
 app.listen(port, () => {

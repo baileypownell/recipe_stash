@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const client = require('../client')
+const client = require('./client')
 const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
