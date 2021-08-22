@@ -2,8 +2,8 @@
 import express, { Response } from 'express'
 const bodyParser = require('body-parser');
 const app = express();
-const routes = require('./server/index.js');
-const client = require('./server/client.js');
+const routes = require('./index.ts');
+const client = require('./client.js');
 // var pg = require('pg'), 
 var session = require('express-session'), 
 pgSession = require('connect-pg-simple')(session);

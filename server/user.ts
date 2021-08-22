@@ -4,9 +4,10 @@ const router = Router.Router()
 import nodemailer from 'nodemailer'
 import sgTransport from 'nodemailer-sendgrid-transport'
 import bcrypt from 'bcryptjs'
-import { authMiddleware } from './authMiddleware'
+// import { authMiddleware } from './authMiddleware'
 const  { deleteAWSFiles } = require('./aws-s3')
 import * as dotenv from "dotenv"
+import { authMiddleware } from './authMiddleware'
 if (process.env.NODE_ENV !== 'production') {
 
   dotenv.config({ path: __dirname+'/.env' });
@@ -239,5 +240,5 @@ router.delete('/', authMiddleware, (request: any, response, next) => {
   })
 })
 
-
-module.exports = router;
+export default router;
+// module.exports = router;

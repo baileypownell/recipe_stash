@@ -6,7 +6,7 @@
   "proxy": "http://localhost:3000",
   "scripts": {
     "dev": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "dev-server": "nodemon ./server.ts node --trace-warnings --skipLibCheck",
+    "dev-server": "nodemon ./server/server.ts node --trace-warnings --skipLibCheck",
     "start": "NODE_ENV=production && node ./public/server.js",
     "build": "tsc -p ."
   },
