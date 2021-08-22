@@ -17,9 +17,9 @@ class ResetPassword extends React.Component<any, any> {
   }
 
   async componentDidMount() {
-    let token = this.props.match.params.token;
+    const token = this.props.match.params.token;
     try {
-      let res = await AuthenticationService.verifyEmailResetToken(token)
+      const res = await AuthenticationService.verifyEmailResetToken(token)
       if (!res.data.success) {
         this.setState({
           invalidLink: true
@@ -43,7 +43,7 @@ class ResetPassword extends React.Component<any, any> {
   }
 
   updatePasswordState = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let password: string = e.target.value
+    const password: string = e.target.value
     if (isPasswordInvalid(password)) {
       this.setState({
           passwordInvalid: true,
@@ -63,7 +63,7 @@ class ResetPassword extends React.Component<any, any> {
       loading: true
     })
     try {
-      let reset_password_token = this.props.match.params.token
+      const reset_password_token = this.props.match.params.token
       await AuthenticationService.updatePassword(this.state.password, reset_password_token, this.state.email)
       M.toast({html: 'Password updated!'})
       this.setState({
@@ -75,7 +75,7 @@ class ResetPassword extends React.Component<any, any> {
       this.setState({
         loading: false
       })
-    } 
+    }
   }
 
   render() {
@@ -95,13 +95,13 @@ class ResetPassword extends React.Component<any, any> {
             <h4>New Password</h4>
             <form onSubmit={this.updatePassword}>
             <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
-            { 
-              this.state.passwordInvalid && this.state.password.length > 0 ? 
-              <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+            {
+              this.state.passwordInvalid && this.state.password.length > 0 ?
+              <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
               : null
             }
             <button
-              disabled={this.state.passwordInvalid} 
+              disabled={this.state.passwordInvalid}
               className="waves-effect waves-light btn"
               >
               {this.state.loading?

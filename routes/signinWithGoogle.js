@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const client = require('../db')
+const client = require('../client')
 const router = Router()
 const jwt_decode = require('jwt-decode')
 

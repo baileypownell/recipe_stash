@@ -5,6 +5,7 @@ import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
+import { Button } from '@material-ui/core'
 
 type Props = {
   history: any
@@ -50,20 +51,20 @@ class Signup extends React.Component<Props, State> {
       loading: true
     })
     try {
-      let userInput: UserInputInterface = {
+      const userInput: UserInputInterface = {
         firstName,
         lastName,
         password,
         email
       }
-      let user: UserCreatedResponse = await UserService.createUser(userInput)
+      const user: UserCreatedResponse = await UserService.createUser(userInput)
       if (user.success) {
         M.toast({html: 'Success! Logging you in now...'})
         AuthenticationService.setUserLoggedIn()
         this.props.history.push('/recipes')
       } else {
         this.setState({
-          error: true, 
+          error: true,
           loading: false
         })
         M.toast({html: user.message})
@@ -105,7 +106,7 @@ class Signup extends React.Component<Props, State> {
   }
 
   validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let password: string = e.target.value
+    const password: string = e.target.value
     if (isPasswordInvalid(password)) {
       this.setState({
           insufficientPasswordMessage: true,
@@ -172,8 +173,8 @@ class Signup extends React.Component<Props, State> {
                   <input onChange={this.validatePassword} id="password" type="password" name="password"  />
                   <label htmlFor="password" >Password</label>
                   {
-                    insufficientPasswordMessage ? 
-                      <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p> 
+                    insufficientPasswordMessage ?
+                      <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
                   : null}
                 </div>
                 <div className="input-field">
@@ -182,18 +183,16 @@ class Signup extends React.Component<Props, State> {
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 </div>
                 <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
-                <button
-                  disabled={!formValid}
-                  className={formValid ? 'enabled waves-effect waves-light btn' : 'disabled waves-effect waves-light btn'}>
+                <Button variant="contained" color="secondary" disabled={!formValid} type="submit">
                   {loading?
-                    <ClipLoader
-                      css={`border-color: white;`}
-                      size={30}
-                      color={"white"}
-                      loading={this.state.loading}
-                    />
-                : 'Submit'}
-                </button>
+                      <ClipLoader
+                        css={`border-color: white;`}
+                        size={30}
+                        color={"white"}
+                        loading={this.state.loading}
+                      />
+                  : 'Submit'}
+                </Button>
               </form>
             </Fade>
           </div>

@@ -1,5 +1,6 @@
 import React from 'react'
 import './FileUpload.scss'
+import { Button } from '@material-ui/core'
 const { v4: uuidv4 } = require('uuid')
 
 class FileUpload extends React.Component {
@@ -186,10 +187,7 @@ class FileUpload extends React.Component {
                     </input>
                     <div>
                         <h1>Drag & Drop an image</h1>
-                        <button 
-                            onClick={this.openFileFinder} 
-                            disabled={limitReached} 
-                            className="waves-effect waves-light btn">Choose a file</button>
+                        <Button variant="outlined" color="secondary" onClick={this.openFileFinder} disabled={limitReached} >Choose a file</Button>
                         <span>(Limit 5)</span>
                         <i className="fas fa-file-upload"></i>
                     </div>

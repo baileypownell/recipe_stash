@@ -1,5 +1,4 @@
 
-
 const aws = require('aws-sdk')
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer')
@@ -40,7 +39,7 @@ const upload = multer({
 })
 const singleFileUpload = upload.single('image')
 
-uploadSingleAWSFile = (req, res) => {
+const uploadSingleAWSFile = (req, res) => {
     req.s3Key = uuidv4()
     let downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`
     return new Promise((resolve, reject) => {
@@ -51,7 +50,7 @@ uploadSingleAWSFile = (req, res) => {
     })
 }
 
-getPresignedUrls = (image_uuids) => {
+const getPresignedUrls = (image_uuids) => {
     return (image_uuids.map(uuid => {
         return s3.getSignedUrl(
             'getObject', 
@@ -63,7 +62,7 @@ getPresignedUrls = (image_uuids) => {
     }))
 }
 
-getPresignedUrl = (uuid) => {
+const getPresignedUrl = (uuid) => {
     return s3.getSignedUrl(
         'getObject', 
         {
@@ -87,7 +86,7 @@ const deleteAWSFiles = (awsKeys) => {
     }))
   }
 
-deleteSingleAWSFile = (imageKey) => {
+const deleteSingleAWSFile = (imageKey) => {
     return new Promise((resolve, reject) => {
         s3.deleteObject({
             Bucket: process.env.S3_BUCKET,

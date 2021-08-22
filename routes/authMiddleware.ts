@@ -1,10 +1,10 @@
-const client = require('../db');
+import client = require('../client')
 
-module.exports = function(req, response, next) {
+const authMiddleware = (req, response, next) => {
     if (req.sessionID) {
-        // get user_id from req.sessionID 
-        client.query('SELECT user_uuid FROM session WHERE sid=$1', 
-        [req.sessionID], 
+        // get user_id from req.sessionID
+        client.query('SELECT user_uuid FROM session WHERE sid=$1',
+        [req.sessionID],
         (err, res) => {
             if (err) return next(err)
             if (res.rows.length && res.rows[0].user_uuid) {
@@ -18,3 +18,5 @@ module.exports = function(req, response, next) {
         return response.status(401).json({success: false, message: 'Access denied: No session for the user.'})
     }
 }
+
+export { authMiddleware }

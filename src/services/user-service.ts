@@ -4,47 +4,47 @@ import AuthenticationService from './auth-service'
 
 export interface UserInputInterface {
     firstName: string
-    lastName: string 
-    password: string 
+    lastName: string
+    password: string
     email: string
 }
 
 export interface UpdateUserNamePayload {
-    first_name: string 
-    last_name: string 
+    first_name: string
+    last_name: string
     id: string
 }
 
-export interface UpdateUserEmailPayload { 
-    new_email: string 
+export interface UpdateUserEmailPayload {
+    new_email: string
     password: string
 }
 
 export interface UserData {
-    email: string 
-    firstName: string 
+    email: string
+    firstName: string
     lastName: string
 }
 
 export interface GenericResponse {
-    success: boolean 
+    success: boolean
     message?: string
 }
 
 export interface UserCreatedResponse extends GenericResponse {
-    sessionID: string 
+    sessionID: string
     userData: {
-        id: string 
-        email: string 
-        firstName: string 
-        lastName: string 
+        id: string
+        email: string
+        firstName: string
+        lastName: string
     }
 }
 
 // TO-DO: return types here
 const UserService = {
     getUser: async(): Promise<UserData> => {
-        let user = await axios.get(`/user`)
+        const user = await axios.get(`/user`)
         return user.data.userData
     },
 
@@ -53,13 +53,13 @@ const UserService = {
     },
 
     deleteUser: async(): Promise<GenericResponse> => {
-        let deletion = await axios.delete(`/user`)
+        const deletion = await axios.delete(`/user`)
         AuthenticationService.setUserLoggedOut()
         return deletion.data
     },
 
     createUser: async(userInput: UserInputInterface): Promise<UserCreatedResponse> => {
-        let newUser = await axios.post(`/user`, userInput)
+        const newUser = await axios.post(`/user`, userInput)
         return newUser.data
     }
 

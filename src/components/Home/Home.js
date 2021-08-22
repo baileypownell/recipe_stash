@@ -5,6 +5,7 @@ import { withRouter } from 'react-router'
 import './Home.scss';
 import { appear } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
+import { Button } from '@material-ui/core'
 
 class Home extends React.Component {
 
@@ -33,9 +34,9 @@ class Home extends React.Component {
                 </div>
               </Fade>
               <Fade bottom>
-                <div id="skew">
+                <div id="phone-image">
                   <img className="fade" src={mobileView} alt="whisk" />
-                  <button className="waves-effect waves-light btn fade" onClick={this.start}>Get Started</button>
+                  <Button variant="contained" color="secondary" onClick={this.start}>Get Started <i class="fas fa-arrow-circle-right"></i></Button>
                 </div>
               </Fade>
               </div>

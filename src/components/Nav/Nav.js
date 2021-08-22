@@ -8,7 +8,6 @@ import AuthenticationService from '../../services/auth-service'
 
 class Nav extends React.Component {
 
-
   state = {
     loggedIn: !!window.localStorage.getItem('user_logged_in')
   }

@@ -1,19 +1,19 @@
-const path = require('path');
-const express = require('express');
+// import path from 'path'
+import express from 'express'
 const bodyParser = require('body-parser');
 const app = express();
 const routes = require('./routes');
-const client = require('./db/index');
-var pg = require('pg')
-  , session = require('express-session')
-  , pgSession = require('connect-pg-simple')(session);
+const client = require('./client.js');
+// var pg = require('pg'), 
+var session = require('express-session'), 
+pgSession = require('connect-pg-simple')(session);
 
 // middleware
 app.use(bodyParser.json());
 
 app.use(express.json())
 
-app.use((err, req, res, next) => {
+app.use((err, _, res, _2) => {
   res.json(err);
 })
 
@@ -44,13 +44,13 @@ app.use('/', routes);
 const port = process.env.PORT || 3000;
 
 
-app.use(express.static(__dirname + '/dist'));
+app.use(express.static(__dirname + '/dist'))
 
 // because I'm too cheap to pay $7/month for TLS (never do this for legit app)
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0'
 
-app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/dist/index.html');
+app.get('*', (_, res) => {
+  res.sendFile(__dirname + '/dist/index.html')
 });
 
 app.listen(port, () => {

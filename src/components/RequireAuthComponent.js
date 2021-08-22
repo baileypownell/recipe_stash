@@ -7,7 +7,6 @@ class RequireAuthComponent extends React.Component {
         userAuthenticated: !!(window.localStorage.getItem('user_logged_in'))
     }
 
-
     render() {
         const { userAuthenticated } = this.state
         return ( userAuthenticated ? this.props.children : <Redirect to="/login" />  )

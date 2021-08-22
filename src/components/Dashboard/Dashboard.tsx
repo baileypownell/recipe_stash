@@ -3,8 +3,10 @@ import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from "rxjs"
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
-import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService } from '../../services/recipe-services'
+import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { appear } from  '../../models/functions'
+import { queryClient } from '../..'
+import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -16,19 +18,29 @@ interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   other: string
 }
 
-// object for iterating through meal cateogries 
+export type MealCategoriesType = {
+    breakfast: 'Breakfast',
+    lunch: 'Lunch',
+    dinner: 'Dinner',
+    side_dish: 'Side Dish',
+    dessert: 'Dessert',
+    drinks: 'Drinks',
+    other: 'Other',
+}
+
+// object for iterating through meal cateogries
 const mealCategories: MealCategoriesInterface = {
   breakfast: 'Breakfast',
-  lunch: 'Lunch', 
+  lunch: 'Lunch',
   dinner: 'Dinner',
   side_dish: 'Side Dish',
-  dessert: 'Dessert', 
-  drinks: 'Drinks', 
+  dessert: 'Dessert',
+  drinks: 'Drinks',
   other: 'Other',
 }
 
-let userInputSubject: BehaviorSubject<string> = new BehaviorSubject('')
-let userInput$ = userInputSubject.asObservable()
+const userInputSubject: BehaviorSubject<string> = new BehaviorSubject('')
+const userInput$ = userInputSubject.asObservable()
 
 interface FilterInterface extends BaseStringAccessibleObjectBoolean {
     dairy_free: boolean
@@ -39,7 +51,7 @@ interface FilterInterface extends BaseStringAccessibleObjectBoolean {
     no_bake: boolean
     sugar_free: boolean
     vegan: boolean
-    vegetarian: boolean 
+    vegetarian: boolean
 }
 
 interface CategoryInterface extends BaseStringAccessibleObjectBoolean {
@@ -47,41 +59,44 @@ interface CategoryInterface extends BaseStringAccessibleObjectBoolean {
   lunch: boolean
   dinner: boolean
   side_dish: boolean
-  dessert: boolean 
-  drinks: boolean 
+  dessert: boolean
+  drinks: boolean
   other: boolean
 }
 
 const appliedFiltersSubject: BehaviorSubject<FilterInterface> = new BehaviorSubject<FilterInterface>({
-  dairy_free: false, 
-  easy: false, 
-  gluten_free: false, 
-  healthy: false, 
-  keto: false, 
-  no_bake: false, 
-  sugar_free: false, 
-  vegan: false, 
-  vegetarian: false, 
+  dairy_free: false,
+  easy: false,
+  gluten_free: false,
+  healthy: false,
+  keto: false,
+  no_bake: false,
+  sugar_free: false,
+  vegan: false,
+  vegetarian: false,
 })
-let appliedFilters$ = appliedFiltersSubject.asObservable()
+const appliedFilters$ = appliedFiltersSubject.asObservable()
 const appliedCategorySubject: BehaviorSubject<CategoryInterface> = new BehaviorSubject<CategoryInterface>({
-  breakfast: false, 
-  lunch: false, 
-  dinner: false, 
-  side_dish: false, 
-  dessert: false, 
-  drinks: false, 
+  breakfast: false,
+  lunch: false,
+  dinner: false,
+  side_dish: false,
+  dessert: false,
+  drinks: false,
   other: false
 })
-let appliedCategory$ = appliedCategorySubject.asObservable()
+const appliedCategory$ = appliedCategorySubject.asObservable()
 
-let unfilteredRecipesSubject: BehaviorSubject<null | SortedRecipeInterface> = new BehaviorSubject<null | SortedRecipeInterface>(null)
-let unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
+const unfilteredRecipesSubject: BehaviorSubject<null | SortedRecipeInterface> = new BehaviorSubject<null | SortedRecipeInterface>(null)
+const unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 
-let selectedFilterSubject = new BehaviorSubject(0)
+const selectedFilterSubject = new BehaviorSubject(0)
 
 type Props = {
   history?: any
+  addRecipeMutation: any
+  fetchRecipes: Function
+  recipes: SortedRecipeInterface
 }
 
 type State = {
@@ -98,26 +113,18 @@ class Dashboard extends React.Component<Props, State> {
     gridView: true,
   }
 
-  fetchRecipes = async() => {
-    try {
-      let recipes: SortedRecipeInterface = await RecipeService.getRecipes()
-      unfilteredRecipesSubject.next(recipes)
-    } catch (error) {
-      if (error.response?.status === 401) {
-        // unathenticated; redirect to log in 
-        this.props.history.push('/login')
-      }
-    } finally {
-      this.setState({
-        recipes_loaded: !!unfilteredRecipesSubject.getValue()
-      })
-    }
+  addRecipe = async(recipeInput: AddRecipeMutationParam) => {
+    await this.props.addRecipeMutation(recipeInput)
+    const current = queryClient.getQueryData('recipes')
+    unfilteredRecipesSubject.next(current)
   }
 
   componentDidMount() {
-    this.fetchRecipes();
-    // unfilteredRecipesSubject.next(this.props.recipes)
-    let faded = document.querySelectorAll('.fade')
+    unfilteredRecipesSubject.next(this.props.recipes)
+    this.setState({
+      recipes_loaded: true
+    })
+    const faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300);
 
 
@@ -127,32 +134,32 @@ class Dashboard extends React.Component<Props, State> {
       closeOnClick: false,
     })
 
-    let userInputSaved = window.sessionStorage.getItem('userInput')
+    const userInputSaved = window.sessionStorage.getItem('userInput')
     if (userInputSaved) {
       userInputSubject.next(userInputSaved)
     }
-    
+
     // using saved features filter
-    let userFiltersSaved = JSON.parse(window.sessionStorage.getItem('feature_filters') as string)
+    const userFiltersSaved = JSON.parse(window.sessionStorage.getItem('feature_filters') as string)
     if (userFiltersSaved) {
-      appliedFiltersSubject.next(userFiltersSaved)  
+      appliedFiltersSubject.next(userFiltersSaved)
       this.calculateSelectedFiltersNumber()
     }
 
     // using saved categories filter
-    let userCategoryFiltersSaved: CategoryInterface = JSON.parse(window.sessionStorage.getItem('category_filters') as string)
+    const userCategoryFiltersSaved: CategoryInterface = JSON.parse(window.sessionStorage.getItem('category_filters') as string)
     if (userCategoryFiltersSaved) {
       appliedCategorySubject.next(userCategoryFiltersSaved)
       this.calculateSelectedFiltersNumber()
     }
 
-    // set gridView 
-    let gridView = JSON.parse(window.sessionStorage.getItem('gridView') as string)
+    // set gridView
+    const gridView = JSON.parse(window.sessionStorage.getItem('gridView') as string)
     this.setState({
       gridView
     })
-    
-    
+
+
     combineLatest([
       appliedFilters$,
       appliedCategory$,
@@ -165,13 +172,13 @@ class Dashboard extends React.Component<Props, State> {
       window.sessionStorage.setItem('userInput', input)
     }))
     .subscribe(([filters, category, input, recipes]) => {
-      let newFilteredRecipesState: SortedRecipeInterface = {} as any
+      const newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
-        let filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+        const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
         newFilteredRecipesState[category] = filteredCategory
       }
 
-      let selectedTags: string[] = []
+      const selectedTags: string[] = []
       for (const tag in filters) {
         if (filters[tag]) {
           selectedTags.push(tag)
@@ -179,14 +186,14 @@ class Dashboard extends React.Component<Props, State> {
       }
 
       if (selectedTags.length) {
-        // limit to only those recipes whose tags include each checked result from res (true) 
+        // limit to only those recipes whose tags include each checked result from res (true)
         for (const category in newFilteredRecipesState) {
-          let filteredCategory = newFilteredRecipesState[category]
+          const filteredCategory = newFilteredRecipesState[category]
           .filter(recipe => recipe.tags.length >= 1)
           .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
           newFilteredRecipesState[category] = filteredCategory
         }
-      } 
+      }
 
       this.setState({
         filteredRecipes: newFilteredRecipesState
@@ -197,7 +204,7 @@ class Dashboard extends React.Component<Props, State> {
   calculateSelectedFiltersNumber(): void {
     let selectedFilters = 0
     for (const property in appliedFiltersSubject.getValue()) {
-      if (appliedFiltersSubject.getValue()[property]) { 
+      if (appliedFiltersSubject.getValue()[property]) {
         selectedFilters++
       }
     }
@@ -212,8 +219,8 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   filter = (e: React.MouseEvent<HTMLElement>) => {
-    let currentState = appliedFiltersSubject.getValue()[(e.target as Element).id]
-    let filter = {
+    const currentState = appliedFiltersSubject.getValue()[(e.target as Element).id]
+    const filter = {
       ...appliedFiltersSubject.getValue(),
       [(e.target as Element).id]: !currentState,
     }
@@ -222,26 +229,22 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   filterByCategory = (e: React.MouseEvent<HTMLElement>) => {
-    let currentState = appliedCategorySubject.getValue()[(e.target as HTMLInputElement).id]
-    let filter: CategoryInterface = {
-      ...appliedCategorySubject.getValue(), 
+    const currentState = appliedCategorySubject.getValue()[(e.target as HTMLInputElement).id]
+    const filter: CategoryInterface = {
+      ...appliedCategorySubject.getValue(),
       [(e.target as Element).id]: !currentState
     }
     appliedCategorySubject.next(filter)
     this.calculateSelectedFiltersNumber()
   }
 
-  updateDashboard = () => {
-    this.fetchRecipes()
-  }
-
   handleSearchChange = (e: { target: HTMLInputElement }) => {
-    let input = e.target.value.toLowerCase()
+    const input = e.target.value.toLowerCase()
     userInputSubject.next(input)
   }
 
-  toggleView = (e: React.MouseEvent<HTMLElement>) => {    
-    let val: boolean = !!((e.target as Element).id === 'grid')
+  toggleView = (e: React.MouseEvent<HTMLElement>) => {
+    const val: boolean = !!((e.target as Element).id === 'grid')
     this.setState({
       gridView: val
     }, () => {
@@ -262,26 +265,26 @@ class Dashboard extends React.Component<Props, State> {
       }
     }
 
-    let filterArray = [
-      {key: "dairy_free", name: 'Dairy Free'}, 
-      {key: "easy", name: 'Easy'}, 
-      {key: "gluten_free", name: 'Gluten Free'}, 
-      {key: "healthy", name: 'Healthy'}, 
-      {key: "keto", name: 'Keto'}, 
-      {key: "no_bake", name: 'No Bake'}, 
-      {key: "sugar_free", name: 'Sugar Free'}, 
-      {key: "vegan", name: 'Vegan'}, 
+    const filterArray = [
+      {key: "dairy_free", name: 'Dairy Free'},
+      {key: "easy", name: 'Easy'},
+      {key: "gluten_free", name: 'Gluten Free'},
+      {key: "healthy", name: 'Healthy'},
+      {key: "keto", name: 'Keto'},
+      {key: "no_bake", name: 'No Bake'},
+      {key: "sugar_free", name: 'Sugar Free'},
+      {key: "vegan", name: 'Vegan'},
       {key: "vegetarian", name: 'Vegetarian'}
     ];
 
-    let filterCategoryArray = [
-      {key: "breakfast", name: mealCategories['breakfast']},
-      {key: "lunch", name: mealCategories['lunch']},
-      {key: "dinner", name: mealCategories['dinner']}, 
-      {key: "side_dish", name: mealCategories['side_dish']}, 
-      {key: "dessert", name: mealCategories['dessert']},
-      {key: "drinks", name: mealCategories['drinks']}, 
-      {key: "other", name: mealCategories['other']}
+    const filterCategoryArray = [
+      {key: "breakfast", name: mealCategories.breakfast},
+      {key: "lunch", name: mealCategories.lunch},
+      {key: "dinner", name: mealCategories.dinner},
+      {key: "side_dish", name: mealCategories.side_dish},
+      {key: "dessert", name: mealCategories.dessert},
+      {key: "drinks", name: mealCategories.drinks},
+      {key: "other", name: mealCategories.other}
     ]
 
     return (
@@ -290,9 +293,9 @@ class Dashboard extends React.Component<Props, State> {
           <div>
             <h1>Recipe Box</h1>
             <div className="searchbar">
-                <input 
-                  onChange={this.handleSearchChange} 
-                  value={userInputSubject.getValue()} 
+                <input
+                  onChange={this.handleSearchChange}
+                  value={userInputSubject.getValue()}
                   type="text" placeholder="Find a recipe">
                 </input>
                 <i className="fas fa-search"></i>
@@ -300,7 +303,7 @@ class Dashboard extends React.Component<Props, State> {
                 <button className='dropdown-trigger btn' data-target='dropdown' id="filter-button">
                   <span>Filter</span>
                   {
-                    selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i> 
+                    selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i>
                   }
                 </button>
                 <ul id='dropdown' className='dropdown-content'>
@@ -309,10 +312,10 @@ class Dashboard extends React.Component<Props, State> {
                         return (
                           <li key={index} >
                             <label>
-                              <input 
-                                checked={appliedFilt[item.key]} 
-                                id={item.key} 
-                                onClick={this.filter} 
+                              <input
+                                checked={appliedFilt[item.key]}
+                                id={item.key}
+                                onClick={this.filter}
                                 type="checkbox" />
                               <span>{item.name}</span>
                               </label>
@@ -325,9 +328,9 @@ class Dashboard extends React.Component<Props, State> {
                         return (
                           <li key={index}>
                             <label>
-                                <input 
-                                  checked={appliedCat[item.key]} 
-                                  id={item.key} 
+                                <input
+                                  checked={appliedCat[item.key]}
+                                  id={item.key}
                                   onClick={this.filterByCategory}
                                   type="checkbox" />
                                 <span>{item.name}</span>
@@ -340,12 +343,12 @@ class Dashboard extends React.Component<Props, State> {
             </div>
           </div>
         </div>
-        
-        <div className="dashboard">       
+
+        <div className="dashboard">
             <>
               <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
               <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
-              { filteredRecipes !== null ? 
+              { filteredRecipes !== null ?
                 Object.keys(mealCategories).map(mealCat => {
                   return (
                       <Category
@@ -355,11 +358,12 @@ class Dashboard extends React.Component<Props, State> {
                         visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
                         gridView={gridView}
                         recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
-                        updateDashboard={this.updateDashboard}
+                        addRecipe={this.addRecipe}
+
                       >
-                      </Category>                       
+                      </Category>
                   )
-                }) : null 
+                }) : null
               }
           </>
       </div>

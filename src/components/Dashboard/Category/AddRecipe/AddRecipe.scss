@@ -20,6 +20,7 @@
   }
 
   .modal-content {
+    padding: 10px 20px;
     @include desktop {
       width: 50%;
       margin: 0 auto;

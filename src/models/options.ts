@@ -1,7 +1,7 @@
 
 
 export interface option {
-  value: string, 
+  value: string,
   label: string
 }
 

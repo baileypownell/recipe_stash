@@ -1,30 +1,31 @@
-const { Router } = require('express')
-const client = require('../db')
-const router = Router()
-const nodemailer = require('nodemailer')
-const sgTransport = require('nodemailer-sendgrid-transport')
-const bcrypt = require('bcryptjs')
-const authMiddleware = require('./authMiddleware')
+import * as Router from 'express'
+import client from '../client.js'
+const router = Router.Router()
+import nodemailer from 'nodemailer'
+import sgTransport from 'nodemailer-sendgrid-transport'
+import bcrypt from 'bcryptjs'
+import { authMiddleware } from './authMiddleware'
 const  { deleteAWSFiles } = require('./aws-s3')
-
+import * as dotenv from "dotenv"
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+
+  dotenv.config({ path: __dirname+'/.env' });
 }
 
-router.get('/', authMiddleware, (request, response, next) => {
-  let userId = request.userID
+router.get('/', authMiddleware, (request: any, response, next) => {
+  const userId = request.userID
   client.query('SELECT email, first_name, last_name FROM users WHERE user_uuid=$1',
   [userId],
    (err, res) => {
     if (err) return next(err)
     if (res.rows.length) {
-      let userData = {
-        email: res.rows[0].email, 
-        firstName: res.rows[0].first_name, 
+      const userData = {
+        email: res.rows[0].email,
+        firstName: res.rows[0].first_name,
         lastName: res.rows[0].last_name
       }
       response.status(200).json({
-        success: true, 
+        success: true,
         userData
       })
     } else {
@@ -33,11 +34,11 @@ router.get('/', authMiddleware, (request, response, next) => {
   })
 })
 
-router.post('/', (request, response, next) => {
+router.post('/', (request: any, response, next) => {
   const { firstName, lastName, password, email } = request.body;
-  let hashedPassword = bcrypt.hashSync(password, 10);
+  const hashedPassword = bcrypt.hashSync(password, 10);
   // make sure user doesn't already exist in the DB
-  client.query('SELECT * FROM users WHERE email=$1', [email], 
+  client.query('SELECT * FROM users WHERE email=$1', [email],
   (err, res) => {
     if (err) return next(err)
     if (res.rows.length >= 1) {
@@ -54,27 +55,27 @@ router.post('/', (request, response, next) => {
           (err, res) => {
             if (err) return next(err)
             if (res.rows.length) {
-              let user_uuid=res.rows[0].user_uuid;
-              let email=res.rows[0].email;
-              let firstName=res.rows[0].first_name;
-              let lastName=res.rows[0].last_name;
+              const user_uuid=res.rows[0].user_uuid;
+              const email=res.rows[0].email;
+              const firstName=res.rows[0].first_name;
+              const lastName=res.rows[0].last_name;
               request.session.regenerate(() => {
                 request.session.save()
-                // update the session table with the user's sessionID 
+                // update the session table with the user's sessionID
                 client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
                 [user_uuid, request.sessionID],
                 (err, res) => {
                   if (err) return next(err)
                   if (res.rowCount) {
                     return response.status(201).json({
-                      success: true, 
+                      success: true,
                       message: 'User created',
                       sessionID: request.sessionID,
                       userData: {
-                        id: user_uuid, 
-                        email: email, 
-                        firstName: firstName, 
-                        lastName: lastName
+                        id: user_uuid,
+                        email,
+                        firstName,
+                        lastName
                       }
                     })
                   }
@@ -82,22 +83,22 @@ router.post('/', (request, response, next) => {
               })
             }
           })
-        } 
+        }
       })
     }
   })
 })
 
 router.put('/reset-password', (request, response, next) => {
-  const { reset_password_token, password } = request.body 
+  const { reset_password_token, password } = request.body
   if (password && reset_password_token) {
     client.query('SELECT * FROM users where reset_password_token=$1',
     [reset_password_token],
     (err, res) => {
       if (err) return next(err)
       if (res.rows.length) {
-        // hash new password 
-        let hashedPassword = bcrypt.hashSync(password, 10);
+        // hash new password
+        const hashedPassword = bcrypt.hashSync(password, 10);
         client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
         [hashedPassword, null, null, reset_password_token],
         (err, res) => {
@@ -112,12 +113,12 @@ router.put('/reset-password', (request, response, next) => {
         return response.status(400).json({ success: false, message: 'Reset password token not found.' })
       }
     })
-  } 
+  }
 })
 
-router.put('/', authMiddleware, (request, response, next) => {
+router.put('/', authMiddleware, (request: any, response, next) => {
   const { first_name, last_name, password, new_email } = request.body
-  let userId = request.userID
+  const userId = request.userID
   if ( first_name && last_name ) {
       client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
       [first_name, last_name, userId],
@@ -129,22 +130,22 @@ router.put('/', authMiddleware, (request, response, next) => {
           return response.status(500).json({success: false, message: 'User could not be updated.'})
         }
       })
-  } 
+  }
   if (new_email) {
       // make sure password is correct, if not, reject
       client.query('SELECT * FROM users WHERE user_uuid=$1',
         [userId],
         (err, res) => {
           if (err) return next(err)
-          let hashedPassword = res.rows[0].password;
-          let oldEmail = res.rows[0].email;
+          const hashedPassword = res.rows[0].password;
+          const oldEmail = res.rows[0].email;
           bcrypt.compare(password, hashedPassword, (err, res) => {
             if (err) return next(err)
             if (res) {
               // update record in DB
               // but first ensure it is unique!
-              client.query('SELECT * FROM users WHERE email=$1', 
-              [new_email], 
+              client.query('SELECT * FROM users WHERE email=$1',
+              [new_email],
               (err, res) => {
                 if (err) return next(err)
                 if (res.rows.length) {
@@ -171,7 +172,7 @@ router.put('/', authMiddleware, (request, response, next) => {
                         subject: 'Your Email Address Has Been Changed',
                         html: `<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
                       }
-                      mailer.sendMail(email, function(err, res) {
+                      mailer.sendMail(email, function(err, _) {
                         if (err) {
                           response.status(500).json({ success: false, message: 'There was an error sending the email.'})
                         } else {
@@ -193,19 +194,19 @@ router.put('/', authMiddleware, (request, response, next) => {
             }
           })
         })
-  } 
+  }
 })
 
-router.delete('/', authMiddleware, (request, response, next) => {
-  let id = request.userID
-  client.query('SELECT key FROM files WHERE user_uuid=$1', 
+router.delete('/', authMiddleware, (request: any, response, next) => {
+  const id = request.userID
+  client.query('SELECT key FROM files WHERE user_uuid=$1',
   [id],
   async(err, res) => {
     if (err) return next(err)
     if (res.rows.length) {
-      let awsKeys = res.rows.map(val => val.key)
+      const awsKeys = res.rows.map(val => val.key)
       try {
-        let awsDeletions = await deleteAWSFiles(awsKeys)
+        const awsDeletions = await deleteAWSFiles(awsKeys)
         if (awsDeletions) {
           client.query('DELETE FROM users WHERE user_uuid=$1',
           [id],
@@ -239,4 +240,4 @@ router.delete('/', authMiddleware, (request, response, next) => {
 })
 
 
-module.exports = router; 
+module.exports = router;
