@@ -181,8 +181,8 @@ router.post('/', (request, response, next) => {
     }
 });
 router.put('/', (request, response, next) => {
-    const userId = request.userID;
-    const { recipeId, title, rawTitle, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
+    const userId = request.userID
+    const { recipeId, title, rawTitle, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body
     client_1.default.query(`UPDATE recipes SET
     title=$1,
     raw_title=$16,

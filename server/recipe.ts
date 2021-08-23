@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Router } from 'express'
 import client from './client'
 import { authMiddleware } from './authMiddleware'
@@ -191,7 +192,32 @@ router.post('/', (request: any, response, next) => {
   }
 })
 
-router.put('/', (request: any, response, next) => {
+export interface RawRecipe {
+  title: string
+  raw_title: string
+  ingredients: string
+  directions: string
+  category: string
+  no_bake: string
+  easy: string
+  healthy: string
+  gluten_free: string
+  dairy_free: string
+  sugar_free: string
+  vegetarian: string
+  vegan: string
+  keto: string
+  recipe_uuid: string
+  user_uuid: string
+}
+
+export interface RecipeUpdatedResponse {
+  success: boolean
+  recipe?: RawRecipe
+  message?: string
+}
+
+router.put('/', (request: any, response, next): RecipeUpdatedResponse => {
   const userId = request.userID
   const {
     recipeId,
@@ -210,7 +236,7 @@ router.put('/', (request: any, response, next) => {
     isVegan,
     isKeto
   } = request.body
-  client.query(`UPDATE recipes SET
+  return client.query(`UPDATE recipes SET
     title=$1,
     raw_title=$16,
     ingredients=$2,
@@ -227,7 +253,7 @@ router.put('/', (request: any, response, next) => {
     keto=$13 WHERE
     recipe_uuid=$14 AND
     user_uuid=$15
-    RETURNING "recipe_uuid"`,
+    RETURNING *`,
   [
     title,
     ingredients,
@@ -249,9 +275,17 @@ router.put('/', (request: any, response, next) => {
   (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
-      return response.status(200).json({ success: true, recipeId: res.rows[0].recipe_uuid })
+      const result: RecipeUpdatedResponse = {
+        success: true,
+        recipe: res.rows[0]
+      }
+      return response.status(200).json(result)
     } else {
-      return response.status(500).json({ success: false, message: 'Could not update recipe.' })
+      const result: RecipeUpdatedResponse = {
+        success: false,
+        message: 'Could not update recipe.'
+      }
+      return response.status(500).json(result)
     }
   })
 })
@@ -289,15 +323,17 @@ router.get('/:recipeId', (request: any, response, next) => {
           ingredients: recipe.ingredients,
           directions: recipe.directions,
           tags: constructTags(recipe),
-          defaultTileImageKey: recipe.default_tile_image_key
+          defaultTileImageKey: recipe.default_tile_image_key,
+          preSignedUrls: undefined,
+          preSignedDefaultTileImageUrl: undefined
         }
         if (recipe.has_images) {
           const urls = await getImageAWSKeys(recipeId)
           if (urls) {
-            recipeResponse['preSignedUrls'] = getPresignedUrls(urls)
+            recipeResponse.preSignedUrls = getPresignedUrls(urls)
             if (recipe.default_tile_image_key) {
               const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
-              recipeResponse['preSignedDefaultTileImageUrl'] = preSignedDefaultTileImageUrl
+              recipeResponse.preSignedDefaultTileImageUrl = preSignedDefaultTileImageUrl
             }
           }
           response.status(200).json({ success: true, recipe: recipeResponse })
