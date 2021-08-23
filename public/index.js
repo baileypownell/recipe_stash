@@ -27,5 +27,4 @@ router.use('/recipe', recipe_1.default);
 router.use('/file-upload', file_upload_1.default);
 router.use('/auth', auth_1.default);
 exports.default = router;
-// module.exports = router
 //# sourceMappingURL=index.js.map

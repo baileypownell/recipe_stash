@@ -22,5 +22,4 @@ else {
 }
 client.connect();
 exports.default = client;
-// module.exports = client;
 //# sourceMappingURL=client.js.map

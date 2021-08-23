@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { AuthenticationState } from '../../server/index'
 
 const AuthenticationService = {
     setUserLoggedIn: (): void => {
@@ -9,7 +10,7 @@ const AuthenticationService = {
         window.localStorage.removeItem('user_logged_in')
     },
 
-    verifyUserSession: async() => {
+    verifyUserSession: async(): Promise<AuthenticationState> => {
         return await axios.get('/auth')
     },
 

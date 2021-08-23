@@ -138,5 +138,4 @@ router.delete('/:imageKey', authMiddleware_1.authMiddleware, async (req, res) =>
     }
 });
 exports.default = router;
-// module.exports = router;
 //# sourceMappingURL=file-upload.js.map

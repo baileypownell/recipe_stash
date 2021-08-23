@@ -101,13 +101,6 @@ const deleteSingleAWSFile = (imageKey) => {
     })
 }
 
-
-// export { 
-//     getPresignedUrls 
-// export getPresignedUrl 
-// export uploadSingleAWSFile 
-// export deleteAWSFiles 
-// export deleteSingleAWSFile
 export {
     getPresignedUrls, 
     getPresignedUrl,

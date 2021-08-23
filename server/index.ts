@@ -26,4 +26,6 @@ router.use('/file-upload', fileUpload)
 router.use('/auth', auth)
 
 export default router
-// module.exports = router
+
+
+export { AuthenticationState } from './auth'

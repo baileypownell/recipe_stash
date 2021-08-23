@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "webpack-dev-server --config ./webpack.config.js --mode development",
     "dev-server": "nodemon ./server/server.ts node --trace-warnings --skipLibCheck",
+    "lint": "eslint . --ext .ts",
     "start": "NODE_ENV=production && node ./public/server.js",
     "build": "webpack && tsc -p ."
   },
@@ -88,10 +89,13 @@
     "@babel/preset-env": "^7.10.4",
     "@types/express": "^4.17.13",
     "@types/node": "^16.6.2",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.1.0",
     "cors": "^2.8.5",
     "css-loader": "^3.6.0",
+    "eslint": "^7.32.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
     "http-proxy-middleware": "^1.0.5",

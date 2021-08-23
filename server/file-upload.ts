@@ -144,4 +144,3 @@ router.delete('/:imageKey', authMiddleware, async(req, res) => {
 })
 
 export default router
-// module.exports = router;

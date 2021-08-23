@@ -7,17 +7,22 @@ const { Router } = require('express');
 const router = Router();
 const client_1 = __importDefault(require("./client"));
 router.get('/', (request, response, next) => {
-    client_1.default.query('SELECT user_uuid FROM session WHERE sid=$1', [request.sessionID], (err, res) => {
+    return client_1.default.query('SELECT user_uuid FROM session WHERE sid=$1', [request.sessionID], (err, res) => {
         if (err)
             return next(err);
         if (res.rows.length && res.rows[0].user_uuid) {
-            return response.status(200).json({ authenticated: true });
+            let authState = {
+                authenticated: true
+            };
+            return response.status(200).json(authState);
         }
         else {
-            return response.status(200).json({ authenticated: false });
+            let authState = {
+                authenticated: false
+            };
+            return response.status(200).json(authState);
         }
     });
 });
 exports.default = router;
-// module.exports = router;
 //# sourceMappingURL=auth.js.map
