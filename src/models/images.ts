@@ -1,4 +1,4 @@
 export interface UploadedFileResult {
-    awsKey: string,
-    fileName: string
+  awsKey: string;
+  fileName: string;
 }
