@@ -1,23 +1,22 @@
 import React, { FormEvent } from 'react'
-import { withRouter } from "react-router-dom"
-import ClipLoader from "react-spinners/ClipLoader"
+import { withRouter } from 'react-router-dom'
+import ClipLoader from 'react-spinners/ClipLoader'
 import M from 'materialize-css'
 import './ResetPassword.scss'
 import AuthenticationService from '../../services/auth-service'
 import { isPasswordInvalid } from '../../models/functions'
 
 class ResetPassword extends React.Component<any, any> {
-
   state = {
     invalidLink: false,
     password: '',
     passwordInvalid: true,
     loading: false,
-    email: '',
+    email: ''
   }
 
-  async componentDidMount() {
-    const token = this.props.match.params.token;
+  async componentDidMount () {
+    const token = this.props.match.params.token
     try {
       const res = await AuthenticationService.verifyEmailResetToken(token)
       if (!res.data.success) {
@@ -30,7 +29,7 @@ class ResetPassword extends React.Component<any, any> {
           email: res.data.user_email
         })
       }
-    } catch(err) {
+    } catch (err) {
       this.setState({
         invalidLink: true
       })
@@ -46,39 +45,39 @@ class ResetPassword extends React.Component<any, any> {
     const password: string = e.target.value
     if (isPasswordInvalid(password)) {
       this.setState({
-          passwordInvalid: true,
-          password: e.target.value
+        passwordInvalid: true,
+        password: e.target.value
       })
     } else {
       this.setState({
-          passwordInvalid: false,
-          password: e.target.value
-      });
+        passwordInvalid: false,
+        password: e.target.value
+      })
+    }
   }
-}
 
-  updatePassword = async(e: FormEvent) => {
-    e.preventDefault();
+  updatePassword = async (e: FormEvent) => {
+    e.preventDefault()
     this.setState({
       loading: true
     })
     try {
       const reset_password_token = this.props.match.params.token
       await AuthenticationService.updatePassword(this.state.password, reset_password_token, this.state.email)
-      M.toast({html: 'Password updated!'})
+      M.toast({ html: 'Password updated!' })
       this.setState({
         loading: false
       })
-      this.props.history.push(`/recipes`)
-    } catch(err) {
-      M.toast({html: 'There was an error.'})
+      this.props.history.push('/recipes')
+    } catch (err) {
+      M.toast({ html: 'There was an error.' })
       this.setState({
         loading: false
       })
     }
   }
 
-  render() {
+  render () {
     if (this.state.invalidLink) {
       return (
         <>
@@ -96,22 +95,22 @@ class ResetPassword extends React.Component<any, any> {
             <form onSubmit={this.updatePassword}>
             <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
             {
-              this.state.passwordInvalid && this.state.password.length > 0 ?
-              <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
-              : null
+              this.state.passwordInvalid && this.state.password.length > 0
+                ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
+                : null
             }
             <button
               disabled={this.state.passwordInvalid}
               className="waves-effect waves-light btn"
               >
-              {this.state.loading?
-                <ClipLoader
-                  css={`border-color: white;`}
+              {this.state.loading
+                ? <ClipLoader
+                  css={'border-color: white;'}
                   size={30}
-                  color={"#689943"}
+                  color={'#689943'}
                   loading={this.state.loading}
                 />
-            : 'Submit'}
+                : 'Submit'}
             </button>
             </form>
           </div>
@@ -121,5 +120,4 @@ class ResetPassword extends React.Component<any, any> {
   }
 }
 
-
-export default withRouter(ResetPassword);
+export default withRouter(ResetPassword)

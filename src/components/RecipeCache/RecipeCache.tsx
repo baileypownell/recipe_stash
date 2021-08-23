@@ -1,6 +1,12 @@
 
 import React from 'react'
 import { useQuery, useMutation } from 'react-query'
+import BounceLoader from 'react-spinners/BounceLoader'
+import { Redirect } from 'react-router-dom'
+import { Dashboard, Recipe } from '..'
+import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
+import { queryClient } from '../..'
+import { query } from 'express'
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
   lunch: 'Lunch',
@@ -28,12 +34,6 @@ export interface AddRecipeMutationParam {
   files: NewFileInterface[],
   defaultTile: DefaultTile | null
 }
-import BounceLoader from "react-spinners/BounceLoader"
-import { Redirect } from 'react-router-dom'
-import { Dashboard, Recipe } from '..'
-import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
-import { queryClient } from '../..'
-import { query } from 'express'
 
 interface RecipeCacheProps {
   dashboard?: boolean
@@ -58,66 +58,73 @@ const determineRecipeCategory = (recipeCategory: string): string => {
   }
 }
 
- function RecipeCache(props: RecipeCacheProps) {
-    const { mutateAsync } = useMutation('recipes', async(recipeInput: AddRecipeMutationParam) => {
-      try {
-        const newRecipe: {recipeAdded: boolean, recipe: any} = await RecipeService.createRecipe(
-          recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile
-        )
-        const recipe: DashboardReadyRecipe = await RecipeService.getRecipe(newRecipe.recipe.recipe_uuid)
-        return recipe
-      } catch(err) {
-        console.log(err)
-        M.toast({html: 'There was an error.'})
-    }}, {
-      onSuccess: (newRecipe: DashboardReadyRecipe) => {
-        queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
-          const recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)
-          const updatedQueryState = {
-            ...currentRecipes,
-            [recipeCategory]: [...currentRecipes[recipeCategory], newRecipe].sort(RecipeService.sortByTitle)
-          }
-          return updatedQueryState
-        })
-      }
-    })
-
-    const { refetch, isLoading, error, data } = useQuery('recipes', async() => {
-      try {
-          const recipes: SortedRecipeInterface = await RecipeService.getRecipes()
-          return recipes
-        } catch (error) {
-          return error
-        }
-      }, {
-        staleTime: Infinity
-      })
-
-    const fetchRecipes = async() => {
-      const result = await refetch()
-      return result.data
+function RecipeCache (props: RecipeCacheProps) {
+  const { mutateAsync } = useMutation('recipes', async (recipeInput: AddRecipeMutationParam) => {
+    try {
+      const newRecipe: {recipeAdded: boolean, recipe: any} = await RecipeService.createRecipe(
+        recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile
+      )
+      const recipe: DashboardReadyRecipe = await RecipeService.getRecipe(newRecipe.recipe.recipe_uuid)
+      return recipe
+    } catch (err) {
+      console.log(err)
+      M.toast({ html: 'There was an error.' })
     }
+  }, {
+    onSuccess: (newRecipe: DashboardReadyRecipe) => {
+      queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
+        const recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)
+        const updatedQueryState = {
+          ...currentRecipes,
+          [recipeCategory]: [...currentRecipes[recipeCategory], newRecipe].sort(RecipeService.sortByTitle)
+        }
+        return updatedQueryState
+      })
+    }
+  })
 
-    if (isLoading) return <div className="BounceLoader">
+  const { refetch, isLoading, error, data } = useQuery('recipes', async () => {
+    try {
+      const recipes: SortedRecipeInterface = await RecipeService.getRecipes()
+      return recipes
+    } catch (error) {
+      return error
+    }
+  }, {
+    staleTime: Infinity
+  })
+
+  const fetchRecipes = async () => {
+    const result = await refetch()
+    return result.data
+  }
+
+  if (isLoading) {
+    return <div className="BounceLoader">
       <BounceLoader
         size={100}
-        color={"#689943"}
+        color={'#689943'}
       />
     </div>
+  }
 
-    if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
+  if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
 
-    if (props.dashboard) return (
+  if (props.dashboard) {
+    return (
       <Dashboard
         recipes={data}
         fetchRecipes={() => fetchRecipes()}
-        addRecipeMutation={async(recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
+        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
       </Dashboard>
-    )
-
-    if (props.individualRecipe) return (
-      <Recipe addRecipeMutation={async(recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}></Recipe>
     )
   }
 
-  export default RecipeCache;
+  if (props.individualRecipe) {
+    return (
+      <Recipe addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}></Recipe>
+    )
+  }
+}
+
+export default RecipeCache

@@ -1,5 +1,5 @@
 declare const router: any;
 export interface AuthenticationState {
-  authenticated: boolean;
+    authenticated: boolean;
 }
 export default router;

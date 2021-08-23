@@ -2,10 +2,8 @@ import React, { ChangeEvent } from 'react'
 import M from 'materialize-css'
 import './AddRecipe.scss'
 import DOMPurify from 'dompurify'
-const { htmlToText } = require('html-to-text')
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import '../../../File-Upload/FileUpload'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
 import tag, { tags } from '../../../../models/tags'
@@ -14,13 +12,14 @@ import Slide from '@material-ui/core/Slide'
 import options from '../../../../models/options'
 import { RecipeService, RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
 import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails } from '@material-ui/core'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { queryClient } from '../../../..'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
+const { htmlToText } = require('html-to-text')
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+const Transition = React.forwardRef(function Transition (props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
 type Props = {
   id: number
@@ -41,9 +40,7 @@ type State = {
   open: boolean
 }
 
-
 class AddRecipe extends React.Component<Props, State> {
-
   state = {
     loading: false,
     recipe_title: '',
@@ -58,7 +55,7 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   checkValidity = () => {
-    const { directions, ingredients, recipe_title } = this.state;
+    const { directions, ingredients, recipe_title } = this.state
     if (directions && ingredients && recipe_title) {
       this.setState({
         recipeValid: true
@@ -81,7 +78,7 @@ class AddRecipe extends React.Component<Props, State> {
     })
   }
 
-  createRecipe = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  createRecipe = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     const tags = this.state.tags
     const titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
@@ -105,7 +102,7 @@ class AddRecipe extends React.Component<Props, State> {
       isSugarFree: tags[5].selected,
       isVegetarian: tags[6].selected,
       isVegan: tags[7].selected,
-      isKeto: tags[8].selected,
+      isKeto: tags[8].selected
     }
     try {
       const param: AddRecipeMutationParam = {
@@ -114,17 +111,17 @@ class AddRecipe extends React.Component<Props, State> {
         defaultTile: this.state.defaultTile
       }
       await this.props.addRecipe(param)
-      M.toast({html: 'Recipe added.'})
+      M.toast({ html: 'Recipe added.' })
       this.clearState()
       this.setState({
         loading: false
       })
-    } catch(err) {
+    } catch (err) {
       console.log(err)
       this.setState({
         loading: false
       })
-      M.toast({html: 'There was an error.'})
+      M.toast({ html: 'There was an error.' })
     }
   }
 
@@ -135,8 +132,8 @@ class AddRecipe extends React.Component<Props, State> {
     }, () => {
       if (this.state.open) {
         // recipe category chip tags
-        const chips = document.querySelectorAll('.chips');
-        M.Chips.init(chips, {});
+        const chips = document.querySelectorAll('.chips')
+        M.Chips.init(chips, {})
       }
     })
   }
@@ -144,7 +141,7 @@ class AddRecipe extends React.Component<Props, State> {
   updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({
       [e.target.id]: e.target.value
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   updateCategory = (e) => {
@@ -156,34 +153,34 @@ class AddRecipe extends React.Component<Props, State> {
   toggleTagSelectionStatus = (e) => {
     const index = e.target.id
     // 1. Make a shallow copy of the items
-    const tags = [...this.state.tags];
+    const tags = [...this.state.tags]
     // 2. Make a shallow copy of the item you want to mutate
-    const item = {...tags[index]};
+    const item = { ...tags[index] }
     // 3. Replace the property you're intested in
     const priorSelectedValue = item.selected
-    item.selected = !priorSelectedValue;
+    item.selected = !priorSelectedValue
     // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-    tags[index] = item;
+    tags[index] = item
     // 5. Set the state to our new copy
-    this.setState({tags});
+    this.setState({ tags })
   }
 
   handleModelChange = (html: string) => {
     this.setState({
       recipe_title: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   handleModelChangeIngredients = (html: string) => {
     this.setState({
       ingredients: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   handleModelChangeDirections = (html: string) => {
     this.setState({
       directions: html
-    }, () => this.checkValidity());
+    }, () => this.checkValidity())
   }
 
   setFiles = (newFiles: NewFileInterface[]) => {
@@ -199,21 +196,21 @@ class AddRecipe extends React.Component<Props, State> {
     })
   }
 
-  render() {
-    const { id, gridView } = this.props as any;
+  render () {
+    const { id, gridView } = this.props as any
     const { open, category, recipe_title, ingredients, directions } = this.state
 
     return (
       <>
-        { gridView ?
-          <div
+        { gridView
+          ? <div
             onClick={this.toggleModal}
             className="addRecipe z-depth-4"
             id={id}
              >
             <i className="fas fa-plus-circle"></i>
-        </div> :
-        <a
+        </div>
+          : <a
           onClick={this.toggleModal}
           className="waves-effect waves-light btn add-button">
           Add Recipe
@@ -234,7 +231,7 @@ class AddRecipe extends React.Component<Props, State> {
               <h3>Directions</h3>
               <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
               <div>
-                <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0'}}>
+                <FormControl variant="filled" style={{ width: '100%', margin: '10px 0' }}>
                   <InputLabel>Category</InputLabel>
                   <Select
                     id="category"
@@ -250,7 +247,7 @@ class AddRecipe extends React.Component<Props, State> {
                 </FormControl>
               </div>
 
-              <Accordion style={{'margin': '10px 0'}}>
+              <Accordion style={{ margin: '10px 0' }}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1a-content"
@@ -265,7 +262,7 @@ class AddRecipe extends React.Component<Props, State> {
                         return <div
                           onClick={this.toggleTagSelectionStatus}
                           id={index.toString()}
-                          className={`chip z-depth-2 ${this.state.tags[index].selected ? "selectedTag" : "null"}`}
+                          className={`chip z-depth-2 ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
                           key={index}>
                             {tag.label}
                           </div>
@@ -286,9 +283,9 @@ class AddRecipe extends React.Component<Props, State> {
             className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
             disabled={!this.state.recipeValid}
             onClick={this.createRecipe}>
-              {this.state.loading ?
-                <Preloader/> :
-                <>
+              {this.state.loading
+                ? <Preloader/>
+                : <>
                   Add Recipe
                   <i className="fas fa-check-square"></i>
                 </>
@@ -304,4 +301,4 @@ class AddRecipe extends React.Component<Props, State> {
   }
 }
 
-export default AddRecipe;
+export default AddRecipe

@@ -6,7 +6,7 @@ const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const router = Router();
-var environment = process.env.NODE_ENV || 'development';
+const environment = process.env.NODE_ENV || 'development';
 if (environment === 'development') {
     require('dotenv').config({
         path: './.env.development'
@@ -33,7 +33,7 @@ router.post('/', (request, response, next) => {
                     // now create  transport, which is actually the account sending the password reset email link
                     const options = {
                         auth: {
-                            api_key: `${process.env.SENDGRID_API_KEY}`,
+                            api_key: `${process.env.SENDGRID_API_KEY}`
                         }
                     };
                     const mailer = nodemailer.createTransport(sgTransport(options));
@@ -61,12 +61,12 @@ router.post('/', (request, response, next) => {
     });
 });
 router.get('/:token', (request, response, next) => {
-    let token = request.params.token;
+    const token = request.params.token;
     client.query('SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1', [token], (err, res) => {
         if (err)
             return next(err);
         if (res.rows.length && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
-            let now = Date.now();
+            const now = Date.now();
             if (res.rows[0].reset_password_expires > now) {
                 return response.status(200).send({
                     success: true,

@@ -33,7 +33,7 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, B
 // }
 
 const DeleteModal = (props: any) => {
-    return (
+  return (
         <div id="deletion-modal">
             <div className="modal-content">
                 <h4>Are you sure?</h4>
@@ -46,7 +46,7 @@ const DeleteModal = (props: any) => {
                 {/* <a className="modal-close waves-effect waves btn-flat" onClick={props.deleteFunction}>Continue</a> */}
             </div>
         </div>
-    )
+  )
 }
 
 export default DeleteModal

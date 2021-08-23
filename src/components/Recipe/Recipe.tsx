@@ -1,13 +1,12 @@
 import React from 'react'
-import { withRouter } from "react-router-dom"
+import { withRouter } from 'react-router-dom'
 import './Recipe.scss'
 import M from 'materialize-css'
-import BounceLoader from "react-spinners/BounceLoader"
+import BounceLoader from 'react-spinners/BounceLoader'
 import DOMPurify from 'dompurify'
 import { BehaviorSubject } from 'rxjs'
-import { tags } from '../../models/tags'
+import Tag, { tags } from '../../models/tags'
 import { RecipeService, RecipeInterface } from '../../services/recipe-services'
-import Tag from '../../models/tags'
 import { appear } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
@@ -26,14 +25,13 @@ type State = {
 }
 
 class Recipe extends React.Component<any, State> {
-
   state = {
     loading: true,
     recipe: null,
     tags,
     cloning: false,
     width: window.innerWidth,
-    dialogOpen: false,
+    dialogOpen: false
   }
 
   goBack = () => {
@@ -41,26 +39,26 @@ class Recipe extends React.Component<any, State> {
   }
 
   triggerDialog = () => {
-    let state = this.state.dialogOpen
+    const state = this.state.dialogOpen
     this.setState({
       dialogOpen: !state
     })
   }
 
-  fetchData = async() => {
+  fetchData = async () => {
     try {
       const recipe: RecipeInterface = await RecipeService.getRecipe(this.props.match.params.id)
       this.setState({
         recipe,
-        loading: false,
+        loading: false
       }, () => {
-          if (recipe.preSignedUrls) {
-            presignedUrlsSubject.next(recipe.preSignedUrls)
-          } else {
-            presignedUrlsSubject.next([])
-          }
-          const elems = document.querySelectorAll('.fixed-action-btn')
-          M.FloatingActionButton.init(elems, {})
+        if (recipe.preSignedUrls) {
+          presignedUrlsSubject.next(recipe.preSignedUrls)
+        } else {
+          presignedUrlsSubject.next([])
+        }
+        const elems = document.querySelectorAll('.fixed-action-btn')
+        M.FloatingActionButton.init(elems, {})
       })
 
       const tagState = tags.map(tag => {
@@ -70,7 +68,7 @@ class Recipe extends React.Component<any, State> {
       this.setState({
         tags: tagState
       })
-    } catch(err) {
+    } catch (err) {
       console.log(err)
       if (err.response?.status === 401) {
         // unathenticated; redirect to log in
@@ -79,19 +77,19 @@ class Recipe extends React.Component<any, State> {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchData()
     const faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 700)
     window.addEventListener('resize', this.handleWindowSizeChange)
   }
 
-  componentDidUpdate() {
+  componentDidUpdate () {
     const elems = document.querySelectorAll('.dropdown-trigger')
     M.Dropdown.init(elems, {})
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     window.removeEventListener('resize', this.handleWindowSizeChange)
   }
 
@@ -109,27 +107,27 @@ class Recipe extends React.Component<any, State> {
     }, () => this.triggerDialog())
   }
 
-  render() {
+  render () {
     const {
       loading,
       tags,
       recipe,
       cloning,
-      width,
-    } = this.state;
+      width
+    } = this.state
 
     return (
-          !loading  ?
-          <div id="mobile-recipe-container">
+      !loading
+        ? <div id="mobile-recipe-container">
             <h1 className="title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
-              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{__html: recipe.rawTitle}}/>
+              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: recipe.rawTitle }}/>
             </h1>
             <Fade>
-              <RecipeDialog 
-                edit={true} 
+              <RecipeDialog
+                edit={true}
                 recipe={this.state.recipe}
-                open={this.state.dialogOpen} 
+                open={this.state.dialogOpen}
                 cloning={cloning}
                 defaultTileImageKey={recipe.defaultTileImageKey}
                 presignedUrls$={presignedUrls$}
@@ -138,7 +136,7 @@ class Recipe extends React.Component<any, State> {
                 triggerDialog={this.triggerDialog}>
               </RecipeDialog>
               <div className="view-recipe" >
-                <div id="recipe-mobile-toolbar" className={width > 700 ? "hidden" : ''}>
+                <div id="recipe-mobile-toolbar" className={width > 700 ? 'hidden' : ''}>
                     <a className='dropdown-trigger' data-target='dropdown1'><i className="fas fa-ellipsis-v"></i></a>
                     <ul id='dropdown1' className='dropdown-content'>
                       <li onClick={this.triggerDialog}><a>Edit</a></li>
@@ -147,30 +145,30 @@ class Recipe extends React.Component<any, State> {
                 </div>
                 <div id="width-setter">
                   <div className="section">
-                    <div id="recipe-title" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(recipe.title)}}/>
+                    <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }}/>
                   </div>
                   <div className="section">
-                    <div dangerouslySetInnerHTML={{__html: recipe.ingredients}} />
+                    <div dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
                   </div>
                   <div className="section">
-                    <div dangerouslySetInnerHTML={{__html: recipe.directions}}/>
+                    <div dangerouslySetInnerHTML={{ __html: recipe.directions }}/>
                   </div>
                   <div className="section">
-                    {tags.map((tag) => ( tag.selected ?
-                        <div
+                    {tags.map((tag) => (tag.selected
+                      ? <div
                           key={tag.label}
                           className="chip z-depth-2 selectedTag">
                           { tag.label }
                         </div>
-                        : null )
+                      : null)
                     )}
                   </div>
-                  <Divider style={{'margin': '20px 0 10px 0'}} />
+                  <Divider style={{ margin: '20px 0 10px 0' }} />
                   <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
                     <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
                   </div>
-                  { width > 700 ?
-                    <div onClick={this.triggerDialog} className="fixed-action-btn">
+                  { width > 700
+                    ? <div onClick={this.triggerDialog} className="fixed-action-btn">
                       <a className="btn-floating btn-large" id="primary-color">
                         <i className="large material-icons">mode_edit</i>
                       </a>
@@ -188,18 +186,17 @@ class Recipe extends React.Component<any, State> {
                     : null }
                 </div>
               </div>
-              
+
             </Fade>
           </div>
-             :
-          <div className="BounceLoader">
+        : <div className="BounceLoader">
             <BounceLoader
                 size={100}
-                color={"#689943"}
+                color={'#689943'}
             />
           </div>
     )
   }
 }
 
-export default withRouter(Recipe);
+export default withRouter(Recipe)

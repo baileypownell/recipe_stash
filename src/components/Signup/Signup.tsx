@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react'
 import './Signup.scss'
-import ClipLoader from "react-spinners/ClipLoader"
+import ClipLoader from 'react-spinners/ClipLoader'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
@@ -26,7 +26,6 @@ type State = {
 }
 
 class Signup extends React.Component<Props, State> {
-
   state = {
     firstName: '',
     lastName: '',
@@ -38,15 +37,14 @@ class Signup extends React.Component<Props, State> {
     formValid: false,
     loading: false,
     submissionError: '',
-    error: false,
+    error: false
   }
 
+  componentDidMount () { }
 
-  componentDidMount() { }
-
-  signup = async(e: FormEvent) => {
-    e.preventDefault();
-    const { email, password, firstName, lastName } = this.state;
+  signup = async (e: FormEvent) => {
+    e.preventDefault()
+    const { email, password, firstName, lastName } = this.state
     this.setState({
       loading: true
     })
@@ -59,7 +57,7 @@ class Signup extends React.Component<Props, State> {
       }
       const user: UserCreatedResponse = await UserService.createUser(userInput)
       if (user.success) {
-        M.toast({html: 'Success! Logging you in now...'})
+        M.toast({ html: 'Success! Logging you in now...' })
         AuthenticationService.setUserLoggedIn()
         this.props.history.push('/recipes')
       } else {
@@ -67,19 +65,19 @@ class Signup extends React.Component<Props, State> {
           error: true,
           loading: false
         })
-        M.toast({html: user.message})
+        M.toast({ html: user.message })
       }
-    } catch(err) {
+    } catch (err) {
       this.setState({
         loading: false
       })
-      M.toast({html: err.response.data.error})
+      M.toast({ html: err.response.data.error })
     }
   }
 
   checkFormValidation = () => {
-    const { firstName, lastName, password, email, confirmPassword } = this.state;
-    if ( firstName && lastName && password && email && confirmPassword) {
+    const { firstName, lastName, password, email, confirmPassword } = this.state
+    if (firstName && lastName && password && email && confirmPassword) {
       if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || confirmPassword.length === 0) {
         this.setState({
           formValid: false
@@ -96,7 +94,7 @@ class Signup extends React.Component<Props, State> {
     this.setState({
       [e.target.id]: e.target.value
     } as any, () => this.checkFormValidation()
-    );
+    )
     // remove email error if it exists
     if (e.target.id === 'email' && this.state.submissionError === 'An account already exists for this email.') {
       this.setState({
@@ -109,14 +107,14 @@ class Signup extends React.Component<Props, State> {
     const password: string = e.target.value
     if (isPasswordInvalid(password)) {
       this.setState({
-          insufficientPasswordMessage: true,
-          formValid: false
+        insufficientPasswordMessage: true,
+        formValid: false
       })
     } else {
       this.setState({
-          insufficientPasswordMessage: false,
-          password: e.target.value
-      });
+        insufficientPasswordMessage: false,
+        password: e.target.value
+      })
       // then check if it doesn't match confirmPassword, but only if confirmPassword has already been set
       if (e.target.value !== this.state.confirmPassword && this.state.confirmPassword !== null) {
         this.setState({
@@ -147,8 +145,8 @@ class Signup extends React.Component<Props, State> {
     this.props.history.push('/login')
   }
 
-  render() {
-    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid } = this.state;
+  render () {
+    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid } = this.state
     return (
         <div className="auth">
           <div className="gradient">
@@ -170,12 +168,12 @@ class Signup extends React.Component<Props, State> {
                   <label htmlFor="email" >Email</label>
                 </div>
                 <div className="input-field">
-                  <input onChange={this.validatePassword} id="password" type="password" name="password"  />
+                  <input onChange={this.validatePassword} id="password" type="password" name="password" />
                   <label htmlFor="password" >Password</label>
                   {
-                    insufficientPasswordMessage ?
-                      <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
-                  : null}
+                    insufficientPasswordMessage
+                      ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
+                      : null}
                 </div>
                 <div className="input-field">
                   <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
@@ -184,14 +182,14 @@ class Signup extends React.Component<Props, State> {
                 </div>
                 <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
                 <Button variant="contained" color="secondary" disabled={!formValid} type="submit">
-                  {loading?
-                      <ClipLoader
-                        css={`border-color: white;`}
+                  {loading
+                    ? <ClipLoader
+                        css={'border-color: white;'}
                         size={30}
-                        color={"white"}
+                        color={'white'}
                         loading={this.state.loading}
                       />
-                  : 'Submit'}
+                    : 'Submit'}
                 </Button>
               </form>
             </Fade>
@@ -201,4 +199,4 @@ class Signup extends React.Component<Props, State> {
   }
 }
 
-export default Signup;
+export default Signup

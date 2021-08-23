@@ -1,10 +1,10 @@
 import React from 'react'
 import Category from './Category/Category'
-import { BehaviorSubject, combineLatest } from "rxjs"
+import { BehaviorSubject, combineLatest } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
 import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
-import { appear } from  '../../models/functions'
+import { appear } from '../../models/functions'
 import { queryClient } from '../..'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 
@@ -36,7 +36,7 @@ const mealCategories: MealCategoriesInterface = {
   side_dish: 'Side Dish',
   dessert: 'Dessert',
   drinks: 'Drinks',
-  other: 'Other',
+  other: 'Other'
 }
 
 const userInputSubject: BehaviorSubject<string> = new BehaviorSubject('')
@@ -73,7 +73,7 @@ const appliedFiltersSubject: BehaviorSubject<FilterInterface> = new BehaviorSubj
   no_bake: false,
   sugar_free: false,
   vegan: false,
-  vegetarian: false,
+  vegetarian: false
 })
 const appliedFilters$ = appliedFiltersSubject.asObservable()
 const appliedCategorySubject: BehaviorSubject<CategoryInterface> = new BehaviorSubject<CategoryInterface>({
@@ -104,34 +104,31 @@ type State = {
     gridView: boolean
 }
 
-
 class Dashboard extends React.Component<Props, State> {
-
   state = {
     recipes_loaded: false,
     filteredRecipes: null,
-    gridView: true,
+    gridView: true
   }
 
-  addRecipe = async(recipeInput: AddRecipeMutationParam) => {
+  addRecipe = async (recipeInput: AddRecipeMutationParam) => {
     await this.props.addRecipeMutation(recipeInput)
     const current = queryClient.getQueryData('recipes')
     unfilteredRecipesSubject.next(current)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     unfilteredRecipesSubject.next(this.props.recipes)
     this.setState({
       recipes_loaded: true
     })
     const faded = document.querySelectorAll('.fade')
-    setTimeout(() => appear(faded, 'fade-in'), 300);
-
+    setTimeout(() => appear(faded, 'fade-in'), 300)
 
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger')
     M.Dropdown.init(dropdown as Element, {
-      closeOnClick: false,
+      closeOnClick: false
     })
 
     const userInputSaved = window.sessionStorage.getItem('userInput')
@@ -159,49 +156,48 @@ class Dashboard extends React.Component<Props, State> {
       gridView
     })
 
-
     combineLatest([
       appliedFilters$,
       appliedCategory$,
       userInput$,
       unfilteredRecipes$
     ])
-    .pipe(tap(([filters, category, input, recipes]) => {
-      window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
-      window.sessionStorage.setItem('category_filters', JSON.stringify(category))
-      window.sessionStorage.setItem('userInput', input)
-    }))
-    .subscribe(([filters, category, input, recipes]) => {
-      const newFilteredRecipesState: SortedRecipeInterface = {} as any
-      for (const category in recipes) {
-        const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
-        newFilteredRecipesState[category] = filteredCategory
-      }
-
-      const selectedTags: string[] = []
-      for (const tag in filters) {
-        if (filters[tag]) {
-          selectedTags.push(tag)
-        }
-      }
-
-      if (selectedTags.length) {
-        // limit to only those recipes whose tags include each checked result from res (true)
-        for (const category in newFilteredRecipesState) {
-          const filteredCategory = newFilteredRecipesState[category]
-          .filter(recipe => recipe.tags.length >= 1)
-          .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
+      .pipe(tap(([filters, category, input, recipes]) => {
+        window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
+        window.sessionStorage.setItem('category_filters', JSON.stringify(category))
+        window.sessionStorage.setItem('userInput', input)
+      }))
+      .subscribe(([filters, category, input, recipes]) => {
+        const newFilteredRecipesState: SortedRecipeInterface = {} as any
+        for (const category in recipes) {
+          const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
           newFilteredRecipesState[category] = filteredCategory
         }
-      }
 
-      this.setState({
-        filteredRecipes: newFilteredRecipesState
+        const selectedTags: string[] = []
+        for (const tag in filters) {
+          if (filters[tag]) {
+            selectedTags.push(tag)
+          }
+        }
+
+        if (selectedTags.length) {
+        // limit to only those recipes whose tags include each checked result from res (true)
+          for (const category in newFilteredRecipesState) {
+            const filteredCategory = newFilteredRecipesState[category]
+              .filter(recipe => recipe.tags.length >= 1)
+              .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
+            newFilteredRecipesState[category] = filteredCategory
+          }
+        }
+
+        this.setState({
+          filteredRecipes: newFilteredRecipesState
+        })
       })
-    })
   }
 
-  calculateSelectedFiltersNumber(): void {
+  calculateSelectedFiltersNumber (): void {
     let selectedFilters = 0
     for (const property in appliedFiltersSubject.getValue()) {
       if (appliedFiltersSubject.getValue()[property]) {
@@ -222,7 +218,7 @@ class Dashboard extends React.Component<Props, State> {
     const currentState = appliedFiltersSubject.getValue()[(e.target as Element).id]
     const filter = {
       ...appliedFiltersSubject.getValue(),
-      [(e.target as Element).id]: !currentState,
+      [(e.target as Element).id]: !currentState
     }
     appliedFiltersSubject.next(filter)
     this.calculateSelectedFiltersNumber()
@@ -252,10 +248,10 @@ class Dashboard extends React.Component<Props, State> {
     })
   }
 
-  render() {
-    const { gridView, filteredRecipes } = this.state;
-    const appliedFilt = appliedFiltersSubject.getValue();
-    const appliedCat = appliedCategorySubject.getValue();
+  render () {
+    const { gridView, filteredRecipes } = this.state
+    const appliedFilt = appliedFiltersSubject.getValue()
+    const appliedCat = appliedCategorySubject.getValue()
 
     let allFalse = true
     for (const [i, cat] of Object.entries(appliedCat).entries()) {
@@ -266,25 +262,25 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     const filterArray = [
-      {key: "dairy_free", name: 'Dairy Free'},
-      {key: "easy", name: 'Easy'},
-      {key: "gluten_free", name: 'Gluten Free'},
-      {key: "healthy", name: 'Healthy'},
-      {key: "keto", name: 'Keto'},
-      {key: "no_bake", name: 'No Bake'},
-      {key: "sugar_free", name: 'Sugar Free'},
-      {key: "vegan", name: 'Vegan'},
-      {key: "vegetarian", name: 'Vegetarian'}
-    ];
+      { key: 'dairy_free', name: 'Dairy Free' },
+      { key: 'easy', name: 'Easy' },
+      { key: 'gluten_free', name: 'Gluten Free' },
+      { key: 'healthy', name: 'Healthy' },
+      { key: 'keto', name: 'Keto' },
+      { key: 'no_bake', name: 'No Bake' },
+      { key: 'sugar_free', name: 'Sugar Free' },
+      { key: 'vegan', name: 'Vegan' },
+      { key: 'vegetarian', name: 'Vegetarian' }
+    ]
 
     const filterCategoryArray = [
-      {key: "breakfast", name: mealCategories.breakfast},
-      {key: "lunch", name: mealCategories.lunch},
-      {key: "dinner", name: mealCategories.dinner},
-      {key: "side_dish", name: mealCategories.side_dish},
-      {key: "dessert", name: mealCategories.dessert},
-      {key: "drinks", name: mealCategories.drinks},
-      {key: "other", name: mealCategories.other}
+      { key: 'breakfast', name: mealCategories.breakfast },
+      { key: 'lunch', name: mealCategories.lunch },
+      { key: 'dinner', name: mealCategories.dinner },
+      { key: 'side_dish', name: mealCategories.side_dish },
+      { key: 'dessert', name: mealCategories.dessert },
+      { key: 'drinks', name: mealCategories.drinks },
+      { key: 'other', name: mealCategories.other }
     ]
 
     return (
@@ -303,13 +299,13 @@ class Dashboard extends React.Component<Props, State> {
                 <button className='dropdown-trigger btn' data-target='dropdown' id="filter-button">
                   <span>Filter</span>
                   {
-                    selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i  className="small material-icons">filter_list</i>
+                    selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i className="small material-icons">filter_list</i>
                   }
                 </button>
                 <ul id='dropdown' className='dropdown-content'>
                   <p>Features</p>
                     {filterArray.map((item, index) => {
-                        return (
+                      return (
                           <li key={index} >
                             <label>
                               <input
@@ -320,12 +316,12 @@ class Dashboard extends React.Component<Props, State> {
                               <span>{item.name}</span>
                               </label>
                           </li>
-                        )
-                      })
+                      )
+                    })
                     }
                   <p>Categories</p>
                     {filterCategoryArray.map((item, index) => {
-                        return (
+                      return (
                           <li key={index}>
                             <label>
                                 <input
@@ -336,8 +332,8 @@ class Dashboard extends React.Component<Props, State> {
                                 <span>{item.name}</span>
                               </label>
                           </li>
-                        )
-                      })
+                      )
+                    })
                     }
                 </ul>
             </div>
@@ -348,8 +344,8 @@ class Dashboard extends React.Component<Props, State> {
             <>
               <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
               <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
-              { filteredRecipes !== null ?
-                Object.keys(mealCategories).map(mealCat => {
+              { filteredRecipes !== null
+                ? Object.keys(mealCategories).map(mealCat => {
                   return (
                       <Category
                         title={mealCategories[mealCat]}
@@ -363,7 +359,8 @@ class Dashboard extends React.Component<Props, State> {
                       >
                       </Category>
                   )
-                }) : null
+                })
+                : null
               }
           </>
       </div>
@@ -372,4 +369,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default(Dashboard);
+export default (Dashboard)

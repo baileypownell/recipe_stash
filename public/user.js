@@ -24,13 +24,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Router = __importStar(require("express"));
 const client_1 = __importDefault(require("./client"));
-const router = Router.Router();
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const nodemailer_sendgrid_transport_1 = __importDefault(require("nodemailer-sendgrid-transport"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const aws_s3_1 = require("./aws-s3");
 const dotenv = __importStar(require("dotenv"));
 const authMiddleware_1 = require("./authMiddleware");
+const router = Router.Router();
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config({ path: __dirname + '/.env' });
 }
@@ -186,7 +186,7 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                                         from: 'virtualcookbook@outlook.com',
                                         to: `${oldEmail}`,
                                         subject: 'Your Email Address Has Been Changed',
-                                        html: `<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>`
+                                        html: '<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you\'ll need to use your updated email address.\n</p>'
                                     };
                                     mailer.sendMail(email, function (err, _) {
                                         if (err) {

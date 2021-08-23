@@ -1,307 +1,307 @@
 import React, { ChangeEvent } from 'react'
-import { 
-    Dialog, 
-    FormControl, 
-    InputLabel, 
-    Select, 
-    MenuItem, 
-    Button, 
-    DialogContent, 
-    DialogTitle, 
-    DialogActions, 
-    CircularProgress 
-} from '@material-ui/core';
+import {
+  Dialog,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  CircularProgress
+} from '@material-ui/core'
 import Slide from '@material-ui/core/Slide'
 import ReactQuill from 'react-quill'
 import FileUpload from '../../File-Upload/FileUpload'
 import options from '../../../models/options'
-import { 
-    RecipeService, 
-    SortedRecipeInterface, 
-    UpdateRecipeInput, 
-    DefaultTile, 
-    RecipeInterface, 
-    ExistingFile, 
-    NewFileInterface, 
-    RecipeInput 
-} from '../../../services/recipe-services';
+import {
+  RecipeService,
+  SortedRecipeInterface,
+  UpdateRecipeInput,
+  DefaultTile,
+  RecipeInterface,
+  ExistingFile,
+  NewFileInterface,
+  RecipeInput
+} from '../../../services/recipe-services'
 import { queryClient } from '../../..'
 import DOMPurify from 'dompurify'
 import { tags } from '../../../models/tags'
 import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache'
 import './RecipeDialog.scss'
-import { withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom'
 const { htmlToText } = require('html-to-text')
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
+const Transition = React.forwardRef(function Transition (props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
 class RecipeDialog extends React.Component<any, any> {
-
     state = {
-        loading: false,
-        recipe_title: this.props.recipe.title,
-        ingredients: this.props.recipe.ingredients,
-        directions: this.props.recipe.directions,
-        recipe_title_edit: this.props.recipe.title,
-        recipe_title_raw: this.props.recipe.rawTitle,
-        recipe_title_raw_edit: this.props.recipe.rawTitle,
-        ingredients_edit: this.props.recipe.ingredients,
-        directions_edit: this.props.recipe.directions,
-        category: this.props.recipe.category,
-        category_edit: this.props.recipe.category,
-        newFiles: [],
-        filesToDelete: [],
-        tags: tags,
-        defaultTileImageKey: this.props.recipe.defaultTileImageKey,
-        recipeValid: null,
-        cloning: this.props.cloning,
-      }
-    
-    componentDidMount() {
-        const tags = this.state.tags.map(tag => {
-            if (this.props.recipe.tags.includes(tag.recipeTagPropertyName)) {
-                tag.selected = true
-            }
-            return tag
-        })
+      loading: false,
+      recipe_title: this.props.recipe.title,
+      ingredients: this.props.recipe.ingredients,
+      directions: this.props.recipe.directions,
+      recipe_title_edit: this.props.recipe.title,
+      recipe_title_raw: this.props.recipe.rawTitle,
+      recipe_title_raw_edit: this.props.recipe.rawTitle,
+      ingredients_edit: this.props.recipe.ingredients,
+      directions_edit: this.props.recipe.directions,
+      category: this.props.recipe.category,
+      category_edit: this.props.recipe.category,
+      newFiles: [],
+      filesToDelete: [],
+      tags: tags,
+      defaultTileImageKey: this.props.recipe.defaultTileImageKey,
+      recipeValid: null,
+      cloning: this.props.cloning
     }
-    
+
+    componentDidMount () {
+      const tags = this.state.tags.map(tag => {
+        if (this.props.recipe.tags.includes(tag.recipeTagPropertyName)) {
+          tag.selected = true
+        }
+        return tag
+      })
+    }
+
     handleModelChange = (content: string, delta, source, editor) => {
-        this.setState({
-          recipe_title_edit: content,
-          recipe_title_raw_edit: editor.getText()
-        }, () => this.checkValidity())
-      }
-    
-    handleModelChangeIngredients = (html: string) => {
-        this.setState({
-            ingredients_edit: html
-        }, () => this.checkValidity())
+      this.setState({
+        recipe_title_edit: content,
+        recipe_title_raw_edit: editor.getText()
+      }, () => this.checkValidity())
     }
-    
+
+    handleModelChangeIngredients = (html: string) => {
+      this.setState({
+        ingredients_edit: html
+      }, () => this.checkValidity())
+    }
+
     handleModelChangeDirections = (html: string) => {
-        this.setState({
-            directions_edit: html
-        }, () => this.checkValidity())
+      this.setState({
+        directions_edit: html
+      }, () => this.checkValidity())
     }
 
     updateCategory = (e) => {
-        this.setState({
+      this.setState({
         category: e.target.value
-        }, () => this.checkValidity())
+      }, () => this.checkValidity())
     }
 
     setFiles = (newFiles: NewFileInterface[]) => {
-        // new files
-        this.setState({
+      // new files
+      this.setState({
         newFiles
-        }, () => this.checkValidity())
+      }, () => this.checkValidity())
     }
 
     setFilesToDelete = (files: ExistingFile[]) => {
-        this.setState({
+      this.setState({
         filesToDelete: files
-        }, () => this.checkValidity())
+      }, () => this.checkValidity())
     }
 
     updateInput = (e: ChangeEvent<HTMLSelectElement> | any) => {
-        this.setState({
-          [e.target.id]: e.target.value
-        } as any, () => this.checkValidity())
-      }
-    
-    toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
-        const index: number = (e.target as Element).id as unknown as number
-        const tags = [...this.state.tags]
-        const item = {...tags[index]}
-        const priorSelectedValue = item.selected
-        item.selected = !priorSelectedValue
-        tags[index] = item
-        this.setState({tags}, () => this.checkValidity())
+      this.setState({
+        [e.target.id]: e.target.value
+      } as any, () => this.checkValidity())
     }
 
-    deleteRecipe = async() => {
-        try {
+    toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
+      const index: number = (e.target as Element).id as unknown as number
+      const tags = [...this.state.tags]
+      const item = { ...tags[index] }
+      const priorSelectedValue = item.selected
+      item.selected = !priorSelectedValue
+      tags[index] = item
+      this.setState({ tags }, () => this.checkValidity())
+    }
+
+    deleteRecipe = async () => {
+      try {
         await RecipeService.deleteRecipe(this.props.recipe.id)
         const current: SortedRecipeInterface = queryClient.getQueryData('recipes')
         queryClient.setQueryData('recipes', () => {
-            const updatedArray = current[this.state.category].filter(el => el.id !== this.props.recipe.id)
-            const updatedCategory = updatedArray
-            const updatedQueryState = {
+          const updatedArray = current[this.state.category].filter(el => el.id !== this.props.recipe.id)
+          const updatedCategory = updatedArray
+          const updatedQueryState = {
             ...current,
             [this.state.category]: updatedCategory
-            }
-            return updatedQueryState
+          }
+          return updatedQueryState
         })
-        M.toast({html: 'Recipe deleted.'})
+        M.toast({ html: 'Recipe deleted.' })
         this.props.history.push('/recipes')
-        } catch(err) {
+      } catch (err) {
         console.log(err)
-        M.toast({html: 'There was an error.'})
-        }
+        M.toast({ html: 'There was an error.' })
+      }
     }
 
     checkValidity = () => {
-        const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state;
-        if (directions_edit && ingredients_edit && recipe_title_edit && category_edit) {
+      const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state
+      if (directions_edit && ingredients_edit && recipe_title_edit && category_edit) {
         this.setState({
-            recipeValid: true
+          recipeValid: true
         })
-        } else {
+      } else {
         this.setState({
-            recipeValid: false
+          recipeValid: false
         })
-        }
+      }
     }
 
     // function for duplicating a recipe
-    addRecipe = async() => {
-        const tags = this.state.tags
-        const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
-        const rawTitle = htmlToText(titleHTML, {
-          wordwrap: 130
-        })
+    addRecipe = async () => {
+      const tags = this.state.tags
+      const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+      const rawTitle = htmlToText(titleHTML, {
+        wordwrap: 130
+      })
+      this.setState({
+        loading: true
+      })
+      const recipeInput: RecipeInput = {
+        title: this.state.recipe_title_edit,
+        rawTitle,
+        category: this.state.category,
+        ingredients: this.state.ingredients_edit,
+        directions: this.state.directions_edit,
+        isNoBake: tags[0].selected,
+        isEasy: tags[1].selected,
+        isHealthy: tags[2].selected,
+        isGlutenFree: tags[3].selected,
+        isDairyFree: tags[4].selected,
+        isSugarFree: tags[5].selected,
+        isVegetarian: tags[6].selected,
+        isVegan: tags[7].selected,
+        isKeto: tags[8].selected
+      }
+      try {
+        const param: AddRecipeMutationParam = {
+          recipeInput,
+          files: this.state.newFiles,
+          defaultTile: this.state.defaultTileImageKey
+        }
+        const recipe = await this.props.addRecipeMutation(param)
+        M.toast({ html: 'Recipe added.' })
         this.setState({
-          loading: true
+          filesToDelete: [],
+          newFiles: [],
+          loading: false
+        }, () => {
+          this.props.history.push(`/recipes/${recipe.id}`)
+          window.location.reload(false)
+          this.props.triggerDialog()
         })
-        const recipeInput: RecipeInput = {
-          title: this.state.recipe_title_edit,
-          rawTitle,
-          category: this.state.category,
-          ingredients: this.state.ingredients_edit,
-          directions: this.state.directions_edit,
-          isNoBake: tags[0].selected,
-          isEasy: tags[1].selected,
-          isHealthy: tags[2].selected,
-          isGlutenFree: tags[3].selected,
-          isDairyFree: tags[4].selected,
-          isSugarFree: tags[5].selected,
-          isVegetarian: tags[6].selected,
-          isVegan: tags[7].selected,
-          isKeto: tags[8].selected,
-        }
-        try {
-          const param: AddRecipeMutationParam = {
-            recipeInput,
-            files: this.state.newFiles,
-            defaultTile: this.state.defaultTileImageKey
-          }
-          const recipe = await this.props.addRecipeMutation(param)
-          M.toast({html: 'Recipe added.'})
-          this.setState({
-            filesToDelete: [],
-            newFiles: [],
-            loading: false
-          }, () => {
-            this.props.history.push(`/recipes/${recipe.id}`)
-            window.location.reload(false)
-            this.props.triggerDialog()
-          })
-        } catch(err) {
-          console.log(err)
-          this.setState({
-            loading: false
-          })
-          M.toast({html: 'There was an error.'})
-        }
+      } catch (err) {
+        console.log(err)
+        this.setState({
+          loading: false
+        })
+        M.toast({ html: 'There was an error.' })
+      }
     }
 
-    saveRecipe = async(e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        if (this.props.cloning) {
-            this.addRecipe()
-            return
-        }
-        const tags = this.state.tags
-        const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
-        const rawTitle = htmlToText(titleHTML, {
-            wordwrap: 130
-        })
-        this.setState({
-            loading: true,
-        })
-        const recipeUpdateInput: UpdateRecipeInput = {
-            title: this.state.recipe_title_edit,
-            rawTitle,
-            ingredients: this.state.ingredients_edit,
-            directions: this.state.directions_edit,
-            recipeId: this.props.recipe.id,
-            category: this.state.category,
-            isNoBake: tags[0].selected,
-            isEasy: tags[1].selected,
-            isHealthy: tags[2].selected,
-            isGlutenFree: tags[3].selected,
-            isDairyFree: tags[4].selected,
-            isSugarFree: tags[5].selected,
-            isVegetarian: tags[6].selected,
-            isVegan: tags[7].selected,
-            isKeto: tags[8].selected,
-        }
-        try {
-            await RecipeService.updateRecipe(
-                recipeUpdateInput,
-                this.state.newFiles,
-                this.state.defaultTileImageKey,
-                this.state.filesToDelete,
-                this.props.recipe.id,
+    saveRecipe = async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      if (this.props.cloning) {
+        this.addRecipe()
+        return
+      }
+      const tags = this.state.tags
+      const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
+      const rawTitle = htmlToText(titleHTML, {
+        wordwrap: 130
+      })
+      this.setState({
+        loading: true
+      })
+      const recipeUpdateInput: UpdateRecipeInput = {
+        title: this.state.recipe_title_edit,
+        rawTitle,
+        ingredients: this.state.ingredients_edit,
+        directions: this.state.directions_edit,
+        recipeId: this.props.recipe.id,
+        category: this.state.category,
+        isNoBake: tags[0].selected,
+        isEasy: tags[1].selected,
+        isHealthy: tags[2].selected,
+        isGlutenFree: tags[3].selected,
+        isDairyFree: tags[4].selected,
+        isSugarFree: tags[5].selected,
+        isVegetarian: tags[6].selected,
+        isVegan: tags[7].selected,
+        isKeto: tags[8].selected
+      }
+      try {
+        await RecipeService.updateRecipe(
+          recipeUpdateInput,
+          this.state.newFiles,
+          this.state.defaultTileImageKey,
+          this.state.filesToDelete,
+          this.props.recipe.id,
                 this.props.recipe as unknown as RecipeInterface
-            )
-            queryClient.refetchQueries('recipes')
-            this.handleUpdate()
-            this.setState({
-                loading: false
-            })
-        } catch(err) {
-            console.log(err)
-            this.setState({
-                loading: false
-            })
-            M.toast({html: 'There was an error updating the recipe.'})
-        }
-    }
-
-    handleUpdate() {
-        // Update recipe details to reflect the change
-        this.props.triggerDialog()
-        this.props.fetchData()
-        M.toast({html: 'Recipe updated.'})
+        )
+        queryClient.refetchQueries('recipes')
+        this.handleUpdate()
         this.setState({
-            filesToDelete: [],
-            newFiles: []
+          loading: false
         })
-    }
-
-    setDefaultTileImage = (key: string | DefaultTile ) => {
+      } catch (err) {
+        console.log(err)
         this.setState({
-        defaultTileImageKey: key
-        }, () => this.checkValidity())
+          loading: false
+        })
+        M.toast({ html: 'There was an error updating the recipe.' })
+      }
     }
 
-    render() {
-        const { loading, recipeValid, tags, category } = this.state
-        const { edit, cloning, recipe, open } = this.props
+    handleUpdate () {
+      // Update recipe details to reflect the change
+      this.props.triggerDialog()
+      this.props.fetchData()
+      M.toast({ html: 'Recipe updated.' })
+      this.setState({
+        filesToDelete: [],
+        newFiles: []
+      })
+    }
 
-        return (
-            <Dialog 
-                fullScreen 
+    setDefaultTileImage = (key: string | DefaultTile) => {
+      this.setState({
+        defaultTileImageKey: key
+      }, () => this.checkValidity())
+    }
+
+    render () {
+      const { loading, recipeValid, tags, category } = this.state
+      const { edit, cloning, recipe, open } = this.props
+
+      return (
+            <Dialog
+                fullScreen
                 scroll="paper"
-                open={open} 
-                onClose={this.props.triggerDialog} 
+                open={open}
+                onClose={this.props.triggerDialog}
                 TransitionComponent={Transition}>
-                <DialogTitle className="title">{ edit ? (cloning ? <span>Add Recipe </span> : <span>Edit Recipe</span>) : 
-                    <span>Add Recipe</span> }
+                <DialogTitle className="title">{ edit
+                  ? (cloning ? <span>Add Recipe </span> : <span>Edit Recipe</span>)
+                  : <span>Add Recipe</span> }
                 </DialogTitle>
                 <DialogContent >
                     <h3>Title</h3>
                     <ReactQuill value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
                     <h3>Ingredients</h3>
-                    <ReactQuill  value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
+                    <ReactQuill value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
                     <h3>Directions</h3>
-                    <ReactQuill  value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
-                    
-                    <FormControl variant="filled" style={{'width': '100%', 'margin': '10px 0 0 0'}}>
+                    <ReactQuill value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
+
+                    <FormControl variant="filled" style={{ width: '100%', margin: '10px 0 0 0' }}>
                         <InputLabel>Category</InputLabel>
                         <Select
                         id="category"
@@ -310,26 +310,26 @@ class RecipeDialog extends React.Component<any, any> {
                         >
                         {
                             options.map((val, index: number) => {
-                            return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
+                              return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
                             })
                         }
                         </Select>
                     </FormControl>
-                        
+
                     <h3>Recipe Tags</h3>
                     <div>
                         { tags.map((tag, index) => {
-                            return <div
+                          return <div
                                 onClick={this.toggleTagSelectionStatus}
                                 id={index.toString()}
-                                className={`chip z-depth-2 ${recipe && tags[index].selected  ? "selectedTag" : "null"}`}
+                                className={`chip z-depth-2 ${recipe && tags[index].selected ? 'selectedTag' : 'null'}`}
                                 key={index}>
                                     {tag.label}
                                 </div>
-                            }) 
+                        })
                         }
                     </div>
-                                            
+
                     <FileUpload
                         defaultTileImageUUID={this.props.defaultTileImageKey}
                         passDefaultTileImage={this.setDefaultTileImage}
@@ -349,14 +349,14 @@ class RecipeDialog extends React.Component<any, any> {
                             </Button>
                         </div>
 
-                        <Button 
-                        onClick={this.saveRecipe} 
-                        disabled={!recipeValid} 
-                        variant="contained" 
+                        <Button
+                        onClick={this.saveRecipe}
+                        disabled={!recipeValid}
+                        variant="contained"
                         color="secondary">
-                            { loading ?
-                                <CircularProgress style={{'color': 'white', 'height': '26px', 'width': '26px'}} /> :
-                            <>
+                            { loading
+                              ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
+                              : <>
                                 {!cloning ? 'Update Recipe' : 'Add Recipe' }
                                 <i className="fas fa-check-square"></i>
                             </>
@@ -365,7 +365,7 @@ class RecipeDialog extends React.Component<any, any> {
                     </div>
                 </DialogActions>
             </Dialog>
-        )
+      )
     }
 }
 

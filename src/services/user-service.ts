@@ -1,5 +1,5 @@
-import axios from 'axios';
-import AuthenticationService from './auth-service';
+import axios from 'axios'
+import AuthenticationService from './auth-service'
 
 export interface UserInputInterface {
   firstName: string;
@@ -43,28 +43,28 @@ export interface UserCreatedResponse extends GenericResponse {
 // TO-DO: return types here
 const UserService = {
   getUser: async (): Promise<UserData> => {
-    const user = await axios.get(`/user`);
-    return user.data.userData;
+    const user = await axios.get('/user')
+    return user.data.userData
   },
 
   updateUser: async (
     payload: UpdateUserNamePayload | UpdateUserEmailPayload
   ): Promise<any> => {
-    return await axios.put(`/user`, payload);
+    return await axios.put('/user', payload)
   },
 
   deleteUser: async (): Promise<GenericResponse> => {
-    const deletion = await axios.delete(`/user`);
-    AuthenticationService.setUserLoggedOut();
-    return deletion.data;
+    const deletion = await axios.delete('/user')
+    AuthenticationService.setUserLoggedOut()
+    return deletion.data
   },
 
   createUser: async (
     userInput: UserInputInterface
   ): Promise<UserCreatedResponse> => {
-    const newUser = await axios.post(`/user`, userInput);
-    return newUser.data;
-  },
-};
+    const newUser = await axios.post('/user', userInput)
+    return newUser.data
+  }
+}
 
-export default UserService;
+export default UserService

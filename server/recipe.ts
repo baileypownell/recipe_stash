@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import client from './client'
-const router = Router()
 import { authMiddleware } from './authMiddleware'
-const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
+const router = Router()
+const { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
 // interface DashboardReadyRecipe {
 //   category: string
@@ -18,34 +18,34 @@ const  { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3
 
 const constructTags = (recipe) => {
   const tagArray: string[] = []
-    if (recipe.no_bake) {
-      tagArray.push('no_bake')
-    }
-    if (recipe.easy) {
-      tagArray.push('easy')
-    }
-    if (recipe.healthy) {
-      tagArray.push('healthy')
-    }
-    if (recipe.gluten_free) {
-      tagArray.push('gluten_free')
-    }
-    if (recipe.dairy_free) {
-      tagArray.push('dairy_free')
-    }
-    if (recipe.vegetarian) {
-      tagArray.push('vegetarian')
-    }
-    if (recipe.vegan) {
-      tagArray.push('vegan')
-    }
-    if (recipe.keto) {
-      tagArray.push('keto')
-    }
-    if (recipe.sugar_free) {
-      tagArray.push('sugar_free')
-    }
-    return tagArray
+  if (recipe.no_bake) {
+    tagArray.push('no_bake')
+  }
+  if (recipe.easy) {
+    tagArray.push('easy')
+  }
+  if (recipe.healthy) {
+    tagArray.push('healthy')
+  }
+  if (recipe.gluten_free) {
+    tagArray.push('gluten_free')
+  }
+  if (recipe.dairy_free) {
+    tagArray.push('dairy_free')
+  }
+  if (recipe.vegetarian) {
+    tagArray.push('vegetarian')
+  }
+  if (recipe.vegan) {
+    tagArray.push('vegan')
+  }
+  if (recipe.keto) {
+    tagArray.push('keto')
+  }
+  if (recipe.sugar_free) {
+    tagArray.push('sugar_free')
+  }
+  return tagArray
 }
 
 const formatRecipeResponse = (recipe: any): any => {
@@ -68,25 +68,25 @@ router.use(authMiddleware)
 router.get('/', authMiddleware, (request: any, response, next) => {
   const userId = request.userID
   client.query('SELECT * FROM recipes WHERE user_uuid=$1',
-  [userId],
-   (err, res) => {
-    if (err) return next(err);
-    const responseObject: any = {
-      breakfast: [],
-      lunch: [],
-      dinner: [],
-      dessert: [],
-      other: [],
-      side_dish: [],
-      drinks: []
-    }
-    if (res.rows.length) {
-        const results = res.rows.map( recipe => {
+    [userId],
+    (err, res) => {
+      if (err) return next(err)
+      const responseObject: any = {
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+        dessert: [],
+        other: [],
+        side_dish: [],
+        drinks: []
+      }
+      if (res.rows.length) {
+        const results = res.rows.map(recipe => {
           if (recipe.default_tile_image_key) {
             const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
             return {
               ...recipe,
-              preSignedDefaultTileImageUrl,
+              preSignedDefaultTileImageUrl
             }
           } else {
             return recipe
@@ -110,10 +110,10 @@ router.get('/', authMiddleware, (request: any, response, next) => {
           }
         })
         response.json(responseObject)
-    } else {
-      return response.json(responseObject)
-    }
-  })
+      } else {
+        return response.json(responseObject)
+      }
+    })
 })
 
 router.post('/', (request: any, response, next) => {
@@ -132,16 +132,16 @@ router.post('/', (request: any, response, next) => {
     isSugarFree,
     isVegetarian,
     isVegan,
-    isKeto,
-  } = request.body;
+    isKeto
+  } = request.body
   if (
     !!rawTitle &&
     !!title &&
     !!category &&
     !!ingredients &&
     !!directions
-   ) {
-      client.query(`INSERT INTO recipes(
+  ) {
+    client.query(`INSERT INTO recipes(
         title,
         raw_title,
         category,
@@ -158,37 +158,37 @@ router.post('/', (request: any, response, next) => {
         vegan,
         keto
       ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
-        [
-          title,
-          rawTitle,
-          category,
-          userId,
-          ingredients,
-          directions,
-          isNoBake,
-          isEasy,
-          isHealthy,
-          isGlutenFree,
-          isDairyFree,
-          isSugarFree,
-          isVegetarian,
-          isVegan,
-          isKeto
-        ],
-        (err, res) => {
-          if (err) return next(err)
-          if (res.rowCount) {
-            return response.status(200).json({ success: true, message: 'Recipe created.', recipe: res.rows[0] })
-          } else {
-            return response.status(500).json({ success: false, message: 'Could not create recipe.' })
-          }
-        })
-    } else {
-      return response.status(400).json({
-        success: false,
-        message: 'Invalid request sent.'
-      })
-    }
+    [
+      title,
+      rawTitle,
+      category,
+      userId,
+      ingredients,
+      directions,
+      isNoBake,
+      isEasy,
+      isHealthy,
+      isGlutenFree,
+      isDairyFree,
+      isSugarFree,
+      isVegetarian,
+      isVegan,
+      isKeto
+    ],
+    (err, res) => {
+      if (err) return next(err)
+      if (res.rowCount) {
+        return response.status(200).json({ success: true, message: 'Recipe created.', recipe: res.rows[0] })
+      } else {
+        return response.status(500).json({ success: false, message: 'Could not create recipe.' })
+      }
+    })
+  } else {
+    return response.status(400).json({
+      success: false,
+      message: 'Invalid request sent.'
+    })
+  }
 })
 
 router.put('/', (request: any, response, next) => {
@@ -208,8 +208,8 @@ router.put('/', (request: any, response, next) => {
     isSugarFree,
     isVegetarian,
     isVegan,
-    isKeto,
-  } = request.body;
+    isKeto
+  } = request.body
   client.query(`UPDATE recipes SET
     title=$1,
     raw_title=$16,
@@ -246,41 +246,41 @@ router.put('/', (request: any, response, next) => {
     userId,
     rawTitle
   ],
-   (err, res) => {
+  (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
-      return response.status(200).json({success: true, recipeId: res.rows[0].recipe_uuid})
+      return response.status(200).json({ success: true, recipeId: res.rows[0].recipe_uuid })
     } else {
-      return response.status(500).json({success: false, message: 'Could not update recipe.'})
+      return response.status(500).json({ success: false, message: 'Could not update recipe.' })
     }
-  });
+  })
 })
 
 const getImageAWSKeys = (recipeId) => {
   return new Promise((resolve, reject) => {
     client.query('SELECT key FROM files WHERE recipe_uuid=$1',
-    [recipeId],
-    (err, res) => {
-      if (err) reject(err)
-      const image_url_array = res.rows.reduce((arr, el) => {
-        arr.push(el.key)
-        return arr
-      }, [])
-      resolve(image_url_array)
-    })
+      [recipeId],
+      (err, res) => {
+        if (err) reject(err)
+        const imageUrlArray = res.rows.reduce((arr, el) => {
+          arr.push(el.key)
+          return arr
+        }, [])
+        resolve(imageUrlArray)
+      })
   })
 }
 
 router.get('/:recipeId', (request: any, response, next) => {
-    const { recipeId } = request.params
-    const userId = request.userID
-    client.query('SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
+  const { recipeId } = request.params
+  const userId = request.userID
+  client.query('SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
     [userId, recipeId],
-     async(err, res) => {
-      if (err) return next(err);
+    async (err, res) => {
+      if (err) return next(err)
       const recipe = res.rows[0]
       if (recipe) {
-        const recipe_response = {
+        const recipeResponse = {
           id: recipe.recipe_uuid,
           title: recipe.title,
           rawTitle: recipe.raw_title || recipe.title,
@@ -294,38 +294,38 @@ router.get('/:recipeId', (request: any, response, next) => {
         if (recipe.has_images) {
           const urls = await getImageAWSKeys(recipeId)
           if (urls) {
-            recipe_response['preSignedUrls'] = getPresignedUrls(urls)
+            recipeResponse['preSignedUrls'] = getPresignedUrls(urls)
             if (recipe.default_tile_image_key) {
               const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
-              recipe_response['preSignedDefaultTileImageUrl'] = preSignedDefaultTileImageUrl
+              recipeResponse['preSignedDefaultTileImageUrl'] = preSignedDefaultTileImageUrl
             }
           }
-          response.status(200).json({ success: true, recipe: recipe_response })
+          response.status(200).json({ success: true, recipe: recipeResponse })
         } else {
-          response.status(200).json({ success: true, recipe: recipe_response })
+          response.status(200).json({ success: true, recipe: recipeResponse })
         }
       } else {
-        response.status(500).json({ success: false, message: 'No recipe could be found.'})
+        response.status(500).json({ success: false, message: 'No recipe could be found.' })
       }
     })
-  })
+})
 
 router.delete('/:recipeId', (request: any, response, next) => {
   const userId = request.userID
   const { recipeId } = request.params
   client.query('DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
-  [recipeId, userId],
-      (err, res) => {
-      if (err) return next(err);
+    [recipeId, userId],
+    (err, res) => {
+      if (err) return next(err)
       if (res) {
-        const has_images = res.rows[0].has_images
-        const recipe_id = res.rows[0].recipe_uuid
-        if (has_images) {
+        const hasImages: boolean = res.rows[0].has_images
+        const recipeId: string = res.rows[0].recipe_uuid
+        if (hasImages) {
           // delete images associated with the recipe from database
           client.query('DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
-          [recipe_id],
-          async(error, res) => {
-              if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}`})
+            [recipeId],
+            async (error, res) => {
+              if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}` })
               // set recipe's "has_images" property to false if necessary
               if (res) {
                 const awsKeys = res.rows.map(row => row.key)
@@ -335,13 +335,12 @@ router.delete('/:recipeId', (request: any, response, next) => {
                   return response.status(200).json({ success: true, message: 'Recipe deleted.' })
                 }
               }
-          })
+            })
         } else {
           return response.status(200).json({ success: true, message: 'Recipe deleted.' })
         }
-    }
-  })
+      }
+    })
 })
 
 export default router
-// module.exports = router

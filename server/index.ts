@@ -27,5 +27,4 @@ router.use('/auth', auth)
 
 export default router
 
-
 export { AuthenticationState } from './auth'

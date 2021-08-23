@@ -37,7 +37,7 @@ const upload = multer({
 const singleFileUpload = upload.single('image');
 const uploadSingleAWSFile = (req, res) => {
     req.s3Key = uuidv4();
-    let downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`;
+    const downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`;
     return new Promise((resolve, reject) => {
         return singleFileUpload(req, res, err => {
             if (err)
