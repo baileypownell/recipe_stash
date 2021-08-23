@@ -35,7 +35,8 @@ app.use(session({
     cookie: { maxAge: 3600000, secure: false } // 1 hour
 }));
 app.use('/', index_1.default);
-app.use(express_1.default.static(__dirname + '/dist'));
+// console.log(__dirname + '/dist')
+app.use(express_1.default.static('./dist'));
 const port = process.env.PORT || 3000;
 // because I'm too cheap to pay $7/month for TLS (never do this for legit app)
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';

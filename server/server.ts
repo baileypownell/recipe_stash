@@ -39,14 +39,15 @@ app.use(session({
 
 app.use('/', routes)
 
-app.use(express.static(__dirname + '/dist'));
+app.use(express.static('./dist')) // this is key for serving up the bundle.js file and not the index.html file
+
 const port = process.env.PORT || 3000;
 
 // because I'm too cheap to pay $7/month for TLS (never do this for legit app)
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0'
 
 app.get('*', (_, res: Response) => {
-    res.sendFile('index.html', { root: './dist/' }) // works for local and production, but only local finds bundle.js
+    res.sendFile('index.html', { root: './dist/' })
 })
 
 app.listen(port, () => {
