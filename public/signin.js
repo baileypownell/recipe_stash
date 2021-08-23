@@ -1,15 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const { Router } = require('express');
-const client = require('./client');
+const express_1 = require("express");
+const client_1 = __importDefault(require("./client"));
 const bcrypt = require('bcryptjs');
-const router = Router();
+const router = express_1.Router();
 router.post('/', (request, response, next) => {
     const { password, email } = request.body;
     if (!password || !email) {
         return response.status(400).json({ success: false, message: 'Insufficient or invalid credentials provided.' });
     }
-    client.query('SELECT * FROM users WHERE email=$1', [email], (err, res) => {
+    client_1.default.query('SELECT * FROM users WHERE email=$1', [email], (err, res) => {
         if (err)
             return next(err);
         if (res.rows.length) {
@@ -26,7 +29,7 @@ router.post('/', (request, response, next) => {
                         request.session.save();
                         const sessionIdentifier = request.sessionID;
                         // update the session table with the user's sessionID 
-                        client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2', [user_uuid, sessionIdentifier], (err, res) => {
+                        client_1.default.query('UPDATE session SET user_uuid=$1 WHERE sid=$2', [user_uuid, sessionIdentifier], (err, res) => {
                             if (err)
                                 return next(err);
                             if (res.rowCount) {

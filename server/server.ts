@@ -1,10 +1,10 @@
 // import path from 'path'
 import express, { Response } from 'express'
-const bodyParser = require('body-parser')
+import bodyParser from 'body-parser'
 const app = express()
 import routes from './index'
 import client from './client'
-var session = require('express-session'), 
+const session = require('express-session'), 
 pgSession = require('connect-pg-simple')(session);
 
 // middleware
@@ -37,29 +37,20 @@ app.use(session({
   cookie: { maxAge: 3600000, secure: false } // 1 hour
 }));
 
-app.use('/', routes);
+app.use('/', routes)
 
-
+app.use(express.static(__dirname + '/dist'));
 const port = process.env.PORT || 3000;
-
-
-app.use(express.static(__dirname + '/dist'))
 
 // because I'm too cheap to pay $7/month for TLS (never do this for legit app)
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0'
 
 app.get('*', (_, res: Response) => {
-  if (process.env.NODE_ENV === 'development') {
-    res.sendFile(__dirname + '/dist/index.html')
-  } else {
-    res.sendFile('index.html', { root: './dist'})
-  }
-  
-  // res.sendFile('index.html', { root: './dist' })
-});
+    res.sendFile('index.html', { root: './dist/' }) // works for local and production, but only local finds bundle.js
+})
 
 app.listen(port, () => {
   console.log('project up on port', port)
 })
 
-module.exports = app;
+export default app

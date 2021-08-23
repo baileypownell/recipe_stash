@@ -8,5 +8,4 @@ router.get('/', (request, response, _) => {
     });
 });
 exports.default = router;
-// module.exports = router;
 //# sourceMappingURL=logout.js.map

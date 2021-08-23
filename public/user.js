@@ -28,8 +28,7 @@ const router = Router.Router();
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const nodemailer_sendgrid_transport_1 = __importDefault(require("nodemailer-sendgrid-transport"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-// import { authMiddleware } from './authMiddleware'
-const { deleteAWSFiles } = require('./aws-s3');
+const aws_s3_1 = require("./aws-s3");
 const dotenv = __importStar(require("dotenv"));
 const authMiddleware_1 = require("./authMiddleware");
 if (process.env.NODE_ENV !== 'production') {
@@ -224,7 +223,7 @@ router.delete('/', authMiddleware_1.authMiddleware, (request, response, next) =>
         if (res.rows.length) {
             const awsKeys = res.rows.map(val => val.key);
             try {
-                const awsDeletions = await deleteAWSFiles(awsKeys);
+                const awsDeletions = await aws_s3_1.deleteAWSFiles(awsKeys);
                 if (awsDeletions) {
                     client_1.default.query('DELETE FROM users WHERE user_uuid=$1', [id], (err, res) => {
                         if (err)
@@ -260,5 +259,4 @@ router.delete('/', authMiddleware_1.authMiddleware, (request, response, next) =>
     });
 });
 exports.default = router;
-// module.exports = router;
 //# sourceMappingURL=user.js.map
