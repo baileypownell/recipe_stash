@@ -1,9 +1,9 @@
-const { Router } = require('express')
-const client = require('./client')
+import { Router } from 'express'
+import client from './client'
 const router = Router()
 const jwt_decode = require('jwt-decode')
 
-router.post('/', (request, response, next) => {
+router.post('/', (request: any, response, next) => {
   const { token } = request.body
   if (!token) {
     return response.status(400).json({success: false, message: 'Insufficient or invalid credentials provided.'})
@@ -36,4 +36,5 @@ router.post('/', (request, response, next) => {
   })
 })
 
-module.exports = router;
+export default router
+// module.exports = router;

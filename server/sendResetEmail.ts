@@ -46,7 +46,7 @@ router.post('/', (request, response, next) => {
               subject: 'Reset Password Link',
               html: `<h1>recipe stash</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button>Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`
             };
-            mailer.sendMail(emailToSend, function(err, res) {
+            mailer.sendMail(emailToSend, function(err, _) {
               if (err) {
                 return response.status(500).json({ success: false, message: 'There was an error sending the email.', error: err.message, name: err.name })
               } else {
@@ -85,4 +85,5 @@ router.get('/:token', (request, response, next) => {
   })
 })
 
-module.exports = router;
+export default router
+// module.exports = router;

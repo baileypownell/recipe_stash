@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const router = Router()
-const client = require('./client')
+import client from './client'
 
 router.get('/', (request, response, next) => {
     client.query('SELECT user_uuid FROM session WHERE sid=$1', 
@@ -15,4 +15,5 @@ router.get('/', (request, response, next) => {
     })
 })
 
-module.exports = router;
+export default router
+// module.exports = router;

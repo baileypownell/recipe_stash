@@ -1,4 +1,4 @@
-import client = require('./client')
+import client from './client'
 
 const authMiddleware = (req, response, next) => {
     if (req.sessionID) {

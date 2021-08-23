@@ -1,9 +1,9 @@
-const { Router } = require('express')
-const client = require('./client')
+import { Router } from 'express'
+import client from './client'
 const bcrypt = require('bcryptjs')
 const router = Router()
 
-router.post('/', (request, response, next) => {
+router.post('/', (request: any, response, next) => {
   const { password, email } = request.body
   if (!password || !email) {
     return response.status(400).json({success: false, message: 'Insufficient or invalid credentials provided.'})
@@ -56,4 +56,5 @@ router.post('/', (request, response, next) => {
     })
 })
 
-module.exports = router;
+export default router
+// module.exports = router;

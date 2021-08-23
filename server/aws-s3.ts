@@ -23,14 +23,14 @@ const upload = multer({
         s3, 
         bucket: process.env.S3_BUCKET,
         contentType: multerS3.AUTO_CONTENT_TYPE,
-        metadata: function (req, file, cb) {
+        metadata: function (_, file, cb) {
             cb(null, {fieldName: file.fieldname})
         }, 
-        key: function (req, file, cb) {
+        key: function (req, _, cb) {
             cb(null, req.s3Key)
         }
     }), 
-    fileFilter: function (req, file, cb) {
+    fileFilter: function (_, file, cb) {
         if (!validExtension.includes(file.mimetype)) {
           return cb(null, false)
         }
@@ -101,10 +101,17 @@ const deleteSingleAWSFile = (imageKey) => {
     })
 }
 
-module.exports = {
+
+// export { 
+//     getPresignedUrls 
+// export getPresignedUrl 
+// export uploadSingleAWSFile 
+// export deleteAWSFiles 
+// export deleteSingleAWSFile
+export {
     getPresignedUrls, 
     getPresignedUrl,
     uploadSingleAWSFile,
     deleteAWSFiles,
     deleteSingleAWSFile
-};
+}

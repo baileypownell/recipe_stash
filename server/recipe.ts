@@ -1,5 +1,4 @@
 import { Router } from 'express'
-// const client = require('../client')
 import client from './client'
 const router = Router()
 import { authMiddleware } from './authMiddleware'

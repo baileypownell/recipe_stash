@@ -1,16 +1,18 @@
 import { Router } from 'express'
 
-const signin = require('./signin')
-const sendResetEmail = require('./sendResetEmail')
-const signinWithGoogle = require('./signinWithGoogle')
-const logout = require('./logout')
+// const signin = require('./signin')
+import signin from './signin'
+// const sendResetEmail = require('./sendResetEmail')
+import sendResetEmail from './sendResetEmail'
+import signinWithGoogle from './signinWithGoogle'
+import logout from './logout'
 // const user = require('./user.ts')
 import user from './user'
 // const recipe = require('./recipe.ts')
 import recipe from './recipe'
-const fileUpload  = require('./file-upload')
-const auth = require('./auth')
-const router = Router();
+import fileUpload from './file-upload'
+import auth from './auth'
+const router = Router()
 
 // middleware
 
@@ -23,4 +25,5 @@ router.use('/recipe', recipe)
 router.use('/file-upload', fileUpload)
 router.use('/auth', auth)
 
-module.exports = router
+export default router
+// module.exports = router

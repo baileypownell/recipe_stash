@@ -1,10 +1,9 @@
 
-const { Router } = require('express')
-const client = require('./client')
+import { Router } from 'express'
+import client from './client'
 const router = Router()
-const { authMiddleware } = require('./authMiddleware')
-// import { authMiddleware } from './authMiddleware'
-const  { getPresignedUrls, uploadSingleAWSFile, deleteSingleAWSFile } = require('./aws-s3')
+import { authMiddleware } from './authMiddleware'
+import { getPresignedUrls, uploadSingleAWSFile, deleteSingleAWSFile } from './aws-s3'
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -12,11 +11,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 router.use(authMiddleware)
 
-router.post('/:recipeId', authMiddleware, async(req, res) => {
+router.post('/:recipeId', authMiddleware, async(req: any, res) => {
     const { recipeId } = req.params
     let userId = req.userID
     try {
-        let awsUploadRes = await uploadSingleAWSFile(req, res)
+        let awsUploadRes: any = await uploadSingleAWSFile(req, res)
         client.query('INSERT INTO files(aws_download_url, recipe_uuid, user_uuid, key) VALUES($1, $2, $3, $4)', 
         [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
         (error, response) => {
@@ -144,4 +143,5 @@ router.delete('/:imageKey', authMiddleware, async(req, res) => {
     }
 })
 
-module.exports = router;
+export default router
+// module.exports = router;

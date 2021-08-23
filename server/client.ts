@@ -22,4 +22,5 @@ if (process.env.DATABASE_URL) {
 
 client.connect();
 
-module.exports = client;
+export default client
+// module.exports = client;
