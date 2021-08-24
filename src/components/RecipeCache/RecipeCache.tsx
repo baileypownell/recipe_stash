@@ -28,20 +28,30 @@ interface RecipeCacheProps {
   individualRecipe?: boolean
 }
 
+enum RecipeCategories {
+  Other = 'Other',
+  Lunch = 'Lunch',
+  Dessert = 'Dessert',
+  Breakfast = 'Breakfast',
+  Drinks = 'Drinks',
+  SideDish = 'Side Dish',
+  Dinner = 'Dinner'
+}
+
 const determineRecipeCategory = (recipeCategory: string): string => {
-  if (recipeCategory === 'Other') {
+  if (recipeCategory === RecipeCategories.Other) {
     return 'other'
-  } else if (recipeCategory === 'Lunch') {
+  } else if (recipeCategory === RecipeCategories.Lunch) {
     return 'lunch'
-  } else if (recipeCategory === 'Dessert') {
+  } else if (recipeCategory === RecipeCategories.Dessert) {
     return 'dessert'
-  } else if (recipeCategory === 'Breakfast') {
+  } else if (recipeCategory === RecipeCategories.Breakfast) {
     return 'breakfast'
-  } else if (recipeCategory === 'Drinks') {
+  } else if (recipeCategory === RecipeCategories.Drinks) {
     return 'drinks'
-  } else if (recipeCategory === 'Side Dish') {
+  } else if (recipeCategory === RecipeCategories.SideDish) {
     return 'side_dish'
-  } else if (recipeCategory === 'Dinner') {
+  } else if (recipeCategory === RecipeCategories.Dinner) {
     return 'dinner'
   }
 }

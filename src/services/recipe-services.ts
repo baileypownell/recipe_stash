@@ -14,36 +14,36 @@ export interface BaseStringAccessibleObjectString {
 }
 
 export interface BaseStringAccessibleObjectRecipeInterface {
-  [key: string]: RecipeInterface[];
+  [key: string]: FullRecipe[];
 }
 
-export interface RecipeInterface {
-  title: string;
-  raw_title: string;
-  category: string;
-  user_uuid: string;
-  ingredients: string;
-  directions: string;
-  no_bake: boolean;
-  easy: boolean;
-  healthy: boolean;
-  gluten_free: boolean;
-  dairy_free: boolean;
-  sugar_free: boolean;
-  vegetarian: boolean;
-  vegan: boolean;
-  keto: boolean;
-}
+// export interface RecipeInterface {
+//   title: string;
+//   raw_title: string;
+//   category: string;
+//   user_uuid: string;
+//   ingredients: string;
+//   directions: string;
+//   no_bake: boolean;
+//   easy: boolean;
+//   healthy: boolean;
+//   gluten_free: boolean;
+//   dairy_free: boolean;
+//   sugar_free: boolean;
+//   vegetarian: boolean;
+//   vegan: boolean;
+//   keto: boolean;
+// }
 
 export interface SortedRecipeInterface
   extends BaseStringAccessibleObjectRecipeInterface {
-  breakfast: RecipeInterface[];
-  dessert: RecipeInterface[];
-  dinner: RecipeInterface[];
-  drinks: RecipeInterface[];
-  lunch: RecipeInterface[];
-  other: RecipeInterface[];
-  side_dish: RecipeInterface[];
+  breakfast: FullRecipe[]
+  dessert: FullRecipe[]
+  dinner: FullRecipe[]
+  drinks: FullRecipe[]
+  lunch: FullRecipe[]
+  other: FullRecipe[]
+  side_dish: FullRecipe[]
 }
 
 export interface RecipeInput {
@@ -120,8 +120,8 @@ export interface ExistingFile {}
 
 export const RecipeService = {
   sortByTitle (
-    a: RecipeInterface | RecipeInput | FullRecipe,
-    b: RecipeInterface | RecipeInput | FullRecipe
+    a: RecipeInput | FullRecipe,
+    b: RecipeInput | FullRecipe
   ) {
     return a.rawTitle.localeCompare(b.rawTitle)
   },
@@ -216,49 +216,78 @@ export const RecipeService = {
     recipeId: number,
     recipe: RecipeInterface
   ): Promise<RawRecipe> => {
-    return new Promise(async (resolve, reject) => {
-      const res: AxiosResponse = await axios.put('/recipe', recipeInput)
-      const recipeUpdated: RawRecipe = res.data
-      const uploads: NewFileInterface[] = files
-      const uploading = !!uploads.length
-      const deleting = !!filesToDeleteKeys?.length
-      let uploadedImageKeys: UploadedFileResult[]
-      if (uploading && deleting) {
-        uploadedImageKeys = await RecipeService.uploadFiles(recipeId, uploads)
-        await RecipeService.handleDefaultTileImageNew(
-          recipeUpdated.recipe_uuid,
-          uploadedImageKeys,
-          defaultTile,
-          recipe.defaultTileImageKey
-        )
-        await RecipeService.deleteFiles(filesToDeleteKeys)
-        resolve(recipeUpdated)
-      } else if (uploading) {
-        uploadedImageKeys = await RecipeService.uploadFiles(recipeId, uploads)
-        await RecipeService.handleDefaultTileImageNew(
-          recipeUpdated.recipe_uuid,
-          uploadedImageKeys,
-          defaultTile,
-          recipe.defaultTileImageKey
-        )
-        resolve(recipeUpdated)
-      } else if (deleting) {
-        await RecipeService.deleteFiles(filesToDeleteKeys)
-        await RecipeService.handleDefaultTileImageExisting(
-          recipeUpdated.recipe_uuid,
-          defaultTile,
-          recipe.defaultTileImageKey
-        )
-        resolve(recipeUpdated)
-      } else {
-        await RecipeService.handleDefaultTileImageExisting(
-          recipeUpdated.recipe_uuid,
-          defaultTile,
-          recipe.defaultTileImageKey
-        )
-        resolve(recipeUpdated)
-      }
-    })
+    // return new Promise(async (resolve, reject) => {
+    return axios.put('/recipe', recipeInput)
+      .then(res => {
+        const recipeUpdated: RawRecipe = res.data
+        const uploads: NewFileInterface[] = files
+        const uploading = !!uploads.length
+        const deleting = !!filesToDeleteKeys?.length
+
+        if (uploading && deleting) {
+          return RecipeService.uploadFiles(recipeId, uploads)
+            .then(uploadedImageKeys => {
+              if (defaultTile || recipe.defaultTileImageKey) {
+                RecipeService.handleDefaultTileImageNew(
+                  recipeUpdated.recipe_uuid,
+                  uploadedImageKeys,
+                  defaultTile,
+                  recipe.defaultTileImageKey
+                )
+                  .then(() => {
+                    return RecipeService.deleteFiles(filesToDeleteKeys)
+                      .then(() => recipeUpdated)
+                      .catch(e => e)
+                  })
+                  .catch(e => e)
+              } else {
+                return RecipeService.deleteFiles(filesToDeleteKeys)
+                  .then(() => recipeUpdated)
+                  .catch(e => e)
+              }
+            })
+        } else if (uploading) {
+          console.log('defaultTile = ', defaultTile)
+          return RecipeService.uploadFiles(recipeId, uploads)
+            .then(uploadedImageKeys => {
+              if (defaultTile || recipe.defaultTileImageKey) {
+                return RecipeService.handleDefaultTileImageNew(
+                  recipeUpdated.recipe_uuid,
+                  uploadedImageKeys,
+                  defaultTile,
+                  recipe.defaultTileImageKey
+                ).then(() => recipeUpdated)
+              } else {
+                return recipeUpdated
+              }
+            })
+            .catch(e => e)
+        } else if (deleting) {
+          return RecipeService.deleteFiles(filesToDeleteKeys)
+            .then(() => {
+              if (defaultTile || recipe.defaultTileImageKey) {
+                return RecipeService.handleDefaultTileImageExisting(
+                  recipeUpdated.recipe_uuid,
+                  defaultTile,
+                  recipe.defaultTileImageKey
+                ).then(() => recipeUpdated)
+              } else {
+                return recipeUpdated
+              }
+            })
+        } else {
+          if (defaultTile || recipe.defaultTileImageKey) {
+            return RecipeService.handleDefaultTileImageExisting(
+              recipeUpdated.recipe_uuid,
+              defaultTile,
+              recipe.defaultTileImageKey
+            ).then(() => recipeUpdated)
+          } else {
+            return recipeUpdated
+          }
+        }
+      })
+      .catch(e => e)
   },
 
   handleDefaultTileImageNew: (
@@ -268,9 +297,10 @@ export const RecipeService = {
     defaultTileImageKey: string | null
   ) => {
     if (defaultTileImageKey || defaultTileImage) {
-      const isNewDefaultTile =
+      const isNewDefaultTile: boolean =
         (typeof defaultTileImage === 'string' &&
-          defaultTileImage !== defaultTileImageKey) ||
+          defaultTileImage !== defaultTileImageKey
+        ) ||
         typeof defaultTileImage !== 'string'
       if (isNewDefaultTile) {
         const uploadThatIsDefault: UploadedFileResult | undefined =
@@ -280,13 +310,14 @@ export const RecipeService = {
           )
         if (uploadThatIsDefault) {
           return RecipeService.setTileImage(recipeId, uploadThatIsDefault.awsKey)
+        } else {
+          
         }
+      } else {
+        return RecipeService.setTileImage(recipeId, defaultTileImageKey)
       }
-    } else {
-      // removing default tile image if recipe previously had a default image
-      if (!defaultTileImageKey && defaultTileImageKey) {
-        return RecipeService.removeTileImage(recipeId)
-      }
+    } else if (!defaultTileImageKey && defaultTileImageKey) {
+      return RecipeService.removeTileImage(recipeId)
     }
   },
 
@@ -315,10 +346,8 @@ export const RecipeService = {
   ): Promise<TileImageSetResponse> => {
     if (defaultTileImageKey) {
       return RecipeService.setTileImage(recipeId, defaultTileImageKey)
-    } else {
-      if (!defaultTileImageKey && recipeDefaultTileImageKey) {
-        RecipeService.removeTileImage(recipeId)
-      }
+    } else if (!defaultTileImageKey && recipeDefaultTileImageKey) {
+      return RecipeService.removeTileImage(recipeId)
     }
   }
 }
