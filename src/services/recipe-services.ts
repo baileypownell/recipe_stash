@@ -187,7 +187,7 @@ export const RecipeService = {
   },
 
   uploadFiles: async (
-    recipeId: number,
+    recipeId: string,
     files: NewFileInterface[]
   ): Promise<UploadedFileResult[]> => {
     return await Promise.all(
@@ -211,12 +211,11 @@ export const RecipeService = {
   updateRecipe: (
     recipeInput: UpdateRecipeInput,
     files: NewFileInterface[],
-    defaultTile: DefaultTile | DefaultTileExisting | null,
+    defaultTile: DefaultTile | string | null, // string if existing image on recipe, not new one
     filesToDeleteKeys: string[],
-    recipeId: number,
+    recipeId: string,
     recipe: RecipeInterface
   ): Promise<RawRecipe> => {
-    // return new Promise(async (resolve, reject) => {
     return axios.put('/recipe', recipeInput)
       .then(res => {
         const recipeUpdated: RawRecipe = res.data
@@ -224,6 +223,7 @@ export const RecipeService = {
         const uploading = !!uploads.length
         const deleting = !!filesToDeleteKeys?.length
 
+        // bug: uploading and deleting OR just uploading AND setting default image to a PREEXISTING image
         if (uploading && deleting) {
           return RecipeService.uploadFiles(recipeId, uploads)
             .then(uploadedImageKeys => {
@@ -247,16 +247,18 @@ export const RecipeService = {
               }
             })
         } else if (uploading) {
-          console.log('defaultTile = ', defaultTile)
           return RecipeService.uploadFiles(recipeId, uploads)
             .then(uploadedImageKeys => {
-              if (defaultTile || recipe.defaultTileImageKey) {
-                return RecipeService.handleDefaultTileImageNew(
-                  recipeUpdated.recipe_uuid,
-                  uploadedImageKeys,
-                  defaultTile,
-                  recipe.defaultTileImageKey
-                ).then(() => recipeUpdated)
+              if (defaultTile) {
+                let awsKey: string
+                if (uploadedImageKeys.find(obj => obj.fileName === (defaultTile as DefaultTile).fileName)) {
+                  awsKey = uploadedImageKeys.find(obj => obj.fileName === (defaultTile as DefaultTile).fileName).awsKey
+                } else {
+                  awsKey = defaultTile as string
+                }
+                return RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey).then(() => recipeUpdated)
+              } else if (recipe.defaultTileImageKey) {
+                return RecipeService.removeTileImage(recipeId).then(() => recipeUpdated)
               } else {
                 return recipeUpdated
               }
@@ -290,10 +292,11 @@ export const RecipeService = {
       .catch(e => e)
   },
 
+  // THIS FUNCTION ONLY SETS THE DEFAULT TO ONE OF THE NEWLY UPLOADED FILES...
   handleDefaultTileImageNew: (
     recipeId: string,
     uploadedImageKeys: { awsKey: string; fileName: string }[],
-    defaultTileImage: DefaultTileExisting | null | DefaultTile,
+    defaultTileImage: DefaultTileExisting | null | DefaultTile | string,
     defaultTileImageKey: string | null
   ) => {
     if (defaultTileImageKey || defaultTileImage) {
@@ -311,13 +314,12 @@ export const RecipeService = {
         if (uploadThatIsDefault) {
           return RecipeService.setTileImage(recipeId, uploadThatIsDefault.awsKey)
         } else {
-          
+          const awsKey: string = defaultTileImage as string
+          return RecipeService.setTileImage(recipeId, awsKey)
         }
       } else {
-        return RecipeService.setTileImage(recipeId, defaultTileImageKey)
+        return RecipeService.removeTileImage(recipeId)
       }
-    } else if (!defaultTileImageKey && defaultTileImageKey) {
-      return RecipeService.removeTileImage(recipeId)
     }
   },
 
