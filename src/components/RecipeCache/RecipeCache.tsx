@@ -62,6 +62,7 @@ function RecipeCache (props: RecipeCacheProps) {
       const newRecipe: RawRecipe = await RecipeService.createRecipe(
         recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile
       )
+      console.log('newRecipe ', newRecipe)
       const recipe: FullRecipe = await RecipeService.getRecipe(newRecipe.recipe_uuid)
       return recipe
     } catch (err) {

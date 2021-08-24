@@ -159,7 +159,7 @@ export const RecipeService = {
     return axios.post('/recipe', recipeInput)
       .then(recipeCreated => {
         if (files?.length) {
-          return RecipeService.uploadFiles(recipeCreated.data.recipe.recipe_uuid, files)
+          return RecipeService.uploadFiles(recipeCreated.data.recipe_uuid, files)
             .then((uploadedImageKeys) => {
               const defaultTileImage = uploadedImageKeys.find(
                 (obj) => obj.fileName === defaultTile?.fileName
@@ -167,17 +167,17 @@ export const RecipeService = {
 
               if (defaultTileImage) {
                 return RecipeService.handleDefaultTileImage(
-                  recipeCreated.data.recipe.recipe_uuid,
+                  recipeCreated.data.recipe_uuid,
                   defaultTileImage.awsKey
                 )
-                  .then(() => recipeCreated.data.recipe)
+                  .then(() => recipeCreated.data)
               } else {
-                return recipeCreated.data.recipe
+                return recipeCreated.data
               }
             })
         }
 
-        return recipeCreated.data.recipe
+        return recipeCreated.data
       })
       .catch(e => { return e })
   },
