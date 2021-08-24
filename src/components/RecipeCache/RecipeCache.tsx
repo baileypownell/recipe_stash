@@ -6,7 +6,7 @@ import { Redirect } from 'react-router-dom'
 import { Dashboard, Recipe } from '..'
 import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { queryClient } from '../..'
-import { query } from 'express'
+import { RawRecipe, FullRecipe } from '../../../server/recipe'
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
   lunch: 'Lunch',
@@ -15,18 +15,6 @@ export interface MealCategoriesType {
   dessert: 'Dessert',
   drinks: 'Drinks',
   other: 'Other',
-}
-
-export interface DashboardReadyRecipe {
-  category: string
-  defaultTileImageKey: boolean
-  directions: string
-  id: string
-  ingredients: string
-  preSignedDefaultTileImageUrl: string
-  rawTitle: string
-  tags: string[]
-  title: string
 }
 
 export interface AddRecipeMutationParam {
@@ -61,17 +49,17 @@ const determineRecipeCategory = (recipeCategory: string): string => {
 function RecipeCache (props: RecipeCacheProps) {
   const { mutateAsync } = useMutation('recipes', async (recipeInput: AddRecipeMutationParam) => {
     try {
-      const newRecipe: {recipeAdded: boolean, recipe: any} = await RecipeService.createRecipe(
+      const newRecipe: RawRecipe = await RecipeService.createRecipe(
         recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile
       )
-      const recipe: DashboardReadyRecipe = await RecipeService.getRecipe(newRecipe.recipe.recipe_uuid)
+      const recipe: FullRecipe = await RecipeService.getRecipe(newRecipe.recipe_uuid)
       return recipe
     } catch (err) {
       console.log(err)
       M.toast({ html: 'There was an error.' })
     }
   }, {
-    onSuccess: (newRecipe: DashboardReadyRecipe) => {
+    onSuccess: (newRecipe: FullRecipe) => {
       queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
         const recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)
         const updatedQueryState = {

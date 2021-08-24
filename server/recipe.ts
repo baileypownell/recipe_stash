@@ -5,19 +5,26 @@ import { authMiddleware } from './authMiddleware'
 const router = Router()
 const { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
 
-// interface DashboardReadyRecipe {
-//   category: string
-//   defaultTileImageKey: boolean
-//   directions: string
-//   id: string
-//   ingredients: string
-//   preSignedDefaultTileImageUrl?: string
-//   rawTitle: string
-//   tags: string[]
-//   title: string
-// }
+export interface RawRecipe {
+  title: string
+  raw_title: string
+  ingredients: string
+  directions: string
+  category: string
+  no_bake: string
+  easy: string
+  healthy: string
+  gluten_free: string
+  dairy_free: string
+  sugar_free: string
+  vegetarian: string
+  vegan: string
+  keto: string
+  recipe_uuid: string
+  user_uuid: string
+}
 
-const constructTags = (recipe) => {
+const constructTags = (recipe): string[] => {
   const tagArray: string[] = []
   if (recipe.no_bake) {
     tagArray.push('no_bake')
@@ -117,7 +124,7 @@ router.get('/', authMiddleware, (request: any, response, next) => {
     })
 })
 
-router.post('/', (request: any, response, next) => {
+router.post('/', (request: any, response, next): Promise<RawRecipe> => {
   const userId = request.userID
   const {
     title,
@@ -142,7 +149,7 @@ router.post('/', (request: any, response, next) => {
     !!ingredients &&
     !!directions
   ) {
-    client.query(`INSERT INTO recipes(
+    return client.query(`INSERT INTO recipes(
         title,
         raw_title,
         category,
@@ -179,45 +186,20 @@ router.post('/', (request: any, response, next) => {
     (err, res) => {
       if (err) return next(err)
       if (res.rowCount) {
-        return response.status(200).json({ success: true, message: 'Recipe created.', recipe: res.rows[0] })
+        return response.status(200).json(res.rows[0])
       } else {
-        return response.status(500).json({ success: false, message: 'Could not create recipe.' })
+        return response.status(500).json(null)
       }
     })
   } else {
     return response.status(400).json({
       success: false,
       message: 'Invalid request sent.'
-    })
+    }) as any
   }
 })
 
-export interface RawRecipe {
-  title: string
-  raw_title: string
-  ingredients: string
-  directions: string
-  category: string
-  no_bake: string
-  easy: string
-  healthy: string
-  gluten_free: string
-  dairy_free: string
-  sugar_free: string
-  vegetarian: string
-  vegan: string
-  keto: string
-  recipe_uuid: string
-  user_uuid: string
-}
-
-export interface RecipeUpdatedResponse {
-  success: boolean
-  recipe?: RawRecipe
-  message?: string
-}
-
-router.put('/', (request: any, response, next): RecipeUpdatedResponse => {
+router.put('/', (request: any, response, next): Promise<RawRecipe> => {
   const userId = request.userID
   const {
     recipeId,
@@ -275,22 +257,14 @@ router.put('/', (request: any, response, next): RecipeUpdatedResponse => {
   (err, res) => {
     if (err) return next(err)
     if (res.rowCount) {
-      const result: RecipeUpdatedResponse = {
-        success: true,
-        recipe: res.rows[0]
-      }
-      return response.status(200).json(result)
+      return response.status(200).json(res.rows[0])
     } else {
-      const result: RecipeUpdatedResponse = {
-        success: false,
-        message: 'Could not update recipe.'
-      }
-      return response.status(500).json(result)
+      return response.status(500).json(null)
     }
   })
 })
 
-const getImageAWSKeys = (recipeId) => {
+const getImageAWSKeys = (recipeId: string) => {
   return new Promise((resolve, reject) => {
     client.query('SELECT key FROM files WHERE recipe_uuid=$1',
       [recipeId],
@@ -305,16 +279,30 @@ const getImageAWSKeys = (recipeId) => {
   })
 }
 
-router.get('/:recipeId', (request: any, response, next) => {
+export interface FullRecipe {
+  id: string
+  title: string
+  rawTitle: string
+  category: string
+  user_id: string
+  ingredients: string
+  directions: string
+  tags: string[],
+  defaultTileImageKey: string | null
+  preSignedUrls: string[] | null
+  preSignedDefaultTileImageUrl: string | null
+}
+
+router.get('/:recipeId', (request: any, response, next): Promise<FullRecipe | null> => {
   const { recipeId } = request.params
   const userId = request.userID
-  client.query('SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
+  return client.query('SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
     [userId, recipeId],
     async (err, res) => {
       if (err) return next(err)
       const recipe = res.rows[0]
       if (recipe) {
-        const recipeResponse = {
+        const recipeResponse: FullRecipe = {
           id: recipe.recipe_uuid,
           title: recipe.title,
           rawTitle: recipe.raw_title || recipe.title,
@@ -324,8 +312,8 @@ router.get('/:recipeId', (request: any, response, next) => {
           directions: recipe.directions,
           tags: constructTags(recipe),
           defaultTileImageKey: recipe.default_tile_image_key,
-          preSignedUrls: undefined,
-          preSignedDefaultTileImageUrl: undefined
+          preSignedUrls: null,
+          preSignedDefaultTileImageUrl: null
         }
         if (recipe.has_images) {
           const urls = await getImageAWSKeys(recipeId)
@@ -336,20 +324,20 @@ router.get('/:recipeId', (request: any, response, next) => {
               recipeResponse.preSignedDefaultTileImageUrl = preSignedDefaultTileImageUrl
             }
           }
-          response.status(200).json({ success: true, recipe: recipeResponse })
+          response.status(200).json(recipeResponse)
         } else {
-          response.status(200).json({ success: true, recipe: recipeResponse })
+          response.status(200).json(recipeResponse)
         }
       } else {
-        response.status(500).json({ success: false, message: 'No recipe could be found.' })
+        response.status(500).json(null)
       }
     })
 })
 
-router.delete('/:recipeId', (request: any, response, next) => {
+router.delete('/:recipeId', (request: any, response, next): Promise<{recipeDeleted: boolean}> => {
   const userId = request.userID
   const { recipeId } = request.params
-  client.query('DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
+  return client.query('DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
     [recipeId, userId],
     (err, res) => {
       if (err) return next(err)
@@ -361,19 +349,19 @@ router.delete('/:recipeId', (request: any, response, next) => {
           client.query('DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
             [recipeId],
             async (error, res) => {
-              if (error) return response.status(500).json({ success: false, message: `There was an error: ${error}` })
+              if (error) return response.status(500).json({ recipeDeleted: false })
               // set recipe's "has_images" property to false if necessary
               if (res) {
                 const awsKeys = res.rows.map(row => row.key)
                 // then delete from AWS S3
                 const awsDeletions = await deleteAWSFiles(awsKeys)
                 if (awsDeletions) {
-                  return response.status(200).json({ success: true, message: 'Recipe deleted.' })
+                  return response.status(200).json({ recipeDeleted: true })
                 }
               }
             })
         } else {
-          return response.status(200).json({ success: true, message: 'Recipe deleted.' })
+          return response.status(200).json({ recipeDeleted: true })
         }
       }
     })

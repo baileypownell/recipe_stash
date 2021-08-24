@@ -28,10 +28,11 @@ import {
 import { queryClient } from '../../..'
 import DOMPurify from 'dompurify'
 import { tags } from '../../../models/tags'
-import { AddRecipeMutationParam, DashboardReadyRecipe } from '../../RecipeCache/RecipeCache'
+import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache'
 import './RecipeDialog.scss'
 import { withRouter } from 'react-router-dom'
 import M from 'materialize-css'
+import { FullRecipe, RawRecipe } from '../../../../server/recipe'
 const { htmlToText } = require('html-to-text')
 
 const Transition = React.forwardRef(function Transition (props, ref) {
@@ -240,7 +241,7 @@ class RecipeDialog extends React.Component<any, any> {
         isKeto: tags[8].selected
       }
       try {
-        const updatedRecipe = await RecipeService.updateRecipe(
+        const updatedRecipe: RawRecipe = await RecipeService.updateRecipe(
           recipeUpdateInput,
           this.state.newFiles,
           this.state.defaultTileImageKey,
@@ -248,13 +249,12 @@ class RecipeDialog extends React.Component<any, any> {
           this.props.recipe.id,
           this.props.recipe as unknown as RecipeInterface
         )
-        const formattedRecipe: DashboardReadyRecipe = await RecipeService.getRecipe(updatedRecipe.recipe.recipe_uuid)
+        const formattedRecipe: FullRecipe = await RecipeService.getRecipe(updatedRecipe.recipe_uuid)
         queryClient.setQueryData('recipes', () => {
           const current: SortedRecipeInterface = queryClient.getQueryData('recipes')
           const updatedArray = current[this.state.category].map(recipe => {
-            if (recipe.id === updatedRecipe.recipe.id) {
+            if (recipe.id === updatedRecipe.recipe_uuid) {
               return formattedRecipe
-              // return updatedRecipe.recipe
             }
             return recipe
           })
@@ -264,7 +264,6 @@ class RecipeDialog extends React.Component<any, any> {
             [this.state.category]: updatedCategory
           }
         })
-        // queryClient.refetchQueries('recipes')
         this.handleUpdate()
         this.setState({
           loading: false
