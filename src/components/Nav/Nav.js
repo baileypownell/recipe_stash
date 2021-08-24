@@ -74,25 +74,21 @@ class Nav extends React.Component {
               </>
             : <>
                 <NavLink to="/login" activeClassName="active">Login</NavLink>
-                <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>      
+                <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
               </>
             }
           </div>
         </nav>
     
-        <ul id="slide-out" className="sidenav">    
+        <ul id="slide-out" className="sidenav">
             <div className="icon">
-              <img src={whiteLogo} alt="logo" /> 
+              <img src={whiteLogo} alt="logo" />
             </div>
             <li><a className="waves-effect" onClick={this.navigate} id="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
             <li><a className="waves-effect" onClick={this.navigate} id="/"><i className="fas fa-house-user"></i>Home</a></li>
             <li><a className="waves-effect" onClick={this.navigate} id="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
             <li><div className="divider"></div></li>
             <li><a className="waves-effect" onClick={this.logout}><i className="fas fa-arrow-right"></i>Logout</a></li>
-            {/* <li><div className="divider"></div></li> */}
-            {/* <li><a className="waves-effect" href="/terms-of-service">Terms of Service</a> <i class="fas fa-book"></i></li> */}
-            {/* <li><a className="waves-effect" href="/developer-contact">Report a Bug</a>  <i class="large material-icons">bug_report</i></li> */}
-            {/* <li><a className="waves-effect" href="/developer-contact">Request a Feature</a> <i class="fas fa-smile"></i></li> */}
         </ul>
       </>
     )
