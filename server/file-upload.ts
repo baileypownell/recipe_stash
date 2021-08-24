@@ -51,11 +51,14 @@ router.post('/', authMiddleware, async (req, res) => {
   res.status(200).json({ presignedUrls: urls })
 })
 
-router.post('/tile-image/:awsKey/:id', authMiddleware, async (req, res) => {
+export interface TileImageSetResponse {
+  success: boolean
+  message?: string
+}
+router.post('/tile-image/:awsKey/:id', authMiddleware, async (req, res): Promise<TileImageSetResponse> => {
   const { awsKey, id } = req.params
-
   try {
-    client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
+    return client.query('UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
       [awsKey, id],
       (error, response) => {
         if (error) {
@@ -79,7 +82,7 @@ router.post('/tile-image/:awsKey/:id', authMiddleware, async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `There was an error: ${e}`
-    })
+    }) as any
   }
 })
 

@@ -31,6 +31,8 @@ import { tags } from '../../../models/tags'
 import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache'
 import './RecipeDialog.scss'
 import { withRouter } from 'react-router-dom'
+import M from 'materialize-css'
+import { FullRecipe, RawRecipe } from '../../../../server/recipe'
 const { htmlToText } = require('html-to-text')
 
 const Transition = React.forwardRef(function Transition (props, ref) {
@@ -59,7 +61,7 @@ class RecipeDialog extends React.Component<any, any> {
     }
 
     componentDidMount () {
-      const tags = this.state.tags.map(tag => {
+      this.state.tags.map(tag => {
         if (this.props.recipe.tags.includes(tag.recipeTagPropertyName)) {
           tag.selected = true
         }
@@ -239,15 +241,29 @@ class RecipeDialog extends React.Component<any, any> {
         isKeto: tags[8].selected
       }
       try {
-        await RecipeService.updateRecipe(
+        const updatedRecipe: RawRecipe = await RecipeService.updateRecipe(
           recipeUpdateInput,
           this.state.newFiles,
           this.state.defaultTileImageKey,
           this.state.filesToDelete,
           this.props.recipe.id,
-                this.props.recipe as unknown as RecipeInterface
+          this.props.recipe as unknown as RecipeInterface
         )
-        queryClient.refetchQueries('recipes')
+        const formattedRecipe: FullRecipe = await RecipeService.getRecipe(updatedRecipe.recipe_uuid)
+        queryClient.setQueryData('recipes', () => {
+          const current: SortedRecipeInterface = queryClient.getQueryData('recipes')
+          const updatedArray = current[this.state.category].map(recipe => {
+            if (recipe.id === updatedRecipe.recipe_uuid) {
+              return formattedRecipe
+            }
+            return recipe
+          })
+          const updatedCategory = updatedArray
+          return {
+            ...current,
+            [this.state.category]: updatedCategory
+          }
+        })
         this.handleUpdate()
         this.setState({
           loading: false

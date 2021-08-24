@@ -10,10 +10,9 @@ import tag, { tags } from '../../../../models/tags'
 import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import options from '../../../../models/options'
-import { RecipeService, RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
+import { RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
 import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import { queryClient } from '../../../..'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
 const { htmlToText } = require('html-to-text')
 

@@ -51,7 +51,7 @@ router.post('/', authMiddleware_1.authMiddleware, async (req, res) => {
 router.post('/tile-image/:awsKey/:id', authMiddleware_1.authMiddleware, async (req, res) => {
     const { awsKey, id } = req.params;
     try {
-        client_1.default.query('UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2', [awsKey, id], (error, response) => {
+        return client_1.default.query('UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2', [awsKey, id], (error, response) => {
             if (error) {
                 return res.status(500).json({
                     success: false,
