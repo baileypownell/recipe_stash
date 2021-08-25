@@ -1,8 +1,7 @@
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { UploadedFileResult } from '../models/images'
 import tag from '../models/tags'
-import { async } from 'rxjs'
-import { RecipeUpdatedResponse, RawRecipe, FullRecipe } from '../../server/recipe'
+import { RawRecipe, FullRecipe } from '../../server/recipe'
 import { TileImageSetResponse } from '../../server/file-upload'
 
 export interface BaseStringAccessibleObjectBoolean {
@@ -275,37 +274,6 @@ export const RecipeService = {
       .catch(e => e)
   },
 
-  // THIS FUNCTION ONLY SETS THE DEFAULT TO ONE OF THE NEWLY UPLOADED FILES...
-  // handleDefaultTileImageNew: (
-  //   recipeId: string,
-  //   uploadedImageKeys: { awsKey: string; fileName: string }[],
-  //   defaultTileImage: DefaultTileExisting | null | DefaultTile | string,
-  //   defaultTileImageKey: string | null
-  // ) => {
-  //   if (defaultTileImageKey || defaultTileImage) {
-  //     const isNewDefaultTile: boolean =
-  //       (typeof defaultTileImage === 'string' &&
-  //         defaultTileImage !== defaultTileImageKey
-  //       ) ||
-  //       typeof defaultTileImage !== 'string'
-  //     if (isNewDefaultTile) {
-  //       const uploadThatIsDefault: UploadedFileResult | undefined =
-  //         uploadedImageKeys.find(
-  //           (obj) =>
-  //             obj.fileName === (defaultTileImage as DefaultTile).fileName
-  //         )
-  //       if (uploadThatIsDefault) {
-  //         return RecipeService.setTileImage(recipeId, uploadThatIsDefault.awsKey)
-  //       } else {
-  //         const awsKey: string = defaultTileImage as string
-  //         return RecipeService.setTileImage(recipeId, awsKey)
-  //       }
-  //     } else {
-  //       return RecipeService.removeTileImage(recipeId)
-  //     }
-  //   }
-  // },
-
   deleteFiles: async (filesToDeleteKeys: string[]) => {
     return await Promise.all(
       filesToDeleteKeys.map(async (url) => {
@@ -321,18 +289,5 @@ export const RecipeService = {
 
   setTileImage: async (recipeId: string, awsKey: string): Promise<TileImageSetResponse> => {
     return axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
-  },
-
-  // need to avoid the "explicit promise construction antipattern"
-  // handleDefaultTileImageExisting: (
-  //   recipeId: string,
-  //   defaultTileImageKey: any,
-  //   recipeDefaultTileImageKey: string
-  // ): Promise<TileImageSetResponse> => {
-  //   if (defaultTileImageKey) {
-  //     return RecipeService.setTileImage(recipeId, defaultTileImageKey)
-  //   } else if (!defaultTileImageKey && recipeDefaultTileImageKey) {
-  //     return RecipeService.removeTileImage(recipeId)
-  //   }
-  // }
+  }
 }
