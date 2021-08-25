@@ -9,13 +9,13 @@ export interface UserInputInterface {
 }
 
 export interface UpdateUserNamePayload {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   id: string;
 }
 
 export interface UpdateUserEmailPayload {
-  new_email: string;
+  newEmail: string;
   password: string;
 }
 

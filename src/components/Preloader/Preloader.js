@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Preloader = (props) => (
     <div className="preloader-wrapper small active">
@@ -14,4 +14,4 @@ const Preloader = (props) => (
     </div>
 )
 
-export default Preloader;
+export default Preloader

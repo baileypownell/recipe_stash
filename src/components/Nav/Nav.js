@@ -1,21 +1,19 @@
 import React from 'react'
-import { NavLink, Link } from "react-router-dom"
+import { NavLink, Link, withRouter } from 'react-router-dom'
 import whiteLogo from '../../images/white-logo.png'
 import blackLogo from '../../images/black-logo.png'
-import './Nav.scss';
-import { withRouter } from "react-router-dom"
+import './Nav.scss'
 import AuthenticationService from '../../services/auth-service'
 
 class Nav extends React.Component {
-
   state = {
     loggedIn: !!window.localStorage.getItem('user_logged_in')
   }
 
-  async componentDidMount() {
+  async componentDidMount () {
     try {
-      let authenticated = await AuthenticationService.verifyUserSession()
-      let authState = authenticated.data.authenticated
+      const authenticated = await AuthenticationService.verifyUserSession()
+      const authState = authenticated.data.authenticated
       if (authState) {
         window.localStorage.setItem('user_logged_in', 'true')
       } else {
@@ -24,10 +22,10 @@ class Nav extends React.Component {
       this.setState({
         loggedIn: authState
       }, () => this.initializeSettingsDropdown())
-    } catch(err) {
+    } catch (err) {
       console.log(err)
     }
-    
+
     this.props.history.listen((location, action) => {
       this.setState({
         loggedIn: !!window.localStorage.getItem('user_logged_in')
@@ -37,9 +35,9 @@ class Nav extends React.Component {
 
   initializeSettingsDropdown = () => {
     const elems = document.querySelectorAll('.sidenav');
-    const instances = M.Sidenav.init(elems, {
+    M.Sidenav.init(elems, {
       edge: 'right'
-    });
+    })
   }
 
   logout = async() => {
@@ -47,7 +45,7 @@ class Nav extends React.Component {
       await AuthenticationService.logout()
       AuthenticationService.setUserLoggedOut()
       this.props.history.push('/')
-    } catch(err) {
+    } catch (err) {
       console.log(err)
     }
   }
@@ -62,24 +60,24 @@ class Nav extends React.Component {
       <>
         <nav>
           <Link to="/"><img src={blackLogo} alt="logo" /></Link>
-          <div>            
-            { this.state.loggedIn ?
-              <>
+          <div>
+            { this.state.loggedIn
+              ? <>
                   <NavLink to="/recipes" activeclassname="active">Recipes</NavLink>
-                  <a 
+                  <a
                     activeclassname="active"
-                    data-target="slide-out" 
+                    data-target="slide-out"
                     className="sidenav-trigger"><i className="fas fa-bars"></i>
                   </a>
               </>
-            : <>
-                <NavLink to="/login" activeClassName="active">Login</NavLink>
-                <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
+              : <>
+                  <NavLink to="/login" activeClassName="active">Login</NavLink>
+                  <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
               </>
             }
           </div>
         </nav>
-    
+
         <ul id="slide-out" className="sidenav">
             <div className="icon">
               <img src={whiteLogo} alt="logo" />
@@ -95,4 +93,4 @@ class Nav extends React.Component {
   }
 }
 
-export default withRouter(Nav);
+export default withRouter(Nav)

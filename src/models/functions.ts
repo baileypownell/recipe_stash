@@ -1,4 +1,5 @@
 export const appear = (
+  // eslint-disable-next-line no-undef
   faded: NodeListOf<Element>,
   classToAdd: string
 ): void => {
