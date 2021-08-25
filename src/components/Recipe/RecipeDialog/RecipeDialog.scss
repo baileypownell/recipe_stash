@@ -1,9 +1,23 @@
 
+@import '../../../scss/mixins.scss';
+@import '../../../scss/variables.scss';
 
 .button-alignment {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    flex-direction: column;
+    > div {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        button:last-of-type {
+            flex-grow: 1;
+        }
+    }
+    @include tablet {
+        flex-direction: row;
+    }
     > div button:last-of-type {
         margin-left: 10px;
     }
