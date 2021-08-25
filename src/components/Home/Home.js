@@ -8,14 +8,13 @@ import Fade from 'react-reveal/Fade'
 import { Button } from '@material-ui/core'
 
 class Home extends React.Component {
-
   start = () => {
     this.props.history.push('/recipes')
   }
 
-  componentDidMount() {
-    let faded = document.querySelectorAll('.fade');
-    setTimeout(appear(faded, 'fade-in'), 500);
+  componentDidMount () {
+    const faded = document.querySelectorAll('.fade')
+    setTimeout(appear(faded, 'fade-in'), 500)
   }
 
   render() {
@@ -36,7 +35,9 @@ class Home extends React.Component {
               <Fade bottom>
                 <div id="phone-image">
                   <img className="fade" src={mobileView} alt="whisk" />
-                  <Button variant="contained" color="secondary" onClick={this.start}>Get Started <i className="fas fa-arrow-circle-right"></i></Button>
+                  <Button variant="contained" color="secondary" onClick={this.start}>
+                    Get Started <i className="fas fa-arrow-circle-right"></i>
+                  </Button>
                 </div>
               </Fade>
               </div>
@@ -46,4 +47,4 @@ class Home extends React.Component {
   }
 }
 
-export default withRouter(Home);
+export default withRouter(Home)

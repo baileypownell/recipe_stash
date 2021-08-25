@@ -3,7 +3,7 @@ import Category from './Category/Category'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
-import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
+import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
 import { appear } from '../../models/functions'
 import { queryClient } from '../..'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
@@ -106,22 +106,18 @@ type State = {
 
 class Dashboard extends React.Component<Props, State> {
   state = {
-    recipes_loaded: false,
     filteredRecipes: null,
     gridView: true
   }
 
   addRecipe = async (recipeInput: AddRecipeMutationParam) => {
     await this.props.addRecipeMutation(recipeInput)
-    const current = queryClient.getQueryData('recipes')
+    const current: SortedRecipeInterface = queryClient.getQueryData('recipes')
     unfilteredRecipesSubject.next(current)
   }
 
   componentDidMount () {
     unfilteredRecipesSubject.next(this.props.recipes)
-    this.setState({
-      recipes_loaded: true
-    })
     const faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 300)
 
@@ -355,7 +351,6 @@ class Dashboard extends React.Component<Props, State> {
                         gridView={gridView}
                         recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
                         addRecipe={this.addRecipe}
-
                       >
                       </Category>
                   )

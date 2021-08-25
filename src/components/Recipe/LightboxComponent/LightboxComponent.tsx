@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader'
 import Lightbox from 'react-image-lightbox'
 
-function LightboxComponent (props) {
+interface Props {
+  preSignedUrls: string[]
+}
+
+function LightboxComponent (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [photoIndex, setPhotoIndex] = useState(0)
 

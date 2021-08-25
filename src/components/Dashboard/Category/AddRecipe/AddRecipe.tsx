@@ -21,9 +21,10 @@ const Transition = React.forwardRef(function Transition (props, ref) {
 })
 
 type Props = {
-  id: number
+  id: string
   category: string
   addRecipe: Function
+  gridView: boolean
 }
 
 type State = {

@@ -21,14 +21,14 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "prettier/prettier": [
-          1,
-          {
-            "trailingComma": "es5",
-            "singleQuote": true,
-            "semi": false
-          }
-        ],
+        // "prettier/prettier": [
+        //   1,
+        //   {
+        //     "trailingComma": "es5",
+        //     "singleQuote": true,
+        //     "semi": false
+        //   }
+        // ],
         "no-console": 0
       }
 }

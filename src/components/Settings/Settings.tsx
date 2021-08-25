@@ -2,7 +2,6 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import M from 'materialize-css'
 import './Settings.scss'
-import { appear } from '../../models/functions'
 import DeleteModal from '../DeleteModal/DeleteModal'
 import Fade from 'react-reveal/Fade'
 import AuthenticationService from '../../services/auth-service'
@@ -78,8 +77,8 @@ class Settings extends React.Component<any, State> {
     e.preventDefault()
     try {
       const payload: UpdateUserNamePayload = {
-        first_name: firstName,
-        last_name: lastName,
+        firstName: firstName,
+        lastName: lastName,
         id
       }
       await UserService.updateUser(payload)
@@ -95,7 +94,7 @@ class Settings extends React.Component<any, State> {
     e.preventDefault()
     try {
       const payload: UpdateUserEmailPayload = {
-        new_email: this.state.new_email,
+        newEmail: this.state.new_email,
         password: this.state.password
       }
       const res = await UserService.updateUser(payload)
