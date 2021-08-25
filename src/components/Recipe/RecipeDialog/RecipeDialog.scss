@@ -11,12 +11,16 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 10px;
+        @include tablet {
+            margin-bottom: 0;
+        }
         button:last-of-type {
             flex-grow: 1;
         }
     }
     @include tablet {
         flex-direction: row;
+        align-items: center;
     }
     > div button:last-of-type {
         margin-left: 10px;

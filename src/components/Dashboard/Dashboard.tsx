@@ -4,7 +4,6 @@ import { BehaviorSubject, combineLatest } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
 import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
-import { appear } from '../../models/functions'
 import { queryClient } from '../..'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 
@@ -118,9 +117,6 @@ class Dashboard extends React.Component<Props, State> {
 
   componentDidMount () {
     unfilteredRecipesSubject.next(this.props.recipes)
-    const faded = document.querySelectorAll('.fade')
-    setTimeout(() => appear(faded, 'fade-in'), 300)
-
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger')
     M.Dropdown.init(dropdown as Element, {
@@ -295,7 +291,9 @@ class Dashboard extends React.Component<Props, State> {
                 <button className='dropdown-trigger btn' data-target='dropdown' id="filter-button">
                   <span>Filter</span>
                   {
-                    selectedFilterSubject.getValue() > 0 ? `(${selectedFilterSubject.getValue()})` : <i className="small material-icons">filter_list</i>
+                    selectedFilterSubject.getValue() > 0
+                      ? `(${selectedFilterSubject.getValue()})`
+                      : <i className="small material-icons">filter_list</i>
                   }
                 </button>
                 <ul id='dropdown' className='dropdown-content'>
