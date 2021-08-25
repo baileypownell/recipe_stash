@@ -2,8 +2,7 @@ import React from 'react'
 import mobileView from '../../images/mobile_dashboard_edited.png'
 import transparentLogo from '../../images/white-text-transparent.svg'
 import { withRouter } from 'react-router'
-import './Home.scss';
-import { appear } from '../../models/functions'
+import './Home.scss'
 import Fade from 'react-reveal/Fade'
 import { Button } from '@material-ui/core'
 
@@ -12,12 +11,9 @@ class Home extends React.Component {
     this.props.history.push('/recipes')
   }
 
-  componentDidMount () {
-    const faded = document.querySelectorAll('.fade')
-    setTimeout(appear(faded, 'fade-in'), 500)
-  }
+  componentDidMount () { }
 
-  render() {
+  render () {
     return (
       <>
          <div id="home">
@@ -27,14 +23,14 @@ class Home extends React.Component {
               </div>
               <Fade top>
                 <div className="blurbs">
-                  <h4 className="fade">All of your recipes.</h4>
-                  <h4 className="fade">All in one place.</h4>
-                  <h4 className="fade">And it's free.</h4>
+                  <h4>All of your recipes.</h4>
+                  <h4>All in one place.</h4>
+                  <h4>And it's free.</h4>
                 </div>
               </Fade>
               <Fade bottom>
                 <div id="phone-image">
-                  <img className="fade" src={mobileView} alt="whisk" />
+                  <img src={mobileView} alt="whisk" />
                   <Button variant="contained" color="secondary" onClick={this.start}>
                     Get Started <i className="fas fa-arrow-circle-right"></i>
                   </Button>
@@ -42,7 +38,7 @@ class Home extends React.Component {
               </Fade>
               </div>
           </div>
-      </>  
+      </>
     )
   }
 }
