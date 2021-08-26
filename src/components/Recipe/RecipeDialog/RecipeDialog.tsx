@@ -252,6 +252,8 @@ class RecipeDialog extends React.Component<any, any> {
         const formattedRecipe: FullRecipe = await RecipeService.getRecipe(updatedRecipe.recipe_uuid)
         queryClient.setQueryData('recipes', () => {
           const current: SortedRecipeInterface = queryClient.getQueryData('recipes')
+          console.log('current = ', current)
+          console.log('accessing: ', this.state.category, current[this.state.category])
           const updatedArray = current[this.state.category].map(recipe => {
             if (recipe.id === updatedRecipe.recipe_uuid) {
               return formattedRecipe
