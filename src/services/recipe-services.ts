@@ -110,6 +110,8 @@ export const RecipeService = {
   getRecipes: async (): Promise<SortedRecipeInterface> => {
     try {
       const recipes = await axios.get('/recipe')
+      console.log('recipes in services = ', recipes)
+      console.log('recipes.data = ', recipes.data)
       for (const category in recipes.data) {
         const sortedCategory = recipes.data[category].sort(
           RecipeService.sortByTitle
