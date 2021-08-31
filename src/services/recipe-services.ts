@@ -107,11 +107,9 @@ export const RecipeService = {
     return a.rawTitle.localeCompare(b.rawTitle)
   },
 
-  getRecipes: async (): Promise<SortedRecipeInterface> => {
+  getRecipes: async (): Promise<SortedRecipeInterface | {error: boolean, errorMessage: string}> => {
     try {
       const recipes = await axios.get('/recipe')
-      console.log('recipes in services = ', recipes)
-      console.log('recipes.data = ', recipes.data)
       for (const category in recipes.data) {
         const sortedCategory = recipes.data[category].sort(
           RecipeService.sortByTitle
@@ -120,8 +118,7 @@ export const RecipeService = {
       }
       return recipes.data
     } catch (error) {
-      console.log(error)
-      return error
+      return { error: true, errorMessage: error }
     }
   },
 
