@@ -83,9 +83,12 @@ function RecipeCache (props: RecipeCacheProps) {
 
   const { refetch, isLoading, error, data } = useQuery('recipes', async () => {
     try {
-      const recipes: SortedRecipeInterface | {error: boolean, errorMessage: string} = await RecipeService.getRecipes()
-      console.log('cache recipes = ', recipes)
-      return recipes
+      const result: SortedRecipeInterface | {error: boolean, errorMessage: string} = await RecipeService.getRecipes()
+      if (result.error) {
+        return null
+      } else {
+        return result
+      }
     } catch (error) {
       return error
     }
