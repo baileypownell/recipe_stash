@@ -110,7 +110,7 @@ function RecipeCache (props: RecipeCacheProps) {
     </div>
   }
 
-  if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
+  // if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
 
   if (props.dashboard) {
     return (
