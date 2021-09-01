@@ -84,7 +84,6 @@ function RecipeCache (props: RecipeCacheProps) {
   const { refetch, isLoading, error, data } = useQuery('recipes', async () => {
     try {
       const result: SortedRecipeInterface | {error: boolean, errorMessage: string} = await RecipeService.getRecipes()
-      console.log('result = ', result)
       if (result.error) {
         return null
       } else {
@@ -111,7 +110,7 @@ function RecipeCache (props: RecipeCacheProps) {
     </div>
   }
 
-  if (error?.response?.status === 401 || !data) return <Redirect to="/login"></Redirect>
+  if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
 
   if (props.dashboard) {
     return (
