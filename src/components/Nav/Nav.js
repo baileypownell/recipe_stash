@@ -17,6 +17,7 @@ class Nav extends React.Component {
       if (authState) {
         window.localStorage.setItem('user_logged_in', 'true')
       } else {
+        console.log('THE USER IS NOT LOGGED IN')
         window.localStorage.removeItem('user_logged_in')
       }
       this.setState({
@@ -55,7 +56,7 @@ class Nav extends React.Component {
     this.props.history.push(e.target.id)
   }
 
-  render() {
+  render () {
     return (
       <>
         <nav>
