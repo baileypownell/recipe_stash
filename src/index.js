@@ -47,6 +47,7 @@ export const queryClient = new QueryClient()
 
 AuthenticationService.verifyUserSession()
   .then(res => {
+    console.log('res.data.authenticated = ', res.data.authenticated)
     if (res.data.authenticated) {
       window.localStorage.setItem('user_logged_in', 'true')
     } else {
