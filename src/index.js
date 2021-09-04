@@ -20,6 +20,7 @@ import GuardedRoute from './GuardedRoute'
 import 'materialize-css/dist/css/materialize.min.css'
 import './scss/main.scss'
 import RecipeCache from './components/RecipeCache/RecipeCache'
+import AuthenticationService from './services/auth-service'
 import { createTheme, ThemeProvider } from '@material-ui/core'
 
 const theme = createTheme({
@@ -43,6 +44,16 @@ const theme = createTheme({
 })
 
 export const queryClient = new QueryClient()
+
+AuthenticationService.verifyUserSession()
+  .then(res => {
+    if (res.data.authenticated) {
+      window.localStorage.setItem('user_logged_in', 'true')
+    } else {
+      window.localStorage.removeItem('user_logged_in')
+    }
+  })
+  .catch(err => console.log(err))
 
 ReactDOM.render(
   <QueryClientProvider client={queryClient}>
