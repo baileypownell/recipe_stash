@@ -52,6 +52,7 @@ AuthenticationService.verifyUserSession()
       window.localStorage.setItem('user_logged_in', 'true')
     } else {
       window.localStorage.removeItem('user_logged_in')
+      return <Redirect to="/" />
     }
   })
   .catch(err => console.log(err))
