@@ -5,43 +5,19 @@ import blackLogo from '../../images/black-logo.png'
 import './Nav.scss'
 import AuthenticationService from '../../services/auth-service'
 
-class Nav extends React.Component {
-  state = {
-    loggedIn: !!window.localStorage.getItem('user_logged_in')
-  }
-
-  async componentDidMount () {
-    try {
-      const authenticated = await AuthenticationService.verifyUserSession()
-      const authState = authenticated.data.authenticated
-      if (authState) {
-        window.localStorage.setItem('user_logged_in', 'true')
-      } else {
-        console.log('THE USER IS NOT LOGGED IN')
-        window.localStorage.removeItem('user_logged_in')
-      }
-      this.setState({
-        loggedIn: authState
-      }, () => this.initializeSettingsDropdown())
-    } catch (err) {
-      console.log(err)
-    }
-
-    this.props.history.listen((location, action) => {
-      this.setState({
-        loggedIn: !!window.localStorage.getItem('user_logged_in')
-      }, () => this.initializeSettingsDropdown())
-    })
+class Nav extends React.Component<{isAuthenticated: boolean}, any> {
+  componentDidMount () {
+    this.initializeSettingsDropdown()
   }
 
   initializeSettingsDropdown = () => {
-    const elems = document.querySelectorAll('.sidenav');
+    const elems = document.querySelectorAll('.sidenav')
     M.Sidenav.init(elems, {
       edge: 'right'
     })
   }
 
-  logout = async() => {
+  logout = async () => {
     try {
       await AuthenticationService.logout()
       AuthenticationService.setUserLoggedOut()
@@ -57,12 +33,13 @@ class Nav extends React.Component {
   }
 
   render () {
+    const isAuthenticated = !!window.localStorage.getItem('user_logged_in')
     return (
       <>
         <nav>
           <Link to="/"><img src={blackLogo} alt="logo" /></Link>
           <div>
-            { this.state.loggedIn
+            { isAuthenticated
               ? <>
                   <NavLink to="/recipes" activeclassname="active">Recipes</NavLink>
                   <a

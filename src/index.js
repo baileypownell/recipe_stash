@@ -1,24 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { ReactQueryDevtools } from 'react-query/devtools'
 import {
   BrowserRouter,
   Route,
   Switch,
   Redirect
-} from "react-router-dom";
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+} from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import {
   Home,
   Login,
   Signup,
-  Dashboard,
-  Recipe,
   Settings,
   ResetPassword,
-  RequireAuthComponent,
   Nav
 } from './components/index'
+import GuardedRoute from './GuardedRoute'
 
 import 'materialize-css/dist/css/materialize.min.css'
 import './scss/main.scss'
@@ -46,31 +43,30 @@ const theme = createTheme({
 })
 
 export const queryClient = new QueryClient()
+
 ReactDOM.render(
   <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <Nav/>
+        <Nav />
         <Switch>
           <Route exact={true} path="/" component={Home}/>
           <Route path="/login" component={Login}/>
           <Route path="/signup" component={Signup}/>
           <Route path="/reset/:token" component={ResetPassword}/>
-          <RequireAuthComponent>
-            <Route 
-              path="/recipes" 
-              exact={true}
-              render={(props) => (
-                <RecipeCache dashboard={true}></RecipeCache>
-              )} /> 
-            <Route path="/settings" component={Settings}/>
-            <Route 
-              path="/recipes/:id" 
-              render={(props) => (
-                <RecipeCache individualRecipe={true}></RecipeCache>
-              )}
-              />
-          </RequireAuthComponent>
+          <GuardedRoute
+            path='/recipes'
+            exact={true}
+            component={RecipeCache}>
+          </GuardedRoute>
+          <GuardedRoute
+            path='/settings'
+            component={Settings}>
+          </GuardedRoute>
+          <GuardedRoute
+            path='/recipes/:id'
+            component={RecipeCache}>
+          </GuardedRoute>
           <Redirect to="/" />
         </Switch>
       </BrowserRouter>
