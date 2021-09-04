@@ -116,7 +116,6 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   componentDidMount () {
-    console.log('nexting: ', this.props.recipes)
     unfilteredRecipesSubject.next(this.props.recipes)
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger')
@@ -161,10 +160,8 @@ class Dashboard extends React.Component<Props, State> {
         window.sessionStorage.setItem('userInput', input)
       }))
       .subscribe(([filters, category, input, recipes]) => {
-        console.log('recipes = ', recipes)
         const newFilteredRecipesState: SortedRecipeInterface = {} as any
         for (const category in recipes) {
-          console.log('recipes[category] = ', recipes[category])
           const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
           newFilteredRecipesState[category] = filteredCategory
         }

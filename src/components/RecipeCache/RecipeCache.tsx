@@ -2,7 +2,7 @@
 import React from 'react'
 import { useQuery, useMutation } from 'react-query'
 import BounceLoader from 'react-spinners/BounceLoader'
-import { Redirect } from 'react-router-dom'
+import { Redirect, withRouter } from 'react-router-dom'
 import { Dashboard, Recipe } from '..'
 import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { queryClient } from '../..'
@@ -21,11 +21,6 @@ export interface AddRecipeMutationParam {
   recipeInput: RecipeInput,
   files: NewFileInterface[],
   defaultTile: DefaultTile | null
-}
-
-interface RecipeCacheProps {
-  dashboard?: boolean
-  individualRecipe?: boolean
 }
 
 enum RecipeCategories {
@@ -56,7 +51,7 @@ const determineRecipeCategory = (recipeCategory: string): string => {
   }
 }
 
-function RecipeCache (props: RecipeCacheProps) {
+function RecipeCache (props: any) {
   const { mutateAsync } = useMutation('recipes', async (recipeInput: AddRecipeMutationParam) => {
     try {
       const newRecipe: RawRecipe = await RecipeService.createRecipe(
@@ -110,9 +105,13 @@ function RecipeCache (props: RecipeCacheProps) {
     </div>
   }
 
-  // if (error?.response?.status === 401) return <Redirect to="/login"></Redirect>
+  const individualRecipe: boolean = !!props.match.params.id
 
-  if (props.dashboard) {
+  if (individualRecipe) {
+    return (
+      <Recipe addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}></Recipe>
+    )
+  } else {
     return (
       <Dashboard
         recipes={data}
@@ -121,12 +120,6 @@ function RecipeCache (props: RecipeCacheProps) {
       </Dashboard>
     )
   }
-
-  if (props.individualRecipe) {
-    return (
-      <Recipe addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}></Recipe>
-    )
-  }
 }
 
-export default RecipeCache
+export default withRouter(RecipeCache)
