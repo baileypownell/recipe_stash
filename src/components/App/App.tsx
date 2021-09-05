@@ -21,7 +21,8 @@ class App extends React.Component<any> {
           if (res.data.authenticated) {
             this.setState({
               authenticationStateDetermined: true,
-              loggedIn: true
+              loggedIn: true,
+
             }, () => {
               window.localStorage.setItem('user_logged_in', 'true')
             })
@@ -58,6 +59,8 @@ class App extends React.Component<any> {
           }
         }
       })
+
+      if (!this.state.authenticationStateDetermined) return null
 
       return (
         <QueryClientProvider client={queryClient}>
