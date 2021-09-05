@@ -24,16 +24,15 @@ class App extends React.Component<any> {
               loggedIn: true,
 
             }, () => {
-              window.localStorage.setItem('user_logged_in', 'true')
+              AuthenticationService.setUserLoggedIn()
             })
           } else {
             this.setState({
               authenticationStateDetermined: true,
               loggedIn: false
             }, () => {
-              window.localStorage.removeItem('user_logged_in')
+              AuthenticationService.setUserLoggedOut()
             })
-            // this.props.history.push('/')
           }
         })
         .catch(err => console.log(err))
@@ -74,6 +73,7 @@ class App extends React.Component<any> {
                 <Route path="/reset/:token" component={ResetPassword}/>
                 <GuardedRoute
                     path='/recipes'
+                    loggedIn={this.state.loggedIn}
                     exact={true}
                     component={RecipeCache}>
                 </GuardedRoute>

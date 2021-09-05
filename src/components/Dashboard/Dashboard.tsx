@@ -97,6 +97,7 @@ type Props = {
   addRecipeMutation: any
   fetchRecipes: Function
   recipes: SortedRecipeInterface
+  loggedIn: boolean
 }
 
 type State = {
@@ -117,6 +118,10 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   componentDidMount () {
+    console.log(this.props.loggedIn)
+    if (!this.props.loggedIn) {
+      console.log('not logged in actually')
+    }
     unfilteredRecipesSubject.next(this.props.recipes)
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger')
