@@ -118,8 +118,8 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   componentDidMount () {
-    console.log(this.props.loggedIn)
-    if (!this.props.loggedIn) {
+    const isAuthenticated = !!window.localStorage.getItem('user_logged_in')
+    if (!isAuthenticated) {
       console.log('not logged in actually')
     }
     unfilteredRecipesSubject.next(this.props.recipes)
