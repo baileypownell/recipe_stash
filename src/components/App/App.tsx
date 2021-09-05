@@ -62,6 +62,7 @@ class App extends React.Component<any> {
       if (!this.state.authenticationStateDetermined) return null
 
       if (this.state.loggedIn !== null) {
+        console.log('loggedIn = ', this.state.loggedIn)
         return (
           <QueryClientProvider client={queryClient}>
               <ThemeProvider theme={theme}>
