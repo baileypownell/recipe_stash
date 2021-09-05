@@ -11,7 +11,6 @@ class Square extends React.Component {
   }
 
   viewRecipe = () => {
-    console.log('viewRecipe()')
     this.props.history.push(`/recipes/${this.props.data.id}`)
   }
 
