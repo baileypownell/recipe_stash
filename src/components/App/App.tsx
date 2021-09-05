@@ -61,36 +61,38 @@ class App extends React.Component<any> {
 
       if (!this.state.authenticationStateDetermined) return null
 
-      return (
-        <QueryClientProvider client={queryClient}>
-            <ThemeProvider theme={theme}>
-            <BrowserRouter>
-                <Nav />
-                <Switch>
-                <Route exact={true} path="/" component={Home}/>
-                <Route path="/login" component={Login}/>
-                <Route path="/signup" component={Signup}/>
-                <Route path="/reset/:token" component={ResetPassword}/>
-                <GuardedRoute
-                    path='/recipes'
-                    loggedIn={this.state.loggedIn}
-                    exact={true}
-                    component={RecipeCache}>
-                </GuardedRoute>
-                <GuardedRoute
-                    path='/settings'
-                    component={Settings}>
-                </GuardedRoute>
-                <GuardedRoute
-                    path='/recipes/:id'
-                    component={RecipeCache}>
-                </GuardedRoute>
-                <Redirect to="/" />
-                </Switch>
-            </BrowserRouter>
-            </ThemeProvider>
-        </QueryClientProvider>
-      )
+      if (this.state.loggedIn !== null) {
+        return (
+          <QueryClientProvider client={queryClient}>
+              <ThemeProvider theme={theme}>
+              <BrowserRouter>
+                  <Nav />
+                  <Switch>
+                  <Route exact={true} path="/" component={Home}/>
+                  <Route path="/login" component={Login}/>
+                  <Route path="/signup" component={Signup}/>
+                  <Route path="/reset/:token" component={ResetPassword}/>
+                  <GuardedRoute
+                      path='/recipes'
+                      loggedIn={this.state.loggedIn}
+                      exact={true}
+                      component={RecipeCache}>
+                  </GuardedRoute>
+                  <GuardedRoute
+                      path='/settings'
+                      component={Settings}>
+                  </GuardedRoute>
+                  <GuardedRoute
+                      path='/recipes/:id'
+                      component={RecipeCache}>
+                  </GuardedRoute>
+                  <Redirect to="/" />
+                  </Switch>
+              </BrowserRouter>
+              </ThemeProvider>
+          </QueryClientProvider>
+        )
+      }
     }
 }
 
