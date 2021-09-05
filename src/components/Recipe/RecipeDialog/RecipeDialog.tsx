@@ -25,7 +25,6 @@ import {
   NewFileInterface,
   RecipeInput
 } from '../../../services/recipe-services'
-import { queryClient } from '../../..'
 import DOMPurify from 'dompurify'
 import { tags } from '../../../models/tags'
 import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache'
@@ -33,6 +32,7 @@ import './RecipeDialog.scss'
 import { withRouter } from 'react-router-dom'
 import M from 'materialize-css'
 import { FullRecipe, RawRecipe } from '../../../../server/recipe'
+import { queryClient } from '../../App/App'
 const { htmlToText } = require('html-to-text')
 
 const Transition = React.forwardRef(function Transition (props, ref) {

@@ -5,8 +5,8 @@ import BounceLoader from 'react-spinners/BounceLoader'
 import { Redirect, withRouter } from 'react-router-dom'
 import { Dashboard, Recipe } from '..'
 import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
-import { queryClient } from '../..'
 import { RawRecipe, FullRecipe } from '../../../server/recipe'
+import { queryClient } from '../App/App'
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
   lunch: 'Lunch',

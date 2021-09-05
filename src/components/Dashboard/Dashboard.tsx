@@ -4,8 +4,9 @@ import { BehaviorSubject, combineLatest } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import './Dashboard.scss'
 import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
-import { queryClient } from '../..'
+// import { queryClient } from '../..'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
+import { queryClient } from '../App/App'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
