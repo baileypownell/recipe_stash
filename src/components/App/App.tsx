@@ -18,7 +18,6 @@ class App extends React.Component<any> {
     componentDidMount () {
       AuthenticationService.verifyUserSession()
         .then(res => {
-          res.data.authenticated = false
           if (res.data.authenticated) {
             this.setState({ loggedIn: true }, () => AuthenticationService.setUserLoggedIn())
           } else {
