@@ -16,12 +16,12 @@ class App extends React.Component<any> {
     }
 
     componentDidMount () {
-      AuthenticationService.setUserLoggedOut()
       AuthenticationService.verifyUserSession()
         .then(res => {
+          res.data.authenticated = false
           if (res.data.authenticated) {
             this.setState({
-              authenticationStateDetermined: true,
+              // authenticationStateDetermined: true,
               loggedIn: true,
 
             }, () => {
@@ -29,12 +29,16 @@ class App extends React.Component<any> {
             })
           } else {
             this.setState({
-              authenticationStateDetermined: true,
+              // authenticationStateDetermined: true,
               loggedIn: false
             }, () => {
               AuthenticationService.setUserLoggedOut()
             })
           }
+
+          this.setState({
+            authenticationStateDetermined: true
+          })
         })
         .catch(err => console.log(err))
     }
@@ -63,6 +67,7 @@ class App extends React.Component<any> {
       if (!this.state.authenticationStateDetermined) return null
 
       if (this.state.loggedIn !== null) {
+        console.log('RENDERING')
         console.log('loggedIn = ', this.state.loggedIn)
         return (
           <QueryClientProvider client={queryClient}>

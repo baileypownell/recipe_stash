@@ -118,10 +118,6 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   componentDidMount () {
-    const isAuthenticated = !!window.localStorage.getItem('user_logged_in')
-    if (!isAuthenticated) {
-      console.log('not logged in actually')
-    }
     unfilteredRecipesSubject.next(this.props.recipes)
     // filter dropdown
     const dropdown = document.querySelector('.dropdown-trigger')

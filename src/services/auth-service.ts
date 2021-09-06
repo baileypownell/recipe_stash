@@ -7,6 +7,7 @@ const AuthenticationService = {
   },
 
   setUserLoggedOut: (): void => {
+    console.log('setting user logged out')
     window.localStorage.removeItem('user_logged_in')
   },
 
