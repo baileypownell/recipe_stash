@@ -16,6 +16,7 @@ class App extends React.Component<any> {
     }
 
     componentDidMount () {
+      AuthenticationService.setUserLoggedOut()
       AuthenticationService.verifyUserSession()
         .then(res => {
           if (res.data.authenticated) {
