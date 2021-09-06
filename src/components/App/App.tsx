@@ -2,7 +2,7 @@ import React from 'react'
 import AuthenticationService from '../../services/auth-service'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { ThemeProvider, createTheme } from '@material-ui/core'
-import { BrowserRouter, Switch, Route, Redirect, withRouter } from 'react-router-dom'
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { Nav, Home, Login, ResetPassword, Signup, Settings } from '..'
 import GuardedRoute from '../../GuardedRoute'
 import RecipeCache from '../RecipeCache/RecipeCache'
@@ -20,25 +20,12 @@ class App extends React.Component<any> {
         .then(res => {
           res.data.authenticated = false
           if (res.data.authenticated) {
-            this.setState({
-              // authenticationStateDetermined: true,
-              loggedIn: true,
-
-            }, () => {
-              AuthenticationService.setUserLoggedIn()
-            })
+            this.setState({ loggedIn: true }, () => AuthenticationService.setUserLoggedIn())
           } else {
-            this.setState({
-              // authenticationStateDetermined: true,
-              loggedIn: false
-            }, () => {
-              AuthenticationService.setUserLoggedOut()
-            })
+            this.setState({ loggedIn: false }, () => AuthenticationService.setUserLoggedOut() )
           }
 
-          this.setState({
-            authenticationStateDetermined: true
-          })
+          this.setState({ authenticationStateDetermined: true })
         })
         .catch(err => console.log(err))
     }
@@ -67,8 +54,6 @@ class App extends React.Component<any> {
       if (!this.state.authenticationStateDetermined) return null
 
       if (this.state.loggedIn !== null) {
-        console.log('RENDERING')
-        console.log('loggedIn = ', this.state.loggedIn)
         return (
           <QueryClientProvider client={queryClient}>
               <ThemeProvider theme={theme}>
@@ -81,7 +66,6 @@ class App extends React.Component<any> {
                   <Route path="/reset/:token" component={ResetPassword}/>
                   <GuardedRoute
                       path='/recipes'
-                      loggedIn={this.state.loggedIn}
                       exact={true}
                       component={RecipeCache}>
                   </GuardedRoute>

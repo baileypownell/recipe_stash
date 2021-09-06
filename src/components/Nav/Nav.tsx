@@ -33,7 +33,7 @@ class Nav extends React.Component<{isAuthenticated: boolean}, any> {
   }
 
   render () {
-    const isAuthenticated = !!window.localStorage.getItem('user_logged_in')
+    const isAuthenticated = AuthenticationService.authenticated()
     return (
       <>
         <nav>

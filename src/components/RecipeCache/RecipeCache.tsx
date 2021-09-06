@@ -2,7 +2,7 @@
 import React from 'react'
 import { useQuery, useMutation } from 'react-query'
 import BounceLoader from 'react-spinners/BounceLoader'
-import { Redirect, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import { Dashboard, Recipe } from '..'
 import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { RawRecipe, FullRecipe } from '../../../server/recipe'

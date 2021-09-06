@@ -1,11 +1,12 @@
 import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
+import AuthenticationService from './services/auth-service'
 
 const GuardedRoute = ({ component: Component, ...rest }) => {
-  const isAuthenticated = !!window.localStorage.getItem('user_logged_in')
+  const isAuthenticated = AuthenticationService.authenticated()
   return (
     <Route {...rest} render={(props) => (
-      isAuthenticated === true
+      isAuthenticated
         ? <Component {...props} />
         : <Redirect to='/login' />
     )} />
