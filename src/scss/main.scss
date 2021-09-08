@@ -147,3 +147,12 @@ html, body {
 .ril__caption, .ril__toolbar {
   background-color: transparent;
 }
+
+.MuiSnackbarContent-message {
+  width: 100%;
+  text-align: center;
+}
+
+.MuiSnackbar-root {
+  z-index: 20000;
+}

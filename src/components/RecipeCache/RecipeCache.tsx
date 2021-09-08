@@ -61,7 +61,6 @@ function RecipeCache (props: any) {
       return recipe
     } catch (err) {
       console.log(err)
-      M.toast({ html: 'There was an error.' })
     }
   }, {
     onSuccess: (newRecipe: FullRecipe) => {
