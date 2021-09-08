@@ -5,102 +5,85 @@ import blackLogo from '../../images/black-logo.png'
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import './Nav.scss'
 import AuthenticationService from '../../services/auth-service'
+import { List, ListItem, Divider, Typography } from '@material-ui/core';
 
-class Nav extends React.Component<{isAuthenticated: boolean}, any> {
+class Nav extends React.Component<null, any> {
   state = {
     open: false
-  }
-  componentDidMount () {
-    this.initializeSettingsDropdown()
-  }
-
-  initializeSettingsDropdown = () => {
-    const elems = document.querySelectorAll('.sidenav')
-    M.Sidenav.init(elems, {
-      edge: 'right'
-    })
   }
 
   logout = async () => {
     try {
       await AuthenticationService.logout()
       AuthenticationService.setUserLoggedOut()
+      this.setState({ open: false })
       this.props.history.push('/')
     } catch (err) {
       console.log(err)
     }
   }
 
-  // doing this funcationally instead of setting the href, because for reasons unkown, the href was causing a hard refresh... 
+  // doing this funcationally instead of setting the href, because for reasons unkown, the href was causing a hard refresh...
   navigate = (e) => {
     this.props.history.push(e.target.id)
+    this.setState({ open: false })
   }
 
-  toggleDrawer = (open) => (event) => {
+  toggleDrawer = (openState) => (event) => {
     if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
+      return
     }
 
-    this.setState({ open })
+    this.setState({ open: openState })
   }
 
   render () {
     const isAuthenticated = AuthenticationService.authenticated()
 
     return (
-        <SwipeableDrawer
-          anchor={'right'}
-          open={this.state.open}
-          onClose={this.toggleDrawer(false)}
-          onOpen={this.toggleDrawer(true)}
-        >
-          <Link to="/"><img src={blackLogo} alt="logo" /></Link>
-
-          <div className="icon">
-               <img src={whiteLogo} alt="logo" />
-             </div>
-             <li><a className="waves-effect" onClick={this.navigate} id="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
-             <li><a className="waves-effect" onClick={this.navigate} id="/"><i className="fas fa-house-user"></i>Home</a></li>
-             <li><a className="waves-effect" onClick={this.navigate} id="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
-             <li><div className="divider"></div></li>
-             <li><a className="waves-effect" onClick={this.logout}><i className="fas fa-arrow-right"></i>Logout</a></li>
-        </SwipeableDrawer>
+      <> 
+        <nav>
+            <Link to="/"><img src={blackLogo} alt="logo" /></Link>
+            <div>
+              { isAuthenticated
+                ? <>
+                    <NavLink to="/recipes" activeclassname="active">Recipes</NavLink>
+                    <a onClick={this.toggleDrawer(!this.state.open)}><i className="fas fa-bars"></i></a>
+                </>
+                : <>
+                    <NavLink to="/login" activeClassName="active">Login</NavLink>
+                    <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
+                </>
+              }
+            </div>
+          </nav>
+          <SwipeableDrawer
+            anchor={'right'}
+            open={this.state.open}
+            onClose={this.toggleDrawer(false)}
+            onOpen={this.toggleDrawer(true)}
+          >
+            <div className="drawer-content">
+              <img src={whiteLogo} alt="logo" />
+              <List>
+                <ListItem button onClick={this.navigate} id="/settings">
+                  <Typography variant="h6"><i className="fas fa-cogs"></i>Settings</Typography>
+                </ListItem>
+                <ListItem button onClick={this.navigate} id="/">
+                  <Typography variant="h6" ><i className="fas fa-house-user"></i>Home</Typography>
+                </ListItem>
+                <ListItem button onClick={this.navigate} id="/recipes">
+                  <Typography variant="h6"><i className="fas fa-utensils"></i>Recipes</Typography>
+                </ListItem>
+                <Divider />
+                <ListItem button onClick={this.logout}>
+                  <Typography variant="h6"><i className="fas fa-arrow-right"></i>Logout</Typography>
+                </ListItem>
+              </List>
+            </div>
+          </SwipeableDrawer>
+      </>
     )
-      })
-    // return (
-    //   <>
-    //     <nav>
-    //       <Link to="/"><img src={blackLogo} alt="logo" /></Link>
-    //       <div>
-    //         { isAuthenticated
-    //           ? <>
-    //               <NavLink to="/recipes" activeclassname="active">Recipes</NavLink>
-    //               <a
-    //                 activeclassname="active"
-    //                 data-target="slide-out"
-    //                 className="sidenav-trigger"><i className="fas fa-bars"></i>
-    //               </a>
-    //           </>
-    //           : <>
-    //               <NavLink to="/login" activeClassName="active">Login</NavLink>
-    //               <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
-    //           </>
-    //         }
-    //       </div>
-    //     </nav>
-
-    //     <ul id="slide-out" className="sidenav">
-    //         <div className="icon">
-    //           <img src={whiteLogo} alt="logo" />
-    //         </div>
-    //         <li><a className="waves-effect" onClick={this.navigate} id="/settings"><i className="fas fa-cogs"></i>Settings</a></li>
-    //         <li><a className="waves-effect" onClick={this.navigate} id="/"><i className="fas fa-house-user"></i>Home</a></li>
-    //         <li><a className="waves-effect" onClick={this.navigate} id="/recipes"><i className="fas fa-utensils"></i>Recipes</a></li>
-    //         <li><div className="divider"></div></li>
-    //         <li><a className="waves-effect" onClick={this.logout}><i className="fas fa-arrow-right"></i>Logout</a></li>
-    //     </ul>
-    //   </>
-    // )
   }
 }
 
