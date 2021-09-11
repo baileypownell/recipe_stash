@@ -12,6 +12,7 @@ import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
 import { Divider } from '@material-ui/core'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
+import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -99,8 +100,7 @@ class Recipe extends React.Component<any, State> {
     })
   }
 
-  cloneRecipe = (e: Event) => {
-    e.stopPropagation()
+  cloneRecipe = () => {
     presignedUrlsSubject.next([])
     this.setState({
       cloning: true
@@ -137,13 +137,11 @@ class Recipe extends React.Component<any, State> {
                 triggerDialog={this.triggerDialog}>
               </RecipeDialog>
               <div className="view-recipe" >
-                <div id="recipe-mobile-toolbar" className={width > 700 ? 'hidden' : ''}>
-                    <a className='dropdown-trigger' data-target='dropdown1'><i className="fas fa-ellipsis-v"></i></a>
-                    <ul id='dropdown1' className='dropdown-content'>
-                      <li onClick={this.triggerDialog}><a>Edit</a></li>
-                      <li onClick={this.cloneRecipe}><a>Duplicate</a></li>
-                    </ul>
-                </div>
+                <MobileRecipeToolbar
+                  width={width}
+                  triggerDialog={this.triggerDialog}
+                  cloneRecipe={this.cloneRecipe}>
+                </MobileRecipeToolbar>
                 <div id="width-setter">
                   <div className="section">
                     <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }}/>

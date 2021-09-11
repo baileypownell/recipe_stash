@@ -1,0 +1,20 @@
+@import '../../../scss/mixins.scss';
+
+#recipe-mobile-toolbar {
+    position: absolute;
+    bottom:0;
+    right: 0;
+    left: 0;
+    background-color: $secondary;
+    width: 100%;
+    margin: 0;
+    padding: 15px;
+    z-index: 1;
+    text-align: right;
+    a {
+      color: white;
+    }
+    i {
+        color: $white;
+    }
+  }
