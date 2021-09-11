@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useQuery, useMutation } from 'react-query'
 import BounceLoader from 'react-spinners/BounceLoader'
 import { withRouter } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { Dashboard, Recipe } from '..'
 import { SortedRecipeInterface, RecipeService, RecipeInput, NewFileInterface, DefaultTile } from '../../services/recipe-services'
 import { RawRecipe, FullRecipe } from '../../../server/recipe'
 import { queryClient } from '../App/App'
+import { Snackbar } from '@material-ui/core'
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
   lunch: 'Lunch',
@@ -61,7 +62,6 @@ function RecipeCache (props: any) {
       return recipe
     } catch (err) {
       console.log(err)
-      M.toast({ html: 'There was an error.' })
     }
   }, {
     onSuccess: (newRecipe: FullRecipe) => {
@@ -96,6 +96,18 @@ function RecipeCache (props: any) {
     return result.data
   }
 
+  const [snackBarOpen, setSnackBarOpen] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState('')
+  const openSnackBar = (message: string) => {
+    setSnackBarOpen(true)
+    setSnackBarMessage(message)
+  }
+
+  const closeSnackBar = () => {
+    setSnackBarMessage('')
+    setSnackBarOpen(false)
+  }
+
   if (isLoading) {
     return <div className="BounceLoader">
       <BounceLoader
@@ -109,15 +121,33 @@ function RecipeCache (props: any) {
 
   if (individualRecipe) {
     return (
-      <Recipe addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}></Recipe>
+      <>
+        <Recipe
+          openSnackBar={openSnackBar}
+          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
+        </Recipe>
+      </>
     )
   } else {
     return (
-      <Dashboard
-        recipes={data}
-        fetchRecipes={() => fetchRecipes()}
-        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
-      </Dashboard>
+      <>
+        <Dashboard
+          recipes={data}
+          fetchRecipes={() => fetchRecipes()}
+          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
+        </Dashboard>
+        <Snackbar
+          open={snackBarOpen}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          onClose={closeSnackBar}
+          autoHideDuration={3000}
+          message={snackBarMessage}
+          key={'bottom' + 'center'}
+        />
+      </>
     )
   }
 }

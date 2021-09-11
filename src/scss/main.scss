@@ -51,10 +51,6 @@ label {
   color: $secondary!important;
 }
 
-.toast {
-  background-color:$orange!important;
-}
-
 
 [type="checkbox"]:checked + span:not(.lever):before {
   border-right: 3px solid $orange!important;
@@ -146,4 +142,9 @@ html, body {
 
 .ril__caption, .ril__toolbar {
   background-color: transparent;
+}
+
+.MuiSnackbarContent-message {
+  width: 100%;
+  text-align: center;
 }

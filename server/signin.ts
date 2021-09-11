@@ -47,14 +47,13 @@ router.post('/', (request: any, response, next) => {
                 })
             })
           } else {
-            return response.status(403).json({ error: 'User could not be authenticated' })
+            return response.status(403).json({ error: 'User could not be authenticated.' })
           }
         })
       } else {
-        return response.status(403).json({ error: 'An email cannot be sent to that address.' })
+        return response.status(403).json({ error: 'Password or email is incorrect.' })
       }
     })
 })
 
 export default router
-// module.exports = router;

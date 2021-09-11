@@ -1,6 +1,6 @@
-const { Router } = require('express')
-const client = require('./client')
-const nodemailer = require('nodemailer')
+import { Router } from 'express'
+import client from './client'
+import nodemailer from 'nodemailer'
 const sgTransport = require('nodemailer-sendgrid-transport')
 const crypto = require('crypto')
 const router = Router()
@@ -13,7 +13,7 @@ if (environment === 'development') {
   })
 }
 
-router.post('/', (request, response, next) => {
+router.post('/', (request: any, response, next) => {
   const { email } = request.body
   if (!email) {
     return response.status(400).json({ success: false, message: 'Invalid request sent.' })
@@ -86,4 +86,3 @@ router.get('/:token', (request, response, next) => {
 })
 
 export default router
-// module.exports = router;

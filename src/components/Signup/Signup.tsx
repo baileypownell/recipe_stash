@@ -5,7 +5,7 @@ import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
-import { Button } from '@material-ui/core'
+import { Button, Snackbar } from '@material-ui/core'
 
 type Props = {
   history: any
@@ -22,7 +22,9 @@ type State = {
     formValid: boolean
     loading: boolean
     submissionError: string
-    error: boolean
+    error: boolean,
+    snackBarOpen: boolean,
+    snackBarMessage: string
 }
 
 class Signup extends React.Component<Props, State> {
@@ -37,7 +39,9 @@ class Signup extends React.Component<Props, State> {
     formValid: false,
     loading: false,
     submissionError: '',
-    error: false
+    error: false,
+    snackBarOpen: false,
+    snackBarMessage: ''
   }
 
   componentDidMount () { }
@@ -57,21 +61,21 @@ class Signup extends React.Component<Props, State> {
       }
       const user: UserCreatedResponse = await UserService.createUser(userInput)
       if (user.success) {
-        M.toast({ html: 'Success! Logging you in now...' })
+        this.openSnackBar('Success! Logging you in now...')
         AuthenticationService.setUserLoggedIn()
-        this.props.history.push('/recipes')
+        setTimeout(() => this.props.history.push('/recipes'), 2000)
       } else {
         this.setState({
           error: true,
           loading: false
         })
-        M.toast({ html: user.message })
+        this.openSnackBar(user.message)
       }
     } catch (err) {
       this.setState({
         loading: false
       })
-      M.toast({ html: err.response.data.error })
+      this.openSnackBar(err.response.data.error)
     }
   }
 
@@ -127,6 +131,20 @@ class Signup extends React.Component<Props, State> {
     }
   }
 
+  openSnackBar (message: string) {
+    this.setState({
+      snackBarOpen: true,
+      snackBarMessage: message
+    })
+  }
+
+  closeSnackBar = () => {
+    this.setState({
+      snackBarOpen: false,
+      snackBarMessage: ''
+    })
+  }
+
   confirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === this.state.password) {
       this.setState({
@@ -146,7 +164,7 @@ class Signup extends React.Component<Props, State> {
   }
 
   render () {
-    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid } = this.state
+    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid, snackBarOpen, snackBarMessage } = this.state
     return (
         <div className="auth">
           <div className="gradient">
@@ -194,6 +212,18 @@ class Signup extends React.Component<Props, State> {
               </form>
             </Fade>
           </div>
+
+          <Snackbar
+            open={snackBarOpen}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center'
+            }}
+            onClose={this.closeSnackBar}
+            autoHideDuration={4000}
+            message={snackBarMessage}
+            key={'bottom' + 'center'}
+          />
         </div>
     )
   }

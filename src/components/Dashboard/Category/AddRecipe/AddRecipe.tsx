@@ -11,7 +11,7 @@ import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import options from '../../../../models/options'
 import { RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
-import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails } from '@material-ui/core'
+import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails, Snackbar } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
 const { htmlToText } = require('html-to-text')
@@ -37,7 +37,9 @@ type State = {
   newFiles: any[]
   tags: tag[],
   defaultTile: DefaultTile | null
-  open: boolean
+  open: boolean,
+  snackBarOpen: boolean,
+  snackBarMessage: string
 }
 
 class AddRecipe extends React.Component<Props, State> {
@@ -51,7 +53,9 @@ class AddRecipe extends React.Component<Props, State> {
     newFiles: [],
     tags,
     defaultTile: null,
-    open: false
+    open: false,
+    snackBarOpen: false,
+    snackBarMessage: ''
   }
 
   checkValidity = () => {
@@ -111,7 +115,7 @@ class AddRecipe extends React.Component<Props, State> {
         defaultTile: this.state.defaultTile
       }
       await this.props.addRecipe(param)
-      M.toast({ html: 'Recipe added.' })
+      this.openSnackBar('Recipe added.')
       this.clearState()
       this.setState({
         loading: false
@@ -121,8 +125,22 @@ class AddRecipe extends React.Component<Props, State> {
       this.setState({
         loading: false
       })
-      M.toast({ html: 'There was an error.' })
+      this.openSnackBar('There was an error.')
     }
+  }
+
+  openSnackBar (message: string) {
+    this.setState({
+      snackBarOpen: true,
+      snackBarMessage: message
+    })
+  }
+
+  closeSnackBar = () => {
+    this.setState({
+      snackBarOpen: false,
+      snackBarMessage: ''
+    })
   }
 
   toggleModal = () => {
@@ -198,7 +216,7 @@ class AddRecipe extends React.Component<Props, State> {
 
   render () {
     const { id, gridView } = this.props as any
-    const { open, category, recipe_title, ingredients, directions } = this.state
+    const { open, category, recipe_title, ingredients, directions, snackBarOpen, snackBarMessage } = this.state
 
     return (
       <>
@@ -296,6 +314,18 @@ class AddRecipe extends React.Component<Props, State> {
         </div>
         </div>
       </Dialog>
+
+      <Snackbar
+        open={snackBarOpen}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        onClose={this.closeSnackBar}
+        autoHideDuration={4000}
+        message={snackBarMessage}
+        key={'bottom' + 'center'}
+      />
     </>
     )
   }
