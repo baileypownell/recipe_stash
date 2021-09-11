@@ -322,7 +322,7 @@ class AddRecipe extends React.Component<Props, State> {
           horizontal: 'center'
         }}
         onClose={this.closeSnackBar}
-        autoHideDuration={400000}
+        autoHideDuration={4000}
         message={snackBarMessage}
         key={'bottom' + 'center'}
       />

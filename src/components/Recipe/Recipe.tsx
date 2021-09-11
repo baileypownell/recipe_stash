@@ -130,6 +130,7 @@ class Recipe extends React.Component<any, State> {
                 open={this.state.dialogOpen}
                 cloning={cloning}
                 defaultTileImageKey={recipe.defaultTileImageKey}
+                openSnackBar={this.props.openSnackBar}
                 presignedUrls$={presignedUrls$}
                 fetchData={this.fetchData}
                 addRecipeMutation={this.props.addRecipeMutation}
@@ -186,7 +187,6 @@ class Recipe extends React.Component<any, State> {
                     : null }
                 </div>
               </div>
-
             </Fade>
           </div>
         : <div className="BounceLoader">

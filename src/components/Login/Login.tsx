@@ -5,7 +5,7 @@ import './Login.scss'
 import M from 'materialize-css'
 import AuthenticationService from '../../services/auth-service'
 import Fade from 'react-reveal/Fade'
-import { Button } from '@material-ui/core'
+import { Button, Snackbar } from '@material-ui/core'
 
 class Login extends React.Component {
   state = {
@@ -13,7 +13,9 @@ class Login extends React.Component {
     password: null,
     formValid: false,
     loading: false,
-    signInError: false
+    signInError: false,
+    snackBarOpen: false,
+    snackBarMessage: ''
   }
 
   componentDidMount (): void {
@@ -34,6 +36,20 @@ class Login extends React.Component {
     })
   }
 
+  openSnackBar (message: string) {
+    this.setState({
+      snackBarOpen: true,
+      snackBarMessage: message
+    })
+  }
+
+  closeSnackBar = () => {
+    this.setState({
+      snackBarOpen: false,
+      snackBarMessage: ''
+    })
+  }
+
   sendPasswordResetLink = async (e): void => {
     e.preventDefault()
     try {
@@ -41,12 +57,10 @@ class Login extends React.Component {
         this.state.email
       )
       res.data.success
-        ? M.toast({
-          html: 'Check your email for a link to reset your password.'
-        })
-        : M.toast({ html: 'There was an error.' })
+        ? this.openSnackBar('Check your email for a link to reset your password.')
+        : this.openSnackBar('There was an error.')
     } catch (err) {
-      M.toast({ html: 'There was an error.' })
+      this.openSnackBar('There was an error.')
     }
   }
 
@@ -57,14 +71,14 @@ class Login extends React.Component {
         AuthenticationService.setUserLoggedIn()
         this.props.history.push('/recipes')
       } else {
-        M.toast({ html: res.data.message })
+        this.openSnackBar(res.data.message)
         this.setState({
           signInError: true
         })
       }
     } catch (err) {
       console.log(err)
-      M.toast({ html: err.data ? err.data.message : 'Could not authenticate.' })
+      this.openSnackBar(err.data ? err.data.message : 'Could not authenticate.')
       this.setState({
         signInError: true
       })
@@ -89,11 +103,11 @@ class Login extends React.Component {
           loading: false,
           signInError: true
         })
-        M.toast({ html: res.data.message })
+        this.openSnackBar(res.data.message)
       }
     } catch (err) {
       console.log(err)
-      M.toast({ html: err.response.data?.error || 'There was an error.' })
+      this.openSnackBar(err.response.data?.error || 'There was an error.')
       this.setState({
         signInError: true,
         loading: false
@@ -101,8 +115,8 @@ class Login extends React.Component {
     }
   }
 
-  render (): void {
-    const { formValid, loading, signInError } = this.state
+  render () {
+    const { formValid, loading, signInError, snackBarMessage, snackBarOpen } = this.state
     return (
       <>
         <div className="auth">
@@ -182,6 +196,18 @@ class Login extends React.Component {
             </Fade>
           </div>
         </div>
+
+        <Snackbar
+          open={snackBarOpen}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          onClose={this.closeSnackBar}
+          autoHideDuration={4000}
+          message={snackBarMessage}
+          key={'bottom' + 'center'}
+        />
       </>
     )
   }

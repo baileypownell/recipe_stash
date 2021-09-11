@@ -1,10 +1,10 @@
 import React, { FormEvent } from 'react'
 import { withRouter } from 'react-router-dom'
 import ClipLoader from 'react-spinners/ClipLoader'
-import M from 'materialize-css'
 import './ResetPassword.scss'
 import AuthenticationService from '../../services/auth-service'
 import { isPasswordInvalid } from '../../models/functions'
+import { Snackbar } from '@material-ui/core'
 
 class ResetPassword extends React.Component<any, any> {
   state = {
@@ -12,7 +12,9 @@ class ResetPassword extends React.Component<any, any> {
     password: '',
     passwordInvalid: true,
     loading: false,
-    email: ''
+    email: '',
+    snackBarOpen: false,
+    snackBarMessage: ''
   }
 
   async componentDidMount () {
@@ -41,6 +43,20 @@ class ResetPassword extends React.Component<any, any> {
     this.props.history.push('/')
   }
 
+  openSnackBar (message: string) {
+    this.setState({
+      snackBarOpen: true,
+      snackBarMessage: message
+    })
+  }
+
+  closeSnackBar = () => {
+    this.setState({
+      snackBarOpen: false,
+      snackBarMessage: ''
+    })
+  }
+
   updatePasswordState = (e: React.ChangeEvent<HTMLInputElement>) => {
     const password: string = e.target.value
     if (isPasswordInvalid(password)) {
@@ -64,13 +80,13 @@ class ResetPassword extends React.Component<any, any> {
     try {
       const reset_password_token = this.props.match.params.token
       await AuthenticationService.updatePassword(this.state.password, reset_password_token, this.state.email)
-      M.toast({ html: 'Password updated!' })
+      this.openSnackBar('Password updated!')
       this.setState({
         loading: false
       })
       this.props.history.push('/recipes')
     } catch (err) {
-      M.toast({ html: 'There was an error.' })
+      this.openSnackBar('There was an error.')
       this.setState({
         loading: false
       })
@@ -78,6 +94,7 @@ class ResetPassword extends React.Component<any, any> {
   }
 
   render () {
+    const { snackBarMessage, snackBarOpen } = this.state
     if (this.state.invalidLink) {
       return (
         <>
@@ -114,6 +131,18 @@ class ResetPassword extends React.Component<any, any> {
             </button>
             </form>
           </div>
+
+          <Snackbar
+            open={snackBarOpen}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center'
+            }}
+            onClose={this.closeSnackBar}
+            autoHideDuration={4000}
+            message={snackBarMessage}
+            key={'bottom' + 'center'}
+          />
         </>
       )
     }

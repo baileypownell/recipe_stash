@@ -1,6 +1,6 @@
 import React from 'react'
 import './FileUpload.scss'
-import { Button } from '@material-ui/core'
+import { Button, Snackbar } from '@material-ui/core'
 const { v4: uuidv4 } = require('uuid')
 
 class FileUpload extends React.Component {
@@ -9,7 +9,9 @@ class FileUpload extends React.Component {
       preExistingImageUrls: null,
       filesToDelete: [],
       defaultTileImageKey: null,
-      defaultRemoved: false
+      defaultRemoved: false,
+      snackBarOpen: false,
+      snackBarMessage: ''
     }
 
     componentDidMount () {
@@ -44,8 +46,8 @@ class FileUpload extends React.Component {
 
     processFile (file) {
       const currentFiles = this.state.files
-      if (this.state.files.length + this.state.preExistingImageUrls?.length === 5) {
-        M.toast({ html: 'Only 5 images allowed per recipe.' })
+      if (this.state.files.length + (this.state.preExistingImageUrls?.length || 0) === 5) {
+        this.openSnackBar('Only 5 images allowed per recipe.')
         return
       }
       if ((file.type === 'image/jpeg' || file.type === 'image/png')) {
@@ -57,6 +59,20 @@ class FileUpload extends React.Component {
           files: currentFiles
         }, () => this.props.passFiles(this.state.files))
       }
+    }
+
+    openSnackBar (message: string) {
+      this.setState({
+        snackBarOpen: true,
+        snackBarMessage: message
+      })
+    }
+
+    closeSnackBar = () => {
+      this.setState({
+        snackBarOpen: false,
+        snackBarMessage: ''
+      })
     }
 
     handleDrop = (e) => {
@@ -171,68 +187,80 @@ class FileUpload extends React.Component {
     input = React.createRef()
 
     render () {
-      const { preExistingImageUrls, files } = this.state
-      const limitReached = files.length + preExistingImageUrls?.length === 5
+      const { preExistingImageUrls, files, snackBarMessage, snackBarOpen } = this.state
+      const limitReached = files.length + (preExistingImageUrls?.length || 0) === 5
       return (
-            <div className="file-upload">
-                <div className="dropzone" onDrop={this.handleDrop} onDragOver={this.handleDrop}>
-                    <input
-                        ref={i => this.input = i}
-                        type="file"
-                        id="input"
-                        disabled={limitReached}
-                        onChange={this.handleUpload}
-                        multiple>
-                    </input>
-                    <div>
-                        <h1>Drag & Drop an image</h1>
-                        <Button variant="outlined" color="secondary" onClick={this.openFileFinder} disabled={limitReached} >
-                            Choose a file
-                        </Button>
-                        <span>(Limit 5)</span>
-                        <i className="fas fa-file-upload"></i>
-                    </div>
-                </div>
-                <div className="file-list">
-                    {Array.from(files)?.map((file, index) => (
-                        <div
-                            key={file.id}
-                            className="file-preview z-depth-2"
-                            style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})` }}>
-                            <div className="file-cover" >
-                            <label htmlFor={file.id}>
-                                <input
-                                    checked={this.determineIfCheckedNew(file.file)}
-                                    type="checkbox"
-                                    onChange={(e) => this.setDefaultTileImageNew(file.file)}
-                                    className="filled-in"
-                                    id={file.id} />
-                                    <span>Use as tile background image</span>
-                                </label>
-                                <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
-                            </div>
-                        </div>
-                    ))}
-                    {preExistingImageUrls?.map((url, index) => (
-                        <div
-                            className="file-preview z-depth-2"
-                            key={index}
-                            style={{ backgroundImage: `url(${url})`  }}>
-                            <div className="file-cover" >
-                                <label htmlFor={url}>
-                                    <input
-                                        checked={this.determineIfChecked(url)}
-                                        type="checkbox"
-                                        onChange={(e) => this.setDefaultTileImage(e)}
-                                        className="filled-in" id={url} />
-                                    <span>Use as tile background image</span>
-                                </label>
-                                <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+        <div className="file-upload">
+          <div className="dropzone" onDrop={this.handleDrop} onDragOver={this.handleDrop}>
+              <input
+                  ref={i => this.input = i}
+                  type="file"
+                  id="input"
+                  disabled={limitReached}
+                  onChange={this.handleUpload}
+                  multiple>
+              </input>
+              <div>
+                  <h1>Drag & Drop an image</h1>
+                  <Button variant="outlined" color="secondary" onClick={this.openFileFinder} disabled={limitReached} >
+                      Choose a file
+                  </Button>
+                  <span>(Limit 5)</span>
+                  <i className="fas fa-file-upload"></i>
+              </div>
+          </div>
+          <div className="file-list">
+              {Array.from(files)?.map((file, index) => (
+                  <div
+                      key={file.id}
+                      className="file-preview z-depth-2"
+                      style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})` }}>
+                      <div className="file-cover" >
+                      <label htmlFor={file.id}>
+                          <input
+                              checked={this.determineIfCheckedNew(file.file)}
+                              type="checkbox"
+                              onChange={(e) => this.setDefaultTileImageNew(file.file)}
+                              className="filled-in"
+                              id={file.id} />
+                              <span>Use as tile background image</span>
+                          </label>
+                          <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
+                      </div>
+                  </div>
+              ))}
+              {preExistingImageUrls?.map((url, index) => (
+                  <div
+                      className="file-preview z-depth-2"
+                      key={index}
+                      style={{ backgroundImage: `url(${url})`  }}>
+                      <div className="file-cover" >
+                          <label htmlFor={url}>
+                              <input
+                                  checked={this.determineIfChecked(url)}
+                                  type="checkbox"
+                                  onChange={(e) => this.setDefaultTileImage(e)}
+                                  className="filled-in" id={url} />
+                              <span>Use as tile background image</span>
+                          </label>
+                          <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>
+                      </div>
+                  </div>
+              ))}
+          </div>
+
+          <Snackbar
+            open={snackBarOpen}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center'
+            }}
+            onClose={this.closeSnackBar}
+            autoHideDuration={4000}
+            message={snackBarMessage}
+            key={'bottom' + 'center'}
+          />
+        </div>
       )
     }
 }

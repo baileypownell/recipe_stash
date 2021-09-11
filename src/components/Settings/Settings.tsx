@@ -6,7 +6,7 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import Fade from 'react-reveal/Fade'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
-import { Button } from '@material-ui/core'
+import { Button, Snackbar } from '@material-ui/core'
 
 let modalInstance
 
@@ -18,7 +18,9 @@ type State = {
   lastNameReceived: string
   new_email: string
   emailReceived: string
-  email: string
+  email: string,
+  snackBarOpen: boolean,
+  snackBarMessage: string
 }
 
 class Settings extends React.Component<any, State> {
@@ -30,7 +32,9 @@ class Settings extends React.Component<any, State> {
     lastNameReceived: '',
     new_email: '',
     emailReceived: '',
-    email: ''
+    email: '',
+    snackBarOpen: false,
+    snackBarMessage: ''
   }
 
   logout = async () => {
@@ -47,12 +51,12 @@ class Settings extends React.Component<any, State> {
     try {
       const res = await AuthenticationService.getPasswordResetLink(this.state.email)
       if (!res.data.success) {
-        M.toast({ html: 'There was an error.' })
+        this.openSnackBar('There was an error.')
       } else {
-        M.toast({ html: 'Check your email for a link to reset your password.' })
+        this.openSnackBar('Check your email for a link to reset your password.')
       }
     } catch (err) {
-      M.toast({ html: 'Password could not be reset.' })
+      this.openSnackBar('Password could not be reset.')
     }
   }
 
@@ -82,7 +86,7 @@ class Settings extends React.Component<any, State> {
         id
       }
       await UserService.updateUser(payload)
-      M.toast({ html: 'Profile updated successfully.' })
+      this.openSnackBar('Profile updated successfully.')
       this.updateView()
     } catch (err) {
       AuthenticationService.setUserLoggedOut()
@@ -98,13 +102,13 @@ class Settings extends React.Component<any, State> {
         password: this.state.password
       }
       const res = await UserService.updateUser(payload)
-      M.toast({ html: res.data.message })
+      this.openSnackBar(res.data.message)
       if (res.data.success) {
         this.updateView()
       }
     } catch (err) {
       console.log(err)
-      M.toast({ html: 'Passwords do not match.' })
+      this.openSnackBar('Passwords do not match.')
     }
   }
 
@@ -112,11 +116,11 @@ class Settings extends React.Component<any, State> {
     e.preventDefault()
     try {
       await UserService.deleteUser()
-      M.toast({ html: 'Account deleted.' })
+      this.openSnackBar('Account deleted.')
       this.props.history.push('/')
     } catch (err) {
       console.log(err)
-      M.toast({ html: 'There was an error.' })
+      this.openSnackBar('There was an error.')
     }
   }
 
@@ -124,14 +128,13 @@ class Settings extends React.Component<any, State> {
     e.preventDefault()
     try {
       const res = await AuthenticationService.getPasswordResetLink(this.state.email)
-      M.toast({ html: res.data.message })
+      this.openSnackBar(res.data.message)
       if (res.data.success) {
-        // log out
         this.logout()
       }
     } catch (err) {
       console.log(err)
-      M.toast({ html: 'There was an error.' })
+      this.openSnackBar('There was an error.')
     }
   }
 
@@ -158,7 +161,22 @@ class Settings extends React.Component<any, State> {
     modal.open()
   }
 
+  openSnackBar (message: string) {
+    this.setState({
+      snackBarOpen: true,
+      snackBarMessage: message
+    })
+  }
+
+  closeSnackBar = () => {
+    this.setState({
+      snackBarOpen: false,
+      snackBarMessage: ''
+    })
+  }
+
   render () {
+    const { snackBarMessage, snackBarOpen } = this.state
     return (
       <Fade>
         <div>
@@ -232,6 +250,18 @@ class Settings extends React.Component<any, State> {
               <DeleteModal deleteFunction={this.deleteAccount}></DeleteModal>
           </div>
         </div>
+
+        <Snackbar
+          open={snackBarOpen}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          onClose={this.closeSnackBar}
+          autoHideDuration={4000}
+          message={snackBarMessage}
+          key={'bottom' + 'center'}
+        />
       </Fade>
     )
   }

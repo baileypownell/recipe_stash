@@ -9,7 +9,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogActions,
-  CircularProgress
+  CircularProgress,
 } from '@material-ui/core'
 import Slide from '@material-ui/core/Slide'
 import ReactQuill from 'react-quill'
@@ -30,7 +30,6 @@ import { tags } from '../../../models/tags'
 import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache'
 import './RecipeDialog.scss'
 import { withRouter } from 'react-router-dom'
-import M from 'materialize-css'
 import { FullRecipe, RawRecipe } from '../../../../server/recipe'
 import { queryClient } from '../../App/App'
 const { htmlToText } = require('html-to-text')
@@ -57,7 +56,9 @@ class RecipeDialog extends React.Component<any, any> {
       tags: tags,
       defaultTileImageKey: this.props.recipe.defaultTileImageKey,
       recipeValid: null,
-      cloning: this.props.cloning
+      cloning: this.props.cloning,
+      snackBarOpen: false,
+      snackBarMessage: ''
     }
 
     componentDidMount () {
@@ -136,11 +137,11 @@ class RecipeDialog extends React.Component<any, any> {
           }
           return updatedQueryState
         })
-        M.toast({ html: 'Recipe deleted.' })
+        this.props.openSnackBar('Recipe deleted.')
         this.props.history.push('/recipes')
       } catch (err) {
         console.log(err)
-        M.toast({ html: 'There was an error.' })
+        this.props.openSnackBar('There was an error.')
       }
     }
 
@@ -190,7 +191,7 @@ class RecipeDialog extends React.Component<any, any> {
           defaultTile: this.state.defaultTileImageKey
         }
         const recipe = await this.props.addRecipeMutation(param)
-        M.toast({ html: 'Recipe added.' })
+        this.props.openSnackBar('Recipe added.')
         this.setState({
           filesToDelete: [],
           newFiles: [],
@@ -205,7 +206,7 @@ class RecipeDialog extends React.Component<any, any> {
         this.setState({
           loading: false
         })
-        M.toast({ html: 'There was an error.' })
+        this.props.openSnackBar('There was an error.')
       }
     }
 
@@ -273,7 +274,7 @@ class RecipeDialog extends React.Component<any, any> {
         this.setState({
           loading: false
         })
-        M.toast({ html: 'There was an error updating the recipe.' })
+        this.props.openSnackBar('There was an error updating the recipe.')
       }
     }
 
@@ -281,7 +282,7 @@ class RecipeDialog extends React.Component<any, any> {
       // Update recipe details to reflect the change
       this.props.triggerDialog()
       this.props.fetchData()
-      M.toast({ html: 'Recipe updated.' })
+      this.props.openSnackBar('Recipe updated.')
       this.setState({
         filesToDelete: [],
         newFiles: []
@@ -299,88 +300,88 @@ class RecipeDialog extends React.Component<any, any> {
       const { edit, cloning, recipe, open } = this.props
 
       return (
-            <Dialog
-                fullScreen
-                scroll="paper"
-                open={open}
-                onClose={this.props.triggerDialog}
-                TransitionComponent={Transition}>
-                <DialogTitle className="title">{ edit
-                  ? (cloning ? <span>Add Recipe </span> : <span>Edit Recipe</span>)
-                  : <span>Add Recipe</span> }
-                </DialogTitle>
-                <DialogContent >
-                    <h3>Title</h3>
-                    <ReactQuill value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
-                    <h3>Ingredients</h3>
-                    <ReactQuill value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
-                    <h3>Directions</h3>
-                    <ReactQuill value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
+        <Dialog
+            fullScreen
+            scroll="paper"
+            open={open}
+            onClose={this.props.triggerDialog}
+            TransitionComponent={Transition}>
+            <DialogTitle className="title">{ edit
+              ? (cloning ? <span>Add Recipe </span> : <span>Edit Recipe</span>)
+              : <span>Add Recipe</span> }
+            </DialogTitle>
+            <DialogContent >
+                <h3>Title</h3>
+                <ReactQuill value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
+                <h3>Ingredients</h3>
+                <ReactQuill value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
+                <h3>Directions</h3>
+                <ReactQuill value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
 
-                    <FormControl variant="filled" style={{ width: '100%', margin: '10px 0 0 0' }}>
-                        <InputLabel>Category</InputLabel>
-                        <Select
-                        id="category"
-                        value={category}
-                        onChange={this.updateCategory}
-                        >
-                        {
-                            options.map((val, index: number) => {
-                              return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
-                            })
-                        }
-                        </Select>
-                    </FormControl>
-
-                    <h3>Recipe Tags</h3>
-                    <div>
-                        { tags.map((tag, index) => {
-                          return <div
-                                onClick={this.toggleTagSelectionStatus}
-                                id={index.toString()}
-                                className={`chip z-depth-2 ${recipe && tags[index].selected ? 'selectedTag' : 'null'}`}
-                                key={index}>
-                                    {tag.label}
-                                </div>
+                <FormControl variant="filled" style={{ width: '100%', margin: '10px 0 0 0' }}>
+                    <InputLabel>Category</InputLabel>
+                    <Select
+                    id="category"
+                    value={category}
+                    onChange={this.updateCategory}
+                    >
+                    {
+                        options.map((val, index: number) => {
+                          return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
                         })
-                        }
-                    </div>
+                    }
+                    </Select>
+                </FormControl>
 
-                    <FileUpload
-                        defaultTileImageUUID={this.props.defaultTileImageKey}
-                        passDefaultTileImage={this.setDefaultTileImage}
-                        preExistingImageUrls={this.props.presignedUrls$}
-                        passFilesToDelete={this.setFilesToDelete}
-                        passFiles={this.setFiles}>
-                    </FileUpload>
-                </DialogContent>
-                <DialogActions>
-                    <div className="button-alignment">
-                        <div>
-                            <Button color="primary" variant="contained" onClick={this.deleteRecipe}>
-                                Delete Recipe <i className="fas fa-trash"></i>
-                            </Button>
-                            <Button onClick={() => this.props.triggerDialog()} variant="contained" >
-                                Cancel
-                            </Button>
-                        </div>
+                <h3>Recipe Tags</h3>
+                <div>
+                    { tags.map((tag, index) => {
+                      return <div
+                            onClick={this.toggleTagSelectionStatus}
+                            id={index.toString()}
+                            className={`chip z-depth-2 ${recipe && tags[index].selected ? 'selectedTag' : 'null'}`}
+                            key={index}>
+                                {tag.label}
+                            </div>
+                    })
+                    }
+                </div>
 
-                        <Button
-                        onClick={this.saveRecipe}
-                        disabled={!recipeValid}
-                        variant="contained"
-                        color="secondary">
-                            { loading
-                              ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
-                              : <>
-                                {!cloning ? 'Update Recipe' : 'Add Recipe' }
-                                <i className="fas fa-check-square"></i>
-                            </>
-                            }
+                <FileUpload
+                    defaultTileImageUUID={this.props.defaultTileImageKey}
+                    passDefaultTileImage={this.setDefaultTileImage}
+                    preExistingImageUrls={this.props.presignedUrls$}
+                    passFilesToDelete={this.setFilesToDelete}
+                    passFiles={this.setFiles}>
+                </FileUpload>
+            </DialogContent>
+            <DialogActions>
+                <div className="button-alignment">
+                    <div>
+                        <Button color="primary" variant="contained" onClick={this.deleteRecipe}>
+                            Delete Recipe <i className="fas fa-trash"></i>
+                        </Button>
+                        <Button onClick={() => this.props.triggerDialog()} variant="contained" >
+                            Cancel
                         </Button>
                     </div>
-                </DialogActions>
-            </Dialog>
+
+                    <Button
+                    onClick={this.saveRecipe}
+                    disabled={!recipeValid}
+                    variant="contained"
+                    color="secondary">
+                        { loading
+                          ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
+                          : <>
+                            {!cloning ? 'Update Recipe' : 'Add Recipe' }
+                            <i className="fas fa-check-square"></i>
+                        </>
+                        }
+                    </Button>
+                </div>
+            </DialogActions>
+        </Dialog>
       )
     }
 }
