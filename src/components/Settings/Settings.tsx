@@ -196,54 +196,6 @@ class Settings extends React.Component<any, State> {
                 </div>
               </div>
             </div>
-            {/* <ul className="collapsible">
-              <li>
-                <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
-                <div className="collapsible-body">
-                  <div className="input-field ">
-                      <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
-                      <label htmlFor="email">New Email</label>
-                  </div>
-                  <div className="input-field">
-                    <label htmlFor="password">Password</label>
-                    <input id="password" type="password" value={this.state.password} onChange={this.updateInput} ></input>
-                  </div>
-                  <Button color="secondary" onClick={this.updateEmail} variant="contained">Save</Button>
-                  </div>
-              </li>
-              <li>
-                <div className="collapsible-header"><i className="material-icons">person</i>Update Name</div>
-                <div className="collapsible-body">
-                    <div className="input-field ">
-                        <input id="firstName" type="text" value={this.state.firstName} onChange={this.updateInput}></input>
-                        <label htmlFor="firstName" >New First Name</label>
-                    </div>
-                    <div className="input-field ">
-                        <input id="lastName" type="text" value={this.state.lastName} onChange={this.updateInput}></input>
-                        <label htmlFor="lastName">New Last Name</label>
-                    </div>
-                    <Button color="secondary" onClick={this.updateProfile} variant="contained">Save</Button>
-                </div>
-              </li>
-              <li>
-                  <div className="collapsible-header"><i className="material-icons">security</i>Update Password</div>
-                  <div className="collapsible-body">
-                  <p>Click the button below to receive an email with a link to reset your password.</p>
-                  <Button color="secondary" onClick={this.updatePassword} variant="contained">Send Email</Button>
-                </div>
-              </li>
-              <li>
-                <div className="collapsible-header"><i className="material-icons">delete</i>Delete Account</div>
-                <div className="collapsible-body">
-                <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
-                    <Button
-                      color="secondary"
-                      onClick={this.openDeleteModal}
-                      variant="contained">Delete Account <i className="fas fa-exclamation-triangle"></i>
-                    </Button>
-                  </div>
-              </li>
-            </ul> */}
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}> <i className="material-icons">email</i>Update Email </AccordionSummary>
               <AccordionDetails>
@@ -288,7 +240,8 @@ class Settings extends React.Component<any, State> {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}><i className="material-icons">delete</i>Delete Account</AccordionSummary>
               <AccordionDetails>
-                <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
+                <p>If you are sure you want to delete your account, click the button below. This action
+                  <span id="bold">cannot</span> be undone.</p>
                 <div>
                   <Button
                     color="secondary"
