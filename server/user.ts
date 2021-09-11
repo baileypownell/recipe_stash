@@ -44,7 +44,7 @@ router.post('/', (request: any, response, next) => {
       if (res.rows.length >= 1) {
         return response.status(403).send({ error: 'An account already exists for this email.' })
       } else {
-      // if user doesn't exist already, create them:
+        // if user doesn't exist already, create them:
         client.query('INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
           [firstName, lastName, hashedPassword, email],
           (err, res) => {
@@ -117,11 +117,11 @@ router.put('/reset-password', (request, response, next) => {
 })
 
 router.put('/', authMiddleware, (request: any, response, next) => {
-  const { first_name, last_name, password, new_email } = request.body
+  const { firstName, lastName, password, newEmail } = request.body
   const userId = request.userID
-  if (first_name && last_name) {
+  if (firstName && lastName) {
     client.query('UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
-      [first_name, last_name, userId],
+      [firstName, lastName, userId],
       (err, res) => {
         if (err) return next(err)
         if (res.rows) {
@@ -131,7 +131,7 @@ router.put('/', authMiddleware, (request: any, response, next) => {
         }
       })
   }
-  if (new_email) {
+  if (newEmail) {
     // make sure password is correct, if not, reject
     client.query('SELECT * FROM users WHERE user_uuid=$1',
       [userId],
@@ -145,7 +145,7 @@ router.put('/', authMiddleware, (request: any, response, next) => {
             // update record in DB
             // but first ensure it is unique!
             client.query('SELECT * FROM users WHERE email=$1',
-              [new_email],
+              [newEmail],
               (err, res) => {
                 if (err) return next(err)
                 if (res.rows.length) {
@@ -155,7 +155,7 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                   })
                 } else {
                   client.query('UPDATE users SET email=$1 WHERE user_uuid=$2',
-                    [new_email, userId],
+                    [newEmail, userId],
                     (err, res) => {
                       if (err) return next(err)
                       if (res) {
@@ -182,7 +182,7 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                             })
                           }
                         })
-                      };
+                      }
                     })
                 }
               })

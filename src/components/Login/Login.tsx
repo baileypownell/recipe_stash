@@ -50,7 +50,7 @@ class Login extends React.Component {
     })
   }
 
-  sendPasswordResetLink = async (e): void => {
+  sendPasswordResetLink = async (e): Promise<void> => {
     e.preventDefault()
     try {
       const res = await AuthenticationService.getPasswordResetLink(
@@ -60,6 +60,7 @@ class Login extends React.Component {
         ? this.openSnackBar('Check your email for a link to reset your password.')
         : this.openSnackBar('There was an error.')
     } catch (err) {
+      console.log(err)
       this.openSnackBar('There was an error.')
     }
   }
@@ -204,7 +205,7 @@ class Login extends React.Component {
             horizontal: 'center'
           }}
           onClose={this.closeSnackBar}
-          autoHideDuration={4000}
+          autoHideDuration={3000}
           message={snackBarMessage}
           key={'bottom' + 'center'}
         />

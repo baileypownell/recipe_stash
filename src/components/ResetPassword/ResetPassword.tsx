@@ -4,7 +4,7 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import './ResetPassword.scss'
 import AuthenticationService from '../../services/auth-service'
 import { isPasswordInvalid } from '../../models/functions'
-import { Snackbar } from '@material-ui/core'
+import { Snackbar, Button } from '@material-ui/core'
 
 class ResetPassword extends React.Component<any, any> {
   state = {
@@ -80,11 +80,11 @@ class ResetPassword extends React.Component<any, any> {
     try {
       const reset_password_token = this.props.match.params.token
       await AuthenticationService.updatePassword(this.state.password, reset_password_token, this.state.email)
-      this.openSnackBar('Password updated!')
+      this.openSnackBar('Password updated! Redirecting...')
       this.setState({
         loading: false
       })
-      this.props.history.push('/recipes')
+      setTimeout(() => this.props.history.push('/recipes'), 3000)
     } catch (err) {
       this.openSnackBar('There was an error.')
       this.setState({
@@ -116,10 +116,11 @@ class ResetPassword extends React.Component<any, any> {
                 ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
                 : null
             }
-            <button
+            <Button
               disabled={this.state.passwordInvalid}
-              className="waves-effect waves-light btn"
-              >
+              variant="contained"
+              color="secondary"
+              type="submit">
               {this.state.loading
                 ? <ClipLoader
                   css={'border-color: white;'}
@@ -128,7 +129,7 @@ class ResetPassword extends React.Component<any, any> {
                   loading={this.state.loading}
                 />
                 : 'Submit'}
-            </button>
+            </Button>
             </form>
           </div>
 

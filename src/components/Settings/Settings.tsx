@@ -117,7 +117,7 @@ class Settings extends React.Component<any, State> {
     try {
       await UserService.deleteUser()
       this.openSnackBar('Account deleted.')
-      this.props.history.push('/')
+      setTimeout(() => this.props.history.push('/'), 2000)
     } catch (err) {
       console.log(err)
       this.openSnackBar('There was an error.')
@@ -130,7 +130,7 @@ class Settings extends React.Component<any, State> {
       const res = await AuthenticationService.getPasswordResetLink(this.state.email)
       this.openSnackBar(res.data.message)
       if (res.data.success) {
-        this.logout()
+        setTimeout(() => this.logout(), 3000)
       }
     } catch (err) {
       console.log(err)
@@ -258,7 +258,7 @@ class Settings extends React.Component<any, State> {
             horizontal: 'center'
           }}
           onClose={this.closeSnackBar}
-          autoHideDuration={4000}
+          autoHideDuration={3000}
           message={snackBarMessage}
           key={'bottom' + 'center'}
         />
