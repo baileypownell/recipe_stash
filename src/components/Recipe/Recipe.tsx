@@ -10,7 +10,7 @@ import { RecipeService, RecipeInterface } from '../../services/recipe-services'
 import { appear } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
-import { Divider } from '@material-ui/core'
+import { Divider, Fab, Tooltip } from '@material-ui/core'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -166,25 +166,23 @@ class Recipe extends React.Component<any, State> {
                   <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
                     <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
                   </div>
-                  { width > 700
-                    ? <div onClick={this.triggerDialog} className="fixed-action-btn">
-                      <a className="btn-floating btn-large" id="primary-color">
-                        <i className="large material-icons">mode_edit</i>
-                      </a>
-
-                      <ul>
-                          <li
-                            onClick={this.cloneRecipe}
-                            className="tooltipped"
-                            data-position="left"
-                            data-tooltip="Duplicate this recipe">
-                              <a className="btn-floating green-icon"><i className="far fa-clone"></i></a>
-                          </li>
-                        </ul>
-                    </div>
-                    : null }
                 </div>
               </div>
+              { width > 700
+                ? <div id="floating-buttons">
+                  <Tooltip title="Edit recipe" aria-label="edit recipe">
+                    <Fab color="secondary" onClick={this.triggerDialog}>
+                      <i className="material-icons">mode_edit</i>
+                    </Fab>
+                  </Tooltip>
+
+                  <Tooltip title="Duplicate recipe" aria-label="duplicate">
+                    <Fab color="primary" onClick={this.cloneRecipe}>
+                      <i className="far fa-clone"></i>
+                    </Fab>
+                  </Tooltip>
+                </div>
+                : null }
             </Fade>
           </div>
         : <div className="BounceLoader">
