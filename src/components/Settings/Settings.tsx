@@ -6,7 +6,8 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import Fade from 'react-reveal/Fade'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
-import { Button, Snackbar } from '@material-ui/core'
+import { Button, Snackbar, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 let modalInstance
 
@@ -195,7 +196,7 @@ class Settings extends React.Component<any, State> {
                 </div>
               </div>
             </div>
-            <ul className="collapsible">
+            {/* <ul className="collapsible">
               <li>
                 <div className="collapsible-header"><i className="material-icons">email</i>Update Email</div>
                 <div className="collapsible-body">
@@ -242,7 +243,62 @@ class Settings extends React.Component<any, State> {
                     </Button>
                   </div>
               </li>
-            </ul>
+            </ul> */}
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}> <i className="material-icons">email</i>Update Email </AccordionSummary>
+              <AccordionDetails>
+                <div className="input-field ">
+                  <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
+                  <label htmlFor="email">New Email</label>
+                  </div>
+                  <div className="input-field">
+                    <label htmlFor="password">Password</label>
+                    <input id="password" type="password" value={this.state.password} onChange={this.updateInput} ></input>
+                  </div>
+                  <div>
+                    <Button color="secondary" onClick={this.updateEmail} variant="contained">Save</Button>
+                  </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}> <i className="material-icons">person</i>Update Name</AccordionSummary>
+              <AccordionDetails>
+                <div className="input-field ">
+                    <input id="firstName" type="text" value={this.state.firstName} onChange={this.updateInput}></input>
+                    <label htmlFor="firstName" >New First Name</label>
+                  </div>
+                  <div className="input-field ">
+                    <input id="lastName" type="text" value={this.state.lastName} onChange={this.updateInput}></input>
+                    <label htmlFor="lastName">New Last Name</label>
+                  </div>
+                  <div>
+                    <Button color="secondary" onClick={this.updateProfile} variant="contained">Save</Button>
+                  </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}><i className="material-icons">security</i>Update Password</AccordionSummary>
+              <AccordionDetails>
+                <p>Click the button below to receive an email with a link to reset your password.</p>
+                <div>
+                  <Button color="secondary" onClick={this.updatePassword} variant="contained">Send Email</Button>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}><i className="material-icons">delete</i>Delete Account</AccordionSummary>
+              <AccordionDetails>
+                <p>If you are sure you want to delete your account, click the button below. This action <span id="bold">cannot</span> be undone.</p>
+                <div>
+                  <Button
+                    color="secondary"
+                    id="delete"
+                    onClick={this.openDeleteModal}
+                    variant="contained">Delete Account <i className="fas fa-exclamation-triangle"></i>
+                  </Button>
+                </div>
+              </AccordionDetails>
+            </Accordion>
           </div>
 
           {/* delete confirmation modal */}

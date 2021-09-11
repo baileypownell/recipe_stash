@@ -23,12 +23,6 @@
   }
 }
 
-
-
-button:not(.MuiButton-root) {
-  // @include button;
-}
-
 .settings {
   width: 90%;
   margin: 0 auto;
@@ -80,11 +74,6 @@ button:not(.MuiButton-root) {
   }
 }
 
-.collapsible-body {
-  padding: 1rem!important;
-  text-align: right;
-}
-
 #bold {
   font-weight: 800;
   font-style: italic;
@@ -92,4 +81,13 @@ button:not(.MuiButton-root) {
 
 #delete {
   background-color: $primary!important;
+}
+
+.MuiAccordionDetails-root {
+  display: flex;
+  flex-direction: column; 
+}
+
+.MuiAccordionSummary-content i {
+  margin-right: 8px;
 }
