@@ -17,15 +17,10 @@
     }
   }
   .searchbar {
-    width: 100%;
+    // width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    @include tablet {
-      min-width: 350px;
-      width: 30%;
-      margin: 0 0 0 auto;
-    }
     input {
       border-radius: 5px;
       color: white;

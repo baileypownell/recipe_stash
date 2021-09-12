@@ -6,6 +6,8 @@ import './Dashboard.scss'
 import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 import { queryClient } from '../App/App'
+import { InputBase } from '@material-ui/core'
+import FilterMenu from './FilterMenu/FilterMenu'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -203,25 +205,24 @@ class Dashboard extends React.Component<Props, State> {
         selectedFilters++
       }
     }
-
     selectedFilterSubject.next(selectedFilters)
   }
 
-  filter = (e: React.MouseEvent<HTMLElement>) => {
-    const currentState = appliedFiltersSubject.getValue()[(e.target as Element).id]
+  filter = (key: string) => {
+    const currentState = appliedFiltersSubject.getValue()[key]
     const filter = {
       ...appliedFiltersSubject.getValue(),
-      [(e.target as Element).id]: !currentState
+      [key]: !currentState
     }
     appliedFiltersSubject.next(filter)
     this.calculateSelectedFiltersNumber()
   }
 
-  filterByCategory = (e: React.MouseEvent<HTMLElement>) => {
-    const currentState = appliedCategorySubject.getValue()[(e.target as HTMLInputElement).id]
+  filterByCategory = (key: string) => {
+    const currentState = appliedCategorySubject.getValue()[key]
     const filter: CategoryInterface = {
       ...appliedCategorySubject.getValue(),
-      [(e.target as Element).id]: !currentState
+      [key]: !currentState
     }
     appliedCategorySubject.next(filter)
     this.calculateSelectedFiltersNumber()
@@ -282,55 +283,22 @@ class Dashboard extends React.Component<Props, State> {
           <div>
             <h1>Recipe Box</h1>
             <div className="searchbar">
-                <input
-                  onChange={this.handleSearchChange}
-                  value={userInputSubject.getValue()}
-                  type="text" placeholder="Find a recipe">
-                </input>
-                <i className="fas fa-search"></i>
-
-                <button className='dropdown-trigger btn' data-target='dropdown' id="filter-button">
-                  <span>Filter</span>
-                  {
-                    selectedFilterSubject.getValue() > 0
-                      ? `(${selectedFilterSubject.getValue()})`
-                      : <i className="small material-icons">filter_list</i>
-                  }
-                </button>
-                <ul id='dropdown' className='dropdown-content'>
-                  <p>Features</p>
-                    {filterArray.map((item, index) => {
-                      return (
-                          <li key={index} >
-                            <label>
-                              <input
-                                checked={appliedFilt[item.key]}
-                                id={item.key}
-                                onClick={this.filter}
-                                type="checkbox" />
-                              <span>{item.name}</span>
-                              </label>
-                          </li>
-                      )
-                    })
-                    }
-                  <p>Categories</p>
-                    {filterCategoryArray.map((item, index) => {
-                      return (
-                          <li key={index}>
-                            <label>
-                                <input
-                                  checked={appliedCat[item.key]}
-                                  id={item.key}
-                                  onClick={this.filterByCategory}
-                                  type="checkbox" />
-                                <span>{item.name}</span>
-                              </label>
-                          </li>
-                      )
-                    })
-                    }
-                </ul>
+              <InputBase
+                placeholder="Search…"
+                value={userInputSubject.getValue()}
+                onChange={this.handleSearchChange}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+              <i className="fas fa-search"></i>
+              <FilterMenu
+                numberOfSelectedFilters={selectedFilterSubject.getValue()}
+                filters={filterArray}
+                appliedFilt={appliedFilt}
+                appliedCat={appliedCat}
+                filter={this.filter}
+                filterByCategory={this.filterByCategory}
+                categories={filterCategoryArray}>
+              </FilterMenu>
             </div>
           </div>
         </div>
