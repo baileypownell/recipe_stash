@@ -4,7 +4,6 @@
 .title {
   background-color: $green;
   color: $white;
-  font-family: 'Roboto', sans-serif;
   padding: 3vw;
   display: flex;
   align-items: center;
@@ -49,7 +48,6 @@
   }
   h2, h3, p {
     color: $secondary;
-    font-family: 'Roboto', sans-serif;
   }
   #table {
     padding: 2vw 0;

@@ -1,6 +1,5 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
-import M from 'materialize-css'
 import './Settings.scss'
 import DeleteModal from '../DeleteModal/DeleteModal'
 import Fade from 'react-reveal/Fade'
@@ -8,8 +7,6 @@ import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
 import { Button, Snackbar, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-
-let modalInstance
 
 type State = {
   password: string
@@ -19,9 +16,10 @@ type State = {
   lastNameReceived: string
   new_email: string
   emailReceived: string
-  email: string,
-  snackBarOpen: boolean,
+  email: string
+  snackBarOpen: boolean
   snackBarMessage: string
+  deleteModalOpen: boolean
 }
 
 class Settings extends React.Component<any, State> {
@@ -35,7 +33,8 @@ class Settings extends React.Component<any, State> {
     emailReceived: '',
     email: '',
     snackBarOpen: false,
-    snackBarMessage: ''
+    snackBarMessage: '',
+    deleteModalOpen: false
   }
 
   logout = async () => {
@@ -62,11 +61,6 @@ class Settings extends React.Component<any, State> {
   }
 
   componentDidMount () {
-    const elems = document.querySelectorAll('.collapsible')
-    M.Collapsible.init(elems, {})
-    const modal = document.querySelector('.modal')
-    modalInstance = modal
-    M.Modal.init(modal, {})
     this.updateView()
   }
 
@@ -150,7 +144,6 @@ class Settings extends React.Component<any, State> {
         email: user.email,
         emailReceived: user.email
       })
-      M.updateTextFields()
     } catch (err) {
       console.log(err)
       this.props.history.push('/login')
@@ -158,8 +151,7 @@ class Settings extends React.Component<any, State> {
   }
 
   openDeleteModal = () => {
-    const modal = M.Modal.getInstance(modalInstance)
-    modal.open()
+    this.setState({ deleteModalOpen: true })
   }
 
   openSnackBar (message: string) {
@@ -177,7 +169,7 @@ class Settings extends React.Component<any, State> {
   }
 
   render () {
-    const { snackBarMessage, snackBarOpen } = this.state
+    const { snackBarMessage, snackBarOpen, deleteModalOpen } = this.state
     return (
       <Fade>
         <div>
@@ -247,16 +239,11 @@ class Settings extends React.Component<any, State> {
                     color="secondary"
                     id="delete"
                     onClick={this.openDeleteModal}
-                    variant="contained">Delete Account <i className="fas fa-exclamation-triangle"></i>
+                    variant="contained">Delete Account <i style={{ marginLeft: '8px' }} className="fas fa-exclamation-triangle"></i>
                   </Button>
                 </div>
               </AccordionDetails>
             </Accordion>
-          </div>
-
-          {/* delete confirmation modal */}
-          <div id="confirmation-modal" className="modal">
-              <DeleteModal deleteFunction={this.deleteAccount}></DeleteModal>
           </div>
         </div>
 
@@ -271,6 +258,8 @@ class Settings extends React.Component<any, State> {
           message={snackBarMessage}
           key={'bottom' + 'center'}
         />
+
+      <DeleteModal open={deleteModalOpen} deleteFunction={this.deleteAccount} closeModal={() => this.setState({ deleteModalOpen: false })}></DeleteModal>
       </Fade>
     )
   }

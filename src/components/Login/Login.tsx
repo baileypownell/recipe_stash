@@ -2,10 +2,9 @@ import React from 'react'
 import ClipLoader from 'react-spinners/ClipLoader'
 import GoogleLogin from 'react-google-login'
 import './Login.scss'
-import M from 'materialize-css'
 import AuthenticationService from '../../services/auth-service'
 import Fade from 'react-reveal/Fade'
-import { Button, Snackbar } from '@material-ui/core'
+import { Button, Snackbar, TextField } from '@material-ui/core'
 
 class Login extends React.Component {
   state = {
@@ -16,10 +15,6 @@ class Login extends React.Component {
     signInError: false,
     snackBarOpen: false,
     snackBarMessage: ''
-  }
-
-  componentDidMount (): void {
-    M.updateTextFields()
   }
 
   updateInput = (e: any): void => {
@@ -125,29 +120,18 @@ class Login extends React.Component {
             <Fade top>
               <form className="fade" onSubmit={this.signin}>
                 <h1>Login</h1>
-                <div className="input-field">
-                  <input
-                    className="materialize-input"
-                    id="email"
-                    onChange={this.updateInput}
-                    type="email"
-                    name="email"
-                  />
-                  <label className="active" htmlFor="email">
-                    Email
-                  </label>
-                </div>
-                <div className="input-field">
-                  <input
-                    onChange={this.updateInput}
-                    id="password"
-                    type="password"
-                    name="password"
-                  />
-                  <label className="active" htmlFor="password">
-                    Password
-                  </label>
-                </div>
+                <TextField
+                  id="email"
+                  label="Email"
+                  onChange={this.updateInput}
+                  type="email"
+                  name="email" />
+                <TextField
+                  onChange={this.updateInput}
+                  id="password"
+                  type="password"
+                  label="Password"
+                  name="password" />
 
                 <div className="buttons">
                   <Button

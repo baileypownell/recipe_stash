@@ -5,7 +5,6 @@
 .title-bar {
   background-color: $green;
   color: white;
-  font-family: 'Roboto', sans-serif;
   padding: 10px;
   > div {
     display: flex;
@@ -112,9 +111,6 @@
         transition: all .4s;
       }
     }
-  }
-  h1, h2, h3 {
-    font-family: 'Roboto', sans-serif;
   }
 }
 

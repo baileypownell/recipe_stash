@@ -5,7 +5,7 @@ import AuthenticationService from '../../services/auth-service'
 import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
 import { isPasswordInvalid } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
-import { Button, Snackbar } from '@material-ui/core'
+import { Button, Snackbar, TextField } from '@material-ui/core'
 
 type Props = {
   history: any
@@ -171,33 +171,17 @@ class Signup extends React.Component<Props, State> {
             <Fade top>
               <form onSubmit={this.signup}>
                 <h1>Signup</h1>
-                <div className="input-field">
-                  <input onChange={this.updateInput} id="firstName" type="text" name="firstname" />
-                  <label htmlFor="firstName" >
-                    First Name
-                  </label>
-                </div>
-                <div className="input-field">
-                  <input onChange={this.updateInput} id="lastName" type="text" name="lastname" />
-                <label htmlFor="lastName" >Last Name</label>
-                </div>
-                <div className="input-field">
-                    <input onChange={this.updateInput} id="email" type="email" name="email" />
-                  <label htmlFor="email" >Email</label>
-                </div>
-                <div className="input-field">
-                  <input onChange={this.validatePassword} id="password" type="password" name="password" />
-                  <label htmlFor="password" >Password</label>
+                <TextField onChange={this.updateInput} id="firstName" type="text" name="firstname" label="First Name" />
+                <TextField onChange={this.updateInput} id="lastName" type="text" name="lastname" label="Last Name" />
+                <TextField onChange={this.updateInput} id="email" type="email" name="email" label="Email" />
+                <TextField onChange={this.validatePassword} id="password" type="password" name="password" label="Password" />
                   {
                     insufficientPasswordMessage
-                      ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
+                      ? <p className="error">Passwords must be at least 8 characters long and have at least 
+                      one uppercase and one lower case character.</p>
                       : null}
-                </div>
-                <div className="input-field">
-                  <input onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" />
+                <TextField onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" label="Confirm Password" />
                   {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
-                <label htmlFor="confirmPassword">Confirm Password</label>
-                </div>
                 <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
                 <Button variant="contained" color="secondary" disabled={!formValid} type="submit">
                   {loading

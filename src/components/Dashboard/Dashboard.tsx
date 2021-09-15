@@ -6,7 +6,7 @@ import './Dashboard.scss'
 import { SortedRecipeInterface, BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString } from '../../services/recipe-services'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 import { queryClient } from '../App/App'
-import { InputBase } from '@material-ui/core'
+import { InputBase, Button } from '@material-ui/core'
 import FilterMenu from './FilterMenu/FilterMenu'
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
@@ -120,11 +120,6 @@ class Dashboard extends React.Component<Props, State> {
 
   componentDidMount () {
     unfilteredRecipesSubject.next(this.props.recipes)
-    // filter dropdown
-    const dropdown = document.querySelector('.dropdown-trigger')
-    M.Dropdown.init(dropdown as Element, {
-      closeOnClick: false
-    })
 
     const userInputSaved = window.sessionStorage.getItem('userInput')
     if (userInputSaved) {
@@ -305,8 +300,8 @@ class Dashboard extends React.Component<Props, State> {
 
         <div className="dashboard">
             <>
-              <a onClick={this.toggleView} id="list" className="waves-effect btn-flat"><i id="list" className="fas fa-bars"></i></a>
-              <a onClick={this.toggleView} id="grid" className="waves-effect btn-flat"><i id="grid" className="fas fa-th"></i></a>
+              <Button onClick={this.toggleView}><i id="list" className="fas fa-bars"></i></Button>
+              <Button onClick={this.toggleView}><i id="grid" className="fas fa-th"></i></Button>
               { filteredRecipes !== null
                 ? Object.keys(mealCategories).map(mealCat => {
                   return (

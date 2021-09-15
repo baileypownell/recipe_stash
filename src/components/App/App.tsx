@@ -3,7 +3,7 @@ import AuthenticationService from '../../services/auth-service'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { ThemeProvider, createTheme } from '@material-ui/core'
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
-import { Nav, Home, Login, ResetPassword, Signup, Settings } from '..'
+import { Nav, Home, ResetPassword, Signup, Settings, Login } from '..'
 import GuardedRoute from '../../GuardedRoute'
 import RecipeCache from '../RecipeCache/RecipeCache'
 
