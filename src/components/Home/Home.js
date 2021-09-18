@@ -32,7 +32,7 @@ class Home extends React.Component {
                 <div id="phone-image">
                   <img src={mobileView} alt="whisk" />
                   <Button variant="contained" color="secondary" onClick={this.start}>
-                    Get Started <i className="fas fa-arrow-circle-right"></i>
+                    Get Started <i className="fas fa-arrow-circle-right" style={{ marginLeft: '8px' }}></i>
                   </Button>
                 </div>
               </Fade>

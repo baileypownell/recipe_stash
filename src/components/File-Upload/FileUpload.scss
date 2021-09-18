@@ -102,16 +102,6 @@
     max-width: none;
 }
 
-[type="checkbox"].filled-in:checked + span:not(.lever):after {
-    border: 2px solid white!important;
-    background-color: white!important;
-}
-
-[type="checkbox"]:checked + span:not(.lever):before {
-    border-right: 3px solid $primary !important;
-    border-bottom: 3px solid $primary !important;
-}
-
 .file-upload {
     padding: 20px 0;
 }

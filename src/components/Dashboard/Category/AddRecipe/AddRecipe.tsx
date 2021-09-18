@@ -221,7 +221,7 @@ class AddRecipe extends React.Component<Props, State> {
             <i className="fas fa-plus-circle"></i>
         </div>
           : <Button
-              color="secondary"
+              className="add-button"
               variant="contained"
               onClick={this.toggleModal}>
               Add Recipe

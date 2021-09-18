@@ -44,25 +44,12 @@ body {
   box-sizing: border-box;
 }
 
-// input:focus,
-// textarea:focus {
-//   border-bottom: 1px solid $primary!important;
-//   -webkit-box-shadow: 0 1px 0 0 $primary!important;
-//   box-shadow: 0 1px 0 0 $primary!important;
-// }
-
 label {
   color: $secondary!important;
 }
 
 .dropdown-content li > a, .dropdown-content li > span {
   color: $secondary!important;
-}
-
-
-[type="checkbox"]:checked + span:not(.lever):before {
-  border-right: 3px solid $orange!important;
-  border-bottom: 3px solid $orange!important;
 }
 
 .chip {
@@ -73,10 +60,6 @@ label {
   .input-field input {
     border-bottom: 1px solid white!important;
   }
-
-  // .input-field input:focus {
-  //     border-bottom:1px solid $primary!important;
-  // }  
 }
 
 .recipe-modal {
