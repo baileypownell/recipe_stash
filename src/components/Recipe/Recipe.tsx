@@ -1,7 +1,6 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
 import './Recipe.scss'
-import M from 'materialize-css'
 import BounceLoader from 'react-spinners/BounceLoader'
 import DOMPurify from 'dompurify'
 import { BehaviorSubject } from 'rxjs'
@@ -10,7 +9,7 @@ import { RecipeService, RecipeInterface } from '../../services/recipe-services'
 import { appear } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
-import { Divider, Fab, Tooltip } from '@material-ui/core'
+import { Divider, Fab, Tooltip, Chip } from '@material-ui/core'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -59,7 +58,6 @@ class Recipe extends React.Component<any, State> {
           presignedUrlsSubject.next([])
         }
         const elems = document.querySelectorAll('.fixed-action-btn')
-        M.FloatingActionButton.init(elems, {})
       })
 
       const tagState = tags.map(tag => {
@@ -83,11 +81,6 @@ class Recipe extends React.Component<any, State> {
     const faded = document.querySelectorAll('.fade')
     setTimeout(() => appear(faded, 'fade-in'), 700)
     window.addEventListener('resize', this.handleWindowSizeChange)
-  }
-
-  componentDidUpdate () {
-    const elems = document.querySelectorAll('.dropdown-trigger')
-    M.Dropdown.init(elems, {})
   }
 
   componentWillUnmount () {
@@ -154,11 +147,10 @@ class Recipe extends React.Component<any, State> {
                   </div>
                   <div className="section">
                     {tags.map((tag) => (tag.selected
-                      ? <div
+                      ? <Chip 
                           key={tag.label}
-                          className="chip z-depth-2 selectedTag">
-                          { tag.label }
-                        </div>
+                          className={'chip selectedTag'}
+                          label={tag.label} />
                       : null)
                     )}
                   </div>

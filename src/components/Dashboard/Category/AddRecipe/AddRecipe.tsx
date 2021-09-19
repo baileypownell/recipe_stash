@@ -1,5 +1,4 @@
 import React, { ChangeEvent } from 'react'
-import M from 'materialize-css'
 import './AddRecipe.scss'
 import DOMPurify from 'dompurify'
 import ReactQuill from 'react-quill'
@@ -11,7 +10,7 @@ import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import options from '../../../../models/options'
 import { RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
-import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails, Snackbar } from '@material-ui/core'
+import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails, Snackbar, Button, Chip } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
 const { htmlToText } = require('html-to-text')
@@ -147,12 +146,6 @@ class AddRecipe extends React.Component<Props, State> {
     const prevOpenState = this.state.open
     this.setState({
       open: !prevOpenState
-    }, () => {
-      if (this.state.open) {
-        // recipe category chip tags
-        const chips = document.querySelectorAll('.chips')
-        M.Chips.init(chips, {})
-      }
     })
   }
 
@@ -168,8 +161,7 @@ class AddRecipe extends React.Component<Props, State> {
     })
   }
 
-  toggleTagSelectionStatus = (e) => {
-    const index = e.target.id
+  toggleTagSelectionStatus = (index: number) => {
     // 1. Make a shallow copy of the items
     const tags = [...this.state.tags]
     // 2. Make a shallow copy of the item you want to mutate
@@ -228,12 +220,13 @@ class AddRecipe extends React.Component<Props, State> {
              >
             <i className="fas fa-plus-circle"></i>
         </div>
-          : <a
-          onClick={this.toggleModal}
-          className="waves-effect waves-light btn add-button">
-          Add Recipe
-          <i className="fas fa-plus-circle"></i>
-        </a>
+          : <Button
+              className="add-button"
+              variant="contained"
+              onClick={this.toggleModal}>
+              Add Recipe
+              <i className="fas fa-plus-circle" style={{ marginLeft: '8px' }}></i>
+            </Button>
       }
 
       <Dialog fullScreen open={open} onClose={this.toggleModal} TransitionComponent={Transition as any}>
@@ -277,13 +270,12 @@ class AddRecipe extends React.Component<Props, State> {
                   <Typography>
                     {
                       this.state.tags.map((tag, index) => {
-                        return <div
-                          onClick={this.toggleTagSelectionStatus}
+                        return <Chip
+                          className={`chip ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
                           id={index.toString()}
-                          className={`chip z-depth-2 ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
-                          key={index}>
-                            {tag.label}
-                          </div>
+                          key={index}
+                          onClick={() => this.toggleTagSelectionStatus(index)}
+                          label={tag.label} />
                       })
                     }
                   </Typography>
@@ -297,19 +289,20 @@ class AddRecipe extends React.Component<Props, State> {
             </div>
           </div>
           <div className="modal-close-buttons">
-          <button
-            className={!this.state.recipeValid ? 'waves-effect waves-light btn disabled' : 'waves-effect waves-light btn enabled'}
+          <Button
+            variant="contained"
+            color="secondary"
             disabled={!this.state.recipeValid}
             onClick={this.createRecipe}>
               {this.state.loading
                 ? <Preloader/>
                 : <>
                   Add Recipe
-                  <i className="fas fa-check-square"></i>
+                  <i className="fas fa-check-square" style={{ marginLeft: '8px' }}></i>
                 </>
                 }
-            </button>
-            <button onClick={this.toggleModal} className="btn waves-effect waves-light grayBtn">Cancel</button>
+            </Button>
+            <Button onClick={this.toggleModal} variant="outlined">Cancel</Button>
         </div>
         </div>
         </div>

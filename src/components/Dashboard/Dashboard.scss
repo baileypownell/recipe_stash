@@ -5,7 +5,6 @@
 .title-bar {
   background-color: $green;
   color: white;
-  font-family: 'Roboto', sans-serif;
   padding: 10px;
   > div {
     display: flex;
@@ -17,12 +16,10 @@
     }
   }
   .searchbar {
-    // width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     input {
-      border-radius: 5px;
       color: white;
       width: 100%;
       border-bottom: 2px solid white!important;
@@ -112,9 +109,6 @@
         transition: all .4s;
       }
     }
-  }
-  h1, h2, h3 {
-    font-family: 'Roboto', sans-serif;
   }
 }
 

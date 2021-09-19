@@ -58,15 +58,11 @@
 }
 
 .chip {
-    background-color: white!important;
-    border: 1px solid $orange;
-    color: $orange!important;
     cursor: pointer!important;
     transition: all .4s;
     &:hover {
         background-color: $orange!important;
         color: white!important;
-        transform: translateY(-5px);
     }
 }
 
@@ -82,6 +78,7 @@
 .add-button {
     background-color: $orange!important;
     margin-bottom: 10px;
+    color: white!important;
     i {
         margin-left: 5px;
     }

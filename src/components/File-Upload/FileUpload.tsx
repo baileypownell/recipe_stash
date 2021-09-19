@@ -1,6 +1,6 @@
 import React from 'react'
 import './FileUpload.scss'
-import { Button, Snackbar } from '@material-ui/core'
+import { Button, Snackbar, Checkbox, FormControlLabel } from '@material-ui/core'
 const { v4: uuidv4 } = require('uuid')
 
 class FileUpload extends React.Component {
@@ -216,16 +216,19 @@ class FileUpload extends React.Component {
                       className="file-preview z-depth-2"
                       style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})` }}>
                       <div className="file-cover" >
-                      <label htmlFor={file.id}>
-                          <input
-                              checked={this.determineIfCheckedNew(file.file)}
-                              type="checkbox"
-                              onChange={(e) => this.setDefaultTileImageNew(file.file)}
-                              className="filled-in"
-                              id={file.id} />
-                              <span>Use as tile background image</span>
-                          </label>
-                          <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
+                      <FormControlLabel
+                        value="end"
+                        control={
+                          <Checkbox
+                            checked={this.determineIfCheckedNew(file.file)}
+                            id={file.id}
+                            onChange={(e) => this.setDefaultTileImageNew(file.file)}
+                            inputProps={{ 'aria-label': 'primary checkbox' }}/>
+                          }
+                          label="Use as tile background image"
+                          labelPlacement="end"
+                        />
+                        <i onClick={(e) => this.removeFile(file.id)} className="fas fa-trash"></i>
                       </div>
                   </div>
               ))}
@@ -233,16 +236,19 @@ class FileUpload extends React.Component {
                   <div
                       className="file-preview z-depth-2"
                       key={index}
-                      style={{ backgroundImage: `url(${url})`  }}>
+                      style={{ backgroundImage: `url(${url})` }}>
                       <div className="file-cover" >
-                          <label htmlFor={url}>
-                              <input
-                                  checked={this.determineIfChecked(url)}
-                                  type="checkbox"
-                                  onChange={(e) => this.setDefaultTileImage(e)}
-                                  className="filled-in" id={url} />
-                              <span>Use as tile background image</span>
-                          </label>
+                        <FormControlLabel
+                          value="end"
+                          control={
+                            <Checkbox
+                              checked={this.determineIfChecked(url)}
+                              id={url}
+                              onChange={(e) => this.setDefaultTileImage(e)}
+                              inputProps={{ 'aria-label': 'primary checkbox' }}/>
+                            }
+                            label="Use as tile background image"
+                            labelPlacement="end"/>
                           <i onClick={(e) => this.stageAWSFileDeletion(url)} className="fas fa-trash"></i>
                       </div>
                   </div>

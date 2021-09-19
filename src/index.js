@@ -4,7 +4,6 @@ import {
   App
 } from './components/index'
 
-import 'materialize-css/dist/css/materialize.min.css'
 import './scss/main.scss'
 
 ReactDOM.render(

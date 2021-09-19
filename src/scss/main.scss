@@ -2,6 +2,14 @@
 @import './mixins.scss';
 @import './variables.scss';
 
+body {
+  margin: 0;
+}
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
 h1, h2, h3, h4, h5, h6 {
     padding: 8px 0;
     margin: 0;
@@ -36,25 +44,12 @@ body {
   box-sizing: border-box;
 }
 
-input:focus,
-textarea:focus {
-  border-bottom: 1px solid $primary!important;
-  -webkit-box-shadow: 0 1px 0 0 $primary!important;
-  box-shadow: 0 1px 0 0 $primary!important;
-}
-
 label {
   color: $secondary!important;
 }
 
 .dropdown-content li > a, .dropdown-content li > span {
   color: $secondary!important;
-}
-
-
-[type="checkbox"]:checked + span:not(.lever):before {
-  border-right: 3px solid $orange!important;
-  border-bottom: 3px solid $orange!important;
 }
 
 .chip {
@@ -65,10 +60,6 @@ label {
   .input-field input {
     border-bottom: 1px solid white!important;
   }
-
-  .input-field input:focus {
-      border-bottom:1px solid $primary!important;
-  }  
 }
 
 .recipe-modal {
@@ -98,7 +89,7 @@ strong {
 
 button {
   i {
-    margin-left: 8px;
+    // margin-left: 8px;
     font-size: 1.2rem;
   }
 }

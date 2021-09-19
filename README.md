@@ -10,7 +10,7 @@ What you need is a single place for all of your recipes that isn't subject to th
 
 ##### This web app gives users the ability to create recipes and attach files, categorize recipes by specific categories, and tag recipes by characteristics such as sugar-free, gluten-free, and vegan. A WYSIWYG text editor provides for a smooth user experience, and integration with AWS S3 provides the ability to upload images.
 
-#### Built with React, MaterializeCSS, RxJS, Node, & PostgreSQL.
+#### Built with React, material-ui, RxJS, Node, & PostgreSQL.
 
 ## [Visit the web app](https://recipe-stash-1.herokuapp.com/)
 

@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogActions,
   CircularProgress,
+  Chip,
 } from '@material-ui/core'
 import Slide from '@material-ui/core/Slide'
 import ReactQuill from 'react-quill'
@@ -114,8 +115,7 @@ class RecipeDialog extends React.Component<any, any> {
       } as any, () => this.checkValidity())
     }
 
-    toggleTagSelectionStatus = (e: React.MouseEvent<HTMLDivElement>) => {
-      const index: number = (e.target as Element).id as unknown as number
+    toggleTagSelectionStatus = (index: number) => {
       const tags = [...this.state.tags]
       const item = { ...tags[index] }
       const priorSelectedValue = item.selected
@@ -297,7 +297,7 @@ class RecipeDialog extends React.Component<any, any> {
 
     render () {
       const { loading, recipeValid, tags, category } = this.state
-      const { edit, cloning, recipe, open } = this.props
+      const { edit, cloning, open } = this.props
 
       return (
         <Dialog
@@ -336,15 +336,13 @@ class RecipeDialog extends React.Component<any, any> {
                 <h3>Recipe Tags</h3>
                 <div>
                     { tags.map((tag, index) => {
-                      return <div
-                            onClick={this.toggleTagSelectionStatus}
-                            id={index.toString()}
-                            className={`chip z-depth-2 ${recipe && tags[index].selected ? 'selectedTag' : 'null'}`}
-                            key={index}>
-                                {tag.label}
-                            </div>
-                    })
-                    }
+                      return <Chip
+                          className={`chip ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
+                          id={index.toString()}
+                          key={index}
+                          onClick={() => this.toggleTagSelectionStatus(index)}
+                          label={tag.label} />
+                    })}
                 </div>
 
                 <FileUpload
@@ -358,9 +356,10 @@ class RecipeDialog extends React.Component<any, any> {
             <DialogActions>
                 <div className="button-alignment">
                     <div>
-                        <Button color="primary" variant="contained" onClick={this.deleteRecipe}>
-                            Delete Recipe <i className="fas fa-trash"></i>
-                        </Button>
+                        { !cloning
+                          ? <Button color="primary" variant="contained" onClick={this.deleteRecipe}>
+                            Delete Recipe <i style={{ marginLeft: '8px' }} className="fas fa-trash"></i>
+                            </Button> : null }
                         <Button onClick={() => this.props.triggerDialog()} variant="contained" >
                             Cancel
                         </Button>
@@ -375,7 +374,7 @@ class RecipeDialog extends React.Component<any, any> {
                           ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
                           : <>
                             {!cloning ? 'Update Recipe' : 'Add Recipe' }
-                            <i className="fas fa-check-square"></i>
+                            <i style={{ marginLeft: '8px' }} className="fas fa-check-square"></i>
                         </>
                         }
                     </Button>

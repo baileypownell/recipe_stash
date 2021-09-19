@@ -1,4 +1,5 @@
 
+@import '../../../scss/variables.scss';
 
 #filter-button {
     background-color: white;
@@ -6,6 +7,16 @@
 
 #menu {
     min-width: 175px;
+    > div {
+        display: flex;
+        align-items: center;
+        p {
+            text-transform: uppercase;
+        }
+        i {
+            color: $secondary;
+        }
+    }
     li, p {
         padding: 0 10px;
     }
@@ -16,4 +27,12 @@
     justify-content: space-between;
     width: 100%;
     align-items: center;
+}
+
+#filter-icon {
+    margin-left: 5px;
+    position: absolute;
+    width: 40px;
+    top: 7px;
+    right: 0;
 }
