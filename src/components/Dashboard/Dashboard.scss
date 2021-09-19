@@ -16,12 +16,10 @@
     }
   }
   .searchbar {
-    // width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     input {
-      border-radius: 5px;
       color: white;
       width: 100%;
       border-bottom: 2px solid white!important;

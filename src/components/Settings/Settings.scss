@@ -26,6 +26,9 @@
   width: 90%;
   margin: 0 auto;
   padding: 4vh 0;
+  .MuiTextField-root {
+    padding: 10px 0;
+  }
   @include tablet {
     width: 50%;
   }
@@ -88,4 +91,9 @@
 
 .MuiAccordionSummary-content i {
   margin-right: 8px;
+}
+
+.accordion-summary {
+  display: flex;
+  align-items: center;
 }

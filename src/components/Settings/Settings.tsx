@@ -5,7 +5,7 @@ import DeleteModal from '../DeleteModal/DeleteModal'
 import Fade from 'react-reveal/Fade'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
-import { Button, Snackbar, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core'
+import { Button, Snackbar, Accordion, AccordionSummary, AccordionDetails, TextField } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
 type State = {
@@ -189,39 +189,57 @@ class Settings extends React.Component<any, State> {
               </div>
             </div>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}> <i className="material-icons">email</i>Update Email </AccordionSummary>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <span className="accordion-summary"><i className="material-icons">email</i>Update Email</span>
+              </AccordionSummary>
               <AccordionDetails>
-                <div className="input-field ">
-                  <input id="new_email" type="email" onChange={this.updateInput} value={this.state.new_email}></input>
-                  <label htmlFor="email">New Email</label>
-                  </div>
-                  <div className="input-field">
-                    <label htmlFor="password">Password</label>
-                    <input id="password" type="password" value={this.state.password} onChange={this.updateInput} ></input>
-                  </div>
-                  <div>
-                    <Button color="secondary" onClick={this.updateEmail} variant="contained">Save</Button>
-                  </div>
+                <TextField
+                  id="new_email"
+                  type="email"
+                  label="New Email"
+                  onChange={this.updateInput}
+                  value={this.state.new_email}>
+                </TextField>
+                <TextField
+                  id="password"
+                  type="password"
+                  label="Password"
+                  value={this.state.password}
+                  onChange={this.updateInput} >
+                </TextField>
+                <div style={{ marginTop: '20px' }}>
+                  <Button color="secondary" onClick={this.updateEmail} variant="contained">Save</Button>
+                </div>
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}> <i className="material-icons">person</i>Update Name</AccordionSummary>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <span className="accordion-summary"><i className="material-icons">person</i>Update Name</span>
+              </AccordionSummary>
               <AccordionDetails>
-                <div className="input-field ">
-                    <input id="firstName" type="text" value={this.state.firstName} onChange={this.updateInput}></input>
-                    <label htmlFor="firstName" >New First Name</label>
-                  </div>
-                  <div className="input-field ">
-                    <input id="lastName" type="text" value={this.state.lastName} onChange={this.updateInput}></input>
-                    <label htmlFor="lastName">New Last Name</label>
-                  </div>
-                  <div>
+                <TextField
+                  id="firstName"
+                  type="text"
+                  label="New First Name"
+                  value={this.state.firstName}
+                  onChange={this.updateInput}>
+                  </TextField>
+                  <TextField
+                    id="lastName"
+                    type="text"
+                    label="New Last Name"
+                    value={this.state.lastName}
+                    onChange={this.updateInput}>
+                  </TextField>
+                  <div style={{ marginTop: '20px' }}>
                     <Button color="secondary" onClick={this.updateProfile} variant="contained">Save</Button>
                   </div>
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}><i className="material-icons">security</i>Update Password</AccordionSummary>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <span className="accordion-summary"><i className="material-icons">security</i>Update Password</span>
+              </AccordionSummary>
               <AccordionDetails>
                 <p>Click the button below to receive an email with a link to reset your password.</p>
                 <div>
@@ -230,7 +248,9 @@ class Settings extends React.Component<any, State> {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}><i className="material-icons">delete</i>Delete Account</AccordionSummary>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <span className="accordion-summary"><i className="material-icons">delete</i>Delete Account</span>
+              </AccordionSummary>
               <AccordionDetails>
                 <p>If you are sure you want to delete your account, click the button below. This action
                   <span id="bold">cannot</span> be undone.</p>
@@ -259,7 +279,11 @@ class Settings extends React.Component<any, State> {
           key={'bottom' + 'center'}
         />
 
-      <DeleteModal open={deleteModalOpen} deleteFunction={this.deleteAccount} closeModal={() => this.setState({ deleteModalOpen: false })}></DeleteModal>
+      <DeleteModal
+        open={deleteModalOpen}
+        deleteFunction={this.deleteAccount}
+        closeModal={() => this.setState({ deleteModalOpen: false })}>
+      </DeleteModal>
       </Fade>
     )
   }

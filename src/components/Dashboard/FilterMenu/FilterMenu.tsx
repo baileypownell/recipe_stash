@@ -64,18 +64,18 @@ export default function FilterMenu (props: {
             <Divider />
                 {props.categories.map((item, index) => {
                   return (
-                        <MenuItem
-                            key={index}
-                            onClick={() => props.filterByCategory(item.key)}>
-                            <div className="option">
-                                <span>{item.name}</span>
-                                <Checkbox
-                                    checked={props.appliedCat[item.key]}
-                                    id={item.key}
-                                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                                />
-                            </div>
-                        </MenuItem>
+                    <MenuItem
+                        key={index}
+                        onClick={() => props.filterByCategory(item.key)}>
+                        <div className="option">
+                            <span>{item.name}</span>
+                            <Checkbox
+                                checked={props.appliedCat[item.key]}
+                                id={item.key}
+                                inputProps={{ 'aria-label': 'primary checkbox' }}
+                            />
+                        </div>
+                    </MenuItem>
                   )
                 })}
           </div>
