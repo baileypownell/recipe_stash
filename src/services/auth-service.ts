@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { QueryCache } from 'react-query'
+import { queryClient } from '../components/App/App'
 
 const AuthenticationService = {
   setUserLoggedIn: (): void => {
@@ -31,6 +33,7 @@ const AuthenticationService = {
   },
 
   logout: async (): Promise<any> => {
+    queryClient.clear()
     return await axios.get('/logout')
   },
 
