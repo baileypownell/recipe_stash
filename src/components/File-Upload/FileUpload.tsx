@@ -213,7 +213,7 @@ class FileUpload extends React.Component {
               {Array.from(files)?.map((file, index) => (
                   <div
                       key={file.id}
-                      className="file-preview z-depth-2"
+                      className="file-preview"
                       style={{ backgroundImage: `url(${URL.createObjectURL(file.file)})` }}>
                       <div className="file-cover" >
                       <FormControlLabel
@@ -234,7 +234,7 @@ class FileUpload extends React.Component {
               ))}
               {preExistingImageUrls?.map((url, index) => (
                   <div
-                      className="file-preview z-depth-2"
+                      className="file-preview"
                       key={index}
                       style={{ backgroundImage: `url(${url})` }}>
                       <div className="file-cover" >

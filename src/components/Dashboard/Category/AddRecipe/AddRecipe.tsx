@@ -215,7 +215,7 @@ class AddRecipe extends React.Component<Props, State> {
         { gridView
           ? <div
             onClick={this.toggleModal}
-            className="addRecipe z-depth-4"
+            className="addRecipe"
             id={id}
              >
             <i className="fas fa-plus-circle"></i>

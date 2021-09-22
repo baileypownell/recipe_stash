@@ -55,6 +55,7 @@
 }
 
 .file-preview {
+    @include boxShadow;
     flex-grow: 1;
     position: relative;
     height: 200px;

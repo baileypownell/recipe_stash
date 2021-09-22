@@ -58,7 +58,7 @@ class Square extends React.Component {
             ? <div
               style={{ backgroundImage: `url(${awsUrl})` }}
               id={'default-tile-image'}
-              className={'recipe-card z-depth-4 red-background'}
+              className={'recipe-card red-background'}
               key={key}
               data={data}
               onClick={this.viewRecipe}>
@@ -75,7 +75,7 @@ class Square extends React.Component {
           }
         </>
         : <div
-                className={'recipe-card z-depth-4'}
+                className={'recipe-card'}
                 key={key}
                 data={data}
                 onClick={this.viewRecipe}

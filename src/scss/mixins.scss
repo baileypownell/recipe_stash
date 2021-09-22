@@ -23,7 +23,10 @@
 @mixin flexColumn {
   display: flex;
   flex-direction: column;
+}
 
+@mixin boxShadow { 
+  box-shadow: 5px 1px 30px #868686;
 }
 
 @mixin button {

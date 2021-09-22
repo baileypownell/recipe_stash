@@ -2,13 +2,12 @@ import React, { useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
 import 'react-image-lightbox/style.css'
 
-function ImageSkeletonLoader (props: { url: string }) {
+function ImageSkeletonLoader (props: { url: string, openLightBox: Function }) {
   const [imageLoaded, setImageLoaded] = useState(false)
 
   return (imageLoaded
     ? <img
         onClick={() => props.openLightBox()}
-        className="z-depth-3"
         style={{ cursor: 'pointer' }}
         key={props.url}
         src={props.url}/>

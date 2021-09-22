@@ -15,6 +15,7 @@
   .recipe-card {
     width: 120px;
     height: 120px;
+    @include boxShadow;
     background-color: $primary;
     margin-right: 10px;
     margin-bottom: 10px;
