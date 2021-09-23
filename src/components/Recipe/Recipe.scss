@@ -92,9 +92,6 @@ h3 {
   h2 {
     font-size: 18px;
   }
-  // button {
-  //   margin: 20px 0;
-  // }
   @include tablet {
     h2 {
       font-size: 20px;
@@ -201,7 +198,7 @@ h3 {
    background-color: $green!important;
  }
 
- #mobile-recipe-container {
+ #recipe-container {
   height: calc(100% - 50px);
   overflow: auto;
   display: flex;

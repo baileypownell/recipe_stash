@@ -111,12 +111,11 @@ class Recipe extends React.Component<any, State> {
 
     return (
       !loading
-        ? <div id="mobile-recipe-container">
+        ? <div id="recipe-container">
             <h1 className="title">
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
               <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: recipe.rawTitle }}/>
             </h1>
-            <Fade>
               <RecipeDialog
                 edit={true}
                 recipe={this.state.recipe}
@@ -175,7 +174,6 @@ class Recipe extends React.Component<any, State> {
                   </Tooltip>
                 </div>
                 : null }
-            </Fade>
           </div>
         : <div className="BounceLoader">
             <BounceLoader
