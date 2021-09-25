@@ -64,8 +64,9 @@
     background-size: cover;
     border-radius: 5px;
     margin: 5px;
+    flex-grow: 1;
     @include desktop {
-        max-width: 300px;
+        width: 300px;
     }
     span {
         color: white;
@@ -97,10 +98,6 @@
         right: 10px;
         transition: color .4s;
     }
-}
-
-.file-preview:last-of-type {
-    max-width: none;
 }
 
 .file-upload {
