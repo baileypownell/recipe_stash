@@ -173,7 +173,7 @@ class Settings extends React.Component<any, State> {
     return (
       <Fade>
         <div>
-          <h1 className="title">Settings<i className="fas fa-cog"></i></h1>
+          <h1 className="title" style={{padding: '15px'}}>Settings<i className="fas fa-cog" style={{ marginLeft: '8px'}}></i></h1>
           <div className="settings">
             <div id="profileParent">
               <div id="profile">
