@@ -4,18 +4,10 @@
 .title {
   background-color: $green;
   color: $white;
-  padding: 3vw;
   display: flex;
   align-items: center;
-  @include tablet {
-    padding: 20px;
-  }
   i {
     font-size: 30px;
-    padding-left: 10px;
-    @include tablet {
-      padding-left: 20px;
-    }
   }
   p {
     margin: 0;

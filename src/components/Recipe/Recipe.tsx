@@ -9,7 +9,7 @@ import { RecipeService, RecipeInterface } from '../../services/recipe-services'
 import { appear } from '../../models/functions'
 import Fade from 'react-reveal/Fade'
 import RecipeDialog from './RecipeDialog/RecipeDialog'
-import { Divider, Fab, Tooltip, Chip } from '@material-ui/core'
+import { Divider, Fab, Tooltip, Chip, IconButton } from '@material-ui/core'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
@@ -113,7 +113,9 @@ class Recipe extends React.Component<any, State> {
       !loading
         ? <div id="recipe-container">
             <h1 className="title">
+            <IconButton style={{ marginRight: '10px', marginLeft: '10px' }}>
               <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
+            </IconButton>
               <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: recipe.rawTitle }}/>
             </h1>
               <RecipeDialog
