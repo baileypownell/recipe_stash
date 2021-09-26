@@ -50,7 +50,7 @@ class AddRecipe extends React.Component<Props, State> {
     category: options.find(option => option.label === this.props.category).value,
     recipeValid: false,
     newFiles: [],
-    tags,
+    tags: tags.map(tag => ({ ...tag, selected: false })),
     defaultTile: null,
     open: false,
     snackBarOpen: false,
