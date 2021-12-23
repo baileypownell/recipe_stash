@@ -40,7 +40,6 @@ export interface UserCreatedResponse extends GenericResponse {
   };
 }
 
-// TO-DO: return types here
 const UserService = {
   getUser: async (): Promise<UserData> => {
     const user = await axios.get('/user')
