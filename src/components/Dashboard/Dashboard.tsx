@@ -20,13 +20,13 @@ interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
 }
 
 export type MealCategoriesType = {
-    breakfast: 'Breakfast',
-    lunch: 'Lunch',
-    dinner: 'Dinner',
-    side_dish: 'Side Dish',
-    dessert: 'Dessert',
-    drinks: 'Drinks',
-    other: 'Other',
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  dinner: 'Dinner',
+  side_dish: 'Side Dish',
+  dessert: 'Dessert',
+  drinks: 'Drinks',
+  other: 'Other',
 }
 
 // object for iterating through meal cateogries
@@ -102,8 +102,8 @@ type Props = {
 }
 
 type State = {
-    filteredRecipes: SortedRecipeInterface | null
-    gridView: boolean
+  filteredRecipes: SortedRecipeInterface | null
+  gridView: boolean
 }
 
 class Dashboard extends React.Component<Props, State> {
@@ -141,50 +141,46 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     // set gridView
-    const gridView = JSON.parse(window.sessionStorage.getItem('gridView') as string)
-    this.setState({
-      gridView
-    })
+    const gridView = JSON.parse(window.localStorage.getItem('gridView') as string)
+    this.setState({ gridView })
 
     combineLatest([
       appliedFilters$,
       appliedCategory$,
       userInput$,
       unfilteredRecipes$
-    ])
-      .pipe(tap(([filters, category, input, recipes]) => {
-        window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
-        window.sessionStorage.setItem('category_filters', JSON.stringify(category))
-        window.sessionStorage.setItem('userInput', input)
-      }))
-      .subscribe(([filters, category, input, recipes]) => {
-        const newFilteredRecipesState: SortedRecipeInterface = {} as any
-        for (const category in recipes) {
-          const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+    ]).pipe(tap(([filters, category, input, recipes]) => {
+      window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
+      window.sessionStorage.setItem('category_filters', JSON.stringify(category))
+      window.sessionStorage.setItem('userInput', input)
+    })).subscribe(([filters, category, input, recipes]) => {
+      const newFilteredRecipesState: SortedRecipeInterface = {} as any
+      for (const category in recipes) {
+        const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
+        newFilteredRecipesState[category] = filteredCategory
+      }
+
+      const selectedTags: string[] = []
+      for (const tag in filters) {
+        if (filters[tag]) {
+          selectedTags.push(tag)
+        }
+      }
+
+      if (selectedTags.length) {
+      // limit to only those recipes whose tags include each checked result from res (true)
+        for (const category in newFilteredRecipesState) {
+          const filteredCategory = newFilteredRecipesState[category]
+            .filter(recipe => recipe.tags.length >= 1)
+            .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
           newFilteredRecipesState[category] = filteredCategory
         }
+      }
 
-        const selectedTags: string[] = []
-        for (const tag in filters) {
-          if (filters[tag]) {
-            selectedTags.push(tag)
-          }
-        }
-
-        if (selectedTags.length) {
-        // limit to only those recipes whose tags include each checked result from res (true)
-          for (const category in newFilteredRecipesState) {
-            const filteredCategory = newFilteredRecipesState[category]
-              .filter(recipe => recipe.tags.length >= 1)
-              .filter(recipe => selectedTags.every(tag => recipe.tags.includes(tag as any)))
-            newFilteredRecipesState[category] = filteredCategory
-          }
-        }
-
-        this.setState({
-          filteredRecipes: newFilteredRecipesState
-        })
+      this.setState({
+        filteredRecipes: newFilteredRecipesState
       })
+    })
   }
 
   calculateSelectedFiltersNumber (): void {
@@ -223,8 +219,8 @@ class Dashboard extends React.Component<Props, State> {
     this.calculateSelectedFiltersNumber()
   }
 
-  handleSearchChange = (e: { target: HTMLInputElement }) => {
-    const input = e.target.value.toLowerCase()
+  handleSearchChange = (e: { target: EventTarget | HTMLInputElement }) => {
+    const input = (e.target as HTMLInputElement).value.toLowerCase()
     userInputSubject.next(input)
   }
 
@@ -232,9 +228,7 @@ class Dashboard extends React.Component<Props, State> {
     const val: boolean = !!((e.target as Element).id === 'grid')
     this.setState({
       gridView: val
-    }, () => {
-      window.sessionStorage.setItem('gridView', val.toString())
-    })
+    }, () => window.localStorage.setItem('gridView', val.toString()))
   }
 
   render () {
