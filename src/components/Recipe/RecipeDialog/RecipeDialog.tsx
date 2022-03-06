@@ -145,21 +145,16 @@ class RecipeDialog extends React.Component<any, any> {
       }
     }
 
-    checkValidity = () => {
+    checkValidity = (): void => {
       const { directions_edit, ingredients_edit, recipe_title_edit, category_edit } = this.state
-      if (directions_edit && ingredients_edit && recipe_title_edit && category_edit) {
-        this.setState({
-          recipeValid: true
-        })
-      } else {
-        this.setState({
-          recipeValid: false
-        })
-      }
+      const rawDirections = htmlToText(directions_edit)
+      const rawIngredients = htmlToText(ingredients_edit)
+      const rawTitle = htmlToText(recipe_title_edit)
+      const recipeValid: boolean = !!rawDirections.trim() && !!rawIngredients.trim() && !!rawTitle.trim() && !!category_edit
+      this.setState({ recipeValid })
     }
 
-    // function for duplicating a recipe
-    addRecipe = async () => {
+    cloneRecipe = async () => {
       const tags = this.state.tags
       const titleHTML = DOMPurify.sanitize(this.state.recipe_title_raw_edit || this.state.recipe_title_raw)
       const rawTitle = htmlToText(titleHTML, {
@@ -213,7 +208,7 @@ class RecipeDialog extends React.Component<any, any> {
     saveRecipe = async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault()
       if (this.props.cloning) {
-        this.addRecipe()
+        this.cloneRecipe()
         return
       }
       const tags = this.state.tags
@@ -265,20 +260,16 @@ class RecipeDialog extends React.Component<any, any> {
             [this.state.category]: updatedCategory
           }
         })
-        this.handleUpdate()
-        this.setState({
-          loading: false
-        })
+        this.refreshRecipeView()
+        this.setState({ loading: false })
       } catch (err) {
         console.log(err)
-        this.setState({
-          loading: false
-        })
+        this.setState({ loading: false })
         this.props.openSnackBar('There was an error updating the recipe.')
       }
     }
 
-    handleUpdate () {
+    refreshRecipeView() {
       // Update recipe details to reflect the change
       this.props.triggerDialog()
       this.props.fetchData()
@@ -301,85 +292,86 @@ class RecipeDialog extends React.Component<any, any> {
 
       return (
         <Dialog
-            fullScreen
-            scroll="paper"
-            open={open}
-            onClose={this.props.triggerDialog}
-            TransitionComponent={Transition}>
-            <DialogTitle className="title">{ edit
-              ? (cloning ? <span>Add Recipe </span> : <span>Edit Recipe</span>)
-              : <span>Add Recipe</span> }
-            </DialogTitle>
-            <DialogContent >
-                <h3>Title</h3>
-                <ReactQuill value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
-                <h3>Ingredients</h3>
-                <ReactQuill value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
-                <h3>Directions</h3>
-                <ReactQuill value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
+          fullScreen
+          scroll='paper'
+          open={open}
+          onClose={this.props.triggerDialog}
+          TransitionComponent={Transition}>
+          <DialogTitle className='title'>{ edit
+            ? (cloning ? <span>Add Recipe </span> : <span>Edit Recipe</span>)
+            : <span>Add Recipe</span> }
+          </DialogTitle>
+          <DialogContent >
+            <h3>Title</h3>
+            <ReactQuill value={this.state.recipe_title_edit} onChange={this.handleModelChange}/>
+            <h3>Ingredients</h3>
+            <ReactQuill value={this.state.ingredients_edit} onChange={this.handleModelChangeIngredients}/>
+            <h3>Directions</h3>
+            <ReactQuill value={this.state.directions_edit} onChange={this.handleModelChangeDirections}/>
 
-                <FormControl variant="filled" style={{ width: '100%', margin: '10px 0 0 0' }}>
-                    <InputLabel>Category</InputLabel>
-                    <Select
-                    id="category"
-                    value={category}
-                    onChange={this.updateCategory}
-                    >
-                    {
-                        options.map((val, index: number) => {
-                          return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
-                        })
-                    }
-                    </Select>
-                </FormControl>
+            <FormControl variant="filled" style={{ width: '100%', margin: '10px 0 0 0' }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                id="category"
+                value={category}
+                onChange={this.updateCategory}>
+              {
+                options.map((val, index: number) => {
+                  return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
+                })
+              }
+              </Select>
+            </FormControl>
 
-                <h3>Recipe Tags</h3>
-                <div>
-                    { tags.map((tag, index) => {
-                      return <Chip
-                          className={`chip ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
-                          id={index.toString()}
-                          key={index}
-                          onClick={() => this.toggleTagSelectionStatus(index)}
-                          label={tag.label} />
-                    })}
-                </div>
+            <h3>Recipe Tags</h3>
+            <div>
+              { tags.map((tag, index) => {
+                return <Chip
+                  className={`chip ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
+                  id={index.toString()}
+                  key={index}
+                  onClick={() => this.toggleTagSelectionStatus(index)}
+                  label={tag.label} />
+              })}
+            </div>
 
-                <FileUpload
-                    defaultTileImageUUID={this.props.defaultTileImageKey}
-                    passDefaultTileImage={this.setDefaultTileImage}
-                    preExistingImageUrls={this.props.presignedUrls$}
-                    passFilesToDelete={this.setFilesToDelete}
-                    passFiles={this.setFiles}>
-                </FileUpload>
-            </DialogContent>
-            <DialogActions>
-                <div className="button-alignment">
-                    <div>
-                        { !cloning
-                          ? <Button color="primary" variant="contained" onClick={this.deleteRecipe}>
-                            Delete Recipe <i style={{ marginLeft: '8px' }} className="fas fa-trash"></i>
-                            </Button> : null }
-                        <Button onClick={() => this.props.triggerDialog()} variant="contained" >
-                            Cancel
-                        </Button>
-                    </div>
+            <FileUpload
+              defaultTileImageUUID={this.props.defaultTileImageKey}
+              passDefaultTileImage={this.setDefaultTileImage}
+              preExistingImageUrls={this.props.presignedUrls$}
+              passFilesToDelete={this.setFilesToDelete}
+              passFiles={this.setFiles}>
+            </FileUpload>
+          </DialogContent>
+          <DialogActions>
+            <div className="button-alignment">
+              <div>
+                  { !cloning
+                    ? <Button
+                        color='primary'
+                        variant='contained'
+                        onClick={this.deleteRecipe}>
+                        Delete Recipe <i style={{ marginLeft: '8px' }} className='fas fa-trash'></i>
+                      </Button>
+                    : null }
+                  <Button onClick={() => this.props.triggerDialog()} variant='contained'>Cancel</Button>
+              </div>
 
-                    <Button
-                    onClick={this.saveRecipe}
-                    disabled={!recipeValid}
-                    variant="contained"
-                    color="secondary">
-                        { loading
-                          ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
-                          : <>
-                            {!cloning ? 'Update Recipe' : 'Add Recipe' }
-                            <i style={{ marginLeft: '8px' }} className="fas fa-check-square"></i>
-                        </>
-                        }
-                    </Button>
-                </div>
-            </DialogActions>
+              <Button
+                onClick={this.saveRecipe}
+                disabled={!recipeValid}
+                variant='contained'
+                color='secondary'>
+                  { loading
+                    ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
+                    : <>
+                      {!cloning ? 'Update Recipe' : 'Add Recipe' }
+                      <i style={{ marginLeft: '8px' }} className="fas fa-check-square"></i>
+                  </>
+                  }
+              </Button>
+            </div>
+          </DialogActions>
         </Dialog>
       )
     }

@@ -10,7 +10,19 @@ import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import options from '../../../../models/options'
 import { RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
-import { FormControl, InputLabel, Select, MenuItem, Accordion, AccordionSummary, Typography, AccordionDetails, Snackbar, Button, Chip } from '@material-ui/core'
+import { 
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Accordion,
+  AccordionSummary,
+  Typography,
+  AccordionDetails,
+  Snackbar,
+  Button,
+  Chip
+} from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
 const { htmlToText } = require('html-to-text')
@@ -59,15 +71,11 @@ class AddRecipe extends React.Component<Props, State> {
 
   checkValidity = () => {
     const { directions, ingredients, recipe_title } = this.state
-    if (directions && ingredients && recipe_title) {
-      this.setState({
-        recipeValid: true
-      })
-    } else {
-      this.setState({
-        recipeValid: false
-      })
-    }
+    const rawDirections = htmlToText(directions)
+    const rawIngredients = htmlToText(ingredients)
+    const rawTitle = htmlToText(recipe_title)
+    const recipeValid: boolean = !!rawDirections.trim() && !!rawIngredients.trim() && !!rawTitle.trim()
+    this.setState({ recipeValid })
   }
 
   clearState = () => {
@@ -85,12 +93,8 @@ class AddRecipe extends React.Component<Props, State> {
     e.preventDefault()
     const tags = this.state.tags
     const titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
-    const rawTitle = htmlToText(titleHTML, {
-      wordwrap: 130
-    })
-    this.setState({
-      loading: true
-    })
+    const rawTitle = htmlToText(titleHTML, { wordwrap: 130 })
+    this.setState({ loading: true })
     const recipeInput: RecipeInput = {
       title: DOMPurify.sanitize(this.state.recipe_title, {}),
       rawTitle,
@@ -116,14 +120,10 @@ class AddRecipe extends React.Component<Props, State> {
       await this.props.addRecipe(param)
       this.openSnackBar('Recipe added.')
       this.clearState()
-      this.setState({
-        loading: false
-      })
+      this.setState({ loading: false })
     } catch (err) {
       console.log(err)
-      this.setState({
-        loading: false
-      })
+      this.setState({ loading: false })
       this.openSnackBar('There was an error.')
     }
   }
@@ -144,9 +144,7 @@ class AddRecipe extends React.Component<Props, State> {
 
   toggleModal = () => {
     const prevOpenState = this.state.open
-    this.setState({
-      open: !prevOpenState
-    })
+    this.setState({ open: !prevOpenState })
   }
 
   updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -156,9 +154,7 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   updateCategory = (e) => {
-    this.setState({
-      category: e.target.value
-    })
+    this.setState({ category: e.target.value })
   }
 
   toggleTagSelectionStatus = (index: number) => {
@@ -176,34 +172,23 @@ class AddRecipe extends React.Component<Props, State> {
   }
 
   handleModelChange = (html: string) => {
-    this.setState({
-      recipe_title: html
-    }, () => this.checkValidity())
+    this.setState({ recipe_title: html }, () => this.checkValidity())
   }
 
   handleModelChangeIngredients = (html: string) => {
-    this.setState({
-      ingredients: html
-    }, () => this.checkValidity())
+    this.setState({ ingredients: html }, () => this.checkValidity())
   }
 
   handleModelChangeDirections = (html: string) => {
-    this.setState({
-      directions: html
-    }, () => this.checkValidity())
+    this.setState({ directions: html }, () => this.checkValidity())
   }
 
   setFiles = (newFiles: NewFileInterface[]) => {
-    // new files
-    this.setState({
-      newFiles
-    })
+    this.setState({ newFiles })
   }
 
   setDefaultTileImage = (defaultTile: DefaultTile) => {
-    this.setState({
-      defaultTile
-    })
+    this.setState({ defaultTile })
   }
 
   render () {
