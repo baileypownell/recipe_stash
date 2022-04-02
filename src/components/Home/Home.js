@@ -1,5 +1,5 @@
 import React from 'react'
-import mobileView from '../../images/mobile_dashboard_edited.png'
+import mobileView from '../../images/mobile_dashboard.png'
 import transparentLogo from '../../images/white-text-transparent.svg'
 import { withRouter } from 'react-router'
 import './Home.scss'
