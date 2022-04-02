@@ -12,6 +12,7 @@ import RecipeDialog from './RecipeDialog/RecipeDialog'
 import { Divider, Fab, Tooltip, Chip, IconButton } from '@material-ui/core'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
+import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -32,10 +33,6 @@ class Recipe extends React.Component<any, State> {
     cloning: false,
     width: window.innerWidth,
     dialogOpen: false
-  }
-
-  goBack = () => {
-    this.props.history.push('/recipes')
   }
 
   triggerDialog = () => {
@@ -112,70 +109,65 @@ class Recipe extends React.Component<any, State> {
     return (
       !loading
         ? <div id="recipe-container">
-            <h1 className="title">
-            <IconButton style={{ marginRight: '10px', marginLeft: '10px' }}>
-              <i onClick={this.goBack} className="fas fa-chevron-circle-left"></i>
-            </IconButton>
-              <span style={{ display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: recipe.rawTitle }}/>
-            </h1>
-              <RecipeDialog
-                edit={true}
-                recipe={this.state.recipe}
-                open={this.state.dialogOpen}
-                cloning={cloning}
-                defaultTileImageKey={recipe.defaultTileImageKey}
-                openSnackBar={this.props.openSnackBar}
-                presignedUrls$={presignedUrls$}
-                fetchData={this.fetchData}
-                addRecipeMutation={this.props.addRecipeMutation}
-                triggerDialog={this.triggerDialog}>
-              </RecipeDialog>
-              <div className="view-recipe" >
-                <MobileRecipeToolbar
-                  width={width}
-                  triggerDialog={this.triggerDialog}
-                  cloneRecipe={this.cloneRecipe}>
-                </MobileRecipeToolbar>
-                <div id="width-setter">
-                  <div className="section">
-                    <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }}/>
-                  </div>
-                  <div className="section">
-                    <div dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
-                  </div>
-                  <div className="section">
-                    <div dangerouslySetInnerHTML={{ __html: recipe.directions }}/>
-                  </div>
-                  <div className="section">
-                    {tags.map((tag) => (tag.selected
-                      ? <Chip 
-                          key={tag.label}
-                          className={'chip selectedTag'}
-                          label={tag.label} />
-                      : null)
-                    )}
-                  </div>
-                  <Divider style={{ margin: '20px 0 10px 0' }} />
-                  <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                    <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
-                  </div>
+            <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
+            <RecipeDialog
+              edit={true}
+              recipe={this.state.recipe}
+              open={this.state.dialogOpen}
+              cloning={cloning}
+              defaultTileImageKey={recipe.defaultTileImageKey}
+              openSnackBar={this.props.openSnackBar}
+              presignedUrls$={presignedUrls$}
+              fetchData={this.fetchData}
+              addRecipeMutation={this.props.addRecipeMutation}
+              triggerDialog={this.triggerDialog}>
+            </RecipeDialog>
+            <div className="view-recipe" >
+              <MobileRecipeToolbar
+                width={width}
+                triggerDialog={this.triggerDialog}
+                cloneRecipe={this.cloneRecipe}>
+              </MobileRecipeToolbar>
+              <div id="width-setter">
+                <div className="section">
+                  <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }}/>
+                </div>
+                <div className="section">
+                  <div dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
+                </div>
+                <div className="section">
+                  <div dangerouslySetInnerHTML={{ __html: recipe.directions }}/>
+                </div>
+                <div className="section">
+                  {tags.map((tag) => (tag.selected
+                    ? <Chip 
+                        key={tag.label}
+                        className={'chip selectedTag'}
+                        label={tag.label} />
+                    : null)
+                  )}
+                </div>
+                <Divider style={{ margin: '20px 0 10px 0' }} />
+                <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
+                  <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
                 </div>
               </div>
-              { width > 700
-                ? <div id="floating-buttons">
-                  <Tooltip title="Edit recipe" aria-label="edit recipe">
-                    <Fab color="secondary" onClick={this.triggerDialog}>
-                      <i className="material-icons">mode_edit</i>
-                    </Fab>
-                  </Tooltip>
+            </div>
+            { width > 700
+              ? <div id="floating-buttons">
+                <Tooltip title="Edit recipe" aria-label="edit recipe">
+                  <Fab color="secondary" onClick={this.triggerDialog}>
+                    <i className="material-icons">mode_edit</i>
+                  </Fab>
+                </Tooltip>
 
-                  <Tooltip title="Duplicate recipe" aria-label="duplicate">
-                    <Fab color="primary" onClick={this.cloneRecipe}>
-                      <i className="far fa-clone"></i>
-                    </Fab>
-                  </Tooltip>
-                </div>
-                : null }
+                <Tooltip title="Duplicate recipe" aria-label="duplicate">
+                  <Fab color="primary" onClick={this.cloneRecipe}>
+                    <i className="far fa-clone"></i>
+                  </Fab>
+                </Tooltip>
+              </div>
+              : null }
           </div>
         : <div className="BounceLoader">
             <BounceLoader

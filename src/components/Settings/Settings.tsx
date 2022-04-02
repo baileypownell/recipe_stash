@@ -7,6 +7,7 @@ import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
 import { Button, Snackbar, Accordion, AccordionSummary, AccordionDetails, TextField } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
 
 type State = {
   password: string
@@ -173,7 +174,7 @@ class Settings extends React.Component<any, State> {
     return (
       <Fade>
         <div>
-          <h1 className="title" style={{padding: '15px'}}>Settings<i className="fas fa-cog" style={{ marginLeft: '8px'}}></i></h1>
+          <InnerNavigationBar title={'Settings'} icon={'<i class="fas fa-cog"></i>'}></InnerNavigationBar>
           <div className="settings">
             <div id="profileParent">
               <div id="profile">
