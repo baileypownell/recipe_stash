@@ -1,0 +1,16 @@
+@import '../../scss/mixins.scss';
+@import '../../scss/variables.scss';
+
+.inner-navigation-bar {
+  background-color: $green;
+  color: $white;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  i {
+    font-size: 30px;
+  }
+  p {
+    margin: 0;
+  }
+}

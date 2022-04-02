@@ -1,6 +1,7 @@
 import React from 'react'
 import { IconButton } from '@material-ui/core'
 import { withRouter } from 'react-router-dom'
+import './InnerNavigationBar.scss'
 
 const InnerNavigationBar = (props: {title: string, icon?: string}) => {
   const goBack = () => {
@@ -8,7 +9,7 @@ const InnerNavigationBar = (props: {title: string, icon?: string}) => {
   }
 
   return (
-    <h1 className="title">
+    <h1 className="inner-navigation-bar">
       { props.icon
         ? <span style={{ marginRight: '8px' }} dangerouslySetInnerHTML={{ __html: props.icon }}></span>
         : <IconButton style={{ padding: '0', marginRight: '8px' }}>
