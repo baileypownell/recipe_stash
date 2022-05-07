@@ -118,20 +118,20 @@ class ResetPassword extends React.Component<any, any> {
                   </p>
                   : null
               }
-            <Button
-              disabled={this.state.passwordInvalid}
-              variant="contained"
-              color="secondary"
-              type="submit">
-              {this.state.loading
-                ? <ClipLoader
-                  css={'border-color: white;'}
-                  size={30}
-                  color={'#689943'}
-                  loading={this.state.loading}
-                />
-                : 'Submit'}
-            </Button>
+              <Button
+                disabled={this.state.passwordInvalid}
+                variant="contained"
+                color="secondary"
+                type="submit">
+                {this.state.loading
+                  ? <ClipLoader
+                    css={'border-color: white;'}
+                    size={30}
+                    color={'#689943'}
+                    loading={this.state.loading}
+                  />
+                  : 'Submit'}
+              </Button>
             </form>
           </div>
 
