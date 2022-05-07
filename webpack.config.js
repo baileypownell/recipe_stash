@@ -1,14 +1,14 @@
-const webpack = require('webpack');
-const fs = require('fs'); // to check if the file exists
-const path = require('path'); // to get the current path
-var ImageminPlugin = require('imagemin-webpack-plugin').default
-var dotenv = require('dotenv').config({path: __dirname + '/.env'});
+const webpack = require('webpack')
+const fs = require('fs') // to check if the file exists
+const path = require('path') // to get the current path
+const ImageminPlugin = require('imagemin-webpack-plugin').default
+const dotenv = require('dotenv').config({path: __dirname + '/.env'})
 
 module.exports = (env) => {
   return {
     entry: './src/index.js',
     output: {
-      path: __dirname + '/dist',
+      path: path.join(__dirname, '/dist'),
       publicPath: '/',
       filename: 'bundle.js'
     },
@@ -18,15 +18,15 @@ module.exports = (env) => {
           test: /\.(ts|js)x?$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
               presets: [
-                "@babel/preset-env",
-                "@babel/preset-react",
-                "@babel/preset-typescript",
-              ],
-            },
-          },
+                '@babel/preset-env',
+                '@babel/preset-react',
+                '@babel/preset-typescript'
+              ]
+            }
+          }
         },
         {
           test: /\.(sa|sc|c)ss$/,
@@ -36,8 +36,8 @@ module.exports = (env) => {
             // Translates CSS into CommonJS
             'css-loader',
             // Compiles Sass to CSS
-            'sass-loader',
-          ],
+            'sass-loader'
+          ]
         },
         {
           test: /\.(png|svg|jpg|gif)$/,
@@ -59,21 +59,24 @@ module.exports = (env) => {
         pngquant: {
           quality: '95-100'
         }
-      }),
+      })
     ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx']
     },
     devServer: {
-      contentBase: './dist',
+      static: './dist',
       historyApiFallback: true,
       proxy: {
         '/**': {
           target: 'http://localhost:3000',
           secure: false,
-          changeOrigin: true,
+          changeOrigin: true
         }
-      },
-    }
+      }
+    },
+    // externals: {
+    //   react: 'React'
+    // }
   }
-};
+}

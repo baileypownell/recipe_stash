@@ -5,7 +5,11 @@
     ],
     "jsRules": {},
     "rules": {
-        "trailing-comma": [ false ]
+        "trailing-comma": [ false ],
+        "camelcase": [{"properties": "never"}],
+ 
+        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/camelcase": ["error", { "properties": "never" } ]
     },
     "rulesDirectory": []
 }

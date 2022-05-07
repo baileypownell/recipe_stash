@@ -110,12 +110,14 @@ class ResetPassword extends React.Component<any, any> {
           <div className="resetPassword">
             <h4>New Password</h4>
             <form onSubmit={this.updatePassword}>
-            <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
-            {
-              this.state.passwordInvalid && this.state.password.length > 0
-                ? <p className="error">Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.</p>
-                : null
-            }
+              <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
+              {
+                this.state.passwordInvalid && this.state.password.length
+                  ? <p className="error">
+                    Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.
+                  </p>
+                  : null
+              }
             <Button
               disabled={this.state.passwordInvalid}
               variant="contained"
