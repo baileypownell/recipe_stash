@@ -2,10 +2,10 @@ import React from 'react'
 import { NavLink, Link, withRouter } from 'react-router-dom'
 import whiteLogo from '../../images/white-logo.png'
 import blackLogo from '../../images/black-logo.png'
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
 import './Nav.scss'
 import AuthenticationService from '../../services/auth-service'
-import { List, ListItem, Divider, Typography } from '@material-ui/core';
+import { List, ListItem, Divider, Typography } from '@material-ui/core'
 
 class Nav extends React.Component<null, any> {
   state = {
