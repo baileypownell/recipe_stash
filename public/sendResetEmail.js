@@ -1,11 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const { Router } = require('express');
-const client = require('./client');
-const nodemailer = require('nodemailer');
+const express_1 = require("express");
+const client_1 = __importDefault(require("./client"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
-const router = Router();
+const router = (0, express_1.Router)();
 const environment = process.env.NODE_ENV || 'development';
 if (environment === 'development') {
     require('dotenv').config({
@@ -17,7 +20,7 @@ router.post('/', (request, response, next) => {
     if (!email) {
         return response.status(400).json({ success: false, message: 'Invalid request sent.' });
     }
-    client.query('SELECT * FROM users WHERE email=$1', [email], (err, res) => {
+    client_1.default.query('SELECT * FROM users WHERE email=$1', [email], (err, res) => {
         if (err)
             return next(err);
         if (res.rows) {
@@ -26,7 +29,7 @@ router.post('/', (request, response, next) => {
             const expiration = Date.now() + 3600000;
             // store the token in the reset_password_token column of the users table
             // also store when it expires in the reset_password_expires column
-            client.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3', [token, expiration, email], (err, res) => {
+            client_1.default.query('UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3', [token, expiration, email], (err, res) => {
                 if (err)
                     return next(err);
                 if (res.rowCount) {
@@ -36,7 +39,7 @@ router.post('/', (request, response, next) => {
                             api_key: `${process.env.SENDGRID_API_KEY}`
                         }
                     };
-                    const mailer = nodemailer.createTransport(sgTransport(options));
+                    const mailer = nodemailer_1.default.createTransport(sgTransport(options));
                     const emailToSend = {
                         from: 'virtualcookbook@outlook.com',
                         to: `${email}`,
@@ -62,7 +65,7 @@ router.post('/', (request, response, next) => {
 });
 router.get('/:token', (request, response, next) => {
     const token = request.params.token;
-    client.query('SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1', [token], (err, res) => {
+    client_1.default.query('SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1', [token], (err, res) => {
         if (err)
             return next(err);
         if (res.rows.length && res.rows[0].reset_password_token && res.rows[0].reset_password_expires) {
@@ -84,5 +87,4 @@ router.get('/:token', (request, response, next) => {
     });
 });
 exports.default = router;
-// module.exports = router;
 //# sourceMappingURL=sendResetEmail.js.map

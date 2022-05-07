@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = __importDefault(require("./client"));
 const bcrypt = require('bcryptjs');
-const router = express_1.Router();
+const router = (0, express_1.Router)();
 router.post('/', (request, response, next) => {
     const { password, email } = request.body;
     if (!password || !email) {
@@ -52,15 +52,14 @@ router.post('/', (request, response, next) => {
                     });
                 }
                 else {
-                    return response.status(403).json({ error: 'User could not be authenticated' });
+                    return response.status(403).json({ error: 'User could not be authenticated.' });
                 }
             });
         }
         else {
-            return response.status(403).json({ error: 'An email cannot be sent to that address.' });
+            return response.status(403).json({ error: 'Password or email is incorrect.' });
         }
     });
 });
 exports.default = router;
-// module.exports = router;
 //# sourceMappingURL=signin.js.map

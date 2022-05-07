@@ -7,7 +7,7 @@ const express_1 = require("express");
 const client_1 = __importDefault(require("./client"));
 const authMiddleware_1 = require("./authMiddleware");
 const aws_s3_1 = require("./aws-s3");
-const router = express_1.Router();
+const router = (0, express_1.Router)();
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
@@ -16,7 +16,7 @@ router.post('/:recipeId', authMiddleware_1.authMiddleware, async (req, res) => {
     const { recipeId } = req.params;
     const userId = req.userID;
     try {
-        const awsUploadRes = await aws_s3_1.uploadSingleAWSFile(req, res);
+        const awsUploadRes = await (0, aws_s3_1.uploadSingleAWSFile)(req, res);
         client_1.default.query('INSERT INTO files(aws_download_url, recipe_uuid, user_uuid, key) VALUES($1, $2, $3, $4)', [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key], (error, response) => {
             if (error)
                 return res.status(500).json({ success: false, message: `There was an error: ${error}` });
@@ -45,7 +45,7 @@ router.post('/:recipeId', authMiddleware_1.authMiddleware, async (req, res) => {
 });
 router.post('/', authMiddleware_1.authMiddleware, async (req, res) => {
     const image_uuids = req.body.image_urls;
-    const urls = aws_s3_1.getPresignedUrls(image_uuids);
+    const urls = (0, aws_s3_1.getPresignedUrls)(image_uuids);
     res.status(200).json({ presignedUrls: urls });
 });
 router.post('/tile-image/:awsKey/:id', authMiddleware_1.authMiddleware, async (req, res) => {
@@ -111,7 +111,7 @@ router.delete('/tile-image/:recipeId', authMiddleware_1.authMiddleware, async (r
 router.delete('/:imageKey', authMiddleware_1.authMiddleware, async (req, res) => {
     const { imageKey } = req.params;
     try {
-        await aws_s3_1.deleteSingleAWSFile(imageKey);
+        await (0, aws_s3_1.deleteSingleAWSFile)(imageKey);
         client_1.default.query('DELETE FROM files WHERE key=$1 RETURNING recipe_uuid', [imageKey], (error, response) => {
             if (error)
                 return res.status(500).json({ success: false, message: `There was an error: ${error}` });

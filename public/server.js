@@ -8,7 +8,7 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const index_1 = __importDefault(require("./index"));
 const client_1 = __importDefault(require("./client"));
-const app = express_1.default();
+const app = (0, express_1.default)();
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 // middleware

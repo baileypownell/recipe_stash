@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -134,10 +138,10 @@ router.put('/reset-password', (request, response, next) => {
     }
 });
 router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
-    const { first_name, last_name, password, new_email } = request.body;
+    const { firstName, lastName, password, newEmail } = request.body;
     const userId = request.userID;
-    if (first_name && last_name) {
-        client_1.default.query('UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3', [first_name, last_name, userId], (err, res) => {
+    if (firstName && lastName) {
+        client_1.default.query('UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3', [firstName, lastName, userId], (err, res) => {
             if (err)
                 return next(err);
             if (res.rows) {
@@ -148,7 +152,7 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
             }
         });
     }
-    if (new_email) {
+    if (newEmail) {
         // make sure password is correct, if not, reject
         client_1.default.query('SELECT * FROM users WHERE user_uuid=$1', [userId], (err, res) => {
             if (err)
@@ -161,7 +165,7 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                 if (res) {
                     // update record in DB
                     // but first ensure it is unique!
-                    client_1.default.query('SELECT * FROM users WHERE email=$1', [new_email], (err, res) => {
+                    client_1.default.query('SELECT * FROM users WHERE email=$1', [newEmail], (err, res) => {
                         if (err)
                             return next(err);
                         if (res.rows.length) {
@@ -171,7 +175,7 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                             });
                         }
                         else {
-                            client_1.default.query('UPDATE users SET email=$1 WHERE user_uuid=$2', [new_email, userId], (err, res) => {
+                            client_1.default.query('UPDATE users SET email=$1 WHERE user_uuid=$2', [newEmail, userId], (err, res) => {
                                 if (err)
                                     return next(err);
                                 if (res) {
@@ -181,7 +185,7 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                                             api_key: `${process.env.SENDGRID_API_KEY}`
                                         }
                                     };
-                                    const mailer = nodemailer_1.default.createTransport(nodemailer_sendgrid_transport_1.default(options));
+                                    const mailer = nodemailer_1.default.createTransport((0, nodemailer_sendgrid_transport_1.default)(options));
                                     const email = {
                                         from: 'virtualcookbook@outlook.com',
                                         to: `${oldEmail}`,
@@ -200,7 +204,6 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                                         }
                                     });
                                 }
-                                ;
                             });
                         }
                     });
@@ -223,7 +226,7 @@ router.delete('/', authMiddleware_1.authMiddleware, (request, response, next) =>
         if (res.rows.length) {
             const awsKeys = res.rows.map(val => val.key);
             try {
-                const awsDeletions = await aws_s3_1.deleteAWSFiles(awsKeys);
+                const awsDeletions = await (0, aws_s3_1.deleteAWSFiles)(awsKeys);
                 if (awsDeletions) {
                     client_1.default.query('DELETE FROM users WHERE user_uuid=$1', [id], (err, res) => {
                         if (err)

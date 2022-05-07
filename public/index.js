@@ -16,7 +16,7 @@ const user_1 = __importDefault(require("./user"));
 const recipe_1 = __importDefault(require("./recipe"));
 const file_upload_1 = __importDefault(require("./file-upload"));
 const auth_1 = __importDefault(require("./auth"));
-const router = express_1.Router();
+const router = (0, express_1.Router)();
 // middleware
 router.use('/signin', signin_1.default);
 router.use('/send-reset-email', sendResetEmail_1.default);
