@@ -1,30 +1,18 @@
-import React, { ChangeEvent } from 'react'
-import './AddRecipe.scss'
-import DOMPurify from 'dompurify'
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import FileUpload from '../../../File-Upload/FileUpload'
-import Preloader from '../../../Preloader/Preloader'
-import tag, { tags } from '../../../../models/tags'
+import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from '@material-ui/core'
 import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
-import options from '../../../../models/options'
-import { RecipeInput, DefaultTile, NewFileInterface } from '../../../../services/recipe-services'
-import { 
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Accordion,
-  AccordionSummary,
-  Typography,
-  AccordionDetails,
-  Snackbar,
-  Button,
-  Chip
-} from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import DOMPurify from 'dompurify'
+import React, { ChangeEvent } from 'react'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import options from '../../../../models/options'
+import tag, { tags } from '../../../../models/tags'
+import { DefaultTile, NewFileInterface, RecipeInput } from '../../../../services/recipe-services'
+import FileUpload from '../../../File-Upload/FileUpload'
+import Preloader from '../../../Preloader/Preloader'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
+import './AddRecipe.scss'
 const { htmlToText } = require('html-to-text')
 
 const Transition = React.forwardRef(function Transition (props, ref) {

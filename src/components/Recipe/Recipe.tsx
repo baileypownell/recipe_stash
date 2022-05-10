@@ -1,18 +1,18 @@
-import React from 'react'
-import { withRouter } from 'react-router-dom'
-import './Recipe.scss'
-import BounceLoader from 'react-spinners/BounceLoader'
+import { Chip, Divider, Fab, Tooltip } from '@material-ui/core'
 import DOMPurify from 'dompurify'
+import React from 'react'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
+import BounceLoader from 'react-spinners/BounceLoader'
 import { BehaviorSubject } from 'rxjs'
-import Tag, { tags } from '../../models/tags'
-import { RecipeService, RecipeInterface } from '../../services/recipe-services'
 import { appear } from '../../models/functions'
-import Fade from 'react-reveal/Fade'
-import RecipeDialog from './RecipeDialog/RecipeDialog'
-import { Divider, Fab, Tooltip, Chip, IconButton } from '@material-ui/core'
+import Tag, { tags } from '../../models/tags'
+import { RecipeInterface, RecipeService } from '../../services/recipe-services'
+import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
-import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
+import './Recipe.scss'
+import RecipeDialog from './RecipeDialog/RecipeDialog'
+
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
 
@@ -25,7 +25,7 @@ type State = {
   dialogOpen: boolean
 }
 
-class Recipe extends React.Component<any, State> {
+class Recipe extends React.Component<RouteComponentProps, State> {
   state = {
     loading: true,
     recipe: null,

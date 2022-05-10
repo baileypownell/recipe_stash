@@ -1,13 +1,13 @@
-import React from 'react'
-import { withRouter } from 'react-router-dom'
-import './Settings.scss'
-import DeleteModal from '../DeleteModal/DeleteModal'
-import Fade from 'react-reveal/Fade'
-import AuthenticationService from '../../services/auth-service'
-import UserService, { UpdateUserNamePayload, UpdateUserEmailPayload, UserData } from '../../services/user-service'
-import { Button, Snackbar, Accordion, AccordionSummary, AccordionDetails, TextField } from '@material-ui/core'
+import { Accordion, AccordionDetails, AccordionSummary, Button, Snackbar, TextField } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import React from 'react'
+import Fade from 'react-reveal/Fade'
+import { withRouter } from 'react-router-dom'
+import AuthenticationService from '../../services/auth-service'
+import UserService, { UpdateUserEmailPayload, UpdateUserNamePayload, UserData } from '../../services/user-service'
+import DeleteModal from '../DeleteModal/DeleteModal'
 import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
+import './Settings.scss'
 
 type State = {
   password: string

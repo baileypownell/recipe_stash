@@ -1,10 +1,10 @@
-import React from 'react'
-import ClipLoader from 'react-spinners/ClipLoader'
-import GoogleLogin from 'react-google-login'
-import './Login.scss'
-import AuthenticationService from '../../services/auth-service'
-import Fade from 'react-reveal/Fade'
 import { Button, Snackbar, TextField } from '@material-ui/core'
+import React from 'react'
+import GoogleLogin from 'react-google-login'
+import Fade from 'react-reveal/Fade'
+import ClipLoader from 'react-spinners/ClipLoader'
+import AuthenticationService from '../../services/auth-service'
+import './Login.scss'
 
 class Login extends React.Component {
   state = {

@@ -31,15 +31,15 @@ const Category = (props: {
                 return (
                   gridView
                     ? <Square
-                      key={recipe.id}
-                      awsUrl={recipe.preSignedDefaultTileImageUrl}
-                      recipeId={recipe.id}
-                      rawTitle={recipe.rawTitle}/>
+                        key={recipe.id}
+                        awsUrl={recipe.preSignedDefaultTileImageUrl}
+                        recipeId={recipe.id}
+                        rawTitle={recipe.rawTitle}/>
                     : <ListItem
-                      key={recipe.id}
-                      data={recipe}
-                      rawTitle={recipe.rawTitle}>
-                    </ListItem>
+                        key={recipe.id}
+                        recipeId={recipe.id}
+                        rawTitle={recipe.rawTitle}>
+                      </ListItem>
                 )
               })
               : null
