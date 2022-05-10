@@ -51,11 +51,11 @@ router.post('/', (request: any, response, next) => {
                   return response.status(500).json({ success: false, message: 'There was an error sending the email.', error: err.message, name: err.name })
                 } else {
                   request.session.destroy()
-                  return response.status(200).json({ success: true, message: 'Recovery email sent. You will now be logged out.' })
+                  return response.status(200).json({ success: true })
                 }
               })
             } else {
-              return response.status(200).json({ success: false, message: 'Recovery email could not be sent because no account exists for the provided email address.' })
+              return response.status(200).json({ success: true })
             }
           })
       }

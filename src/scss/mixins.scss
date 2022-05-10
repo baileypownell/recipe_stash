@@ -89,7 +89,7 @@
         max-width: 400px;
         height: auto;
       }
-      p {
+      p:not(.MuiFormHelperText-root.Mui-error) {
         font-size: 20px;
       }
       .link {

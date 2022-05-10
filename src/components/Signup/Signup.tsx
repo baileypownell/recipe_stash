@@ -177,7 +177,7 @@ class Signup extends React.Component<Props, State> {
                 <TextField onChange={this.validatePassword} id="password" type="password" name="password" label="Password" />
                   {
                     insufficientPasswordMessage
-                      ? <p className="error">Passwords must be at least 8 characters long and have at least 
+                      ? <p className="error">Passwords must be at least 8 characters long and have at least
                       one uppercase and one lower case character.</p>
                       : null}
                 <TextField onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" label="Confirm Password" />

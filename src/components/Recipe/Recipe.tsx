@@ -54,7 +54,6 @@ class Recipe extends React.Component<RouteComponentProps, State> {
         } else {
           presignedUrlsSubject.next([])
         }
-        const elems = document.querySelectorAll('.fixed-action-btn')
       })
 
       const tagState = tags.map(tag => {
@@ -140,7 +139,7 @@ class Recipe extends React.Component<RouteComponentProps, State> {
                 </div>
                 <div className="section">
                   {tags.map((tag) => (tag.selected
-                    ? <Chip 
+                    ? <Chip
                         key={tag.label}
                         className={'chip selectedTag'}
                         label={tag.label} />

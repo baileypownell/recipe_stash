@@ -25,8 +25,8 @@ export default function MobileRecipeToolbar (props: {width: number, triggerDialo
     props.cloneRecipe()
   }
 
-  return (props.width <= 700 ?
-    <div id="recipe-mobile-toolbar">
+  return (props.width <= 700
+    ? <div id="recipe-mobile-toolbar">
       <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
         <i className="fas fa-ellipsis-v"></i>
       </Button>
@@ -40,6 +40,7 @@ export default function MobileRecipeToolbar (props: {width: number, triggerDialo
         <MenuItem onClick={triggerDialog}>Edit</MenuItem>
         <MenuItem onClick={cloneRecipe}>Duplicate</MenuItem>
       </Menu>
-    </div> : null
+    </div>
+    : null
   )
 }

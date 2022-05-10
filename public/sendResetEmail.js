@@ -8,7 +8,7 @@ const client_1 = __importDefault(require("./client"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
-const router = (0, express_1.Router)();
+const router = express_1.Router();
 const environment = process.env.NODE_ENV || 'development';
 if (environment === 'development') {
     require('dotenv').config({

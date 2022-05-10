@@ -1,25 +1,9 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -185,7 +169,7 @@ router.put('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                                             api_key: `${process.env.SENDGRID_API_KEY}`
                                         }
                                     };
-                                    const mailer = nodemailer_1.default.createTransport((0, nodemailer_sendgrid_transport_1.default)(options));
+                                    const mailer = nodemailer_1.default.createTransport(nodemailer_sendgrid_transport_1.default(options));
                                     const email = {
                                         from: 'virtualcookbook@outlook.com',
                                         to: `${oldEmail}`,
@@ -226,7 +210,7 @@ router.delete('/', authMiddleware_1.authMiddleware, (request, response, next) =>
         if (res.rows.length) {
             const awsKeys = res.rows.map(val => val.key);
             try {
-                const awsDeletions = await (0, aws_s3_1.deleteAWSFiles)(awsKeys);
+                const awsDeletions = await aws_s3_1.deleteAWSFiles(awsKeys);
                 if (awsDeletions) {
                     client_1.default.query('DELETE FROM users WHERE user_uuid=$1', [id], (err, res) => {
                         if (err)

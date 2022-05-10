@@ -26,4 +26,3 @@ const ListItem = (props: Props) => {
 }
 
 export default withRouter(ListItem)
-

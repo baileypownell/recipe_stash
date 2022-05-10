@@ -21,7 +21,7 @@ class App extends React.Component<any> {
           if (res.data.authenticated) {
             this.setState({ loggedIn: true }, () => AuthenticationService.setUserLoggedIn())
           } else {
-            this.setState({ loggedIn: false }, () => AuthenticationService.setUserLoggedOut() )
+            this.setState({ loggedIn: false }, () => AuthenticationService.setUserLoggedOut())
           }
 
           this.setState({ authenticationStateDetermined: true })

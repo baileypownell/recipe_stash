@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = __importDefault(require("./client"));
 const authMiddleware_1 = require("./authMiddleware");
-const router = (0, express_1.Router)();
+const router = express_1.Router();
 const { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3');
 const constructTags = (recipe) => {
     const tagArray = [];

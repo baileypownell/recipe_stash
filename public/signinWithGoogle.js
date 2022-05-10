@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = __importDefault(require("./client"));
-const router = (0, express_1.Router)();
+const router = express_1.Router();
 const jwt_decode = require('jwt-decode');
 router.post('/', (request, response, next) => {
     const { token } = request.body;

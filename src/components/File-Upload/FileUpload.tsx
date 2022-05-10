@@ -23,7 +23,7 @@ class FileUpload extends React.Component {
 
       if (this.props.defaultTileImageUUID) {
         this.setState({
-          defaultTileImageKey: this.props.defaultTileImageUUID,
+          defaultTileImageKey: this.props.defaultTileImageUUID
         }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
       }
     }
@@ -33,7 +33,7 @@ class FileUpload extends React.Component {
     // then clear the files and defaultTileImageKey state
       if (prevProps.open === true && this.props.open === false) {
         this.setState({
-          files: [], 
+          files: [],
           defaultTileImageKey: null
         }, () => {
           this.props.passFiles(this.state.files)
@@ -101,10 +101,10 @@ class FileUpload extends React.Component {
       })
     }
 
-    stageAWSFileDeletion(url) {
+    stageAWSFileDeletion (url) {
       const updatedFiles = this.state.preExistingImageUrls.filter(u => u !== url)
       const filesToDelete = this.state.filesToDelete
-      filesToDelete.push(url) 
+      filesToDelete.push(url)
       // compare the key from the url to props.defaultTileImageKey
       // if they are the same, then you need to set the state to null and update the parent
       const imageKey = url.split('amazonaws.com/')[1].split('?')[0]
@@ -140,7 +140,7 @@ class FileUpload extends React.Component {
           }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
         } else {
           this.setState({
-            defaultTileImageKey: imageKey,
+            defaultTileImageKey: imageKey
           }, () => this.props.passDefaultTileImage(this.state.defaultTileImageKey))
         }
       } else {

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSingleAWSFile = exports.deleteAWSFiles = exports.uploadSingleAWSFile = exports.getPresignedUrl = exports.getPresignedUrls = void 0;
 const aws = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');

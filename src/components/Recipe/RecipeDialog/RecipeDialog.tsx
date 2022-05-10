@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogActions,
   CircularProgress,
-  Chip,
+  Chip
 } from '@material-ui/core'
 import Slide from '@material-ui/core/Slide'
 import ReactQuill from 'react-quill'
@@ -269,7 +269,7 @@ class RecipeDialog extends React.Component<any, any> {
       }
     }
 
-    refreshRecipeView() {
+    refreshRecipeView () {
       // Update recipe details to reflect the change
       this.props.triggerDialog()
       this.props.fetchData()

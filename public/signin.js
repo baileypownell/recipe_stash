@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = __importDefault(require("./client"));
 const bcrypt = require('bcryptjs');
-const router = (0, express_1.Router)();
+const router = express_1.Router();
 router.post('/', (request, response, next) => {
     const { password, email } = request.body;
     if (!password || !email) {
