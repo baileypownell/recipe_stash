@@ -33,7 +33,7 @@ const Category = (props: {
                     ? <Square
                       key={recipe.id}
                       awsUrl={recipe.preSignedDefaultTileImageUrl}
-                      data={recipe}
+                      recipeId={recipe.id}
                       rawTitle={recipe.rawTitle}/>
                     : <ListItem
                       key={recipe.id}
