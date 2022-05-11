@@ -1,216 +1,167 @@
-import React, { FormEvent } from 'react'
-import './Signup.scss'
-import ClipLoader from 'react-spinners/ClipLoader'
-import AuthenticationService from '../../services/auth-service'
-import UserService, { UserInputInterface, UserCreatedResponse } from '../../services/user-service'
-import { isPasswordInvalid } from '../../models/functions'
-import Fade from 'react-reveal/Fade'
 import { Button, Snackbar, TextField } from '@material-ui/core'
+import { useFormik } from 'formik'
+import React, { useState, useEffect } from 'react'
+import Fade from 'react-reveal/Fade'
+import { RouteComponentProps } from 'react-router-dom'
+import ClipLoader from 'react-spinners/ClipLoader'
+import * as yup from 'yup'
+import { isPasswordInvalid } from '../../models/functions'
+import AuthenticationService from '../../services/auth-service'
+import UserService, { UserCreatedResponse, UserInputInterface } from '../../services/user-service'
+import './Signup.scss'
 
-type Props = {
-  history: any
-}
+const validationSchema = yup.object({
+  firstName: yup
+    .string()
+    .required('First name is required'),
+  lastName: yup
+    .string()
+    .required('Last name is required'),
+  email: yup
+    .string()
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters long.')
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters long.')
+    .oneOf([yup.ref('password')], 'Passwords don\'t match.')
+    .required('Password confirmation is required')
+})
 
-type State = {
-    firstName: string
-    lastName: string
-    password: string
-    confirmPassword: string
-    email: string
-    confirmPasswordMessage: boolean
-    insufficientPasswordMessage: boolean
-    formValid: boolean
-    loading: boolean
-    submissionError: string
-    error: boolean,
-    snackBarOpen: boolean,
-    snackBarMessage: string
-}
+const Signup = (props: RouteComponentProps) => {
+  const [loading, setLoading] = useState(false)
+  const [snackBarOpen, setSnackBarOpen] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState('')
 
-class Signup extends React.Component<Props, State> {
-  state = {
-    firstName: '',
-    lastName: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-    confirmPasswordMessage: false,
-    insufficientPasswordMessage: false,
-    formValid: false,
-    loading: false,
-    submissionError: '',
-    error: false,
-    snackBarOpen: false,
-    snackBarMessage: ''
+  const openSnackBar = (message: string) => {
+    setSnackBarMessage(message)
+    setSnackBarOpen(true)
   }
 
-  componentDidMount () { }
-
-  signup = async (e: FormEvent) => {
-    e.preventDefault()
-    const { email, password, firstName, lastName } = this.state
-    this.setState({
-      loading: true
-    })
+  const signup = async (values) => {
+    setLoading(true)
     try {
       const userInput: UserInputInterface = {
-        firstName,
-        lastName,
-        password,
-        email
+        firstName: values.firstName,
+        lastName: values.lastName,
+        password: values.password,
+        email: values.email
       }
       const user: UserCreatedResponse = await UserService.createUser(userInput)
       if (user.success) {
-        this.openSnackBar('Success! Logging you in now...')
         AuthenticationService.setUserLoggedIn()
-        setTimeout(() => this.props.history.push('/recipes'), 1000)
+        props.history.push('/recipes')
       } else {
-        this.setState({
-          error: true,
-          loading: false
-        })
-        this.openSnackBar(user.message)
+        setLoading(false)
+        openSnackBar(user.message)
       }
     } catch (err) {
-      this.setState({
-        loading: false
-      })
-      this.openSnackBar(err.response.data.error)
+      setLoading(false)
+      openSnackBar(err.response.data.error)
     }
   }
 
-  checkFormValidation = () => {
-    const { firstName, lastName, password, email, confirmPassword } = this.state
-    if (firstName && lastName && password && email && confirmPassword) {
-      if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || confirmPassword.length === 0) {
-        this.setState({
-          formValid: false
-        })
-      } else {
-        this.setState({
-          formValid: true
-        })
-      }
-    }
+  const closeSnackBar = (): void => {
+    setSnackBarMessage('')
+    setSnackBarOpen(false)
   }
 
-  updateInput = (e: any) => {
-    this.setState({
-      [e.target.id]: e.target.value
-    } as any, () => this.checkFormValidation()
-    )
-    // remove email error if it exists
-    if (e.target.id === 'email' && this.state.submissionError === 'An account already exists for this email.') {
-      this.setState({
-        submissionError: ''
-      })
-    }
-  }
+  const login = (): void => { props.history.push('/login') }
 
-  validatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const password: string = e.target.value
-    if (isPasswordInvalid(password)) {
-      this.setState({
-        insufficientPasswordMessage: true,
-        formValid: false
-      })
-    } else {
-      this.setState({
-        insufficientPasswordMessage: false,
-        password: e.target.value
-      })
-      // then check if it doesn't match confirmPassword, but only if confirmPassword has already been set
-      if (e.target.value !== this.state.confirmPassword && this.state.confirmPassword !== null) {
-        this.setState({
-          confirmPasswordMessage: true,
-          formValid: false
-        })
-      } else if (e.target.value === this.state.confirmPassword) {
-        () => this.checkFormValidation()
-      }
-    }
-  }
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    },
+    validationSchema,
+    onSubmit: (values) => signup(values)
+  })
 
-  openSnackBar (message: string) {
-    this.setState({
-      snackBarOpen: true,
-      snackBarMessage: message
-    })
-  }
+  useEffect(() => {
+    // console.log(formik)
+  }, [formik])
 
-  closeSnackBar = () => {
-    this.setState({
-      snackBarOpen: false,
-      snackBarMessage: ''
-    })
-  }
+  return (
+    <div className="auth">
+      <div className="gradient">
+        <Fade top>
+          <form onSubmit={formik.handleSubmit}>
+            <h1>Signup</h1>
+            <TextField
+              id="firstName"
+              type="text"
+              label="First Name"
+              value={formik.values.firstName}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.firstName)}
+              helperText={formik.touched.firstName && formik.errors.firstName}/>
+            <TextField
+              id="lastName"
+              type="text"
+              label="Last Name"
+              value={formik.values.lastName}
+              onChange={formik.handleChange}
+              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+              helperText={formik.touched.lastName && formik.errors.lastName}/>
+            <TextField
+              id="email"
+              type="email"
+              label="Email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}/>
+            <TextField
+              id="password"
+              type="password"
+              label="Password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}/>
+            <TextField
+              id="confirmPassword"
+              type="password"
+              label="Confirm Password"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+              helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}/>
+            <p>Already have an account? <span className="link" onClick={login}>Log in.</span></p>
+            <Button variant="contained" color="secondary" type="submit" disabled={!formik.isValid}>
+              {loading
+                ? <ClipLoader
+                    css={'border-color: white;'}
+                    size={30}
+                    color={'white'}
+                    loading={loading}
+                  />
+                : 'Submit'}
+            </Button>
+          </form>
+        </Fade>
+      </div>
 
-  confirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === this.state.password) {
-      this.setState({
-        confirmPassword: e.target.value,
-        confirmPasswordMessage: false
-      }, () => this.checkFormValidation())
-    } else {
-      this.setState({
-        confirmPasswordMessage: true,
-        formValid: false
-      }, () => this.checkFormValidation())
-    }
-  }
-
-  login = () => {
-    this.props.history.push('/login')
-  }
-
-  render () {
-    const { confirmPasswordMessage, insufficientPasswordMessage, loading, formValid, snackBarOpen, snackBarMessage } = this.state
-    return (
-        <div className="auth">
-          <div className="gradient">
-            <Fade top>
-              <form onSubmit={this.signup}>
-                <h1>Signup</h1>
-                <TextField onChange={this.updateInput} id="firstName" type="text" name="firstname" label="First Name" />
-                <TextField onChange={this.updateInput} id="lastName" type="text" name="lastname" label="Last Name" />
-                <TextField onChange={this.updateInput} id="email" type="email" name="email" label="Email" />
-                <TextField onChange={this.validatePassword} id="password" type="password" name="password" label="Password" />
-                  {
-                    insufficientPasswordMessage
-                      ? <p className="error">Passwords must be at least 8 characters long and have at least
-                      one uppercase and one lower case character.</p>
-                      : null}
-                <TextField onChange={this.confirmPassword} id="confirmPassword" type="password" name="confirmpassword" label="Confirm Password" />
-                  {confirmPasswordMessage ? <p className="error">Passwords must match</p> : null}
-                <p>Already have an account? <span className="link" onClick={this.login}>Log in.</span></p>
-                <Button variant="contained" color="secondary" disabled={!formValid} type="submit">
-                  {loading
-                    ? <ClipLoader
-                        css={'border-color: white;'}
-                        size={30}
-                        color={'white'}
-                        loading={this.state.loading}
-                      />
-                    : 'Submit'}
-                </Button>
-              </form>
-            </Fade>
-          </div>
-
-          <Snackbar
-            open={snackBarOpen}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center'
-            }}
-            onClose={this.closeSnackBar}
-            autoHideDuration={4000}
-            message={snackBarMessage}
-            key={'bottom' + 'center'}
-          />
-        </div>
-    )
-  }
+      <Snackbar
+        open={snackBarOpen}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        onClose={closeSnackBar}
+        autoHideDuration={4000}
+        message={snackBarMessage}
+        key={'bottom' + 'center'}
+      />
+    </div>
+  )
 }
 
 export default Signup

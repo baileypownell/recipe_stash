@@ -1,6 +1,6 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core'
 import React, { useEffect } from 'react'
 import './DeleteModal.scss'
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@material-ui/core'
 
 const DeleteModal = (props: {
   open: boolean,
@@ -32,7 +32,7 @@ const DeleteModal = (props: {
                 <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={handleClose} color="primary" autoFocus>
+                <Button onClick={props.deleteFunction} color="primary" autoFocus>
                     Continue
                 </Button>
             </DialogActions>

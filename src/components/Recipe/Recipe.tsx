@@ -74,8 +74,6 @@ class Recipe extends React.Component<RouteComponentProps, State> {
 
   componentDidMount () {
     this.fetchData()
-    const faded = document.querySelectorAll('.fade')
-    setTimeout(() => appear(faded, 'fade-in'), 700)
     window.addEventListener('resize', this.handleWindowSizeChange)
   }
 

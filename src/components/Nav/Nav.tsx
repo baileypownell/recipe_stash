@@ -21,9 +21,8 @@ const Nav = (props: RouteComponentProps) => {
     }
   }
 
-  // doing this funcationally instead of setting the href, because for reasons unkown, the href was causing a hard refresh...
-  const navigate = (e) => {
-    props.history.push(e.target.id)
+  const navigate = (route: string) => {
+    props.history.push(route)
     setOpenState(false)
   }
 
@@ -60,13 +59,13 @@ const Nav = (props: RouteComponentProps) => {
           <div className="drawer-content">
             <img src={whiteLogo} alt="logo" />
             <List>
-              <ListItem button onClick={navigate} id="/settings">
+              <ListItem button onClick={() => navigate('/settings')}>
                 <Typography variant="h6"><i className="fas fa-cogs"></i>Settings</Typography>
               </ListItem>
-              <ListItem button onClick={navigate} id="/">
+              <ListItem button onClick={() => navigate('/')}>
                 <Typography variant="h6" ><i className="fas fa-house-user"></i>Home</Typography>
               </ListItem>
-              <ListItem button onClick={navigate} id="/recipes">
+              <ListItem button onClick={() => navigate('/recipes')}>
                 <Typography variant="h6"><i className="fas fa-utensils"></i>Recipes</Typography>
               </ListItem>
               <Divider />

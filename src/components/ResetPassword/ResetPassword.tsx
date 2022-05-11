@@ -84,7 +84,7 @@ class ResetPassword extends React.Component<any, any> {
       this.setState({
         loading: false
       })
-      setTimeout(() => this.props.history.push('/recipes'), 3000)
+      this.props.history.push('/recipes')
     } catch (err) {
       this.openSnackBar('There was an error.')
       this.setState({
