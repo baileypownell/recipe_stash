@@ -20,3 +20,16 @@ export const isPasswordInvalid = (password: string): boolean => {
     return false
   }
 }
+
+export const isPasswordValid = (password: string): boolean => {
+  if (
+    password.length < 8 ||
+    !/([A-Z]+)/g.test(password) ||
+    !/([a-z]+)/g.test(password) ||
+    !/([0-9]+)/g.test(password)
+  ) {
+    return false
+  } else {
+    return true
+  }
+}
