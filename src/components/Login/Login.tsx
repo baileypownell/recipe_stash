@@ -17,11 +17,11 @@ interface FormInputs {
 const validationSchema = yup.object({
   email: yup
     .string()
-    .email('Enter a valid email')
-    .required('Email is required'),
+    .email('Enter a valid email.')
+    .required('Email is required.'),
   password: yup
     .string()
-    .required('Password is required')
+    .required('Password is required.')
 })
 
 const Login = (props: RouteComponentProps) => {
@@ -112,6 +112,7 @@ const Login = (props: RouteComponentProps) => {
                   onChange={formik.handleChange}
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email}
+                  onBlur={formik.handleBlur}
                   type="email"
                   name="email"/>
                 <TextField
@@ -119,6 +120,7 @@ const Login = (props: RouteComponentProps) => {
                   onChange={formik.handleChange}
                   error={formik.touched.password && Boolean(formik.errors.password)}
                   helperText={formik.touched.password && formik.errors.password}
+                  onBlur={formik.handleBlur}
                   id="password"
                   type="password"
                   label="Password"
@@ -127,16 +129,14 @@ const Login = (props: RouteComponentProps) => {
                   <Button
                     type="submit"
                     variant="outlined"
-                    color="secondary">
+                    color="secondary"
+                    disabled={!formik.isValid}>
                     { loading
                       ? <ClipLoader
-                        css={`
-                          border-color: white;
-                        `}
+                        css={'border-color: white;'}
                         size={30}
                         color={'#689943'}
-                        loading={loading}
-                      />
+                        loading={loading}/>
                       : 'Submit' }
                   </Button>
 
