@@ -1,11 +1,11 @@
 import { Button, Snackbar, TextField } from '@material-ui/core'
 import { useFormik } from 'formik'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Fade from 'react-reveal/Fade'
 import { RouteComponentProps } from 'react-router-dom'
 import ClipLoader from 'react-spinners/ClipLoader'
 import * as yup from 'yup'
-import { isPasswordInvalid } from '../../models/functions'
+import { isPasswordValid } from '../../models/functions'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UserCreatedResponse, UserInputInterface } from '../../services/user-service'
 import './Signup.scss'
@@ -13,23 +13,24 @@ import './Signup.scss'
 const validationSchema = yup.object({
   firstName: yup
     .string()
-    .required('First name is required'),
+    .required('First name is required.'),
   lastName: yup
     .string()
-    .required('Last name is required'),
+    .required('Last name is required.'),
   email: yup
     .string()
-    .email('Enter a valid email')
-    .required('Email is required'),
+    .email('Enter a valid email.')
+    .required('Email is required.'),
   password: yup
     .string()
     .min(8, 'Password must be at least 8 characters long.')
-    .required('Password is required'),
+    .test('is-valid', 'Password must contain at least one capital letter, one lower case letter, and one number.', (value) => isPasswordValid(value))
+    .required('Password is required.'),
   confirmPassword: yup
     .string()
     .min(8, 'Password must be at least 8 characters long.')
     .oneOf([yup.ref('password')], 'Passwords don\'t match.')
-    .required('Password confirmation is required')
+    .required('Password confirmation is required.')
 })
 
 const Signup = (props: RouteComponentProps) => {
@@ -84,10 +85,6 @@ const Signup = (props: RouteComponentProps) => {
     onSubmit: (values) => signup(values)
   })
 
-  useEffect(() => {
-    // console.log(formik)
-  }, [formik])
-
   return (
     <div className="auth">
       <div className="gradient">
@@ -97,41 +94,51 @@ const Signup = (props: RouteComponentProps) => {
             <TextField
               id="firstName"
               type="text"
+              required
               label="First Name"
               value={formik.values.firstName}
               onChange={formik.handleChange}
-              error={Boolean(formik.errors.firstName)}
+              onBlur={formik.handleBlur}
+              error={formik.touched.firstName && Boolean(formik.errors.firstName)}
               helperText={formik.touched.firstName && formik.errors.firstName}/>
             <TextField
               id="lastName"
               type="text"
+              required
               label="Last Name"
               value={formik.values.lastName}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               error={formik.touched.lastName && Boolean(formik.errors.lastName)}
               helperText={formik.touched.lastName && formik.errors.lastName}/>
             <TextField
               id="email"
               type="email"
+              required
               label="Email"
               value={formik.values.email}
+              onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}/>
             <TextField
               id="password"
               type="password"
+              required
               label="Password"
               value={formik.values.password}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}/>
             <TextField
               id="confirmPassword"
               type="password"
+              required
               label="Confirm Password"
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
               helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}/>
             <p>Already have an account? <span className="link" onClick={login}>Log in.</span></p>
