@@ -52,7 +52,7 @@ const Login = (props: RouteComponentProps) => {
     }
   }
 
-  const responseGoogle = async (response) => {
+  const authenticateWithGoogle = async (response) => {
     try {
       const res = await AuthenticationService.signInWithGoogle(response.tokenId)
       if (res.data.success) {
@@ -144,8 +144,7 @@ const Login = (props: RouteComponentProps) => {
                     className="googleButton"
                     clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}
                     buttonText="Login with Google"
-                    onSuccess={responseGoogle}
-                    onFailure={responseGoogle}
+                    onSuccess={authenticateWithGoogle}
                     cookiePolicy={'single_host_origin'}
                   />
 

@@ -1,136 +1,122 @@
-import React, { FormEvent } from 'react'
-import { withRouter } from 'react-router-dom'
+import { Button, Snackbar, TextField } from '@material-ui/core'
+import { useFormik } from 'formik'
+import React, { useEffect, useState } from 'react'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
 import ClipLoader from 'react-spinners/ClipLoader'
-import './ResetPassword.scss'
+import * as yup from 'yup'
+import { isPasswordValid } from '../../models/functions'
 import AuthenticationService from '../../services/auth-service'
-import { isPasswordInvalid } from '../../models/functions'
-import { Snackbar, Button } from '@material-ui/core'
+import './ResetPassword.scss'
 
-class ResetPassword extends React.Component<any, any> {
-  state = {
-    invalidLink: false,
-    password: '',
-    passwordInvalid: true,
-    loading: false,
-    email: '',
-    snackBarOpen: false,
-    snackBarMessage: ''
-  }
+const validationSchema = yup.object({
+  password: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters long.')
+    .test('is-valid', 'Password must contain at least one capital letter, one lower case letter, and one number.', (value) => isPasswordValid(value))
+    .required('Password is required.')
+})
 
-  async componentDidMount () {
-    const token = this.props.match.params.token
+const ResetPassword = (props: RouteComponentProps) => {
+  const [invalidLink, setInvalidLink] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [snackBarOpen, setSnackBarOpen] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState('')
+  const [email, setUserEmail] = useState(null)
+
+  const verifyToken = async () => {
+    const token = props.match.params.token
     try {
       const res = await AuthenticationService.verifyEmailResetToken(token)
       if (!res.data.success) {
-        this.setState({
-          invalidLink: true
-        })
+        setInvalidLink(true)
       } else {
-        this.setState({
-          invalidLink: false,
-          email: res.data.user_email
-        })
+        setInvalidLink(false)
+        setUserEmail(res.data.user_email)
       }
     } catch (err) {
-      this.setState({
-        invalidLink: true
-      })
+      setInvalidLink(true)
       console.log(err)
     }
   }
 
-  goHome = () => {
-    this.props.history.push('/')
+  useEffect(() => {
+    verifyToken()
+  }, [])
+
+  const goHome = (): void => {
+    props.history.push('/')
   }
 
-  openSnackBar (message: string) {
-    this.setState({
-      snackBarOpen: true,
-      snackBarMessage: message
-    })
+  const openSnackBar = (message: string): void => {
+    setSnackBarOpen(true)
+    setSnackBarMessage(message)
   }
 
-  closeSnackBar = () => {
-    this.setState({
-      snackBarOpen: false,
-      snackBarMessage: ''
-    })
+  const closeSnackBar = (): void => {
+    setSnackBarOpen(false)
+    setSnackBarMessage('')
   }
 
-  updatePasswordState = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const password: string = e.target.value
-    if (isPasswordInvalid(password)) {
-      this.setState({
-        passwordInvalid: true,
-        password: e.target.value
-      })
-    } else {
-      this.setState({
-        passwordInvalid: false,
-        password: e.target.value
-      })
-    }
-  }
-
-  updatePassword = async (e: FormEvent) => {
-    e.preventDefault()
-    this.setState({
-      loading: true
-    })
+  const updatePassword = async (values) => {
+    setLoading(true)
     try {
-      const reset_password_token = this.props.match.params.token
-      await AuthenticationService.updatePassword(this.state.password, reset_password_token, this.state.email)
-      this.openSnackBar('Password updated! Redirecting...')
-      this.setState({
-        loading: false
-      })
-      this.props.history.push('/recipes')
+      const reset_password_token = props.match.params.token
+      await AuthenticationService.updatePassword(values.password, reset_password_token, email)
+      openSnackBar('Password updated! Redirecting...')
+      setLoading(false)
+      props.history.push('/recipes')
     } catch (err) {
-      this.openSnackBar('There was an error.')
-      this.setState({
-        loading: false
-      })
+      openSnackBar('There was an error.')
+      setLoading(false)
     }
   }
 
-  render () {
-    const { snackBarMessage, snackBarOpen } = this.state
-    if (this.state.invalidLink) {
-      return (
-        <>
-            <div className="invalid-link">
-              <h3>The link is invalid or expired.</h3>
-              <button className="waves-effect waves-light btn" onClick={this.goHome}>Home</button>
-            </div>
+  const formik = useFormik({
+    initialValues: {
+      password: ''
+    },
+    validationSchema,
+    onSubmit: (values) => updatePassword(values)
+  })
+
+  return (
+    invalidLink
+      ? <>
+          <div className="invalid-link">
+            <h3>The link is invalid or expired.</h3>
+            <Button
+              variant="contained"
+              onClick={goHome}
+              color="secondary"
+              type="submit">Home</Button>
+          </div>
         </>
-      )
-    } else {
-      return (
-        <>
+      : <>
           <div className="resetPassword">
-            <h4>New Password</h4>
-            <form onSubmit={this.updatePassword}>
-              <input type="password" onChange={this.updatePasswordState} value={this.state.password}></input>
-              {
-                this.state.passwordInvalid && this.state.password.length
-                  ? <p className="error">
-                    Passwords must be at least 8 characters long and have at least one uppercase and one lower case character.
-                  </p>
-                  : null
-              }
+            <form onSubmit={formik.handleSubmit}>
+              <TextField
+                id="password"
+                type="password"
+                required
+                label="New Password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}/>
               <Button
-                disabled={this.state.passwordInvalid}
+                disabled={!formik.isValid}
                 variant="contained"
                 color="secondary"
                 type="submit">
-                {this.state.loading
+                { loading
                   ? <ClipLoader
                     css={'border-color: white;'}
                     size={30}
                     color={'#689943'}
-                    loading={this.state.loading}
+                    loading={loading}
                   />
-                  : 'Submit'}
+                  : 'Submit' }
               </Button>
             </form>
           </div>
@@ -141,15 +127,12 @@ class ResetPassword extends React.Component<any, any> {
               vertical: 'bottom',
               horizontal: 'center'
             }}
-            onClose={this.closeSnackBar}
+            onClose={closeSnackBar}
             autoHideDuration={4000}
             message={snackBarMessage}
-            key={'bottom' + 'center'}
-          />
-        </>
-      )
-    }
-  }
+            key={'bottom' + 'center'}/>
+          </>
+  )
 }
 
 export default withRouter(ResetPassword)

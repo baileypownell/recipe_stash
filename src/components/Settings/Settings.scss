@@ -29,7 +29,7 @@
   @include desktop {
     width: 35%;
   }
-  > #profileParent {
+  > #profile-container {
     @include flexRow;
     justify-content: space-between;
     align-items: center;
