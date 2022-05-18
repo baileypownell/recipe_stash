@@ -1,16 +1,16 @@
 import { Accordion, AccordionDetails, AccordionSummary, Button, Snackbar, TextField } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import React, { useState, useEffect } from 'react'
+import { Field, Formik } from 'formik'
+import React, { useEffect, useState } from 'react'
 import Fade from 'react-reveal/Fade'
-import { withRouter, RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
+import * as yup from 'yup'
+import { isPasswordValid } from '../../models/functions'
 import AuthenticationService from '../../services/auth-service'
 import UserService, { UpdateUserEmailPayload, UpdateUserNamePayload, UserData } from '../../services/user-service'
 import DeleteModal from '../DeleteModal/DeleteModal'
-import * as yup from 'yup'
 import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
 import './Settings.scss'
-import { isPasswordValid } from '../../models/functions'
-import { Formik, Field } from 'formik'
 
 interface Props extends RouteComponentProps {
   id: string
@@ -20,6 +20,7 @@ const validationSchema = yup.object({
   email: yup.object({
     email: yup
       .string()
+      .required('Email is required.')
       .email('Enter a valid email.'),
     password: yup
       .string()
@@ -33,11 +34,9 @@ const validationSchema = yup.object({
   }),
   names: yup.object({
     firstName: yup
-      .string()
-      .required('First name is required.'),
+      .string(),
     lastName: yup
       .string()
-      .required('Last name is required.')
   })
 })
 
@@ -46,21 +45,6 @@ const Settings = (props: Props) => {
   const [snackBarMessage, setSnackBarMessage] = useState('')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [user, setUser] = useState(null)
-
-  // const formik = useFormik({
-  //   initialValues: {
-  //     email: {
-  //       email: '',
-  //       password: ''
-  //     },
-  //     names: {
-  //       firstName: '',
-  //       lastName: ''
-  //     }
-  //   },
-  //   validationSchema,
-  //   onSubmit: () => null
-  // })
 
   const openSnackBar = (message: string): void => {
     setSnackBarOpen(true)
@@ -90,35 +74,39 @@ const Settings = (props: Props) => {
     getUserData()
   }, [])
 
-  const updateProfile = async () => {
+  const updateNames = async (values) => {
+    if (!values.names.firstName && !values.names.lastName) {
+      openSnackBar('Must enter either first name or last name.')
+      return 
+    }
     const { id } = props
 
     try {
       const payload: UpdateUserNamePayload = {
-        firstName: formik.values.names.firstName,
-        lastName: formik.values.names.lastName,
+        firstName: values.names.firstName || user.firstName,
+        lastName: values.names.lastName || user.lastName,
         id
       }
       await UserService.updateUser(payload)
       openSnackBar('Profile updated successfully.')
       getUserData()
     } catch (err) {
-      AuthenticationService.setUserLoggedOut()
-      props.history.push('/login')
+      console.log(err)
     }
   }
 
   const updateEmail = async (values) => {
-    console.log(values)
     try {
       const payload: UpdateUserEmailPayload = {
         newEmail: values.email.email,
         password: values.email.password
       }
       const res = await UserService.updateUser(payload)
-      setSnackBarOpen(res.data.message)
       if (res.data.success) {
+        openSnackBar(res.data.message)
         getUserData()
+      } else {
+        openSnackBar('Invalid email.')
       }
     } catch (err) {
       console.log(err)
@@ -130,7 +118,7 @@ const Settings = (props: Props) => {
     try {
       await UserService.deleteUser()
       openSnackBar('Account deleted.')
-      props.history.push('/')
+      logout()
     } catch (err) {
       console.log(err)
       openSnackBar('There was an error.')
@@ -164,137 +152,145 @@ const Settings = (props: Props) => {
       <div>
         <InnerNavigationBar title={'Settings'} icon={'<i class="fas fa-cog"></i>'}></InnerNavigationBar>
         <div className="settings">
-          <div id="profileParent">
+          <div id="profile-container">
             <div id="profile">
               <i className="fas fa-user-circle"></i><h3>{user?.firstName} {user?.lastName}</h3>
             </div>
           </div>
-            <div id="table">
-              <div className="row">
-                <div>
-                  <p>Email</p>
-                  <h4>{user?.email}</h4>
-                </div>
+          <div id="table">
+            <div className="row">
+              <div>
+                <p>Email</p>
+                <h4>{user?.email}</h4>
               </div>
             </div>
-              <Formik
-                initialValues={{
-                  email: {
-                    email: '',
-                    password: ''
-                  },
-                  names: {
-                    firstName: '',
-                    lastName: ''
-                  }
-                }}
-                validationSchema={validationSchema}
-                onSubmit={values => {
-                  // same shape as initial values
-                  console.log(values)
-                }}
-                render={(formikBag) => (
-                <>
-                  <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary"><i className="material-icons">email</i>Update Email</span>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                    <Field
-                      name="email.email"
-                      render={({ field, form }) => (
-                        <TextField
-                          id="email"
-                          name="email.email"
-                          type="email"
-                          label="New Email"
-                          onChange={formikBag.handleChange}
-                          onBlur={formikBag.handleBlur}
-                          error={form.touched.email?.email && Boolean(form.errors.email?.email)}
-                          helperText={form.touched.email?.email && form.errors.email?.email}>
-                        </TextField>
-                      )}
-                      />
-                      <Field
+          </div>
+          <Formik
+            initialValues={{
+              email: {
+                email: '',
+                password: ''
+              },
+              names: {
+                firstName: '',
+                lastName: ''
+              }
+            }}
+            validationSchema={validationSchema}
+            onSubmit={null}
+            render={formik => (
+            <>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <span className="accordion-summary"><i className="material-icons">email</i>Update Email</span>
+                </AccordionSummary>
+                <AccordionDetails>
+                <Field
+                  name="email.email"
+                  render={({ field, form }) => (
+                  <TextField
+                    id="email"
+                    name="email.email"
+                    type="email"
+                    label="New Email"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={form.touched.email?.email && Boolean(form.errors.email?.email)}
+                    helperText={form.touched.email?.email && form.errors.email?.email}>
+                  </TextField>
+                  )}
+                  />
+                  <Field
+                    name="email.password"
+                    render={({ field, form }) => (
+                    <TextField
+                      id="password"
+                      type="password"
                       name="email.password"
-                      render={({ field, form }) => (
-                        <TextField
-                          id="password"
-                          type="password"
-                          name="email.password"
-                          label="Password"
-                          onChange={formikBag.handleChange}
-                          onBlur={formikBag.handleBlur}
-                          error={form.touched.email?.password && Boolean(form.errors.email?.password)}
-                          helperText={form.touched.email?.password && form.errors.email?.password}
-                          >
-                        </TextField>
-                      )} />
-                      <div style={{ marginTop: '20px' }}>
-                        <Button color="secondary" onClick={() => updateEmail(formikBag.values)} variant="contained">Save</Button>
-                      </div>
-                    </AccordionDetails>
-                  </Accordion>
-                  <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary"><i className="material-icons">person</i>Update Name</span>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      {/* <TextField
-                        id="firstName"
-                        type="text"
-                        label="New First Name"
-                        value={formik.values.names.firstName}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.names?.firstName && Boolean(formik.errors.names?.firstName)}
-                        helperText={formik.touched.names?.firstName && formik.errors.names?.firstName}>
-                        </TextField>
-                        <TextField
-                          id="lastName"
-                          type="text"
-                          label="New Last Name"
-                          value={formik.values.names.lastName}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          error={formik.touched.names?.lastName && Boolean(formik.errors.names?.lastName)}
-                          helperText={formik.touched.names?.lastName && formik.errors.names?.lastName}>
-                        </TextField> */}
-                        <div style={{ marginTop: '20px' }}>
-                          <Button color="secondary" onClick={updateProfile} variant="contained">Save</Button>
-                        </div>
-                    </AccordionDetails>
-                  </Accordion>
-                  <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary"><i className="material-icons">security</i>Update Password</span>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <p>Click the button below to receive an email with a link to reset your password.</p>
-                      <div>
-                        <Button color="secondary" onClick={updatePassword} variant="contained">Send Email</Button>
-                      </div>
-                    </AccordionDetails>
-                  </Accordion>
-                  <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary"><i className="material-icons">delete</i>Delete Account</span>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <p>If you are sure you want to delete your account, click the button below. This action
-                        <span id="bold">cannot</span> be undone.</p>
-                      <div>
-                        <Button
-                          color="secondary"
-                          id="delete"
-                          onClick={openDeleteModal}
-                          variant="contained">Delete Account <i style={{ marginLeft: '8px' }} className="fas fa-exclamation-triangle"></i>
-                        </Button>
-                      </div>
-                    </AccordionDetails>
-                  </Accordion>
-                </>
-                )}></Formik>
+                      label="Password"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={form.touched.email?.password && Boolean(form.errors.email?.password)}
+                      helperText={form.touched.email?.password && form.errors.email?.password}
+                      >
+                    </TextField>
+                  )} />
+                  <div style={{ marginTop: '20px' }}>
+                    <Button color="secondary" onClick={() => updateEmail(formik.values)} variant="contained">Save</Button>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <span className="accordion-summary"><i className="material-icons">person</i>Update Name</span>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Field
+                    name="names.firstName"
+                    render={({ field, form }) => (
+                    <TextField
+                      name="names.firstName"
+                      label="New First Name"
+                      type="text"
+                      id="firstName"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={form.touched.names?.firstName && Boolean(form.errors.names?.firstName)}
+                      helperText={form.touched.names?.firstName && form.errors.names?.firstName}>
+                    </TextField>
+                    )}
+                    />
+                  <Field
+                    name="names.lastName"
+                    render={({ field, form }) => (
+                    <TextField
+                      name="names.lastName"
+                      label="New Last Name"
+                      id="lastName"
+                      type="text"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={form.touched.names?.lastName && Boolean(form.errors.names?.lastName)}
+                      helperText={form.touched.names?.lastName && form.errors.names?.lastName}
+                      >
+                    </TextField>
+                  )} />
+                    <div style={{ marginTop: '20px' }}>
+                      <Button color="secondary" onClick={() => updateNames(formik.values)} variant="contained">Save</Button>
+                    </div>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <span className="accordion-summary"><i className="material-icons">security</i>Update Password</span>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <p>Click the button below to receive an email with a link to reset your password.</p>
+                  <div>
+                    <Button color="secondary" onClick={updatePassword} variant="contained">Send Email</Button>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <span className="accordion-summary"><i className="material-icons">delete</i>Delete Account</span>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <p>If you are sure you want to delete your account, click the button below. This action
+                    <span id="bold">cannot</span> be undone.</p>
+                  <div>
+                    <Button
+                      color="secondary"
+                      id="delete"
+                      onClick={openDeleteModal}
+                      variant="contained">Delete Account <i style={{ marginLeft: '8px' }} className="fas fa-exclamation-triangle"></i>
+                    </Button>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            </>
+            )}>
+          </Formik>
         </div>
       </div>
 

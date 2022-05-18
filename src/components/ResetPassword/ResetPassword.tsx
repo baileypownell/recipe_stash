@@ -1,12 +1,12 @@
-import { Button, Snackbar, TextField, Divider } from '@material-ui/core'
+import { Button, Snackbar, TextField } from '@material-ui/core'
 import { useFormik } from 'formik'
-import React, { useState, useEffect } from 'react'
-import { withRouter, RouteComponentProps } from 'react-router-dom'
-import * as yup from 'yup'
+import React, { useEffect, useState } from 'react'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
 import ClipLoader from 'react-spinners/ClipLoader'
+import * as yup from 'yup'
+import { isPasswordValid } from '../../models/functions'
 import AuthenticationService from '../../services/auth-service'
 import './ResetPassword.scss'
-import { isPasswordValid } from '../../models/functions'
 
 const validationSchema = yup.object({
   password: yup
@@ -84,7 +84,11 @@ const ResetPassword = (props: RouteComponentProps) => {
       ? <>
           <div className="invalid-link">
             <h3>The link is invalid or expired.</h3>
-            <button className="waves-effect waves-light btn" onClick={goHome}>Home</button>
+            <Button
+              variant="contained"
+              onClick={goHome}
+              color="secondary"
+              type="submit">Home</Button>
           </div>
         </>
       : <>
