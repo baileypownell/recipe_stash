@@ -5,47 +5,19 @@
     min-height: 100px!important;
 }
 
-.recipe {
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    grid-template-areas: 
-    'title'
-    'main'
-    'footer';
-    .modal-scroll {
-      overflow: auto;
-    }
-  }
-
-  .modal-content {
-    padding: 10px 20px;
-    @include desktop {
-      width: 50%;
-      margin: 0 auto;
-    }
-  }
-
 .modal-close-buttons {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-    > div {
-        display: flex; 
-        > button {
-            flex-grow: 1;
-        }
-    }
     @media screen and (min-width: 530px) {
         flex-direction: row-reverse;
     }
     button {
         margin: 5px;
-    }
-    .grayBtn {
-        background-color: $gray!important;
-        color: $secondary;
+        @media screen and (min-width: 530px) {
+            margin: 0;
+        }
     }
 }
 

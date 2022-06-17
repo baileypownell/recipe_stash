@@ -62,22 +62,6 @@ label {
   }
 }
 
-.recipe-modal {
-  width: 100%!important;
-  top:0!important;
-  max-height: none!important;
-  height: 100%;
-}
-
-// preserve froala bold setting 
-strong {
-  font-weight: 800!important;
-}
-
-.modal-close-buttons {
-  padding: 10px;
-}
-
 .quill {
   button {
     background-color: transparent!important;
@@ -89,7 +73,6 @@ strong {
 
 button {
   i {
-    // margin-left: 8px;
     font-size: 1.2rem;
   }
 }
