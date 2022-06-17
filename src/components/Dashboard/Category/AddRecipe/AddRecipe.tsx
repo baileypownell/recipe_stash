@@ -205,7 +205,7 @@ class AddRecipe extends React.Component<Props, State> {
       <Dialog fullScreen open={open} onClose={this.toggleModal} TransitionComponent={Transition as any}>
         <div className="recipe-modal">
           <div className="recipe">
-            <h1 className="title">New Recipe</h1>
+            <h2 className="title">New Recipe</h2>
             <div className="modal-scroll">
               <div className="modal-content">
               <h3>Title</h3>

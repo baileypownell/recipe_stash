@@ -270,7 +270,7 @@ class Dashboard extends React.Component<Props, State> {
       <div>
         <div className="title-bar">
           <div>
-            <h1>Recipe Box</h1>
+            <h1 style={{ fontWeight: 'normal' }}>Recipe Box</h1>
             <div className="searchbar">
               <InputBase
                 placeholder="Search…"
