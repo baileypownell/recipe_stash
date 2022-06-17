@@ -24,8 +24,12 @@ nav {
   background-color: $secondary!important;
   justify-content: space-between;
   align-items: center;
-  height: 77px!important;
+  height: 50px!important;
   overflow: hidden;
+  flex-wrap: nowrap;
+  @include tablet {
+    height: 70px!important;
+  }
   a {
     line-height: 0px;
   }
@@ -33,7 +37,10 @@ nav {
     height: auto;
   }
   img {
-    height: 40px;
+    height: 35px;
+    @include tablet { 
+      height: 40px;
+    }
   }
   div {
     display: flex;
