@@ -2,7 +2,6 @@ import client from './client'
 
 const authMiddleware = (req, response, next) => {
   if (req.sessionID) {
-    // get user_id from req.sessionID
     client.query('SELECT user_uuid FROM session WHERE sid=$1',
       [req.sessionID],
       (err, res) => {

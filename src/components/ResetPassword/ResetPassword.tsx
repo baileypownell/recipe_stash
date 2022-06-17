@@ -1,5 +1,5 @@
 import { Button, Snackbar, TextField } from '@material-ui/core'
-import { useFormik } from 'formik'
+import { Field, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import ClipLoader from 'react-spinners/ClipLoader'
@@ -71,14 +71,6 @@ const ResetPassword = (props: RouteComponentProps) => {
     }
   }
 
-  const formik = useFormik({
-    initialValues: {
-      password: ''
-    },
-    validationSchema,
-    onSubmit: (values) => updatePassword(values)
-  })
-
   return (
     invalidLink
       ? <>
@@ -93,32 +85,42 @@ const ResetPassword = (props: RouteComponentProps) => {
         </>
       : <>
           <div className="resetPassword">
-            <form onSubmit={formik.handleSubmit}>
-              <TextField
-                id="password"
-                type="password"
-                required
-                label="New Password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.password && Boolean(formik.errors.password)}
-                helperText={formik.touched.password && formik.errors.password}/>
-              <Button
-                disabled={!formik.isValid}
-                variant="contained"
-                color="secondary"
-                type="submit">
-                { loading
-                  ? <ClipLoader
-                    css={'border-color: white;'}
-                    size={30}
-                    color={'#689943'}
-                    loading={loading}
-                  />
-                  : 'Submit' }
-              </Button>
-            </form>
+            <Formik
+              initialValues={{
+                  password: ''
+              }}
+              validationSchema={validationSchema}
+              onSubmit={(values) => updatePassword(values)}
+              render={formik => (
+              <Form>
+                <TextField
+                  type="password"
+                  name="password"
+                  required
+                  label="New Password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  helperText={formik.touched.password && formik.errors.password}>
+                </TextField>
+                <Button
+                  disabled={!formik.isValid}
+                  variant="contained"
+                  color="secondary"
+                  type="submit">
+                  { loading
+                    ? <ClipLoader
+                      css={'border-color: white;'}
+                      size={30}
+                      color={'#689943'}
+                      loading={loading}
+                    />
+                    : 'Submit' }
+                </Button>
+              </Form>
+            )} >
+            </Formik>
           </div>
 
           <Snackbar

@@ -1,5 +1,5 @@
 import { Button, Snackbar, TextField } from '@material-ui/core'
-import { useFormik } from 'formik'
+import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import GoogleLogin from 'react-google-login'
 import Fade from 'react-reveal/Fade'
@@ -89,24 +89,22 @@ const Login = (props: RouteComponentProps) => {
     }
   }
 
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: ''
-    },
-    validationSchema,
-    onSubmit: (values) => signin(values)
-  })
-
   return (
     <>
       <div className="auth">
         <div className="gradient">
           <Fade top>
-              <form className="fade" onSubmit={formik.handleSubmit}>
+            <Formik
+              initialValues={{
+                email: '',
+                password: ''
+              }}
+              validationSchema={validationSchema}
+              onSubmit={(values) => signin(values)}
+              render={formik => (
+              <Form>
                 <h1>Login</h1>
                 <TextField
-                  id="email"
                   label="Email"
                   value={formik.values.email}
                   onChange={formik.handleChange}
@@ -121,7 +119,6 @@ const Login = (props: RouteComponentProps) => {
                   error={formik.touched.password && Boolean(formik.errors.password)}
                   helperText={formik.touched.password && formik.errors.password}
                   onBlur={formik.handleBlur}
-                  id="password"
                   type="password"
                   label="Password"
                   name="password"/>
@@ -159,8 +156,10 @@ const Login = (props: RouteComponentProps) => {
                     </Button>
                       )
                     : null }
-                </div>
-              </form>
+                  </div>
+              </Form>
+              )}>
+              </Formik>
           </Fade>
         </div>
       </div>

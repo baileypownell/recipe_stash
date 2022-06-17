@@ -41,7 +41,7 @@ router.post('/', (request: any, response, next) => {
                       }
                     })
                   } else {
-                    console.log(`There was an error: No user found to update with SID: ${sessionIdentifier}`) // so how does it end up undefined, or even a different string entirely, here? when it's the same, why doesn't it work?
+                    console.log(`There was an error: No user found to update with SID: ${sessionIdentifier}`)
                     return response.status(500).json({ error: 'There was an error.' })
                   }
                 })

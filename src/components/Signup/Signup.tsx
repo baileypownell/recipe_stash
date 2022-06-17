@@ -1,5 +1,5 @@
 import { Button, Snackbar, TextField } from '@material-ui/core'
-import { useFormik } from 'formik'
+import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import Fade from 'react-reveal/Fade'
 import { RouteComponentProps } from 'react-router-dom'
@@ -73,86 +73,87 @@ const Signup = (props: RouteComponentProps) => {
 
   const login = (): void => { props.history.push('/login') }
 
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    },
-    validationSchema,
-    onSubmit: (values) => signup(values)
-  })
-
   return (
     <div className="auth">
       <div className="gradient">
         <Fade top>
-          <form onSubmit={formik.handleSubmit}>
-            <h1>Signup</h1>
-            <TextField
-              id="firstName"
-              type="text"
-              required
-              label="First Name"
-              value={formik.values.firstName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-              helperText={formik.touched.firstName && formik.errors.firstName}/>
-            <TextField
-              id="lastName"
-              type="text"
-              required
-              label="Last Name"
-              value={formik.values.lastName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-              helperText={formik.touched.lastName && formik.errors.lastName}/>
-            <TextField
-              id="email"
-              type="email"
-              required
-              label="Email"
-              value={formik.values.email}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}/>
-            <TextField
-              id="password"
-              type="password"
-              required
-              label="Password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}/>
-            <TextField
-              id="confirmPassword"
-              type="password"
-              required
-              label="Confirm Password"
-              value={formik.values.confirmPassword}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-              helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}/>
-            <p>Already have an account? <span className="link" onClick={login}>Log in.</span></p>
-            <Button variant="contained" color="secondary" type="submit" disabled={!formik.isValid}>
-              {loading
-                ? <ClipLoader
-                    css={'border-color: white;'}
-                    size={30}
-                    color={'white'}
-                    loading={loading}
-                  />
-                : 'Submit'}
-            </Button>
-          </form>
+          <Formik
+              initialValues={{
+                firstName: '',
+                lastName: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+              }}
+              validationSchema={validationSchema}
+              onSubmit={(values) => signup(values)}
+              render={formik => (
+              <Form>
+                <h1>Signup</h1>
+                <TextField
+                  name="firstName"
+                  type="text"
+                  required
+                  label="First Name"
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                  helperText={formik.touched.firstName && formik.errors.firstName}/>
+                <TextField
+                  name="lastName"
+                  type="text"
+                  required
+                  label="Last Name"
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                  helperText={formik.touched.lastName && formik.errors.lastName}/>
+                <TextField
+                  name="email"
+                  type="email"
+                  required
+                  label="Email"
+                  value={formik.values.email}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}/>
+                <TextField
+                  name="password"
+                  type="password"
+                  required
+                  label="Password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  helperText={formik.touched.password && formik.errors.password}/>
+                <TextField
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  label="Confirm Password"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                  helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}/>
+                <p>Already have an account? <span className="link" onClick={login}>Log in.</span></p>
+                <Button variant="contained" color="secondary" type="submit" disabled={!formik.isValid}>
+                  { loading
+                    ? <ClipLoader
+                        css={'border-color: white;'}
+                        size={30}
+                        color={'white'}
+                        loading={loading}
+                      />
+                    : 'Submit' }
+                </Button>
+              </Form>
+              )}>
+            </Formik>
         </Fade>
       </div>
 
