@@ -154,6 +154,7 @@ h3 {
    }
    img, 
    .recipe-image-skeleton {
+     width: 100%;
      max-width: 400px;
      border-radius: 5px;
      @include boxShadow;
