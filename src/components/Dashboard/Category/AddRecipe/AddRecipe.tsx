@@ -1,13 +1,14 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from '@material-ui/core'
+import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from '@material-ui/core'
 import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import DOMPurify from 'dompurify'
-import React, { ChangeEvent } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { RouteComponentProps } from 'react-router-dom'
 import options from '../../../../models/options'
-import tag, { tags } from '../../../../models/tags'
+import { tags as RecipeTags } from '../../../../models/tags'
 import { DefaultTile, NewFileInterface, RecipeInput } from '../../../../services/recipe-services'
 import FileUpload from '../../../File-Upload/FileUpload'
 import Preloader from '../../../Preloader/Preloader'
@@ -19,76 +20,47 @@ const Transition = React.forwardRef(function Transition (props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-type Props = {
+interface Props extends RouteComponentProps {
   id: string
   category: string
   addRecipe: Function
   gridView: boolean
 }
 
-type State = {
-  loading: boolean
-  recipe_title: string
-  ingredients: string
-  directions: string
-  category: string
-  recipeValid: boolean
-  newFiles: any[]
-  tags: tag[],
-  defaultTile: DefaultTile | null
-  open: boolean,
-  snackBarOpen: boolean,
-  snackBarMessage: string
-}
+const AddRecipe = (props: Props) => {
+  const [loading, setLoading] = useState(false)
+  const [recipeTitle, setRecipeTitle]= useState('')
+  const [ingredients, setIngredients] = useState('')
+  const [directions, setDirections] = useState('')
+  const [category, setCategory] = useState(options.find(option => option.label === props.category).value)
+  const [recipeValid, setRecipeValid] = useState(false)
+  const [newFiles, setNewFiles] = useState([])
+  const [tags, setTags] = useState(RecipeTags.map(tag => ({ ...tag, selected: false })))
+  const [defaultTile, setDefaultTile] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [snackBarOpen, setSnackBarOpen] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState('')
 
-class AddRecipe extends React.Component<Props, State> {
-  state = {
-    loading: false,
-    recipe_title: '',
-    ingredients: '',
-    directions: '',
-    category: options.find(option => option.label === this.props.category).value,
-    recipeValid: false,
-    newFiles: [],
-    tags: tags.map(tag => ({ ...tag, selected: false })),
-    defaultTile: null,
-    open: false,
-    snackBarOpen: false,
-    snackBarMessage: ''
+  const clearState = () => {
+    const prevOpenState = open
+    setRecipeTitle('')
+    setIngredients('')
+    setDirections('')
+    setOpen(!prevOpenState)
+    setTags(tags)
   }
 
-  checkValidity = () => {
-    const { directions, ingredients, recipe_title } = this.state
-    const rawDirections = htmlToText(directions)
-    const rawIngredients = htmlToText(ingredients)
-    const rawTitle = htmlToText(recipe_title)
-    const recipeValid: boolean = !!rawDirections.trim() && !!rawIngredients.trim() && !!rawTitle.trim()
-    this.setState({ recipeValid })
-  }
-
-  clearState = () => {
-    const prevOpenState = this.state.open
-    this.setState({
-      recipe_title: '',
-      ingredients: '',
-      directions: '',
-      open: !prevOpenState,
-      tags
-    })
-  }
-
-  createRecipe = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const createRecipe = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    const tags = this.state.tags
-    const titleHTML = DOMPurify.sanitize(this.state.recipe_title, {})
+    const titleHTML = DOMPurify.sanitize(recipeTitle, {})
     const rawTitle = htmlToText(titleHTML, { wordwrap: 130 })
-    this.setState({ loading: true })
+    setLoading(true)
     const recipeInput: RecipeInput = {
-      title: DOMPurify.sanitize(this.state.recipe_title, {}),
+      title: DOMPurify.sanitize(recipeTitle, {}),
       rawTitle,
-      category: this.state.category,
-      ingredients: DOMPurify.sanitize(this.state.ingredients, {}),
-      directions: DOMPurify.sanitize(this.state.directions, {}),
+      category,
+      ingredients: DOMPurify.sanitize(ingredients, {}),
+      directions: DOMPurify.sanitize(directions, {}),
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
       isHealthy: tags[2].selected,
@@ -102,199 +74,183 @@ class AddRecipe extends React.Component<Props, State> {
     try {
       const param: AddRecipeMutationParam = {
         recipeInput,
-        files: this.state.newFiles,
-        defaultTile: this.state.defaultTile
+        files: newFiles,
+        defaultTile: defaultTile
       }
-      await this.props.addRecipe(param)
-      this.openSnackBar('Recipe added.')
-      this.clearState()
-      this.setState({ loading: false })
+      await props.addRecipe(param)
+      openSnackBar('Recipe added.')
+      clearState()
+      setLoading(false)
     } catch (err) {
       console.log(err)
-      this.setState({ loading: false })
-      this.openSnackBar('There was an error.')
+      setLoading(false)
+      openSnackBar('There was an error.')
     }
   }
 
-  openSnackBar (message: string) {
-    this.setState({
-      snackBarOpen: true,
-      snackBarMessage: message
-    })
+  const openSnackBar = (message: string): void => {
+    setSnackBarOpen(true)
+    setSnackBarMessage(message)
   }
 
-  closeSnackBar = () => {
-    this.setState({
-      snackBarOpen: false,
-      snackBarMessage: ''
-    })
+  const closeSnackBar = (): void => {
+    setSnackBarOpen(false)
+    setSnackBarMessage('')
   }
 
-  toggleModal = () => {
-    const prevOpenState = this.state.open
-    this.setState({ open: !prevOpenState })
+  const toggleModal = (): void => {
+    const prevOpenState = open
+    setOpen(!prevOpenState)
   }
 
-  updateInput = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.setState({
-      [e.target.id]: e.target.value
-    }, () => this.checkValidity())
+  const updateCategory = (e) => {
+    setCategory(e.target.value)
   }
 
-  updateCategory = (e) => {
-    this.setState({ category: e.target.value })
-  }
-
-  toggleTagSelectionStatus = (index: number) => {
-    // 1. Make a shallow copy of the items
-    const tags = [...this.state.tags]
-    // 2. Make a shallow copy of the item you want to mutate
-    const item = { ...tags[index] }
-    // 3. Replace the property you're intested in
+  const toggleTagSelectionStatus = (index: number) => {
+    const copyTags = [...tags]
+    const item = { ...copyTags[index] }
     const priorSelectedValue = item.selected
     item.selected = !priorSelectedValue
-    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-    tags[index] = item
-    // 5. Set the state to our new copy
-    this.setState({ tags })
+    copyTags[index] = item
+    setTags(copyTags)
   }
 
-  handleModelChange = (html: string) => {
-    this.setState({ recipe_title: html }, () => this.checkValidity())
+  const setFiles = (newFiles: NewFileInterface[]) => {
+    setNewFiles(newFiles)
   }
 
-  handleModelChangeIngredients = (html: string) => {
-    this.setState({ ingredients: html }, () => this.checkValidity())
+  const setDefaultTileImage = (defaultTile: DefaultTile) => {
+    setDefaultTile(defaultTile)
   }
 
-  handleModelChangeDirections = (html: string) => {
-    this.setState({ directions: html }, () => this.checkValidity())
+  const handleModelChange = (html: string) => {
+    setRecipeTitle(html)
   }
 
-  setFiles = (newFiles: NewFileInterface[]) => {
-    this.setState({ newFiles })
+  const handleModelChangeIngredients = (html: string) => {
+    setIngredients(html)
   }
 
-  setDefaultTileImage = (defaultTile: DefaultTile) => {
-    this.setState({ defaultTile })
+  const handleModelChangeDirections = (html: string) => {
+    setDirections(html)
   }
 
-  render () {
-    const { id, gridView } = this.props as any
-    const { open, category, recipe_title, ingredients, directions, snackBarOpen, snackBarMessage } = this.state
+  useEffect(() => {
+    const rawDirections = htmlToText(directions)
+    const rawIngredients = htmlToText(ingredients)
+    const rawTitle = htmlToText(recipeTitle)
+    const recipeValid: boolean = !!rawDirections.trim() && !!rawIngredients.trim() && !!rawTitle.trim()
+    setRecipeValid(recipeValid)
+  }, [recipeTitle, ingredients, directions])
 
-    return (
-      <>
-        { gridView
-          ? <div
-            onClick={this.toggleModal}
+  const { id, gridView } = props
+
+  return (
+    <>
+      { gridView
+        ? <div
+            onClick={toggleModal}
             className="addRecipe"
-            id={id}
-             >
+            id={id}>
             <i className="fas fa-plus-circle"></i>
-        </div>
-          : <Button
-              className="add-button"
-              variant="contained"
-              onClick={this.toggleModal}>
-              Add Recipe
-              <i className="fas fa-plus-circle" style={{ marginLeft: '8px' }}></i>
-            </Button>
-      }
-
-      <Dialog fullScreen open={open} onClose={this.toggleModal} TransitionComponent={Transition as any}>
-        <div className="recipe-modal">
-          <div className="recipe">
-            <h2 className="title">New Recipe</h2>
-            <div className="modal-scroll">
-              <div className="modal-content">
-              <h3>Title</h3>
-              <ReactQuill value={recipe_title} onChange={this.handleModelChange}/>
-              <h3>Ingredients</h3>
-              <ReactQuill theme="snow" value={ingredients} onChange={this.handleModelChangeIngredients}/>
-              <h3>Directions</h3>
-              <ReactQuill theme="snow" value={directions} onChange={this.handleModelChangeDirections}/>
-              <div>
-                <FormControl variant="filled" style={{ width: '100%', margin: '10px 0' }}>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    id="category"
-                    value={category}
-                    onChange={this.updateCategory}
-                  >
-                    {
-                      options.map((val, index: number) => {
-                        return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
-                      })
-                    }
-                  </Select>
-                </FormControl>
-              </div>
-
-              <Accordion style={{ margin: '10px 0' }}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography>Recipe Tags</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                    {
-                      this.state.tags.map((tag, index) => {
-                        return <Chip
-                          className={`chip ${this.state.tags[index].selected ? 'selectedTag' : 'null'}`}
-                          id={index.toString()}
-                          key={index}
-                          onClick={() => this.toggleTagSelectionStatus(index)}
-                          label={tag.label} />
-                      })
-                    }
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-              <FileUpload
-                open={open}
-                passDefaultTileImage={this.setDefaultTileImage}
-                passFiles={this.setFiles}>
-                </FileUpload>
-            </div>
           </div>
-          <div className="modal-close-buttons">
+        : <Button
+            className="add-button"
+            variant="contained"
+            onClick={toggleModal}>
+            Add Recipe
+            <i className="fas fa-plus-circle" style={{ marginLeft: '8px' }}></i>
+          </Button>
+    }
+
+    <Dialog fullScreen open={open} onClose={toggleModal} TransitionComponent={Transition}>
+      <DialogTitle className='title'><span>Add Recipe</span></DialogTitle>
+      <DialogContent>
+        <h3>Title</h3>
+        <ReactQuill value={recipeTitle} onChange={handleModelChange}/>
+        <h3>Ingredients</h3>
+        <ReactQuill theme="snow" value={ingredients} onChange={handleModelChangeIngredients}/>
+        <h3>Directions</h3>
+        <ReactQuill theme="snow" value={directions} onChange={handleModelChangeDirections}/>
+        <div>
+          <FormControl variant="filled" style={{ width: '100%', margin: '10px 0' }}>
+            <InputLabel>Category</InputLabel>
+            <Select
+              id="category"
+              value={category}
+              onChange={updateCategory}
+            >
+              {
+                options.map((val, index: number) => {
+                  return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
+                })
+              }
+            </Select>
+          </FormControl>
+        </div>
+
+        <Accordion style={{ margin: '10px 0' }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Recipe Tags</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              {
+                tags.map((tag, index) => {
+                  return <Chip
+                    className={`chip ${tags[index].selected ? 'selectedTag' : 'null'}`}
+                    id={index.toString()}
+                    key={index}
+                    onClick={() => toggleTagSelectionStatus(index)}
+                    label={tag.label} />
+                })
+              }
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <FileUpload
+          open={open}
+          passDefaultTileImage={setDefaultTileImage}
+          passFiles={setFiles}/>
+      </DialogContent>
+      <DialogActions>
+        <div className="modal-close-buttons">
           <Button
             variant="contained"
             color="secondary"
-            disabled={!this.state.recipeValid}
-            onClick={this.createRecipe}>
-              {this.state.loading
+            disabled={!recipeValid}
+            onClick={createRecipe}>
+              { loading
                 ? <Preloader/>
                 : <>
-                  Add Recipe
-                  <i className="fas fa-check-square" style={{ marginLeft: '8px' }}></i>
-                </>
-                }
+                    Add Recipe
+                    <i className="fas fa-check-square" style={{ marginLeft: '8px' }}></i>
+                  </>
+              }
             </Button>
-            <Button onClick={this.toggleModal} variant="outlined">Cancel</Button>
+          <Button onClick={toggleModal} variant="outlined">Cancel</Button>
         </div>
-        </div>
-        </div>
-      </Dialog>
+      </DialogActions>
+    </Dialog>
 
-      <Snackbar
-        open={snackBarOpen}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
-        }}
-        onClose={this.closeSnackBar}
-        autoHideDuration={4000}
-        message={snackBarMessage}
-        key={'bottom' + 'center'}
-      />
-    </>
-    )
-  }
+    <Snackbar
+      open={snackBarOpen}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center'
+      }}
+      onClose={closeSnackBar}
+      autoHideDuration={4000}
+      message={snackBarMessage}
+      key={'bottom' + 'center'}
+    />
+  </>
+  )
 }
 
 export default AddRecipe

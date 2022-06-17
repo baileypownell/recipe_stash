@@ -10,28 +10,6 @@
   padding-bottom: 20px;
 }
 
-.recipe {
-  height: 100%;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas: 
-  'title'
-  'main'
-  'footer';
-  .modal-scroll {
-    overflow: auto;
-  }
-}
-
-
-.modal-content {
-  @include desktop {
-    width: 50%;
-    margin: 0 auto;
-  }
-}
 .ingredients {
   white-space: pre-line;
 }
