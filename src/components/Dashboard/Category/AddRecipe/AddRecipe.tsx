@@ -168,11 +168,11 @@ const AddRecipe = (props: Props) => {
       <DialogTitle className='title'><span>Add Recipe</span></DialogTitle>
       <DialogContent>
         <h3>Title</h3>
-        <ReactQuill value={recipeTitle} onChange={handleModelChange}/>
+        <ReactQuill onChange={handleModelChange}/>
         <h3>Ingredients</h3>
-        <ReactQuill theme="snow" value={ingredients} onChange={handleModelChangeIngredients}/>
+        <ReactQuill onChange={handleModelChangeIngredients}/>
         <h3>Directions</h3>
-        <ReactQuill theme="snow" value={directions} onChange={handleModelChangeDirections}/>
+        <ReactQuill onChange={handleModelChangeDirections}/>
         <div>
           <FormControl variant="filled" style={{ width: '100%', margin: '10px 0' }}>
             <InputLabel>Category</InputLabel>
