@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, CircularProgress, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from '@material-ui/core'
+import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, CircularProgress, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography } from '@material-ui/core'
 import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
@@ -69,8 +69,6 @@ const RecipeDialog = (props: Props) => {
   const [tags, setTags] = useState(RecipeTags.map(tag => ({ ...tag, selected: false })))
   const [defaultTile, setDefaultTile] = useState(null)
   const [open, setOpen] = useState(false)
-  const [snackBarOpen, setSnackBarOpen] = useState(false)
-  const [snackBarMessage, setSnackBarMessage] = useState('')
   const [filesToDelete, setFilesToDelete] = useState([])
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('')
 
@@ -142,7 +140,6 @@ const RecipeDialog = (props: Props) => {
           defaultTile,
         }
         await (props.recipeDialogInfo as AddProps).addRecipe(param)
-        openSnackBar('Recipe added.')
         clearState()
         setLoading(false)
       } else if (mode === Mode.Edit) {
@@ -153,7 +150,6 @@ const RecipeDialog = (props: Props) => {
             defaultTile,
           }
           const recipe = await (props.recipeDialogInfo as EditProps).addRecipeMutation(param)
-          openSnackBar('Recipe added.')
           setFilesToDelete([])
           setNewFiles([])
           setLoading(false)
@@ -207,26 +203,14 @@ const RecipeDialog = (props: Props) => {
     } catch (err) {
       console.log(err)
       setLoading(false)
-      openSnackBar('There was an error.')
     }
   }
 
   const refreshRecipeView = () => {
-    openSnackBar('Recipe updated.');
-    (props.recipeDialogInfo as EditProps).triggerDialog();
-    (props.recipeDialogInfo as EditProps).fetchData();
+    (props.recipeDialogInfo as EditProps).triggerDialog()
+    (props.recipeDialogInfo as EditProps).fetchData()
     setFilesToDelete([])
     setNewFiles([])
-  }
-
-  const openSnackBar = (message: string): void => {
-    setSnackBarOpen(true)
-    setSnackBarMessage(message)
-  }
-
-  const closeSnackBar = (): void => {
-    setSnackBarOpen(false)
-    setSnackBarMessage('')
   }
 
   const toggleModal = (): void => {
@@ -436,18 +420,6 @@ const RecipeDialog = (props: Props) => {
         </div>
       </DialogActions>
     </Dialog>
-
-    <Snackbar
-      open={snackBarOpen}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center'
-      }}
-      onClose={closeSnackBar}
-      autoHideDuration={4000}
-      message={snackBarMessage}
-      key={'bottom' + 'center'}
-    />
   </>
   )
 }
