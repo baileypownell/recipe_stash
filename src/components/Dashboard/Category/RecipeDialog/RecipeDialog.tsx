@@ -207,8 +207,8 @@ const RecipeDialog = (props: Props) => {
   }
 
   const refreshRecipeView = () => {
-    (props.recipeDialogInfo as EditProps).triggerDialog()
-    (props.recipeDialogInfo as EditProps).fetchData()
+    (props.recipeDialogInfo as EditProps).triggerDialog();
+    (props.recipeDialogInfo as EditProps).fetchData();
     setFilesToDelete([])
     setNewFiles([])
   }
