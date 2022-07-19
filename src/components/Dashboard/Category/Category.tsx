@@ -1,5 +1,5 @@
 import React from 'react'
-import AddRecipe from './AddRecipe/AddRecipe'
+import RecipeDialog, { Mode } from './RecipeDialog/RecipeDialog'
 import Square from './Square/Square'
 import ListItem from './ListItem/ListItem'
 import Fade from 'react-reveal/Fade'
@@ -20,26 +20,29 @@ const Category = (props: {
         <div className={visibility === 'true' ? 'visible category' : 'invisible category'}>
           <h3 >{title}</h3>
           <div className="recipeBox">
-            <AddRecipe
-              id={id}
-              gridView={gridView}
-              category={title}
-              addRecipe={props.addRecipe}
+            <RecipeDialog
+              mode={Mode.Add}
+              recipeDialogInfo={{
+                id,
+                gridView,
+                category: title,
+                addRecipe: props.addRecipe
+              }}
             />
             { recipes
               ? recipes.map((recipe) => {
                 return (
                   gridView
                     ? <Square
-                        key={recipe.id}
-                        awsUrl={recipe.preSignedDefaultTileImageUrl}
-                        recipeId={recipe.id}
-                        rawTitle={recipe.rawTitle}/>
+                      key={recipe.id}
+                      awsUrl={recipe.preSignedDefaultTileImageUrl}
+                      recipeId={recipe.id}
+                      rawTitle={recipe.rawTitle}/>
                     : <ListItem
-                        key={recipe.id}
-                        recipeId={recipe.id}
-                        rawTitle={recipe.rawTitle}>
-                      </ListItem>
+                      key={recipe.id}
+                      recipeId={recipe.id}
+                      rawTitle={recipe.rawTitle}
+                    />
                 )
               })
               : null

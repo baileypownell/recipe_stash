@@ -27,12 +27,7 @@ export interface SortedRecipeInterface
   side_dish: FullRecipe[]
 }
 
-export interface RecipeInput {
-  title: string;
-  rawTitle: string;
-  category: string;
-  ingredients: string;
-  directions: string;
+export interface IRecipeTags {
   isNoBake: boolean;
   isEasy: boolean;
   isHealthy: boolean;
@@ -42,6 +37,14 @@ export interface RecipeInput {
   isVegetarian: boolean;
   isVegan: boolean;
   isKeto: boolean;
+}
+
+export interface RecipeInput extends RecipeTags {
+  title: string;
+  rawTitle: string;
+  category: string;
+  ingredients: string;
+  directions: string;
 }
 
 export interface NewFileInterface {

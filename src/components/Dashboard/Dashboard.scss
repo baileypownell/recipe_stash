@@ -54,7 +54,6 @@
   }
   .recipeBox {
     @include flexRow;
-    // justify-content: center;
     #breakfast {
       background-image: url('../../images/french_toast.jpg');
     }

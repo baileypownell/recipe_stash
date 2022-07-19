@@ -19,6 +19,12 @@
             margin: 0;
         }
     }
+    .edit {
+        display: flex;
+        #cancel {
+            flex-grow: 1;
+        }
+    }
 }
 
 .collapsible {

@@ -10,7 +10,7 @@ import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
 import './Recipe.scss'
-import RecipeDialog from './RecipeDialog/RecipeDialog'
+import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog/RecipeDialog'
 
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
@@ -65,6 +65,10 @@ const Recipe = (props: Props) => {
     }
   }, [])
 
+  useEffect(() => {
+    if (cloning && !dialogOpen) setCloning(false)
+  }, [dialogOpen])
+
   const handleWindowSizeChange = (): void => {
     setWidth(window.innerWidth)
   }
@@ -80,17 +84,19 @@ const Recipe = (props: Props) => {
       ? <div id="recipe-container">
           <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
           <RecipeDialog
-            edit={true}
-            recipe={recipe}
-            open={dialogOpen}
-            cloning={cloning}
-            defaultTileImageKey={recipe.defaultTileImageKey}
-            openSnackBar={props.openSnackBar}
-            presignedUrls$={presignedUrls$}
-            fetchData={fetchData}
-            addRecipeMutation={props.addRecipeMutation}
-            triggerDialog={triggerDialog}>
-          </RecipeDialog>
+            mode={Mode.Edit}
+            recipeDialogInfo={{
+              recipe,
+              open: dialogOpen,
+              cloning,
+              defaultTileImageKey: recipe.defaultTileImageKey,
+              openSnackBar: props.openSnackBar,
+              presignedUrls$: presignedUrls$,
+              fetchData: fetchData,
+              addRecipeMutation: props.addRecipeMutation,
+              triggerDialog: triggerDialog,
+            }}
+          />
           <div className="view-recipe" >
             <MobileRecipeToolbar
               width={width}
