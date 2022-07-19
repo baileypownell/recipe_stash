@@ -29,6 +29,7 @@ const Login = (props: RouteComponentProps) => {
   const [signInError, setSignInError] = useState(null)
   const [snackBarOpen, setSnackBarOpen] = useState(null)
   const [snackBarMessage, setSnackBarMessage] = useState(null)
+  const [googleLoginHidden, setGoogleLoginHidden] = useState(false)
 
   const openSnackBar = (message: string): void => {
     setSnackBarOpen(true)
@@ -89,6 +90,11 @@ const Login = (props: RouteComponentProps) => {
     }
   }
 
+  const handleGoogleLoginFailure = (error) => {
+    console.log(error)
+    setGoogleLoginHidden(true)
+  }
+
   return (
     <>
       <div className="auth">
@@ -137,13 +143,14 @@ const Login = (props: RouteComponentProps) => {
                       : 'Submit' }
                   </Button>
 
-                  <GoogleLogin
+                  { !googleLoginHidden ? <GoogleLogin
                     className="googleButton"
                     clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}
                     buttonText="Login with Google"
                     onSuccess={authenticateWithGoogle}
+                    onFailure={handleGoogleLoginFailure}
                     cookiePolicy={'single_host_origin'}
-                  />
+                  /> : null }
 
                   { signInError
                     ? (
