@@ -1,8 +1,8 @@
-import { Button, Snackbar, TextField } from '@material-ui/core'
+
+import { Button, Fade, Snackbar, TextField } from '@mui/material'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
-import Fade from 'react-reveal/Fade'
-import { RouteComponentProps } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import ClipLoader from 'react-spinners/ClipLoader'
 import * as yup from 'yup'
 import { isPasswordValid } from '../../models/functions'
@@ -33,10 +33,11 @@ const validationSchema = yup.object({
     .required('Password confirmation is required.')
 })
 
-const Signup = (props: RouteComponentProps) => {
+const Signup = (props) => {
   const [loading, setLoading] = useState(false)
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
+  const navigate = useNavigate()
 
   const openSnackBar = (message: string) => {
     setSnackBarMessage(message)
@@ -55,7 +56,7 @@ const Signup = (props: RouteComponentProps) => {
       const user: UserCreatedResponse = await UserService.createUser(userInput)
       if (user.success) {
         AuthenticationService.setUserLoggedIn()
-        props.history.push('/recipes')
+        navigate('/recipes')
       } else {
         setLoading(false)
         openSnackBar(user.message)
@@ -71,12 +72,12 @@ const Signup = (props: RouteComponentProps) => {
     setSnackBarOpen(false)
   }
 
-  const login = (): void => { props.history.push('/login') }
+  const login = (): void => ( navigate('/login') )
 
   return (
     <div className="auth">
       <div className="gradient">
-        <Fade top>
+        <Fade>
           <Formik
               initialValues={{
                 firstName: '',

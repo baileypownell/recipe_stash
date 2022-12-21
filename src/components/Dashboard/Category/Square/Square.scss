@@ -15,7 +15,6 @@
   .recipe-card {
     width: 120px;
     height: 120px;
-    @include boxShadow;
     background-color: $primary;
     margin-right: 10px;
     margin-bottom: 10px;
@@ -31,14 +30,6 @@
     cursor: pointer;
     transition: all .3s;
     border: 2px solid $primary;
-    h3 {
-      padding: 10px;
-      text-align: center;
-    }
-    h4 {
-      font-weight: normal;
-      text-align: center;
-    }
     &:hover {
       background-color: $white;
       color: $primary;

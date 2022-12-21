@@ -1,6 +1,6 @@
+import { Button, Checkbox, FormControlLabel, Snackbar } from '@mui/material'
 import React from 'react'
 import './FileUpload.scss'
-import { Button, Snackbar, Checkbox, FormControlLabel } from '@material-ui/core'
 const { v4: uuidv4 } = require('uuid')
 
 class FileUpload extends React.Component {

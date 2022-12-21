@@ -27,9 +27,8 @@ h3 {
   bottom: 0px;
   padding: 20px;
   width: 90vw;
-  text-align: center;
+  text-align: center;s
     button {
-      @include button;
       @include desktop {
         margin: 0 auto;
       }
@@ -67,13 +66,7 @@ h3 {
       width: 60%;
     }
   }
-  h2 {
-    font-size: 18px;
-  }
   @include tablet {
-    h2 {
-      font-size: 20px;
-    }
     > div {
       width: 75%;
       margin: 20px auto;
@@ -97,25 +90,6 @@ h3 {
   }
 }
 
-#primary-color {
-  background-color: $primary!important;
-}
-
-.options {
-  padding: 10px 0;
-}
-
-.fr-box {
-  margin: 10px 0;
-}
-
-// #recipe-title {
-//    p, h3, h2, h1 {
-//     font-size: 30px;
-//     margin: 0 0 10px 0;
-//   }
-//  }
-
 .view-recipe > div .section ul li {
    list-style-type: initial!important;
  }
@@ -135,12 +109,6 @@ h3 {
      border-radius: 5px;
      @include boxShadow;
    }
-   span {
-     width: 100%;
-     > span {
-       width: 100%!important;
-     }
-   }
  }
 
  #noGrid {
@@ -152,15 +120,11 @@ h3 {
      display: flex;
      justify-content: center;
    }
-   img, 
-   .recipe-image-skeleton {
+   img {
      width: 100%;
      max-width: 400px;
      border-radius: 5px;
      @include boxShadow;
-   }
-   .recipe-image-skeleton {
-     width: 100%!important;
    }
    > div {
      margin: 0 auto;

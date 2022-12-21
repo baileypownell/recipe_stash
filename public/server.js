@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import path from 'path'
+
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const index_1 = __importDefault(require("./index"));
@@ -32,7 +32,7 @@ app.use(session({
     }),
     secret: process.env.SESSION_SECRET || secret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { maxAge: 3600000, secure: false } // 1 hour
 }));
 app.use('/', index_1.default);

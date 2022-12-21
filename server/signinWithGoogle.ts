@@ -15,21 +15,18 @@ router.post('/', (request: any, response, next) => {
       if (err) return next(err)
       if (res.rows.length) {
         const user_uuid = res.rows[0].user_uuid
-        request.session.regenerate(() => {
-          request.session.save()
-          // update the session table with the user's sessionID
-          client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
-            [user_uuid, request.sessionID],
-            (err, res) => {
-              if (err) return next(err)
-              if (res.rowCount) {
-                return response.status(200).json({
-                  success: true,
-                  sessionID: request.sessionID
-                })
-              }
-            })
-        })
+        // update the session table with the user's sessionID
+        client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
+          [user_uuid, request.sessionID],
+          (err, res) => {
+            if (err) return next(err)
+            if (res.rowCount) {
+              return response.status(200).json({
+                success: true,
+                sessionID: request.sessionID
+              })
+            }
+          })
       } else {
         return response.status(404).json({ success: false })
       }
@@ -37,4 +34,3 @@ router.post('/', (request: any, response, next) => {
 })
 
 export default router
-// module.exports = router;

@@ -1,28 +1,31 @@
-import { Divider, List, ListItem, Typography } from '@material-ui/core'
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
+
+import { Box, Divider, List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer } from '@mui/material'
+import { Stack } from '@mui/system'
 import React, { useState } from 'react'
-import { Link, NavLink, withRouter, RouteComponentProps } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import blackLogo from '../../images/black-logo.png'
 import whiteLogo from '../../images/white-logo.png'
 import AuthenticationService from '../../services/auth-service'
 import './Nav.scss'
 
-const Nav = (props: RouteComponentProps) => {
+const Nav = () => {
   const [open, setOpenState] = useState(false)
   const isAuthenticated = AuthenticationService.authenticated()
+  const navigate = useNavigate()
+
   const logout = async () => {
     try {
       await AuthenticationService.logout()
       AuthenticationService.setUserLoggedOut()
       setOpenState(false)
-      props.history.push('/')
+      navigate('/')
     } catch (err) {
       console.log(err)
     }
   }
 
-  const navigate = (route: string) => {
-    props.history.push(route)
+  const handleListItemClick = (route: string) => {
+    navigate(route)
     setOpenState(false)
   }
 
@@ -36,47 +39,59 @@ const Nav = (props: RouteComponentProps) => {
   return (
     <>
       <nav>
-          <Link to="/"><img src={blackLogo} alt="logo" /></Link>
-          <div>
-            { isAuthenticated
-              ? <>
-                  <NavLink to="/recipes" activeClassName="active">Recipes</NavLink>
-                  <a onClick={toggleDrawer(!open)}><i className="fas fa-bars"></i></a>
-              </>
-              : <>
-                  <NavLink to="/login" activeClassName="active">Login</NavLink>
-                  <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
-              </>
-            }
-          </div>
-        </nav>
-        <SwipeableDrawer
-          anchor={'right'}
-          open={open}
-          onClose={toggleDrawer(false)}
-          onOpen={toggleDrawer(true)}
-        >
-          <div className="drawer-content">
-            <img src={whiteLogo} alt="logo" />
-            <List>
-              <ListItem button onClick={() => navigate('/settings')}>
-                <Typography variant="h6"><i className="fas fa-cogs"></i>Settings</Typography>
-              </ListItem>
-              <ListItem button onClick={() => navigate('/')}>
-                <Typography variant="h6" ><i className="fas fa-house-user"></i>Home</Typography>
-              </ListItem>
-              <ListItem button onClick={() => navigate('/recipes')}>
-                <Typography variant="h6"><i className="fas fa-utensils"></i>Recipes</Typography>
-              </ListItem>
-              <Divider />
-              <ListItem button onClick={logout}>
-                <Typography variant="h6"><i className="fas fa-arrow-right"></i>Logout</Typography>
-              </ListItem>
-            </List>
-          </div>
-        </SwipeableDrawer>
+        <Link to="/"><img src={blackLogo} alt="logo" /></Link>
+        <Box>
+          { isAuthenticated
+            ? <>
+                <NavLink to="/recipes">Recipes</NavLink>
+                <a onClick={toggleDrawer(!open)}><i className="fas fa-bars"></i></a>
+            </>
+            : <>
+                <NavLink to="/login">Login</NavLink>
+                <NavLink to="/signup">Sign Up</NavLink>
+            </>
+          }
+        </Box>
+      </nav>
+      <SwipeableDrawer
+        anchor="right"
+        open={open}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+      >
+        <Stack width="250px" paddingTop="20px">
+          <img style={{width: "calc(100% - 20px)", margin: "0 auto 20px auto"}} src={whiteLogo} alt="logo" />
+          <List>
+            <ListItem button onClick={() => handleListItemClick('/settings')}>
+              <ListItemIcon>
+                <i className="fas fa-cogs"></i>
+              </ListItemIcon>
+              <ListItemText primary="Settings"></ListItemText>
+            </ListItem>
+            <ListItem button onClick={() => handleListItemClick('/')}>
+              <ListItemIcon>
+                <i className="fas fa-house-user"></i>
+              </ListItemIcon>
+              <ListItemText primary="Home"></ListItemText>
+            </ListItem>
+            <ListItem button onClick={() => handleListItemClick('/recipes')}>
+              <ListItemIcon>
+                <i className="fas fa-utensils"></i>
+              </ListItemIcon>
+              <ListItemText primary="Recipes"></ListItemText>
+            </ListItem>
+            <Divider />
+            <ListItem button onClick={logout}>
+              <ListItemIcon>
+                <i className="fas fa-arrow-right"></i>
+              </ListItemIcon>
+              <ListItemText primary="Logout"></ListItemText>
+            </ListItem>
+          </List>
+        </Stack>
+      </SwipeableDrawer>
     </>
   )
 }
 
-export default withRouter(Nav)
+export default Nav

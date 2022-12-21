@@ -1,9 +1,9 @@
-import { Button, Snackbar, TextField } from '@material-ui/core'
+
+import { Box, Button, Fade, Snackbar, TextField } from '@mui/material'
+import { GoogleLogin } from '@react-oauth/google'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
-import GoogleLogin from 'react-google-login'
-import Fade from 'react-reveal/Fade'
-import { RouteComponentProps } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import ClipLoader from 'react-spinners/ClipLoader'
 import * as yup from 'yup'
 import AuthenticationService from '../../services/auth-service'
@@ -24,12 +24,13 @@ const validationSchema = yup.object({
     .required('Password is required.')
 })
 
-const Login = (props: RouteComponentProps) => {
+const Login = () => {
   const [loading, setLoading] = useState(null)
   const [signInError, setSignInError] = useState(null)
   const [snackBarOpen, setSnackBarOpen] = useState(null)
   const [snackBarMessage, setSnackBarMessage] = useState(null)
   const [googleLoginHidden, setGoogleLoginHidden] = useState(false)
+  const navigate = useNavigate()
 
   const openSnackBar = (message: string): void => {
     setSnackBarOpen(true)
@@ -55,10 +56,10 @@ const Login = (props: RouteComponentProps) => {
 
   const authenticateWithGoogle = async (response) => {
     try {
-      const res = await AuthenticationService.signInWithGoogle(response.tokenId)
+      const res = await AuthenticationService.signInWithGoogle(response.credential)
       if (res.data.success) {
         AuthenticationService.setUserLoggedIn()
-        props.history.push('/recipes')
+        navigate('/recipes')
       } else {
         openSnackBar(res.data.message)
         setSignInError(true)
@@ -76,7 +77,7 @@ const Login = (props: RouteComponentProps) => {
       const res = await AuthenticationService.signIn(data.password, data.email)
       if (res.data?.success) {
         AuthenticationService.setUserLoggedIn()
-        props.history.push('/recipes')
+        navigate('/recipes')
       } else {
         setLoading(false)
         setSignInError(true)
@@ -90,16 +91,11 @@ const Login = (props: RouteComponentProps) => {
     }
   }
 
-  const handleGoogleLoginFailure = (error) => {
-    console.log(error)
-    setGoogleLoginHidden(true)
-  }
-
   return (
     <>
       <div className="auth">
         <div className="gradient">
-          <Fade top>
+          <Fade>
             <Formik
               initialValues={{
                 email: '',
@@ -134,23 +130,25 @@ const Login = (props: RouteComponentProps) => {
                     variant="outlined"
                     color="secondary"
                     disabled={!formik.isValid}>
-                    { loading
-                      ? <ClipLoader
-                        css={'border-color: white;'}
+                    { loading ? 
+                      <ClipLoader
+                        cssOverride={{ borderColor: 'white'}}
                         size={30}
                         color={'#689943'}
                         loading={loading}/>
                       : 'Submit' }
                   </Button>
 
-                  { !googleLoginHidden ? <GoogleLogin
-                    className="googleButton"
-                    clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}
-                    buttonText="Login with Google"
-                    onSuccess={authenticateWithGoogle}
-                    onFailure={handleGoogleLoginFailure}
-                    cookiePolicy={'single_host_origin'}
-                  /> : null }
+                  { !googleLoginHidden ?               
+                    <Box marginTop={2} marginBottom={2}>
+                      <GoogleLogin
+                        onSuccess={authenticateWithGoogle}
+                        onError={() => {
+                          console.log('Login Failed');
+                        }}
+                      />
+                    </Box>
+                  : null }
 
                   { signInError
                     ? (

@@ -1,7 +1,5 @@
+import { Button, Menu, MenuItem } from '@mui/material'
 import React from 'react'
-import Button from '@material-ui/core/Button'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
 import './MobileRecipeToolbar.scss'
 
 export default function MobileRecipeToolbar (props: {width: number, triggerDialog: Function, cloneRecipe: Function}) {

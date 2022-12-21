@@ -1,23 +1,6 @@
 @import '../../scss/mixins.scss';
 @import '../../scss/variables.scss';
 
-.drawer-content {
-  padding-top: 20px;
-  width: 250px;
-  display: flex;
-  flex-direction: column;
-  img {
-    width: 200px;
-    margin: 0 auto 20px auto;
-  }
-  i {
-    margin-right: 10px;
-  }
-  h6 {
-    font-size: 16px!important;
-  }
-}
-
 nav {
   display: flex!important;
   @include flexRow;

@@ -1,16 +1,7 @@
 import React from 'react'
-import { Route, Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import AuthenticationService from './services/auth-service'
 
-const GuardedRoute = ({ component: Component, ...rest }) => {
-  const isAuthenticated = AuthenticationService.authenticated()
-  return (
-    <Route {...rest} render={(props) => (
-      isAuthenticated
-        ? <Component {...props} />
-        : <Redirect to='/login' />
-    )} />
-  )
-}
+const GuardedRoute = (props: any) => ( AuthenticationService.authenticated() ? props.children : <Navigate to="/login" /> )
 
 export default GuardedRoute

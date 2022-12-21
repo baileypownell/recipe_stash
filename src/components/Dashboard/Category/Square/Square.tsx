@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { Box, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
-import { withRouter, RouteComponentProps } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import './Square.scss'
 
-interface Props extends RouteComponentProps {
+interface Props {
   key: string
   rawTitle: string
   awsUrl: string
@@ -14,9 +15,10 @@ const Square = (props: Props) => {
   const [imageLoaded, setImageLoaded] = useState(false)
   const [skeletonWidth, setSkeletonWidth] = useState(120)
   const [skeletonHeight, setSkeletonHeight] = useState(120)
+  const navigate = useNavigate()
 
   const viewRecipe = () => {
-    props.history.push(`/recipes/${props.recipeId}`)
+    navigate(`/recipes/${props.recipeId}`)
   }
 
   const handleWindowSizeChange = () => {
@@ -41,20 +43,19 @@ const Square = (props: Props) => {
 
   // a <Square/> should not render until the background image (if there is one) is fully loaded
   // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
-  const { key, rawTitle, awsUrl } = props
+  const { rawTitle, awsUrl } = props
   return (
     <>
     { awsUrl
       ? <>
         { imageLoaded
-          ? <div
+          ? <Box
               style={{ backgroundImage: `url(${awsUrl})` }}
               id={'default-tile-image'}
               className={'recipe-card red-background'}
-              key={key}
               onClick={viewRecipe}>
             <h4>{rawTitle}</h4>
-          </div>
+          </Box>
           : <>
               <img
                 src={awsUrl}
@@ -65,15 +66,15 @@ const Square = (props: Props) => {
             </>
         }
       </>
-      : <div
-          className={'recipe-card'}
-          key={key}
+      : <Box
+          boxShadow={3}
+          className="recipe-card"
           onClick={viewRecipe}>
-          <h4>{rawTitle}</h4>
-        </div>
+          <Typography variant="body1">{rawTitle}</Typography>
+        </Box>
       }
     </>
   )
 }
 
-export default withRouter(Square)
+export default Square

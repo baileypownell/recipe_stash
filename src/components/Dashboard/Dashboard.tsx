@@ -1,6 +1,8 @@
-import { Button, InputBase } from '@material-ui/core'
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import TableRowsRoundedIcon from '@mui/icons-material/TableRowsRounded'
+import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded'
+import { Box, Collapse, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import { BaseStringAccessibleObjectBoolean, BaseStringAccessibleObjectString, SortedRecipeInterface } from '../../services/recipe-services'
@@ -8,7 +10,12 @@ import { queryClient } from '../App/App'
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache'
 import Category from './Category/Category'
 import './Dashboard.scss'
-import FilterMenu from './FilterMenu/FilterMenu'
+import FilterMenu from './FilterMenu'
+
+export enum GridView {
+  Grid,
+  List
+}
 
 interface MealCategoriesInterface extends BaseStringAccessibleObjectString {
   breakfast: string
@@ -30,7 +37,6 @@ export type MealCategoriesType = {
   other: 'Other',
 }
 
-// object for iterating through meal cateogries
 const mealCategories: MealCategoriesInterface = {
   breakfast: 'Breakfast',
   lunch: 'Lunch',
@@ -45,15 +51,15 @@ const userInputSubject: BehaviorSubject<string> = new BehaviorSubject('')
 const userInput$ = userInputSubject.asObservable()
 
 interface FilterInterface extends BaseStringAccessibleObjectBoolean {
-    dairy_free: boolean
-    easy: boolean
-    gluten_free: boolean
-    healthy: boolean
-    keto: boolean
-    no_bake: boolean
-    sugar_free: boolean
-    vegan: boolean
-    vegetarian: boolean
+  dairy_free: boolean
+  easy: boolean
+  gluten_free: boolean
+  healthy: boolean
+  keto: boolean
+  no_bake: boolean
+  sugar_free: boolean
+  vegan: boolean
+  vegetarian: boolean
 }
 
 interface CategoryInterface extends BaseStringAccessibleObjectBoolean {
@@ -78,6 +84,7 @@ const appliedFiltersSubject: BehaviorSubject<FilterInterface> = new BehaviorSubj
   vegetarian: false
 })
 const appliedFilters$ = appliedFiltersSubject.asObservable()
+
 const appliedCategorySubject: BehaviorSubject<CategoryInterface> = new BehaviorSubject<CategoryInterface>({
   breakfast: false,
   lunch: false,
@@ -92,16 +99,15 @@ const appliedCategory$ = appliedCategorySubject.asObservable()
 const unfilteredRecipesSubject: BehaviorSubject<null | SortedRecipeInterface> = new BehaviorSubject<null | SortedRecipeInterface>(null)
 const unfilteredRecipes$ = unfilteredRecipesSubject.asObservable()
 
-interface Props extends RouteComponentProps {
+interface Props {
   addRecipeMutation: any
   fetchRecipes: Function
   recipes: SortedRecipeInterface
-  loggedIn: boolean
 }
 
 const Dashboard = (props: Props) => {
   const [filteredRecipes, setFilteredRecipes] = useState(null)
-  const [gridView, setGridView] = useState(true)
+  const [gridView, setGridView] = useState(GridView.Grid)
   const [selectedFiltersNum, setSelectedFiltersNum] = useState(0)
 
   const addRecipe = async (recipeInput: AddRecipeMutationParam) => {
@@ -139,11 +145,11 @@ const Dashboard = (props: Props) => {
       appliedCategory$,
       userInput$,
       unfilteredRecipes$
-    ]).pipe(tap(([filters, category, input, recipes]) => {
+    ]).pipe(tap(([filters, category, input]) => {
       window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
       window.sessionStorage.setItem('category_filters', JSON.stringify(category))
       window.sessionStorage.setItem('userInput', input)
-    })).subscribe(([filters, category, input, recipes]) => {
+    })).subscribe(([filters,, input, recipes]) => {
       const newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
         const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
@@ -211,17 +217,16 @@ const Dashboard = (props: Props) => {
     userInputSubject.next(input)
   }
 
-  const toggleView = (e: React.MouseEvent<HTMLElement>) => {
-    const val: boolean = !!((e.target as Element).id === 'grid')
-    setGridView(val)
-    window.localStorage.setItem('gridView', val.toString())
+  const toggleView = (gridView: GridView) => {
+    setGridView(gridView)
+    window.localStorage.setItem('gridView', gridView.toString())
   }
 
   const appliedFilt = appliedFiltersSubject.getValue()
   const appliedCat = appliedCategorySubject.getValue()
 
   let allFalse = true
-  for (const [i, cat] of Object.entries(appliedCat).entries()) {
+  for (const [, cat] of Object.entries(appliedCat).entries()) {
     if (cat[1]) {
       allFalse = false
       break
@@ -251,18 +256,30 @@ const Dashboard = (props: Props) => {
   ]
 
   return (
-    <div>
-      <div className="title-bar">
-        <div>
-          <h1 style={{ fontWeight: 'normal' }}>Recipe Box</h1>
-          <div className="searchbar">
-            <InputBase
-              placeholder="Search…"
-              value={userInputSubject.getValue()}
+    <Box>
+      <Box className="title-bar">
+        <Box>
+          <Typography variant="h5">Recipe Box</Typography>
+          <Stack direction="row" alignItems="center">
+            <TextField
+              label="Find a recipe"
+              variant="filled"
               onChange={handleSearchChange}
-              inputProps={{ 'aria-label': 'search' }}
+              value={userInputSubject.getValue()}
+              sx={{
+                m: 1, 
+                width: '25ch',
+                input: {
+                  color: 'white',
+                },
+                'label, svg': {
+                  color: 'white!important',
+                }
+              }}
+              InputProps={{
+                endAdornment: <InputAdornment position="end"><SearchRoundedIcon /></InputAdornment>,
+              }}
             />
-            <i className="fas fa-search"></i>
             <FilterMenu
               numberOfSelectedFilters={selectedFiltersNum}
               filters={filterArray}
@@ -271,34 +288,28 @@ const Dashboard = (props: Props) => {
               filter={filter}
               filterByCategory={filterByCategory}
               categories={filterCategoryArray}/>
-          </div>
-        </div>
-      </div>
+          </Stack>
+        </Box>
+      </Box>
 
-      <div className="dashboard">
-          <>
-            <Button onClick={toggleView}><i id="list" className="fas fa-bars"></i></Button>
-            <Button onClick={toggleView}><i id="grid" className="fas fa-th"></i></Button>
-            { filteredRecipes !== null
-              ? Object.keys(mealCategories).map(mealCat => {
-                return (
-                    <Category
-                      title={mealCategories[mealCat]}
-                      id={mealCat}
-                      key={mealCat}
-                      visibility={allFalse ? 'true' : `${appliedCat[mealCat]}`}
-                      gridView={gridView}
-                      recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
-                      addRecipe={addRecipe}
-                    >
-                    </Category>
-                )
-              })
-              : null
-            }
-        </>
-    </div>
-    </div>
+      <Box className="dashboard">
+        <IconButton onClick={() => toggleView(GridView.List)}><TableRowsRoundedIcon /></IconButton>
+        <IconButton onClick={() => toggleView(GridView.Grid)}><ViewModuleRoundedIcon /></IconButton>
+        { filteredRecipes !== null ? 
+          Object.keys(mealCategories).map(mealCat => (
+            <Collapse key={mealCat} in={allFalse ? true : appliedCat[mealCat]}>
+              <Category
+                title={mealCategories[mealCat]}
+                id={mealCat}
+                gridView={gridView}
+                recipes={(filteredRecipes as unknown as SortedRecipeInterface)[mealCat]}
+                addRecipe={addRecipe}>
+              </Category>
+            </Collapse>
+            )
+          ) : null }
+      </Box>
+    </Box>
   )
 }
 

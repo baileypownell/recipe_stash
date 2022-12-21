@@ -82,12 +82,6 @@
         padding: 5px;
         transition: background-color .4s;
         border-radius: 5px;
-        &:hover {
-            background-color: rgba(0,0,0,0.5);
-            i {
-                color: $primary;
-            }
-        }
     }
     i {
         color: white;
