@@ -293,8 +293,8 @@ const Dashboard = (props: Props) => {
       </Box>
 
       <Box className="dashboard">
-        <IconButton onClick={() => toggleView(GridView.List)}><TableRowsRoundedIcon /></IconButton>
-        <IconButton onClick={() => toggleView(GridView.Grid)}><ViewModuleRoundedIcon /></IconButton>
+        <IconButton color="gray" onClick={() => toggleView(GridView.List)}><TableRowsRoundedIcon /></IconButton>
+        <IconButton color="gray" onClick={() => toggleView(GridView.Grid)}><ViewModuleRoundedIcon /></IconButton>
         { filteredRecipes !== null ? 
           Object.keys(mealCategories).map(mealCat => (
             <Collapse key={mealCat} in={allFalse ? true : appliedCat[mealCat]}>

@@ -26,7 +26,7 @@ export default function FilterMenu (props: {
       <Button 
         sx={{ 
           backgroundColor: 'white',
-          color: '#87ad6a',
+          color: '#353531',
           '&:hover': {
             backgroundColor: 'white',
           }

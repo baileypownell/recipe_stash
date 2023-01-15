@@ -33,7 +33,11 @@ const App = () => {
         dark: '#c23c3c'
       },
       info: {
-        main: '#f7f7f7'
+        main: '#f7f7f7',
+        contrastText: '#353531',
+      },
+     gray: {
+        main: '#353531',
       }
     }
   })

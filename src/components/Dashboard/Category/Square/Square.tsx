@@ -54,7 +54,7 @@ const Square = (props: Props) => {
               id={'default-tile-image'}
               className={'recipe-card red-background'}
               onClick={viewRecipe}>
-            <h4>{rawTitle}</h4>
+            <Typography variant="body1">{rawTitle}</Typography>
           </Box>
           : <>
               <img
@@ -68,7 +68,9 @@ const Square = (props: Props) => {
       </>
       : <Box
           boxShadow={3}
+          padding={0.5}
           className="recipe-card"
+          textAlign="center"
           onClick={viewRecipe}>
           <Typography variant="body1">{rawTitle}</Typography>
         </Box>
