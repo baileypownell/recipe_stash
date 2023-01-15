@@ -10,18 +10,18 @@ interface Props {
   preSignedUrls: string[] | null;
 }
 
-const LightboxComponent = ({preSignedUrls}: Props) => {
+const LightboxComponent = ({ preSignedUrls }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const [currentImageIndex, setCurrentIndex] = useState(0);
 
   const gotoPrevious = () =>
-      currentImageIndex > 0 && setCurrentIndex(currentImageIndex - 1);
+    currentImageIndex > 0 && setCurrentIndex(currentImageIndex - 1);
 
   const gotoNext = () =>
-      currentImageIndex + 1 < images.length &&
-      setCurrentIndex(currentImageIndex + 1);
+    currentImageIndex + 1 < images.length &&
+    setCurrentIndex(currentImageIndex + 1);
 
-  const images: ImagesListType = preSignedUrls ? preSignedUrls.map(url => ({src: url, loading: 'lazy', alt: 'Alt text'})) : null
+  const images: ImagesListType = preSignedUrls ? preSignedUrls.map(url => ({ src: url, loading: 'lazy', alt: 'Alt text' })) : null
 
   const triggerLightbox = (photoIndex: number): void => {
     setIsOpen(true)
@@ -35,9 +35,9 @@ const LightboxComponent = ({preSignedUrls}: Props) => {
 
   return (
     <>
-      { preSignedUrls?.map((url: string, i: number) => (
-          <ImageSkeletonLoader openLightBox={() => triggerLightbox(i)} url={url} key={i}></ImageSkeletonLoader>
-        ))
+      {preSignedUrls?.map((url: string, i: number) => (
+        <ImageSkeletonLoader openLightBox={() => triggerLightbox(i)} url={url} key={i}></ImageSkeletonLoader>
+      ))
       }
 
       <Lightbox
@@ -48,9 +48,9 @@ const LightboxComponent = ({preSignedUrls}: Props) => {
         currentIndex={currentImageIndex}
         onClose={onClose}
         renderHeader={() => (<Box padding={1} textAlign="right"><Button color="info" onClick={onClose}><CloseRoundedIcon /></Button></Box>)}
-        renderPrevButton={({ canPrev }) => (<Button color="info" disabled={!canPrev} onClick={gotoPrevious}><ArrowBackIosNewRoundedIcon/></Button>)}
-        renderNextButton={({ canNext }) => (<Button color="info" disabled={!canNext} onClick={gotoNext}><ArrowForwardIosRoundedIcon/></Button>)}
-        style={{ background: `rgba(29,29,29, 0.95`}}
+        renderPrevButton={({ canPrev }) => (<Button color="info" disabled={!canPrev} onClick={gotoPrevious}><ArrowBackIosNewRoundedIcon /></Button>)}
+        renderNextButton={({ canNext }) => (<Button color="info" disabled={!canNext} onClick={gotoNext}><ArrowForwardIosRoundedIcon /></Button>)}
+        style={{ background: `rgba(29,29,29, 0.95` }}
       />
     </>
   )

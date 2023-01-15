@@ -3,7 +3,7 @@ const { Router } = require('express')
 const router = Router()
 
 export interface AuthenticationState {
-    authenticated: boolean
+  authenticated: boolean
 }
 
 router.get('/', (request, response, next): AuthenticationState => {

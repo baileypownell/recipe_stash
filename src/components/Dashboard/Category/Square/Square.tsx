@@ -46,27 +46,27 @@ const Square = (props: Props) => {
   const { rawTitle, awsUrl } = props
   return (
     <>
-    { awsUrl
-      ? <>
-        { imageLoaded
-          ? <Box
+      {awsUrl
+        ? <>
+          {imageLoaded
+            ? <Box
               style={{ backgroundImage: `url(${awsUrl})` }}
               id={'default-tile-image'}
               className={'recipe-card red-background'}
               onClick={viewRecipe}>
-            <Typography variant="body1">{rawTitle}</Typography>
-          </Box>
-          : <>
+              <Typography variant="body1">{rawTitle}</Typography>
+            </Box>
+            : <>
               <img
                 src={awsUrl}
                 style={{ display: 'none' }}
                 onLoad={() => setImageLoaded(true)}
-                />
+              />
               <Skeleton width={skeletonWidth} height={skeletonHeight} className="skeleton" />
             </>
-        }
-      </>
-      : <Box
+          }
+        </>
+        : <Box
           boxShadow={3}
           padding={0.5}
           className="recipe-card"

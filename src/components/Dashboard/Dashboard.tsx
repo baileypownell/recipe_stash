@@ -149,7 +149,7 @@ const Dashboard = (props: Props) => {
       window.sessionStorage.setItem('feature_filters', JSON.stringify(filters))
       window.sessionStorage.setItem('category_filters', JSON.stringify(category))
       window.sessionStorage.setItem('userInput', input)
-    })).subscribe(([filters,, input, recipes]) => {
+    })).subscribe(([filters, , input, recipes]) => {
       const newFilteredRecipesState: SortedRecipeInterface = {} as any
       for (const category in recipes) {
         const filteredCategory = recipes[category].filter(recipe => recipe.title.toLowerCase().includes(input))
@@ -164,7 +164,7 @@ const Dashboard = (props: Props) => {
       }
 
       if (selectedTags.length) {
-      // limit to only those recipes whose tags include each checked result from res (true)
+        // limit to only those recipes whose tags include each checked result from res (true)
         for (const category in newFilteredRecipesState) {
           const filteredCategory = newFilteredRecipesState[category]
             .filter(recipe => recipe.tags.length >= 1)
@@ -191,7 +191,7 @@ const Dashboard = (props: Props) => {
       }
     }
     setSelectedFiltersNum(selectedFilters)
-    
+
   }, [appliedFiltersSubject.getValue(), appliedCategorySubject.getValue()])
 
   const filter = (key: string): void => {
@@ -267,7 +267,7 @@ const Dashboard = (props: Props) => {
               onChange={handleSearchChange}
               value={userInputSubject.getValue()}
               sx={{
-                m: 1, 
+                m: 1,
                 width: '25ch',
                 input: {
                   color: 'white',
@@ -287,7 +287,7 @@ const Dashboard = (props: Props) => {
               appliedCat={appliedCat}
               filter={filter}
               filterByCategory={filterByCategory}
-              categories={filterCategoryArray}/>
+              categories={filterCategoryArray} />
           </Stack>
         </Box>
       </Box>
@@ -295,7 +295,7 @@ const Dashboard = (props: Props) => {
       <Box className="dashboard">
         <IconButton color="gray" onClick={() => toggleView(GridView.List)}><TableRowsRoundedIcon /></IconButton>
         <IconButton color="gray" onClick={() => toggleView(GridView.Grid)}><ViewModuleRoundedIcon /></IconButton>
-        { filteredRecipes !== null ? 
+        {filteredRecipes !== null ?
           Object.keys(mealCategories).map(mealCat => (
             <Collapse key={mealCat} in={allFalse ? true : appliedCat[mealCat]}>
               <Category
@@ -306,8 +306,8 @@ const Dashboard = (props: Props) => {
                 addRecipe={addRecipe}>
               </Category>
             </Collapse>
-            )
-          ) : null }
+          )
+          ) : null}
       </Box>
     </Box>
   )

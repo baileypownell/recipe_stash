@@ -75,24 +75,24 @@ const ResetPassword = (props) => {
   return (
     invalidLink
       ? <>
-          <div className="invalid-link">
-            <h3>The link is invalid or expired.</h3>
-            <Button
-              variant="contained"
-              onClick={goHome}
-              color="secondary"
-              type="submit">Home</Button>
-          </div>
-        </>
+        <div className="invalid-link">
+          <h3>The link is invalid or expired.</h3>
+          <Button
+            variant="contained"
+            onClick={goHome}
+            color="secondary"
+            type="submit">Home</Button>
+        </div>
+      </>
       : <>
-          <div className="resetPassword">
-            <Formik
-              initialValues={{
-                  password: ''
-              }}
-              validationSchema={validationSchema}
-              onSubmit={(values) => updatePassword(values)}
-              render={formik => (
+        <div className="resetPassword">
+          <Formik
+            initialValues={{
+              password: ''
+            }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => updatePassword(values)}
+            render={formik => (
               <Form>
                 <TextField
                   type="password"
@@ -110,31 +110,31 @@ const ResetPassword = (props) => {
                   variant="contained"
                   color="secondary"
                   type="submit">
-                  { loading
+                  {loading
                     ? <ClipLoader
                       css={'border-color: white;'}
                       size={30}
                       color={'#689943'}
                       loading={loading}
                     />
-                    : 'Submit' }
+                    : 'Submit'}
                 </Button>
               </Form>
             )} >
-            </Formik>
-          </div>
+          </Formik>
+        </div>
 
-          <Snackbar
-            open={snackBarOpen}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center'
-            }}
-            onClose={closeSnackBar}
-            autoHideDuration={4000}
-            message={snackBarMessage}
-            key={'bottom' + 'center'}/>
-          </>
+        <Snackbar
+          open={snackBarOpen}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          onClose={closeSnackBar}
+          autoHideDuration={4000}
+          message={snackBarMessage}
+          key={'bottom' + 'center'} />
+      </>
   )
 }
 

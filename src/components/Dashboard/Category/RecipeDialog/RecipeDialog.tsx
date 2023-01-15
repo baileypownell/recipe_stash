@@ -17,7 +17,7 @@ import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
 import { GridView } from '../../Dashboard'
 import './RecipeDialog.scss'
 
-const Transition = forwardRef(function Transition (props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
@@ -41,7 +41,7 @@ type AddProps = {
 }
 
 export enum Mode {
-  Add = 'Add', 
+  Add = 'Add',
   Edit = 'Edit'
 }
 
@@ -60,7 +60,7 @@ const determineCategory = (props: Props): string => {
 
 const RecipeDialog = (props: Props) => {
   const [loading, setLoading] = useState(false)
-  const [recipeTitle, setRecipeTitle]= useState('')
+  const [recipeTitle, setRecipeTitle] = useState('')
   const [ingredients, setIngredients] = useState('')
   const [directions, setDirections] = useState('')
   const [category, setCategory] = useState(determineCategory(props))
@@ -75,7 +75,7 @@ const RecipeDialog = (props: Props) => {
 
   useEffect(() => {
     if (props.mode === Mode.Edit) {
-      const recipe =  (props.recipeDialogInfo as EditProps).recipe
+      const recipe = (props.recipeDialogInfo as EditProps).recipe
       setRecipeTitle(recipe.title)
       setIngredients(recipe.ingredients)
       setDirections(recipe.directions)
@@ -121,7 +121,7 @@ const RecipeDialog = (props: Props) => {
   const saveRecipe = async (e: any) => {
     e.preventDefault()
     const titleHTML = DOMPurify.sanitize(
-      recipeTitleRaw  || (props.recipeDialogInfo as EditProps).recipe.rawTitle
+      recipeTitleRaw || (props.recipeDialogInfo as EditProps).recipe.rawTitle
     )
     const rawTitle = htmlToText(titleHTML, { wordwrap: 130 })
     setLoading(true)
@@ -306,14 +306,14 @@ const RecipeDialog = (props: Props) => {
 
   return (
     <>
-      { mode === Mode.Add ? 
-        gridView === GridView.Grid ? 
+      {mode === Mode.Add ?
+        gridView === GridView.Grid ?
           <Box
             onClick={toggleModal}
             className="addRecipe"
             id={id}>
             <i className="fas fa-plus-circle"></i>
-          </Box> : 
+          </Box> :
           <Button
             className="add-button"
             variant="contained"
@@ -325,104 +325,104 @@ const RecipeDialog = (props: Props) => {
         : null
       }
 
-    <Dialog 
-      fullScreen 
-      open={open} 
-      onClose={toggleModal} 
-      TransitionComponent={Transition}>
-      <DialogTitle className='title'><span>{getTitle()}</span></DialogTitle>
-      <DialogContent>
-        <h3>Title</h3>
-        <ReactQuill defaultValue={mode === Mode.Edit ? (props.recipeDialogInfo as EditProps).recipe.title : null} onChange={handleModelChange}/>
-        <h3>Ingredients</h3>
-        <ReactQuill defaultValue={mode === Mode.Edit ? (props.recipeDialogInfo as EditProps).recipe.ingredients : null} onChange={handleModelChangeIngredients}/>
-        <h3>Directions</h3>
-        <ReactQuill defaultValue={mode === Mode.Edit ? (props.recipeDialogInfo as EditProps).recipe.directions : null} onChange={handleModelChangeDirections}/>
-        <div>
-          <FormControl variant="filled" style={{ width: '100%', margin: '10px 0' }}>
-            <InputLabel>Category</InputLabel>
-            <Select
-              id="category"
-              value={category}
-              onChange={updateCategory}
-            >
-              {
-                options.map((val, index: number) => {
-                  return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
-                })
-              }
-            </Select>
-          </FormControl>
-        </div>
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={toggleModal}
+        TransitionComponent={Transition}>
+        <DialogTitle className='title'><span>{getTitle()}</span></DialogTitle>
+        <DialogContent>
+          <h3>Title</h3>
+          <ReactQuill defaultValue={mode === Mode.Edit ? (props.recipeDialogInfo as EditProps).recipe.title : null} onChange={handleModelChange} />
+          <h3>Ingredients</h3>
+          <ReactQuill defaultValue={mode === Mode.Edit ? (props.recipeDialogInfo as EditProps).recipe.ingredients : null} onChange={handleModelChangeIngredients} />
+          <h3>Directions</h3>
+          <ReactQuill defaultValue={mode === Mode.Edit ? (props.recipeDialogInfo as EditProps).recipe.directions : null} onChange={handleModelChangeDirections} />
+          <div>
+            <FormControl variant="filled" style={{ width: '100%', margin: '10px 0' }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                id="category"
+                value={category}
+                onChange={updateCategory}
+              >
+                {
+                  options.map((val, index: number) => {
+                    return <MenuItem key={index} value={val.value}>{val.label}</MenuItem>
+                  })
+                }
+              </Select>
+            </FormControl>
+          </div>
 
-        <Accordion style={{ margin: '10px 0' }}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography>Recipe Tags</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              {
-                tags.map((tag, index) => {
-                  return <Chip
-                    className={`chip ${tags[index].selected ? 'selectedTag' : 'null'}`}
-                    id={index.toString()}
-                    key={index}
-                    onClick={() => toggleTagSelectionStatus(index)}
-                    label={tag.label} />
-                })
-              }
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        { mode === Mode.Add 
-          ? <FileUpload
-            open={open}
-            passDefaultTileImage={setDefaultTileImage}
-            passFiles={setFiles}/>
-          : <FileUpload
+          <Accordion style={{ margin: '10px 0' }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Recipe Tags</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                {
+                  tags.map((tag, index) => {
+                    return <Chip
+                      className={`chip ${tags[index].selected ? 'selectedTag' : 'null'}`}
+                      id={index.toString()}
+                      key={index}
+                      onClick={() => toggleTagSelectionStatus(index)}
+                      label={tag.label} />
+                  })
+                }
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+          {mode === Mode.Add
+            ? <FileUpload
+              open={open}
+              passDefaultTileImage={setDefaultTileImage}
+              passFiles={setFiles} />
+            : <FileUpload
               defaultTileImageUUID={(props.recipeDialogInfo as EditProps).defaultTileImageKey}
               passDefaultTileImage={setDefaultTileImage}
               preExistingImageUrls={(props.recipeDialogInfo as EditProps).presignedUrls$}
               passFilesToDelete={handleFilesToDelete}
               passFiles={setFiles}
             />
-        }
-      </DialogContent>
-      <DialogActions>
-        <div className="modal-close-buttons"> 
-          <Button
-            variant="contained"
-            color="secondary"
-            disabled={!recipeValid}
-            onClick={saveRecipe}>
-              { loading
+          }
+        </DialogContent>
+        <DialogActions>
+          <div className="modal-close-buttons">
+            <Button
+              variant="contained"
+              color="secondary"
+              disabled={!recipeValid}
+              onClick={saveRecipe}>
+              {loading
                 ? <CircularProgress style={{ color: 'white', height: '26px', width: '26px' }} />
                 : <>
-                    { mode === Mode.Add || (props.recipeDialogInfo as EditProps).cloning ? 'Add Recipe' : 'Update Recipe' }
-                    <i className="fas fa-check-square" style={{ marginLeft: '8px' }}></i>
-                  </>
+                  {mode === Mode.Add || (props.recipeDialogInfo as EditProps).cloning ? 'Add Recipe' : 'Update Recipe'}
+                  <i className="fas fa-check-square" style={{ marginLeft: '8px' }}></i>
+                </>
               }
             </Button>
-          <div className={editing ? 'edit' : null}>
-            { editing
-              ? <Button
+            <div className={editing ? 'edit' : null}>
+              {editing
+                ? <Button
                   color='primary'
                   variant='contained'
-                  style={{ marginRight: '5px '}}
+                  style={{ marginRight: '5px ' }}
                   onClick={deleteRecipe}>
                   Delete Recipe <i style={{ marginLeft: '8px' }} className='fas fa-trash'></i>
                 </Button>
-              : null }
-            <Button id="cancel" onClick={toggleModal} variant="outlined">Cancel</Button>
+                : null}
+              <Button id="cancel" onClick={toggleModal} variant="outlined">Cancel</Button>
+            </div>
           </div>
-        </div>
-      </DialogActions>
-    </Dialog>
-  </>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 

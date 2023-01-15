@@ -33,7 +33,7 @@ router.post('/', (request: any, response, next) => {
           (err, res) => {
             if (err) return next(err)
             if (res.rowCount) {
-            // now create  transport, which is actually the account sending the password reset email link
+              // now create  transport, which is actually the account sending the password reset email link
               const options = {
                 auth: {
                   api_key: `${process.env.SENDGRID_API_KEY}`

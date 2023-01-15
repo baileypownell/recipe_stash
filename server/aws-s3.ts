@@ -44,7 +44,7 @@ const uploadSingleAWSFile = (req, res) => {
   return new Promise((resolve) => {
     return singleFileUpload(req, res, err => {
       if (err) {
-        throw(err)
+        throw (err)
       }
       return resolve({ downloadUrl, key: req.s3Key })
     })

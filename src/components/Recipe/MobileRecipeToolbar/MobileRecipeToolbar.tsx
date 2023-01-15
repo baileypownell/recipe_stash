@@ -2,7 +2,7 @@ import { Button, Menu, MenuItem } from '@mui/material'
 import React from 'react'
 import './MobileRecipeToolbar.scss'
 
-export default function MobileRecipeToolbar (props: {width: number, triggerDialog: Function, cloneRecipe: Function}) {
+export default function MobileRecipeToolbar(props: { width: number, triggerDialog: Function, cloneRecipe: Function }) {
   const [anchorEl, setAnchorEl] = React.useState(null)
 
   const handleClick = (event) => {

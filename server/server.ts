@@ -1,4 +1,3 @@
-// import path from 'path'
 import express, { Response } from 'express'
 import bodyParser from 'body-parser'
 import routes from './index'
@@ -7,7 +6,6 @@ const app = express()
 const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
 
-// middleware
 app.use(bodyParser.json())
 
 app.use(express.json())

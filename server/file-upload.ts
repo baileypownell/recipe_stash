@@ -20,7 +20,7 @@ router.post('/:recipeId', authMiddleware, async (req: any, res) => {
       [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
       (error, response) => {
         if (error) {
-          throw(error)
+          throw (error)
         }
         if (response.rowCount) {
           client.query('UPDATE recipes SET has_images = TRUE WHERE recipe_uuid = $1',
@@ -43,7 +43,7 @@ router.post('/:recipeId', authMiddleware, async (req: any, res) => {
         }
       })
   } catch (error) {
-    throw(error)
+    throw (error)
   }
 })
 

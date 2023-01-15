@@ -100,17 +100,17 @@ export interface DefaultTileExisting {
 }
 
 // TO-DO: give this meaning
-export interface ExistingFile {}
+export interface ExistingFile { }
 
 export const RecipeService = {
-  sortByTitle (
+  sortByTitle(
     a: RecipeInput | FullRecipe,
     b: RecipeInput | FullRecipe
   ) {
     return a.rawTitle.localeCompare(b.rawTitle)
   },
 
-  getRecipes: async (): Promise<SortedRecipeInterface | {error: boolean, errorMessage: string}> => {
+  getRecipes: async (): Promise<SortedRecipeInterface | { error: boolean, errorMessage: string }> => {
     try {
       const recipes = await axios.get('/recipe')
       for (const category in recipes.data) {
@@ -130,7 +130,7 @@ export const RecipeService = {
     return recipeResponse.data
   },
 
-  deleteRecipe: async (recipeId: string): Promise<{recipeDeleted: boolean}> => {
+  deleteRecipe: async (recipeId: string): Promise<{ recipeDeleted: boolean }> => {
     return await axios.delete(`/recipe/${recipeId}`)
   },
 
@@ -149,22 +149,22 @@ export const RecipeService = {
           if (defaultTileImage) {
             try {
               await RecipeService.handleDefaultTileImage(recipeCreated.data.recipe_uuid, defaultTileImage.awsKey)
-            } catch(error) {
+            } catch (error) {
               console.log(error)
-              throw(error)
+              throw (error)
             }
           }
-      } catch(error) {
-        console.log(error)
-        throw(error)
+        } catch (error) {
+          console.log(error)
+          throw (error)
+        }
       }
-    }
 
-    return recipeCreated.data
-  } catch(error) {
-    console.log(error)
-    throw(error)
-  }
+      return recipeCreated.data
+    } catch (error) {
+      console.log(error)
+      throw (error)
+    }
   },
 
   handleDefaultTileImage: (recipeId: string, awsKey: string) => {
@@ -180,7 +180,7 @@ export const RecipeService = {
         files.map(async (file: NewFileInterface) => {
           const formData = new FormData()
           formData.append('image', file.file as any)
-  
+
           try {
             const upload = await axios.post(`/file-upload/${recipeId}`, formData, {
               headers: {
@@ -191,14 +191,14 @@ export const RecipeService = {
               awsKey: upload.data.key,
               fileName: file.file.name
             }
-          } catch(error) {
+          } catch (error) {
             console.log('There was an error uploading a file bitch: ', error)
-            throw(error)
+            throw (error)
           }
         })
       )
-    } catch(error) {
-      throw(error)
+    } catch (error) {
+      throw (error)
     }
   },
 

@@ -28,7 +28,7 @@ const Recipe = (props: Props) => {
   const [cloning, setCloning] = useState(false)
   const [width, setWidth] = useState(window.innerWidth)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const navigate  = useNavigate()
+  const navigate = useNavigate()
   const triggerDialog = (): void => { setDialogOpen(!dialogOpen) }
   const params = useParams()
 
@@ -84,73 +84,73 @@ const Recipe = (props: Props) => {
   return (
     !loading
       ? <Box id="recipe-container">
-          <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
-          <RecipeDialog
-            mode={Mode.Edit}
-            recipeDialogInfo={{
-              recipe,
-              open: dialogOpen,
-              cloning,
-              defaultTileImageKey: recipe.defaultTileImageKey,
-              openSnackBar: props.openSnackBar,
-              presignedUrls$: presignedUrls$,
-              fetchData: fetchData,
-              addRecipeMutation: props.addRecipeMutation,
-              triggerDialog: triggerDialog,
-            }}
-          />
-          <div className="view-recipe" >
-            <MobileRecipeToolbar
-              width={width}
-              triggerDialog={triggerDialog}
-              cloneRecipe={cloneRecipe} />
-            <div id="width-setter">
-              <div className="section">
-                <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }}/>
-              </div>
-              <div className="section">
-                <div dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
-              </div>
-              <div className="section">
-                <div dangerouslySetInnerHTML={{ __html: recipe.directions }}/>
-              </div>
-              <div className="section">
-                {tags.map((tag) => (tag.selected
-                  ? <Chip
-                      key={tag.label}
-                      className={'chip selectedTag'}
-                      label={tag.label} />
-                  : null)
-                )}
-              </div>
-              <Divider style={{ margin: '20px 0 10px 0' }} />
-              <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
-                <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
-              </div>
+        <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
+        <RecipeDialog
+          mode={Mode.Edit}
+          recipeDialogInfo={{
+            recipe,
+            open: dialogOpen,
+            cloning,
+            defaultTileImageKey: recipe.defaultTileImageKey,
+            openSnackBar: props.openSnackBar,
+            presignedUrls$: presignedUrls$,
+            fetchData: fetchData,
+            addRecipeMutation: props.addRecipeMutation,
+            triggerDialog: triggerDialog,
+          }}
+        />
+        <div className="view-recipe" >
+          <MobileRecipeToolbar
+            width={width}
+            triggerDialog={triggerDialog}
+            cloneRecipe={cloneRecipe} />
+          <div id="width-setter">
+            <div className="section">
+              <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }} />
+            </div>
+            <div className="section">
+              <div dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
+            </div>
+            <div className="section">
+              <div dangerouslySetInnerHTML={{ __html: recipe.directions }} />
+            </div>
+            <div className="section">
+              {tags.map((tag) => (tag.selected
+                ? <Chip
+                  key={tag.label}
+                  className={'chip selectedTag'}
+                  label={tag.label} />
+                : null)
+              )}
+            </div>
+            <Divider style={{ margin: '20px 0 10px 0' }} />
+            <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
+              <LightboxComponent preSignedUrls={recipe.preSignedUrls}></LightboxComponent>
             </div>
           </div>
-          { width > 700
-            ? <div id="floating-buttons">
-              <Tooltip title="Edit recipe" aria-label="edit recipe">
-                <Fab color="secondary" onClick={triggerDialog}>
-                  <i className="material-icons">mode_edit</i>
-                </Fab>
-              </Tooltip>
-
-              <Tooltip title="Duplicate recipe" aria-label="duplicate">
-                <Fab color="primary" onClick={cloneRecipe}>
-                  <i className="far fa-clone"></i>
-                </Fab>
-              </Tooltip>
-            </div>
-            : null }
-        </Box>
-      : <div className="BounceLoader">
-          <BounceLoader
-              size={100}
-              color={'#689943'}
-          />
         </div>
+        {width > 700
+          ? <div id="floating-buttons">
+            <Tooltip title="Edit recipe" aria-label="edit recipe">
+              <Fab color="secondary" onClick={triggerDialog}>
+                <i className="material-icons">mode_edit</i>
+              </Fab>
+            </Tooltip>
+
+            <Tooltip title="Duplicate recipe" aria-label="duplicate">
+              <Fab color="primary" onClick={cloneRecipe}>
+                <i className="far fa-clone"></i>
+              </Fab>
+            </Tooltip>
+          </div>
+          : null}
+      </Box>
+      : <div className="BounceLoader">
+        <BounceLoader
+          size={100}
+          color={'#689943'}
+        />
+      </div>
   )
 }
 

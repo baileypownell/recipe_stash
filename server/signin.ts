@@ -22,29 +22,29 @@ router.post('/', (request: any, response, next) => {
           if (err) return next(err)
           if (res) {
             // request.session.regenerate(() => {
-              request.session.save()
-              const sessionIdentifier = request.sessionID
-              // update the session table with the user's sessionID
-              client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
-                [user_uuid, sessionIdentifier],
-                (err, res) => {
-                  if (err) return next(err)
-                  if (res.rowCount) {
-                    return response.status(200).json({
-                      success: true,
-                      sessionID: sessionIdentifier,
-                      userData: {
-                        id: user_uuid,
-                        first_name: first_name,
-                        last_name: last_name,
-                        email: email
-                      }
-                    })
-                  } else {
-                    console.log(`There was an error: No user found to update with SID: ${sessionIdentifier}`)
-                    return response.status(500).json({ error: 'There was an error.' })
-                  }
-                })
+            request.session.save()
+            const sessionIdentifier = request.sessionID
+            // update the session table with the user's sessionID
+            client.query('UPDATE session SET user_uuid=$1 WHERE sid=$2',
+              [user_uuid, sessionIdentifier],
+              (err, res) => {
+                if (err) return next(err)
+                if (res.rowCount) {
+                  return response.status(200).json({
+                    success: true,
+                    sessionID: sessionIdentifier,
+                    userData: {
+                      id: user_uuid,
+                      first_name: first_name,
+                      last_name: last_name,
+                      email: email
+                    }
+                  })
+                } else {
+                  console.log(`There was an error: No user found to update with SID: ${sessionIdentifier}`)
+                  return response.status(500).json({ error: 'There was an error.' })
+                }
+              })
             // })
           } else {
             return response.status(403).json({ error: 'User could not be authenticated.' })

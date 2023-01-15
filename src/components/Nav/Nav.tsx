@@ -41,14 +41,14 @@ const Nav = () => {
       <nav>
         <Link to="/"><img src={blackLogo} alt="logo" /></Link>
         <Box>
-          { isAuthenticated
+          {isAuthenticated
             ? <>
-                <NavLink to="/recipes">Recipes</NavLink>
-                <a onClick={toggleDrawer(!open)}><i className="fas fa-bars"></i></a>
+              <NavLink to="/recipes">Recipes</NavLink>
+              <a onClick={toggleDrawer(!open)}><i className="fas fa-bars"></i></a>
             </>
             : <>
-                <NavLink to="/login">Login</NavLink>
-                <NavLink to="/signup">Sign Up</NavLink>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/signup">Sign Up</NavLink>
             </>
           }
         </Box>
@@ -60,7 +60,7 @@ const Nav = () => {
         onOpen={toggleDrawer(true)}
       >
         <Stack width="250px" paddingTop="20px">
-          <img style={{width: "calc(100% - 20px)", margin: "0 auto 20px auto"}} src={whiteLogo} alt="logo" />
+          <img style={{ width: "calc(100% - 20px)", margin: "0 auto 20px auto" }} src={whiteLogo} alt="logo" />
           <List>
             <ListItem button onClick={() => handleListItemClick('/settings')}>
               <ListItemIcon>

@@ -97,7 +97,7 @@ router.put('/reset-password', (request, response, next) => {
       (err, res) => {
         if (err) return next(err)
         if (res.rows.length) {
-        // hash new password
+          // hash new password
           const hashedPassword = bcrypt.hashSync(password, 10)
           client.query('UPDATE users SET password=$1, reset_password_expires=$2, reset_password_token=$3 WHERE reset_password_token=$4',
             [hashedPassword, null, null, reset_password_token],
@@ -159,7 +159,7 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                     (err, res) => {
                       if (err) return next(err)
                       if (res) {
-                      // then send notification to the old email
+                        // then send notification to the old email
                         const options = {
                           auth: {
                             api_key: `${process.env.SENDGRID_API_KEY}`

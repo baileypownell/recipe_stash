@@ -72,23 +72,23 @@ const Signup = (props) => {
     setSnackBarOpen(false)
   }
 
-  const login = (): void => ( navigate('/login') )
+  const login = (): void => (navigate('/login'))
 
   return (
     <div className="auth">
       <div className="gradient">
         <Fade>
           <Formik
-              initialValues={{
-                firstName: '',
-                lastName: '',
-                email: '',
-                password: '',
-                confirmPassword: ''
-              }}
-              validationSchema={validationSchema}
-              onSubmit={(values) => signup(values)}
-              render={formik => (
+            initialValues={{
+              firstName: '',
+              lastName: '',
+              email: '',
+              password: '',
+              confirmPassword: ''
+            }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => signup(values)}
+            render={formik => (
               <Form>
                 <h1>Signup</h1>
                 <TextField
@@ -100,7 +100,7 @@ const Signup = (props) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                  helperText={formik.touched.firstName && formik.errors.firstName}/>
+                  helperText={formik.touched.firstName && formik.errors.firstName} />
                 <TextField
                   name="lastName"
                   type="text"
@@ -110,7 +110,7 @@ const Signup = (props) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                  helperText={formik.touched.lastName && formik.errors.lastName}/>
+                  helperText={formik.touched.lastName && formik.errors.lastName} />
                 <TextField
                   name="email"
                   type="email"
@@ -120,7 +120,7 @@ const Signup = (props) => {
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}/>
+                  helperText={formik.touched.email && formik.errors.email} />
                 <TextField
                   name="password"
                   type="password"
@@ -130,7 +130,7 @@ const Signup = (props) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.password && Boolean(formik.errors.password)}
-                  helperText={formik.touched.password && formik.errors.password}/>
+                  helperText={formik.touched.password && formik.errors.password} />
                 <TextField
                   name="confirmPassword"
                   type="password"
@@ -140,21 +140,21 @@ const Signup = (props) => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-                  helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}/>
+                  helperText={formik.touched.confirmPassword && formik.errors.confirmPassword} />
                 <p>Already have an account? <span className="link" onClick={login}>Log in.</span></p>
                 <Button variant="contained" color="secondary" type="submit" disabled={!formik.isValid}>
-                  { loading
+                  {loading
                     ? <ClipLoader
-                        css={'border-color: white;'}
-                        size={30}
-                        color={'white'}
-                        loading={loading}
-                      />
-                    : 'Submit' }
+                      css={'border-color: white;'}
+                      size={30}
+                      color={'white'}
+                      loading={loading}
+                    />
+                    : 'Submit'}
                 </Button>
               </Form>
-              )}>
-            </Formik>
+            )}>
+          </Formik>
         </Fade>
       </div>
 

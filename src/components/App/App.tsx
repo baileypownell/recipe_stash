@@ -19,7 +19,7 @@ const App = () => {
   }, [])
 
   const theme = createTheme({
-    palette: { 
+    palette: {
       primary: {
         main: '#e66c6c',
         dark: '#d35151'
@@ -36,7 +36,7 @@ const App = () => {
         main: '#f7f7f7',
         contrastText: '#353531',
       },
-     gray: {
+      gray: {
         main: '#353531',
       }
     }
@@ -46,27 +46,27 @@ const App = () => {
     <GoogleOAuthProvider clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Nav />
-          <Routes>
-            <Route path="/" element={<Home />}/>
-            <Route path="/login" element={<Login />}/>
-            <Route path="/signup" element={<Signup />}/>
-            <Route path="/reset/:token" element={<ResetPassword />}/>
-            <Route
+          <BrowserRouter>
+            <Nav />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/reset/:token" element={<ResetPassword />} />
+              <Route
                 path='/recipes'
                 element={<GuardedRoute><RecipeCache /></GuardedRoute>}>
-                  <Route
-                    path=':id'
-                    element={<GuardedRoute><RecipeCache /></GuardedRoute>}>
+                <Route
+                  path=':id'
+                  element={<GuardedRoute><RecipeCache /></GuardedRoute>}>
                 </Route>
-            </Route>
-            <Route
+              </Route>
+              <Route
                 path='/settings'
                 element={<GuardedRoute><Settings /></GuardedRoute>}>
-            </Route>
-          </Routes>
-        </BrowserRouter>
+              </Route>
+            </Routes>
+          </BrowserRouter>
         </ThemeProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

@@ -104,67 +104,67 @@ const Login = () => {
               validationSchema={validationSchema}
               onSubmit={(values) => signin(values)}
               render={formik => (
-              <Form>
-                <h1>Login</h1>
-                <TextField
-                  label="Email"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
-                  onBlur={formik.handleBlur}
-                  type="email"
-                  name="email"/>
-                <TextField
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  error={formik.touched.password && Boolean(formik.errors.password)}
-                  helperText={formik.touched.password && formik.errors.password}
-                  onBlur={formik.handleBlur}
-                  type="password"
-                  label="Password"
-                  name="password"/>
-                <div className="buttons">
-                  <Button
-                    type="submit"
-                    variant="outlined"
-                    color="secondary"
-                    disabled={!formik.isValid}>
-                    { loading ? 
-                      <ClipLoader
-                        cssOverride={{ borderColor: 'white'}}
-                        size={30}
-                        color={'#689943'}
-                        loading={loading}/>
-                      : 'Submit' }
-                  </Button>
-
-                  { !googleLoginHidden ?               
-                    <Box marginTop={2} marginBottom={2}>
-                      <GoogleLogin
-                        onSuccess={authenticateWithGoogle}
-                        onError={() => {
-                          console.log('Login Failed');
-                        }}
-                      />
-                    </Box>
-                  : null }
-
-                  { signInError
-                    ? (
+                <Form>
+                  <h1>Login</h1>
+                  <TextField
+                    label="Email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email && formik.errors.email}
+                    onBlur={formik.handleBlur}
+                    type="email"
+                    name="email" />
+                  <TextField
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    error={formik.touched.password && Boolean(formik.errors.password)}
+                    helperText={formik.touched.password && formik.errors.password}
+                    onBlur={formik.handleBlur}
+                    type="password"
+                    label="Password"
+                    name="password" />
+                  <div className="buttons">
                     <Button
-                      variant="contained"
-                      onClick={() => sendPasswordResetLink(formik.values.email)}
-                      color="primary"
-                    >
-                      Reset Password
+                      type="submit"
+                      variant="outlined"
+                      color="secondary"
+                      disabled={!formik.isValid}>
+                      {loading ?
+                        <ClipLoader
+                          cssOverride={{ borderColor: 'white' }}
+                          size={30}
+                          color={'#689943'}
+                          loading={loading} />
+                        : 'Submit'}
                     </Button>
+
+                    {!googleLoginHidden ?
+                      <Box marginTop={2} marginBottom={2}>
+                        <GoogleLogin
+                          onSuccess={authenticateWithGoogle}
+                          onError={() => {
+                            console.log('Login Failed');
+                          }}
+                        />
+                      </Box>
+                      : null}
+
+                    {signInError
+                      ? (
+                        <Button
+                          variant="contained"
+                          onClick={() => sendPasswordResetLink(formik.values.email)}
+                          color="primary"
+                        >
+                          Reset Password
+                        </Button>
                       )
-                    : null }
+                      : null}
                   </div>
-              </Form>
+                </Form>
               )}>
-              </Formik>
+            </Formik>
           </Fade>
         </div>
       </div>

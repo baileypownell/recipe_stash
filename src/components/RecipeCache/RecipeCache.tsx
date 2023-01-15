@@ -83,7 +83,7 @@ const RecipeCache = () => {
 
   const { refetch, isLoading, error, data } = useQuery('recipes', async () => {
     try {
-      const result: SortedRecipeInterface | {error: boolean, errorMessage: string} = await RecipeService.getRecipes()
+      const result: SortedRecipeInterface | { error: boolean, errorMessage: string } = await RecipeService.getRecipes()
       if (result.error) {
         return null
       } else {
@@ -134,9 +134,9 @@ const RecipeCache = () => {
     return (
       <>
         <Routes>
-          <Route path=":id" element={<Recipe 
+          <Route path=":id" element={<Recipe
             openSnackBar={openSnackBar}
-            addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />} 
+            addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />}
           />
         </Routes>
         <Dashboard

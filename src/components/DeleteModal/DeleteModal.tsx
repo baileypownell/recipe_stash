@@ -19,25 +19,25 @@ const DeleteModal = (props: {
   return (
     open
       ? <Dialog
-            open={true}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            >
-            <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    This action cannot be undone.
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                    Cancel
-                </Button>
-                <Button onClick={props.deleteFunction} color="primary" autoFocus>
-                    Continue
-                </Button>
-            </DialogActions>
-        </Dialog>
+        open={true}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={props.deleteFunction} color="primary" autoFocus>
+            Continue
+          </Button>
+        </DialogActions>
+      </Dialog>
       : null
   )
 }

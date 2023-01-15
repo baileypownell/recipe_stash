@@ -13,12 +13,12 @@ const Home = (props: any) => {
   useEffect(() => {
     setTimeout(() => setVisible(true), 500)
   }, [])
-  
+
   return (
     <Box id="home">
       <Box id="picture">
         <Box className="flex">
-          <img src={transparentLogo}/>
+          <img src={transparentLogo} />
         </Box>
         <Fade in={visible}>
           <Box>

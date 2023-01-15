@@ -166,31 +166,31 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
         vegan,
         keto
       ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
-    [
-      title,
-      rawTitle,
-      category,
-      userId,
-      ingredients,
-      directions,
-      isNoBake,
-      isEasy,
-      isHealthy,
-      isGlutenFree,
-      isDairyFree,
-      isSugarFree,
-      isVegetarian,
-      isVegan,
-      isKeto
-    ],
-    (err, res) => {
-      if (err) return next(err)
-      if (res.rowCount) {
-        return response.status(200).json(res.rows[0])
-      } else {
-        return response.status(500).json(null)
-      }
-    })
+      [
+        title,
+        rawTitle,
+        category,
+        userId,
+        ingredients,
+        directions,
+        isNoBake,
+        isEasy,
+        isHealthy,
+        isGlutenFree,
+        isDairyFree,
+        isSugarFree,
+        isVegetarian,
+        isVegan,
+        isKeto
+      ],
+      (err, res) => {
+        if (err) return next(err)
+        if (res.rowCount) {
+          return response.status(200).json(res.rows[0])
+        } else {
+          return response.status(500).json(null)
+        }
+      })
   } else {
     return response.status(400).json({
       success: false,
@@ -236,32 +236,32 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
     recipe_uuid=$14 AND
     user_uuid=$15
     RETURNING *`,
-  [
-    title,
-    ingredients,
-    directions,
-    category,
-    isNoBake,
-    isEasy,
-    isHealthy,
-    isGlutenFree,
-    isDairyFree,
-    isSugarFree,
-    isVegetarian,
-    isVegan,
-    isKeto,
-    recipeId,
-    userId,
-    rawTitle
-  ],
-  (err, res) => {
-    if (err) return next(err)
-    if (res.rowCount) {
-      return response.status(200).json(res.rows[0])
-    } else {
-      return response.status(500).json(null)
-    }
-  })
+    [
+      title,
+      ingredients,
+      directions,
+      category,
+      isNoBake,
+      isEasy,
+      isHealthy,
+      isGlutenFree,
+      isDairyFree,
+      isSugarFree,
+      isVegetarian,
+      isVegan,
+      isKeto,
+      recipeId,
+      userId,
+      rawTitle
+    ],
+    (err, res) => {
+      if (err) return next(err)
+      if (res.rowCount) {
+        return response.status(200).json(res.rows[0])
+      } else {
+        return response.status(500).json(null)
+      }
+    })
 })
 
 const getImageAWSKeys = (recipeId: string) => {
@@ -334,7 +334,7 @@ router.get('/:recipeId', (request: any, response, next): Promise<FullRecipe | nu
     })
 })
 
-router.delete('/:recipeId', (request: any, response, next): Promise<{recipeDeleted: boolean}> => {
+router.delete('/:recipeId', (request: any, response, next): Promise<{ recipeDeleted: boolean }> => {
   const userId = request.userID
   const { recipeId } = request.params
   return client.query('DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',

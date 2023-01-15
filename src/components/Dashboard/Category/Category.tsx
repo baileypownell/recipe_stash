@@ -33,17 +33,17 @@ const Category = ({
           addRecipe: addRecipe
         }}
       />
-      { recipes ? recipes.map((recipe) => ( gridView === GridView.Grid ? 
+      {recipes ? recipes.map((recipe) => (gridView === GridView.Grid ?
         <Square
           key={recipe.id}
           awsUrl={recipe.preSignedDefaultTileImageUrl}
           recipeId={recipe.id}
-          rawTitle={recipe.rawTitle}/>
+          rawTitle={recipe.rawTitle} />
         : <ListItem
-            key={recipe.id}
-            recipeId={recipe.id}
-            rawTitle={recipe.rawTitle} />
-        )) : null }
+          key={recipe.id}
+          recipeId={recipe.id}
+          rawTitle={recipe.rawTitle} />
+      )) : null}
     </Box>
   </Box>
 )
