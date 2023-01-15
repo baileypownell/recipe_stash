@@ -134,35 +134,37 @@ export const RecipeService = {
     return await axios.delete(`/recipe/${recipeId}`)
   },
 
-  createRecipe: (
+  createRecipe: async (
     recipeInput: RecipeInput,
     files: NewFileInterface[],
     defaultTile: DefaultTile | null
   ): Promise<RawRecipe> => {
-    return axios.post('/recipe', recipeInput)
-      .then(recipeCreated => {
-        if (files?.length) {
-          return RecipeService.uploadFiles(recipeCreated.data.recipe_uuid, files)
-            .then((uploadedImageKeys) => {
-              const defaultTileImage = uploadedImageKeys.find(
-                (obj) => obj.fileName === defaultTile?.fileName
-              )
+    try {
+      const recipeCreated = await axios.post('/recipe', recipeInput)
+      if (files?.length) {
+        try {
+          const uploadedImageKeys = await RecipeService.uploadFiles(recipeCreated.data.recipe_uuid, files)
+          const defaultTileImage = uploadedImageKeys.find(key => key.fileName === defaultTile?.fileName)
 
-              if (defaultTileImage) {
-                return RecipeService.handleDefaultTileImage(
-                  recipeCreated.data.recipe_uuid,
-                  defaultTileImage.awsKey
-                )
-                  .then(() => recipeCreated.data)
-              } else {
-                return recipeCreated.data
-              }
-            })
-        }
+          if (defaultTileImage) {
+            try {
+              await RecipeService.handleDefaultTileImage(recipeCreated.data.recipe_uuid, defaultTileImage.awsKey)
+            } catch(error) {
+              console.log(error)
+              throw(error)
+            }
+          }
+      } catch(error) {
+        console.log(error)
+        throw(error)
+      }
+    }
 
-        return recipeCreated.data
-      })
-      .catch(e => { return e })
+    return recipeCreated.data
+  } catch(error) {
+    console.log(error)
+    throw(error)
+  }
   },
 
   handleDefaultTileImage: (recipeId: string, awsKey: string) => {
@@ -173,22 +175,31 @@ export const RecipeService = {
     recipeId: string,
     files: NewFileInterface[]
   ): Promise<UploadedFileResult[]> => {
-    return await Promise.all(
-      files.map(async (file: NewFileInterface) => {
-        const formData = new FormData()
-        formData.append('image', file.file as any)
-
-        const upload = await axios.post(`/file-upload/${recipeId}`, formData, {
-          headers: {
-            'content-type': 'multipart/form-data'
+    try {
+      return await Promise.all(
+        files.map(async (file: NewFileInterface) => {
+          const formData = new FormData()
+          formData.append('image', file.file as any)
+  
+          try {
+            const upload = await axios.post(`/file-upload/${recipeId}`, formData, {
+              headers: {
+                'content-type': 'multipart/form-data'
+              }
+            })
+            return {
+              awsKey: upload.data.key,
+              fileName: file.file.name
+            }
+          } catch(error) {
+            console.log('There was an error uploading a file bitch: ', error)
+            throw(error)
           }
         })
-        return {
-          awsKey: upload.data.key,
-          fileName: file.file.name
-        }
-      })
-    )
+      )
+    } catch(error) {
+      throw(error)
+    }
   },
 
   updateRecipe: (

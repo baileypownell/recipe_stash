@@ -1,28 +1,29 @@
-import React from 'react'
-import { withRouter, RouteComponentProps } from 'react-router-dom'
+import { Box, Typography } from '@mui/material'
+import { useNavigate } from 'react-router'
 import './ListItem.scss'
 
-interface Props extends RouteComponentProps {
+interface Props {
   recipeId: string
   key: string
   rawTitle: string
 }
 
 const ListItem = (props: Props) => {
+  const navigate = useNavigate()
   const viewRecipe = () => {
-    props.history.push(`/recipes/${props.recipeId}`)
+    navigate(`/recipes/${props.recipeId}`)
   }
 
   const { key, rawTitle } = props
   return (
-    <div
+    <Box
       className="list-item hoverable"
       key={key}
       onClick={viewRecipe}
     >
-      <h4>{rawTitle}</h4>
-    </div>
+      <Typography variant="body1">{rawTitle}</Typography>
+    </Box>
   )
 }
 
-export default withRouter(ListItem)
+export default ListItem

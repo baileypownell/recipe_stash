@@ -29,17 +29,6 @@
   box-shadow: 5px 1px 30px #868686;
 }
 
-@mixin button {
-  background-color: $green!important;
-  cursor: pointer;
-  outline: none;
-  text-transform: uppercase;
-  transition: all .3s;
-  &:hover {
-    background-color: darken($green, 5%)!important;
-  }
-}
-
 @mixin auth {
     background-image: url('../../images/ingredients.jpg');
     background-size:cover;

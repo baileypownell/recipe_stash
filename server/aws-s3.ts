@@ -1,8 +1,7 @@
-
-const aws = require('aws-sdk')
-const { v4: uuidv4 } = require('uuid')
-const multer = require('multer')
-const multerS3 = require('multer-s3')
+import aws from 'aws-sdk';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import { v4 as uuidv4 } from 'uuid';
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -42,9 +41,11 @@ const singleFileUpload = upload.single('image')
 const uploadSingleAWSFile = (req, res) => {
   req.s3Key = uuidv4()
   const downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     return singleFileUpload(req, res, err => {
-      if (err) return reject(err)
+      if (err) {
+        throw(err)
+      }
       return resolve({ downloadUrl, key: req.s3Key })
     })
   })
@@ -76,7 +77,7 @@ const deleteAWSFiles = (awsKeys) => {
   return Promise.all(awsKeys.map(key => {
     return new Promise((resolve, reject) => {
       s3.deleteObject({
-        Bucket: process.env.S3_BUCKET,
+        Bucket: process.env.S3_BUCKET as string,
         Key: key
       }, (err, data) => {
         if (err) reject(err)
@@ -89,7 +90,7 @@ const deleteAWSFiles = (awsKeys) => {
 const deleteSingleAWSFile = (imageKey) => {
   return new Promise((resolve, reject) => {
     s3.deleteObject({
-      Bucket: process.env.S3_BUCKET,
+      Bucket: process.env.S3_BUCKET as string,
       Key: imageKey
     }, (err, data) => {
       if (err) {
@@ -107,4 +108,5 @@ export {
   uploadSingleAWSFile,
   deleteAWSFiles,
   deleteSingleAWSFile
-}
+};
+

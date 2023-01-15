@@ -1,12 +1,12 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, CircularProgress, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography } from '@material-ui/core'
-import Dialog from '@material-ui/core/Dialog'
-import Slide from '@material-ui/core/Slide'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Slide, Typography } from '@mui/material'
 import DOMPurify from 'dompurify'
-import React, { useEffect, useState } from 'react'
+import { htmlToText } from 'html-to-text'
+import { forwardRef, useEffect, useState } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { RouteComponentProps, withRouter } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { FullRecipe, RawRecipe } from '../../../../../server/recipe'
 import options from '../../../../models/options'
 import { tags as RecipeTags } from '../../../../models/tags'
@@ -14,10 +14,10 @@ import { DefaultTile, ExistingFile, IRecipeTags, NewFileInterface, RecipeInput, 
 import { queryClient } from '../../../App/App'
 import FileUpload from '../../../File-Upload/FileUpload'
 import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache'
+import { GridView } from '../../Dashboard'
 import './RecipeDialog.scss'
-const { htmlToText } = require('html-to-text')
 
-const Transition = React.forwardRef(function Transition (props, ref) {
+const Transition = forwardRef(function Transition (props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
@@ -37,7 +37,7 @@ type AddProps = {
   id: string
   category: string
   addRecipe: Function
-  gridView: boolean
+  gridView: GridView
 }
 
 export enum Mode {
@@ -45,7 +45,7 @@ export enum Mode {
   Edit = 'Edit'
 }
 
-interface Props extends RouteComponentProps {
+interface Props {
   recipeDialogInfo: AddProps | EditProps
   mode: Mode
 }
@@ -71,6 +71,7 @@ const RecipeDialog = (props: Props) => {
   const [open, setOpen] = useState(false)
   const [filesToDelete, setFilesToDelete] = useState([])
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (props.mode === Mode.Edit) {
@@ -117,7 +118,7 @@ const RecipeDialog = (props: Props) => {
     }
   }
 
-  const saveRecipe = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const saveRecipe = async (e: any) => {
     e.preventDefault()
     const titleHTML = DOMPurify.sanitize(
       recipeTitleRaw  || (props.recipeDialogInfo as EditProps).recipe.rawTitle
@@ -153,7 +154,7 @@ const RecipeDialog = (props: Props) => {
           setFilesToDelete([])
           setNewFiles([])
           setLoading(false)
-          props.history.push(`/recipes/${recipe.id}`)
+          navigate(`/recipes/${recipe.id}`)
           window.location.reload();
           (props.recipeDialogInfo as EditProps).triggerDialog()
         } else {
@@ -294,7 +295,7 @@ const RecipeDialog = (props: Props) => {
         return updatedQueryState
       });
       // (props.recipeDialogInfo as EditProps).openSnackBar('Recipe deleted.')
-      props.history.push('/recipes')
+      navigate('/recipes')
     } catch (err) {
       console.log(err);
       (props.recipeDialogInfo as EditProps).openSnackBar('There was an error.')
@@ -305,21 +306,22 @@ const RecipeDialog = (props: Props) => {
 
   return (
     <>
-      { mode === Mode.Add 
-        ? gridView
-          ? <div
-              onClick={toggleModal}
-              className="addRecipe"
-              id={id}>
-              <i className="fas fa-plus-circle"></i>
-            </div>
-          : <Button
-              className="add-button"
-              variant="contained"
-              onClick={toggleModal}>
-              Add Recipe
-              <i className="fas fa-plus-circle" style={{ marginLeft: '8px' }}></i>
-            </Button>
+      { mode === Mode.Add ? 
+        gridView === GridView.Grid ? 
+          <Box
+            onClick={toggleModal}
+            className="addRecipe"
+            id={id}>
+            <i className="fas fa-plus-circle"></i>
+          </Box> : 
+          <Button
+            className="add-button"
+            variant="contained"
+            onClick={toggleModal}
+            sx={{ marginBottom: 1 }}>
+            Add Recipe
+            <i className="fas fa-plus-circle" style={{ marginLeft: '8px' }}></i>
+          </Button>
         : null
       }
 
@@ -424,4 +426,4 @@ const RecipeDialog = (props: Props) => {
   )
 }
 
-export default withRouter(RecipeDialog)
+export default RecipeDialog

@@ -19,7 +19,9 @@ router.post('/:recipeId', authMiddleware, async (req: any, res) => {
     client.query('INSERT INTO files(aws_download_url, recipe_uuid, user_uuid, key) VALUES($1, $2, $3, $4)',
       [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
       (error, response) => {
-        if (error) return res.status(500).json({ success: false, message: `There was an error: ${error}` })
+        if (error) {
+          throw(error)
+        }
         if (response.rowCount) {
           client.query('UPDATE recipes SET has_images = TRUE WHERE recipe_uuid = $1',
             [recipeId],
@@ -41,7 +43,7 @@ router.post('/:recipeId', authMiddleware, async (req: any, res) => {
         }
       })
   } catch (error) {
-    return res.status(500).json({ success: false, message: `There was an error: ${error}` })
+    throw(error)
   }
 })
 

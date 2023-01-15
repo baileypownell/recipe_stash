@@ -1,21 +1,22 @@
-import { Chip, Divider, Fab, Tooltip } from '@material-ui/core'
+
 import DOMPurify from 'dompurify'
 import React, { useEffect, useState } from 'react'
-import { RouteComponentProps, withRouter } from 'react-router-dom'
 import BounceLoader from 'react-spinners/BounceLoader'
 import { BehaviorSubject } from 'rxjs'
 import { tags as recipeTags } from '../../models/tags'
-import { RecipeInterface, RecipeService } from '../../services/recipe-services'
+import { RecipeService } from '../../services/recipe-services'
 import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar'
 import LightboxComponent from './LightboxComponent/LightboxComponent'
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar'
 import './Recipe.scss'
 import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog/RecipeDialog'
+import { useNavigate, useParams } from 'react-router'
+import { Box, Chip, Divider, Fab, Tooltip } from '@mui/material'
 
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([])
 const presignedUrls$ = presignedUrlsSubject.asObservable()
 
-interface Props extends RouteComponentProps {
+interface Props {
   openSnackBar: Function
   addRecipeMutation: Function
 }
@@ -27,12 +28,13 @@ const Recipe = (props: Props) => {
   const [cloning, setCloning] = useState(false)
   const [width, setWidth] = useState(window.innerWidth)
   const [dialogOpen, setDialogOpen] = useState(false)
-
+  const navigate  = useNavigate()
   const triggerDialog = (): void => { setDialogOpen(!dialogOpen) }
+  const params = useParams()
 
   const fetchData = async () => {
     try {
-      const recipe: RecipeInterface = await RecipeService.getRecipe(props.match.params.id)
+      const recipe = await RecipeService.getRecipe(params.id)
       setRecipe(recipe)
       setLoading(false)
 
@@ -51,7 +53,7 @@ const Recipe = (props: Props) => {
       console.log(err)
       if (err.response?.status === 401) {
         // unathenticated; redirect to log in
-        props.history.push('/login')
+        navigate('/login')
       }
     }
   }
@@ -81,7 +83,7 @@ const Recipe = (props: Props) => {
 
   return (
     !loading
-      ? <div id="recipe-container">
+      ? <Box id="recipe-container">
           <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
           <RecipeDialog
             mode={Mode.Edit}
@@ -101,8 +103,7 @@ const Recipe = (props: Props) => {
             <MobileRecipeToolbar
               width={width}
               triggerDialog={triggerDialog}
-              cloneRecipe={cloneRecipe}>
-            </MobileRecipeToolbar>
+              cloneRecipe={cloneRecipe} />
             <div id="width-setter">
               <div className="section">
                 <div id="recipe-title" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(recipe.title) }}/>
@@ -143,7 +144,7 @@ const Recipe = (props: Props) => {
               </Tooltip>
             </div>
             : null }
-        </div>
+        </Box>
       : <div className="BounceLoader">
           <BounceLoader
               size={100}
@@ -153,5 +154,5 @@ const Recipe = (props: Props) => {
   )
 }
 
-export default withRouter(Recipe)
+export default Recipe
 

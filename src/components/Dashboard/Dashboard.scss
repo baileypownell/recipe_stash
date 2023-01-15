@@ -15,26 +15,6 @@
       flex-direction: row;
     }
   }
-  .searchbar {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    input {
-      color: white;
-      width: 100%;
-      border-bottom: 2px solid white!important;
-      outline: none;
-      @include tablet {
-        padding: 10px;
-      }
-    }
-    i {
-      font-size: 20px;
-      background-color: $green;
-      transform: translateX(-20px);
-      padding: 5px;
-    }
-  }
 }
 
 
@@ -110,24 +90,6 @@
       }
     }
   }
-}
-
-
-#filter-button {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: white!important;
-    color: $green;
-    span {
-      padding-right: 3px;
-    }
-    i {
-      line-height: normal;
-      padding: 0px;
-      transform: none;
-      background-color: white;
-    }
 }
 
 #dropdown {

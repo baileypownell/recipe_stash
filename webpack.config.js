@@ -22,7 +22,9 @@ module.exports = (env) => {
             options: {
               presets: [
                 '@babel/preset-env',
-                '@babel/preset-react',
+                ['@babel/preset-react', {
+                  "runtime": "automatic" // eliminates the need to explicitly import React in a component file
+                }],
                 '@babel/preset-typescript'
               ]
             }
@@ -41,9 +43,7 @@ module.exports = (env) => {
         },
         {
           test: /\.(png|svg|jpg|gif)$/,
-          use: [
-            'file-loader',
-          ],
+          type: 'asset/resource',
         },
       ]
     },
@@ -75,8 +75,5 @@ module.exports = (env) => {
         }
       }
     },
-    // externals: {
-    //   react: 'React'
-    // }
   }
 }

@@ -1,24 +1,25 @@
+import { Box } from '@mui/material'
 import React, { useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
-import 'react-image-lightbox/style.css'
 
-function ImageSkeletonLoader (props: { url: string, openLightBox: Function }) {
+import "react-loading-skeleton/dist/skeleton.css";
+
+function ImageSkeletonLoader ({ url, openLightBox }) {
   const [imageLoaded, setImageLoaded] = useState(false)
 
   return (imageLoaded
     ? <img
-        onClick={() => props.openLightBox()}
+        onClick={() => openLightBox()}
         style={{ cursor: 'pointer' }}
-        key={props.url}
-        src={props.url}/>
-    : <>
+        key={url}
+        src={url}/>
+    : <Box sx={{ height: '300px', backgroundColor: '#eaeaea', marginBottom: '10px' }}>
         <img
-            src={props.url}
-            style={{ display: 'none' }}
-            onLoad={() => setImageLoaded(true)}
-            />
-        <Skeleton width={200} height={200} className="recipe-image-skeleton" />
-      </>
+          src={url}
+          style={{ display: 'none' }}
+          onLoad={() => setImageLoaded(true)} />
+        <Skeleton height="100%"  />
+      </Box>
   )
 }
 

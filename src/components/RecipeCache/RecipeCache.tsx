@@ -1,13 +1,15 @@
 
-import { Snackbar } from '@material-ui/core'
+import { Snackbar } from '@mui/material'
 import React, { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
-import { withRouter } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 import BounceLoader from 'react-spinners/BounceLoader'
-import { Dashboard, Recipe } from '..'
 import { FullRecipe, RawRecipe } from '../../../server/recipe'
 import { DefaultTile, NewFileInterface, RecipeInput, RecipeService, SortedRecipeInterface } from '../../services/recipe-services'
 import { queryClient } from '../App/App'
+import Dashboard from '../Dashboard/Dashboard'
+import Recipe from '../Recipe/Recipe'
+
 export interface MealCategoriesType {
   breakfast: 'Breakfast',
   lunch: 'Lunch',
@@ -52,7 +54,7 @@ const determineRecipeCategory = (recipeCategory: string): string => {
   }
 }
 
-function RecipeCache (props: any) {
+const RecipeCache = () => {
   const { mutateAsync } = useMutation('recipes', async (recipeInput: AddRecipeMutationParam) => {
     try {
       const newRecipe: RawRecipe = await RecipeService.createRecipe(
@@ -73,6 +75,9 @@ function RecipeCache (props: any) {
         }
         return updatedQueryState
       })
+    },
+    onError: (error) => {
+      console.log('Recipe could not be created: ', error);
     }
   })
 
@@ -98,6 +103,8 @@ function RecipeCache (props: any) {
 
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
+  const params = useParams()
+
   const openSnackBar = (message: string) => {
     setSnackBarOpen(true)
     setSnackBarMessage(message)
@@ -117,25 +124,25 @@ function RecipeCache (props: any) {
     </div>
   }
 
-  const individualRecipe: boolean = !!props.match.params.id
-
-  if (individualRecipe) {
+  if (params.id) {
     return (
-      <>
-        <Recipe
-          openSnackBar={openSnackBar}
-          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
-        </Recipe>
-      </>
+      <Recipe
+        openSnackBar={openSnackBar}
+        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />
     )
   } else {
     return (
       <>
+        <Routes>
+          <Route path=":id" element={<Recipe 
+            openSnackBar={openSnackBar}
+            addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />} 
+          />
+        </Routes>
         <Dashboard
           recipes={data}
           fetchRecipes={() => fetchRecipes()}
-          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)}>
-        </Dashboard>
+          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />
         <Snackbar
           open={snackBarOpen}
           anchorOrigin={{
@@ -145,11 +152,10 @@ function RecipeCache (props: any) {
           onClose={closeSnackBar}
           autoHideDuration={3000}
           message={snackBarMessage}
-          key={'bottom' + 'center'}
-        />
+          key={'bottom' + 'center'} />
       </>
     )
   }
 }
 
-export default withRouter(RecipeCache)
+export default RecipeCache

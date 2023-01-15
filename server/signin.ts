@@ -21,7 +21,7 @@ router.post('/', (request: any, response, next) => {
         bcrypt.compare(password, hashedPassword, (err, res) => {
           if (err) return next(err)
           if (res) {
-            request.session.regenerate(() => {
+            // request.session.regenerate(() => {
               request.session.save()
               const sessionIdentifier = request.sessionID
               // update the session table with the user's sessionID
@@ -45,7 +45,7 @@ router.post('/', (request: any, response, next) => {
                     return response.status(500).json({ error: 'There was an error.' })
                   }
                 })
-            })
+            // })
           } else {
             return response.status(403).json({ error: 'User could not be authenticated.' })
           }

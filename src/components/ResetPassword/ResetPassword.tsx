@@ -1,7 +1,7 @@
-import { Button, Snackbar, TextField } from '@material-ui/core'
+import { Button, TextField, Snackbar } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { RouteComponentProps, withRouter } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import ClipLoader from 'react-spinners/ClipLoader'
 import * as yup from 'yup'
 import { isPasswordValid } from '../../models/functions'
@@ -16,12 +16,13 @@ const validationSchema = yup.object({
     .required('Password is required.')
 })
 
-const ResetPassword = (props: RouteComponentProps) => {
+const ResetPassword = (props) => {
   const [invalidLink, setInvalidLink] = useState(false)
   const [loading, setLoading] = useState(false)
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
   const [email, setUserEmail] = useState(null)
+  const navigate = useNavigate()
 
   const verifyToken = async () => {
     const token = props.match.params.token
@@ -44,7 +45,7 @@ const ResetPassword = (props: RouteComponentProps) => {
   }, [])
 
   const goHome = (): void => {
-    props.history.push('/')
+    navigate('/')
   }
 
   const openSnackBar = (message: string): void => {
@@ -64,7 +65,7 @@ const ResetPassword = (props: RouteComponentProps) => {
       await AuthenticationService.updatePassword(values.password, reset_password_token, email)
       openSnackBar('Password updated! Redirecting...')
       setLoading(false)
-      props.history.push('/recipes')
+      navigate('/recipes')
     } catch (err) {
       openSnackBar('There was an error.')
       setLoading(false)
@@ -137,4 +138,4 @@ const ResetPassword = (props: RouteComponentProps) => {
   )
 }
 
-export default withRouter(ResetPassword)
+export default ResetPassword
