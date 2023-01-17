@@ -1,5 +1,9 @@
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
 import {
   Accordion,
   AccordionDetails,
@@ -205,139 +209,141 @@ const Settings = (props: Props) => {
                 <>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary">
-                        <i className="material-icons">email</i>Update Email
-                      </span>
+                      <Stack direction="row" alignItems="center">
+                        <EmailRoundedIcon />
+                        <Typography marginLeft={1}>Update Email</Typography>
+                      </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Field
-                        name="email.email"
-                        render={({ field, form }) => (
-                          <TextField
-                            id="email"
-                            name="email.email"
-                            type="email"
-                            label="New Email"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              form.touched.email?.email &&
-                              Boolean(form.errors.email?.email)
-                            }
-                            helperText={
-                              form.touched.email?.email &&
-                              form.errors.email?.email
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <Field
-                        name="email.password"
-                        render={({ field, form }) => (
-                          <TextField
-                            id="password"
-                            type="password"
-                            name="email.password"
-                            label="Password"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              form.touched.email?.password &&
-                              Boolean(form.errors.email?.password)
-                            }
-                            helperText={
-                              form.touched.email?.password &&
-                              form.errors.email?.password
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <div style={{ marginTop: '20px' }}>
-                        <Button
-                          color="secondary"
-                          onClick={() => updateEmail(formik.values)}
-                          variant="contained"
-                        >
-                          Save
-                        </Button>
-                      </div>
+                      <Stack marginBottom={2} spacing={2}>
+                        <Field
+                          name="email.email"
+                          render={({ field, form }) => (
+                            <TextField
+                              id="email"
+                              name="email.email"
+                              type="email"
+                              label="New Email"
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              error={
+                                form.touched.email?.email &&
+                                Boolean(form.errors.email?.email)
+                              }
+                              helperText={
+                                form.touched.email?.email &&
+                                form.errors.email?.email
+                              }
+                            ></TextField>
+                          )}
+                        />
+                        <Field
+                          name="email.password"
+                          render={({ field, form }) => (
+                            <TextField
+                              id="password"
+                              type="password"
+                              name="email.password"
+                              label="Password"
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              error={
+                                form.touched.email?.password &&
+                                Boolean(form.errors.email?.password)
+                              }
+                              helperText={
+                                form.touched.email?.password &&
+                                form.errors.email?.password
+                              }
+                            ></TextField>
+                          )}
+                        />
+                      </Stack>
+                      <Button
+                        color="secondary"
+                        onClick={() => updateEmail(formik.values)}
+                        variant="contained"
+                      >
+                        Save
+                      </Button>
                     </AccordionDetails>
                   </Accordion>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary">
-                        <i className="material-icons">person</i>Update Name
-                      </span>
+                      <Stack direction="row" alignItems="center">
+                        <PersonRoundedIcon />
+                        <Typography marginLeft={1}>Update Name</Typography>
+                      </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Field
-                        name="names.firstName"
-                        render={({ field, form }) => (
-                          <TextField
-                            name="names.firstName"
-                            label="New First Name"
-                            type="text"
-                            id="firstName"
-                            value={formik.values.names.firstName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              form.touched.names?.firstName &&
-                              Boolean(form.errors.names?.firstName)
-                            }
-                            helperText={
-                              form.touched.names?.firstName &&
-                              form.errors.names?.firstName
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <Field
-                        name="names.lastName"
-                        render={({ field, form }) => (
-                          <TextField
-                            name="names.lastName"
-                            label="New Last Name"
-                            id="lastName"
-                            type="text"
-                            value={formik.values.names.lastName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              form.touched.names?.lastName &&
-                              Boolean(form.errors.names?.lastName)
-                            }
-                            helperText={
-                              form.touched.names?.lastName &&
-                              form.errors.names?.lastName
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <div style={{ marginTop: '20px' }}>
-                        <Button
-                          color="secondary"
-                          onClick={() => updateNames(formik.values)}
-                          variant="contained"
-                        >
-                          Save
-                        </Button>
-                      </div>
+                      <Stack marginBottom={2} spacing={2}>
+                        <Field
+                          name="names.firstName"
+                          render={({ field, form }) => (
+                            <TextField
+                              name="names.firstName"
+                              label="New First Name"
+                              type="text"
+                              id="firstName"
+                              value={formik.values.names.firstName}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              error={
+                                form.touched.names?.firstName &&
+                                Boolean(form.errors.names?.firstName)
+                              }
+                              helperText={
+                                form.touched.names?.firstName &&
+                                form.errors.names?.firstName
+                              }
+                            ></TextField>
+                          )}
+                        />
+                        <Field
+                          name="names.lastName"
+                          render={({ field, form }) => (
+                            <TextField
+                              name="names.lastName"
+                              label="New Last Name"
+                              id="lastName"
+                              type="text"
+                              value={formik.values.names.lastName}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              error={
+                                form.touched.names?.lastName &&
+                                Boolean(form.errors.names?.lastName)
+                              }
+                              helperText={
+                                form.touched.names?.lastName &&
+                                form.errors.names?.lastName
+                              }
+                            ></TextField>
+                          )}
+                        />
+                      </Stack>
+                      <Button
+                        color="secondary"
+                        onClick={() => updateNames(formik.values)}
+                        variant="contained"
+                      >
+                        Save
+                      </Button>
                     </AccordionDetails>
                   </Accordion>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary">
-                        <i className="material-icons">security</i>Update
-                        Password
-                      </span>
+                      <Stack direction="row" alignItems="center">
+                        <SecurityRoundedIcon />
+                        <Typography marginLeft={1}>Update Password</Typography>
+                      </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <p>
+                      <Typography variant="body1" paddingBottom={1}>
                         Click the button below to receive an email with a link
                         to reset your password.
-                      </p>
-                      <div>
+                      </Typography>
+                      <Box>
                         <Button
                           color="secondary"
                           onClick={updatePassword}
@@ -345,35 +351,41 @@ const Settings = (props: Props) => {
                         >
                           Send Email
                         </Button>
-                      </div>
+                      </Box>
                     </AccordionDetails>
                   </Accordion>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <span className="accordion-summary">
-                        <i className="material-icons">delete</i>Delete Account
-                      </span>
+                      <Stack direction="row" alignItems="center">
+                        <DeleteRoundedIcon />
+                        <Typography marginLeft={1}>Delete Account</Typography>
+                      </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <p>
+                      <Typography variant="body1" paddingBottom={1}>
                         If you are sure you want to delete your account, click
                         the button below. This action
-                        <span id="bold">cannot</span> be undone.
-                      </p>
-                      <div>
+                        <span
+                          style={{
+                            fontWeight: 'bold',
+                            fontStyle: 'italic',
+                            marginLeft: '2px',
+                          }}
+                        >
+                          cannot
+                        </span>{' '}
+                        be undone.
+                      </Typography>
+                      <Box>
                         <Button
-                          color="secondary"
-                          id="delete"
+                          color="primary"
                           onClick={openDeleteModal}
                           variant="contained"
+                          startIcon={<DeleteRoundedIcon />}
                         >
-                          Delete Account{' '}
-                          <i
-                            style={{ marginLeft: '8px' }}
-                            className="fas fa-exclamation-triangle"
-                          ></i>
+                          Delete Account
                         </Button>
-                      </div>
+                      </Box>
                     </AccordionDetails>
                   </Accordion>
                 </>
