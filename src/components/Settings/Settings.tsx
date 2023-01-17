@@ -23,7 +23,7 @@ import UserService, {
   UpdateUserNamePayload,
   UserData,
 } from '../../services/user-service';
-import DeleteModal from '../DeleteModal/DeleteModal';
+import DeleteModal from '../DeleteModal';
 import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar';
 import './Settings.scss';
 
@@ -395,7 +395,7 @@ const Settings = (props: Props) => {
         />
 
         <DeleteModal
-          open={deleteModalOpen}
+          isOpen={deleteModalOpen}
           deleteFunction={deleteAccount}
           closeModal={() => setDeleteModalOpen(false)}
         />

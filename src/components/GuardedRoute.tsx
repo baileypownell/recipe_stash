@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import AuthenticationService from './services/auth-service';
+import AuthenticationService from '../services/auth-service';
 
 const GuardedRoute = (props: any) =>
   AuthenticationService.authenticated() ? (

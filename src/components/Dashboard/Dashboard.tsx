@@ -18,7 +18,7 @@ import {
   BaseStringAccessibleObjectString,
   SortedRecipeInterface,
 } from '../../services/recipe-services';
-import { queryClient } from '../App/App';
+import { queryClient } from '../App';
 import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache';
 import Category from './Category/Category';
 import './Dashboard.scss';

@@ -7,19 +7,24 @@ import {
   Button,
 } from '@mui/material';
 import React, { useEffect } from 'react';
-import './DeleteModal.scss';
 
-const DeleteModal = (props: {
-  open: boolean;
-  deleteFunction: Function;
+type DeleteModalProps = {
+  isOpen: boolean;
+  deleteFunction: () => void;
   closeModal: Function;
-}) => {
+};
+
+const DeleteModal = ({
+  isOpen,
+  deleteFunction,
+  closeModal,
+}: DeleteModalProps) => {
   const [open, setOpen] = React.useState(false);
 
-  const handleClose = () => props.closeModal();
+  const handleClose = () => closeModal();
 
   useEffect(() => {
-    setOpen(props.open);
+    setOpen(isOpen);
   });
 
   return open ? (
@@ -33,10 +38,15 @@ const DeleteModal = (props: {
         <DialogContentText>This action cannot be undone.</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" variant="contained">
           Cancel
         </Button>
-        <Button onClick={props.deleteFunction} color="primary" autoFocus>
+        <Button
+          onClick={deleteFunction}
+          color="primary"
+          variant="outlined"
+          autoFocus
+        >
           Continue
         </Button>
       </DialogActions>

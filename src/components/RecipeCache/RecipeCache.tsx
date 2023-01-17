@@ -11,7 +11,7 @@ import {
   RecipeService,
   SortedRecipeInterface,
 } from '../../services/recipe-services';
-import { queryClient } from '../App/App';
+import { queryClient } from '../App';
 import Dashboard from '../Dashboard/Dashboard';
 import Recipe from '../Recipe/Recipe';
 

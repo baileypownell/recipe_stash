@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { QueryCache } from 'react-query';
-import { queryClient } from '../components/App/App';
+import { queryClient } from '../components/App';
 
 const AuthenticationService = {
   setUserLoggedIn: (): void => {

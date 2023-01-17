@@ -3,10 +3,10 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Home, Login, Nav, ResetPassword, Settings, Signup } from '..';
-import GuardedRoute from '../../GuardedRoute';
-import AuthenticationService from '../../services/auth-service';
-import RecipeCache from '../RecipeCache/RecipeCache';
+import { Home, Login, Nav, ResetPassword, Settings, Signup } from '.';
+import GuardedRoute from './GuardedRoute';
+import AuthenticationService from '../services/auth-service';
+import RecipeCache from './RecipeCache/RecipeCache';
 
 export const queryClient = new QueryClient();
 
