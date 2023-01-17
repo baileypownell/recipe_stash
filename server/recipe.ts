@@ -1,60 +1,64 @@
 /* eslint-disable camelcase */
-import { Router } from 'express'
-import client from './client'
-import { authMiddleware } from './authMiddleware'
-const router = Router()
-const { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3')
+import { Router } from 'express';
+import client from './client';
+import { authMiddleware } from './authMiddleware';
+const router = Router();
+const {
+  getPresignedUrls,
+  getPresignedUrl,
+  deleteAWSFiles,
+} = require('./aws-s3');
 
 export interface RawRecipe {
-  title: string
-  raw_title: string
-  ingredients: string
-  directions: string
-  category: string
-  no_bake: string
-  easy: string
-  healthy: string
-  gluten_free: string
-  dairy_free: string
-  sugar_free: string
-  vegetarian: string
-  vegan: string
-  keto: string
-  recipe_uuid: string
-  user_uuid: string
+  title: string;
+  raw_title: string;
+  ingredients: string;
+  directions: string;
+  category: string;
+  no_bake: string;
+  easy: string;
+  healthy: string;
+  gluten_free: string;
+  dairy_free: string;
+  sugar_free: string;
+  vegetarian: string;
+  vegan: string;
+  keto: string;
+  recipe_uuid: string;
+  user_uuid: string;
 }
 
 const constructTags = (recipe): string[] => {
-  const tagArray: string[] = []
+  const tagArray: string[] = [];
   if (recipe.no_bake) {
-    tagArray.push('no_bake')
+    tagArray.push('no_bake');
   }
   if (recipe.easy) {
-    tagArray.push('easy')
+    tagArray.push('easy');
   }
   if (recipe.healthy) {
-    tagArray.push('healthy')
+    tagArray.push('healthy');
   }
   if (recipe.gluten_free) {
-    tagArray.push('gluten_free')
+    tagArray.push('gluten_free');
   }
   if (recipe.dairy_free) {
-    tagArray.push('dairy_free')
+    tagArray.push('dairy_free');
   }
   if (recipe.vegetarian) {
-    tagArray.push('vegetarian')
+    tagArray.push('vegetarian');
   }
   if (recipe.vegan) {
-    tagArray.push('vegan')
+    tagArray.push('vegan');
   }
   if (recipe.keto) {
-    tagArray.push('keto')
+    tagArray.push('keto');
   }
   if (recipe.sugar_free) {
-    tagArray.push('sugar_free')
+    tagArray.push('sugar_free');
   }
-  return tagArray
-}
+  return tagArray;
+};
 
 const formatRecipeResponse = (recipe: any): any => {
   return {
@@ -67,18 +71,19 @@ const formatRecipeResponse = (recipe: any): any => {
     directions: recipe.directions,
     tags: constructTags(recipe),
     defaultTileImageKey: recipe.default_tile_image_key,
-    preSignedDefaultTileImageUrl: recipe.preSignedDefaultTileImageUrl
-  }
-}
+    preSignedDefaultTileImageUrl: recipe.preSignedDefaultTileImageUrl,
+  };
+};
 
-router.use(authMiddleware)
+router.use(authMiddleware);
 
 router.get('/', authMiddleware, (request: any, response, next) => {
-  const userId = request.userID
-  client.query('SELECT * FROM recipes WHERE user_uuid=$1',
+  const userId = request.userID;
+  client.query(
+    'SELECT * FROM recipes WHERE user_uuid=$1',
     [userId],
     (err, res) => {
-      if (err) return next(err)
+      if (err) return next(err);
       const responseObject: any = {
         breakfast: [],
         lunch: [],
@@ -86,46 +91,67 @@ router.get('/', authMiddleware, (request: any, response, next) => {
         dessert: [],
         other: [],
         side_dish: [],
-        drinks: []
-      }
+        drinks: [],
+      };
       if (res.rows.length) {
-        const results = res.rows.map(recipe => {
+        const results = res.rows.map((recipe) => {
           if (recipe.default_tile_image_key) {
-            const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
+            const preSignedDefaultTileImageUrl = getPresignedUrl(
+              recipe.default_tile_image_key,
+            );
             return {
               ...recipe,
-              preSignedDefaultTileImageUrl
-            }
+              preSignedDefaultTileImageUrl,
+            };
           } else {
-            return recipe
+            return recipe;
           }
-        })
+        });
         results.forEach((recipe) => {
           if (recipe.category === 'Dinner' || recipe.category === 'dinner') {
-            responseObject.dinner.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Dessert' || recipe.category === 'dessert') {
-            responseObject.dessert.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Drinks' || recipe.category === 'drinks') {
-            responseObject.drinks.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Lunch' || recipe.category === 'lunch') {
-            responseObject.lunch.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Breakfast' || recipe.category === 'breakfast') {
-            responseObject.breakfast.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Other' || recipe.category === 'other') {
-            responseObject.other.push(formatRecipeResponse(recipe))
-          } else if (recipe.category === 'Side Dish' || recipe.category === 'side_dish') {
-            responseObject.side_dish.push(formatRecipeResponse(recipe))
+            responseObject.dinner.push(formatRecipeResponse(recipe));
+          } else if (
+            recipe.category === 'Dessert' ||
+            recipe.category === 'dessert'
+          ) {
+            responseObject.dessert.push(formatRecipeResponse(recipe));
+          } else if (
+            recipe.category === 'Drinks' ||
+            recipe.category === 'drinks'
+          ) {
+            responseObject.drinks.push(formatRecipeResponse(recipe));
+          } else if (
+            recipe.category === 'Lunch' ||
+            recipe.category === 'lunch'
+          ) {
+            responseObject.lunch.push(formatRecipeResponse(recipe));
+          } else if (
+            recipe.category === 'Breakfast' ||
+            recipe.category === 'breakfast'
+          ) {
+            responseObject.breakfast.push(formatRecipeResponse(recipe));
+          } else if (
+            recipe.category === 'Other' ||
+            recipe.category === 'other'
+          ) {
+            responseObject.other.push(formatRecipeResponse(recipe));
+          } else if (
+            recipe.category === 'Side Dish' ||
+            recipe.category === 'side_dish'
+          ) {
+            responseObject.side_dish.push(formatRecipeResponse(recipe));
           }
-        })
-        response.json(responseObject)
+        });
+        response.json(responseObject);
       } else {
-        return response.json(responseObject)
+        return response.json(responseObject);
       }
-    })
-})
+    },
+  );
+});
 
 router.post('/', (request: any, response, next): Promise<RawRecipe> => {
-  const userId = request.userID
+  const userId = request.userID;
   const {
     title,
     rawTitle,
@@ -140,16 +166,11 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
     isSugarFree,
     isVegetarian,
     isVegan,
-    isKeto
-  } = request.body
-  if (
-    !!rawTitle &&
-    !!title &&
-    !!category &&
-    !!ingredients &&
-    !!directions
-  ) {
-    return client.query(`INSERT INTO recipes(
+    isKeto,
+  } = request.body;
+  if (!!rawTitle && !!title && !!category && !!ingredients && !!directions) {
+    return client.query(
+      `INSERT INTO recipes(
         title,
         raw_title,
         category,
@@ -181,26 +202,27 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
         isSugarFree,
         isVegetarian,
         isVegan,
-        isKeto
+        isKeto,
       ],
       (err, res) => {
-        if (err) return next(err)
+        if (err) return next(err);
         if (res.rowCount) {
-          return response.status(200).json(res.rows[0])
+          return response.status(200).json(res.rows[0]);
         } else {
-          return response.status(500).json(null)
+          return response.status(500).json(null);
         }
-      })
+      },
+    );
   } else {
     return response.status(400).json({
       success: false,
-      message: 'Invalid request sent.'
-    }) as any
+      message: 'Invalid request sent.',
+    }) as any;
   }
-})
+});
 
 router.put('/', (request: any, response, next): Promise<RawRecipe> => {
-  const userId = request.userID
+  const userId = request.userID;
   const {
     recipeId,
     title,
@@ -216,9 +238,10 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
     isSugarFree,
     isVegetarian,
     isVegan,
-    isKeto
-  } = request.body
-  return client.query(`UPDATE recipes SET
+    isKeto,
+  } = request.body;
+  return client.query(
+    `UPDATE recipes SET
     title=$1,
     raw_title=$16,
     ingredients=$2,
@@ -252,119 +275,138 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
       isKeto,
       recipeId,
       userId,
-      rawTitle
+      rawTitle,
     ],
     (err, res) => {
-      if (err) return next(err)
+      if (err) return next(err);
       if (res.rowCount) {
-        return response.status(200).json(res.rows[0])
+        return response.status(200).json(res.rows[0]);
       } else {
-        return response.status(500).json(null)
+        return response.status(500).json(null);
       }
-    })
-})
+    },
+  );
+});
 
 const getImageAWSKeys = (recipeId: string) => {
   return new Promise((resolve, reject) => {
-    client.query('SELECT key FROM files WHERE recipe_uuid=$1',
+    client.query(
+      'SELECT key FROM files WHERE recipe_uuid=$1',
       [recipeId],
       (err, res) => {
-        if (err) reject(err)
+        if (err) reject(err);
         const imageUrlArray = res.rows.reduce((arr, el) => {
-          arr.push(el.key)
-          return arr
-        }, [])
-        resolve(imageUrlArray)
-      })
-  })
-}
+          arr.push(el.key);
+          return arr;
+        }, []);
+        resolve(imageUrlArray);
+      },
+    );
+  });
+};
 
 export interface FullRecipe {
-  id: string
-  title: string
-  rawTitle: string
-  category: string
-  user_id: string
-  ingredients: string
-  directions: string
-  tags: string[],
-  defaultTileImageKey: string | null
-  preSignedUrls: string[] | null
-  preSignedDefaultTileImageUrl: string | null
+  id: string;
+  title: string;
+  rawTitle: string;
+  category: string;
+  user_id: string;
+  ingredients: string;
+  directions: string;
+  tags: string[];
+  defaultTileImageKey: string | null;
+  preSignedUrls: string[] | null;
+  preSignedDefaultTileImageUrl: string | null;
 }
 
-router.get('/:recipeId', (request: any, response, next): Promise<FullRecipe | null> => {
-  const { recipeId } = request.params
-  const userId = request.userID
-  return client.query('SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
-    [userId, recipeId],
-    async (err, res) => {
-      if (err) return next(err)
-      const recipe = res.rows[0]
-      if (recipe) {
-        const recipeResponse: FullRecipe = {
-          id: recipe.recipe_uuid,
-          title: recipe.title,
-          rawTitle: recipe.raw_title || recipe.title,
-          category: recipe.category,
-          user_id: recipe.user_uuid,
-          ingredients: recipe.ingredients,
-          directions: recipe.directions,
-          tags: constructTags(recipe),
-          defaultTileImageKey: recipe.default_tile_image_key,
-          preSignedUrls: null,
-          preSignedDefaultTileImageUrl: null
-        }
-        if (recipe.has_images) {
-          const urls = await getImageAWSKeys(recipeId)
-          if (urls) {
-            recipeResponse.preSignedUrls = getPresignedUrls(urls)
-            if (recipe.default_tile_image_key) {
-              const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key)
-              recipeResponse.preSignedDefaultTileImageUrl = preSignedDefaultTileImageUrl
-            }
-          }
-          response.status(200).json(recipeResponse)
-        } else {
-          response.status(200).json(recipeResponse)
-        }
-      } else {
-        response.status(500).json(null)
-      }
-    })
-})
-
-router.delete('/:recipeId', (request: any, response, next): Promise<{ recipeDeleted: boolean }> => {
-  const userId = request.userID
-  const { recipeId } = request.params
-  return client.query('DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
-    [recipeId, userId],
-    (err, res) => {
-      if (err) return next(err)
-      if (res) {
-        const hasImages: boolean = res.rows[0].has_images
-        const recipeId: string = res.rows[0].recipe_uuid
-        if (hasImages) {
-          // delete images associated with the recipe from database
-          client.query('DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
-            [recipeId],
-            async (error, res) => {
-              if (error) return response.status(500).json({ recipeDeleted: false })
-              // set recipe's "has_images" property to false if necessary
-              if (res) {
-                const awsKeys = res.rows.map(row => row.key)
-                // then delete from AWS S3
-                const awsDeletions = await deleteAWSFiles(awsKeys)
-                if (awsDeletions) {
-                  return response.status(200).json({ recipeDeleted: true })
-                }
+router.get(
+  '/:recipeId',
+  (request: any, response, next): Promise<FullRecipe | null> => {
+    const { recipeId } = request.params;
+    const userId = request.userID;
+    return client.query(
+      'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
+      [userId, recipeId],
+      async (err, res) => {
+        if (err) return next(err);
+        const recipe = res.rows[0];
+        if (recipe) {
+          const recipeResponse: FullRecipe = {
+            id: recipe.recipe_uuid,
+            title: recipe.title,
+            rawTitle: recipe.raw_title || recipe.title,
+            category: recipe.category,
+            user_id: recipe.user_uuid,
+            ingredients: recipe.ingredients,
+            directions: recipe.directions,
+            tags: constructTags(recipe),
+            defaultTileImageKey: recipe.default_tile_image_key,
+            preSignedUrls: null,
+            preSignedDefaultTileImageUrl: null,
+          };
+          if (recipe.has_images) {
+            const urls = await getImageAWSKeys(recipeId);
+            if (urls) {
+              recipeResponse.preSignedUrls = getPresignedUrls(urls);
+              if (recipe.default_tile_image_key) {
+                const preSignedDefaultTileImageUrl = getPresignedUrl(
+                  recipe.default_tile_image_key,
+                );
+                recipeResponse.preSignedDefaultTileImageUrl =
+                  preSignedDefaultTileImageUrl;
               }
-            })
+            }
+            response.status(200).json(recipeResponse);
+          } else {
+            response.status(200).json(recipeResponse);
+          }
         } else {
-          return response.status(200).json({ recipeDeleted: true })
+          response.status(500).json(null);
         }
-      }
-    })
-})
+      },
+    );
+  },
+);
 
-export default router
+router.delete(
+  '/:recipeId',
+  (request: any, response, next): Promise<{ recipeDeleted: boolean }> => {
+    const userId = request.userID;
+    const { recipeId } = request.params;
+    return client.query(
+      'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
+      [recipeId, userId],
+      (err, res) => {
+        if (err) return next(err);
+        if (res) {
+          const hasImages: boolean = res.rows[0].has_images;
+          const recipeId: string = res.rows[0].recipe_uuid;
+          if (hasImages) {
+            // delete images associated with the recipe from database
+            client.query(
+              'DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
+              [recipeId],
+              async (error, res) => {
+                if (error)
+                  return response.status(500).json({ recipeDeleted: false });
+                // set recipe's "has_images" property to false if necessary
+                if (res) {
+                  const awsKeys = res.rows.map((row) => row.key);
+                  // then delete from AWS S3
+                  const awsDeletions = await deleteAWSFiles(awsKeys);
+                  if (awsDeletions) {
+                    return response.status(200).json({ recipeDeleted: true });
+                  }
+                }
+              },
+            );
+          } else {
+            return response.status(200).json({ recipeDeleted: true });
+          }
+        }
+      },
+    );
+  },
+);
+
+export default router;

@@ -1,9 +1,9 @@
 @import '../../scss/mixins.scss';
 
 .fa-chevron-circle-left {
-  padding-left: 0px!important;
+  padding-left: 0px !important;
   cursor: pointer;
-  color:$white;
+  color: $white;
 }
 
 .directions {
@@ -27,18 +27,17 @@ h3 {
   bottom: 0px;
   padding: 20px;
   width: 90vw;
-  text-align: center;s
-    button {
-      @include desktop {
-        margin: 0 auto;
-      }
-    }
+  text-align: center;
+  s button {
     @include desktop {
-      left: 0px;
-      width: 100%;
+      margin: 0 auto;
     }
   }
-
+  @include desktop {
+    left: 0px;
+    width: 100%;
+  }
+}
 
 .select {
   text-align: end;
@@ -58,7 +57,7 @@ h3 {
   flex-grow: 1;
   width: 100%;
   .section ul {
-    padding-left: revert!important;
+    padding-left: revert !important;
   }
   #width-setter {
     width: 100%;
@@ -78,8 +77,8 @@ h3 {
       font-weight: normal;
       &:hover {
         transform: none;
-        cursor: inherit!important;
-        background-color: $orange!important;
+        cursor: inherit !important;
+        background-color: $orange !important;
       }
     }
   }
@@ -91,58 +90,57 @@ h3 {
 }
 
 .view-recipe > div .section ul li {
-   list-style-type: initial!important;
- }
+  list-style-type: initial !important;
+}
 
- #images {
-   padding: 20px 0;
-   display: grid;
-   grid-template-columns: 1fr;
-   @include tablet {
-     grid-template-columns: 1fr 1fr;
-     grid-template-rows: auto;
-     gap: 0 15px;
-   }
-   img {
-     width: 100%!important;
-     margin: 0 0 15px 0;
-     border-radius: 5px;
-     @include boxShadow;
-   }
- }
+#images {
+  padding: 20px 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  @include tablet {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 0 15px;
+  }
+  img {
+    width: 100% !important;
+    margin: 0 0 15px 0;
+    border-radius: 5px;
+    @include boxShadow;
+  }
+}
 
- #noGrid {
-   display: flex;
-   padding: 30px 0;
-   justify-content: center;
-   span {
-     width: 100%;
-     display: flex;
-     justify-content: center;
-   }
-   img {
-     width: 100%;
-     max-width: 400px;
-     border-radius: 5px;
-     @include boxShadow;
-   }
-   > div {
-     margin: 0 auto;
-   }
- }
+#noGrid {
+  display: flex;
+  padding: 30px 0;
+  justify-content: center;
+  span {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 5px;
+    @include boxShadow;
+  }
+  > div {
+    margin: 0 auto;
+  }
+}
 
+.fixed-action-button {
+  li {
+    list-style-type: none;
+  }
+}
 
- .fixed-action-button {
-   li {
-     list-style-type: none;
-   }
- }
+.green-icon {
+  background-color: $green !important;
+}
 
- .green-icon {
-   background-color: $green!important;
- }
-
- #recipe-container {
+#recipe-container {
   height: calc(100% - 50px);
   overflow: auto;
   display: flex;
@@ -151,16 +149,16 @@ h3 {
     height: auto;
     overflow: auto;
   }
- }
- 
- #floating-buttons {
-   position: fixed;
-   bottom: 20px;
-   right: 20px;
-   button i {
-      margin-left: 0;
-   }
-   button {
-     margin-right: 10px;
-   }
- }
+}
+
+#floating-buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  button i {
+    margin-left: 0;
+  }
+  button {
+    margin-right: 10px;
+  }
+}

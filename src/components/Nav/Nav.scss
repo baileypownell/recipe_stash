@@ -2,16 +2,16 @@
 @import '../../scss/variables.scss';
 
 nav {
-  display: flex!important;
+  display: flex !important;
   @include flexRow;
-  background-color: $secondary!important;
+  background-color: $secondary !important;
   justify-content: space-between;
   align-items: center;
-  height: 50px!important;
+  height: 50px !important;
   overflow: hidden;
   flex-wrap: nowrap;
   @include tablet {
-    height: 70px!important;
+    height: 70px !important;
   }
   a {
     line-height: 0px;
@@ -21,7 +21,7 @@ nav {
   }
   img {
     height: 35px;
-    @include tablet { 
+    @include tablet {
       height: 40px;
     }
   }
@@ -41,7 +41,7 @@ nav {
       text-decoration: none;
       height: 100%;
       font-size: 20px;
-      transition: background-color .3s;
+      transition: background-color 0.3s;
       cursor: pointer;
       &:hover {
         background-color: lighten($secondary, 10%);

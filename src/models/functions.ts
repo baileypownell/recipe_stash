@@ -7,8 +7,8 @@ export const isPasswordValid = (password: string | undefined): boolean => {
     !/([a-z]+)/g.test(password) ||
     !/([0-9]+)/g.test(password)
   ) {
-    return false
+    return false;
   } else {
-    return true
+    return true;
   }
-}
+};

@@ -1,31 +1,39 @@
-import { Button, Menu, MenuItem } from '@mui/material'
-import React from 'react'
-import './MobileRecipeToolbar.scss'
+import { Button, Menu, MenuItem } from '@mui/material';
+import React from 'react';
+import './MobileRecipeToolbar.scss';
 
-export default function MobileRecipeToolbar(props: { width: number, triggerDialog: Function, cloneRecipe: Function }) {
-  const [anchorEl, setAnchorEl] = React.useState(null)
+export default function MobileRecipeToolbar(props: {
+  width: number;
+  triggerDialog: Function;
+  cloneRecipe: Function;
+}) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const triggerDialog = () => {
-    handleClose()
-    props.triggerDialog()
-  }
+    handleClose();
+    props.triggerDialog();
+  };
 
   const cloneRecipe = () => {
-    handleClose()
-    props.cloneRecipe()
-  }
+    handleClose();
+    props.cloneRecipe();
+  };
 
-  return (props.width <= 700
-    ? <div id="recipe-mobile-toolbar">
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+  return props.width <= 700 ? (
+    <div id="recipe-mobile-toolbar">
+      <Button
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
         <i className="fas fa-ellipsis-v"></i>
       </Button>
       <Menu
@@ -39,6 +47,5 @@ export default function MobileRecipeToolbar(props: { width: number, triggerDialo
         <MenuItem onClick={cloneRecipe}>Duplicate</MenuItem>
       </Menu>
     </div>
-    : null
-  )
+  ) : null;
 }

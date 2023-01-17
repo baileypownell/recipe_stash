@@ -2,62 +2,62 @@
 @import '../../../../scss/variables.scss';
 
 .minHeight {
-    min-height: 100px!important;
+  min-height: 100px !important;
 }
 
 .modal-close-buttons {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  @media screen and (min-width: 530px) {
+    flex-direction: row-reverse;
+  }
+  button {
+    margin: 5px;
     @media screen and (min-width: 530px) {
-        flex-direction: row-reverse;
+      margin: 0;
     }
-    button {
-        margin: 5px;
-        @media screen and (min-width: 530px) {
-            margin: 0;
-        }
+  }
+  .edit {
+    display: flex;
+    #cancel {
+      flex-grow: 1;
     }
-    .edit {
-        display: flex;
-        #cancel {
-            flex-grow: 1;
-        }
-    }
+  }
 }
 
 .collapsible {
-    margin-top: 30px!important;
+  margin-top: 30px !important;
 }
 
 .collapsible-header p {
-    margin: 0;
+  margin: 0;
 }
 
 .chip {
-    cursor: pointer!important;
-    transition: all .4s;
-    &:hover {
-        background-color: $orange!important;
-        color: white!important;
-    }
+  cursor: pointer !important;
+  transition: all 0.4s;
+  &:hover {
+    background-color: $orange !important;
+    color: white !important;
+  }
 }
 
 .selectedTag {
-    background-color: $orange!important;
-    color: white!important;
+  background-color: $orange !important;
+  color: white !important;
 }
 
 .collapsible-body {
-    text-align: left!important;
+  text-align: left !important;
 }
 
 .add-button {
-    background-color: $orange!important;
-    margin-bottom: 10px;
-    color: white!important;
-    i {
-        margin-left: 5px;
-    }
+  background-color: $orange !important;
+  margin-bottom: 10px;
+  color: white !important;
+  i {
+    margin-left: 5px;
+  }
 }

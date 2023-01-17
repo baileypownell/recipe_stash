@@ -1,8 +1,8 @@
-import axios from 'axios'
-import { UploadedFileResult } from '../models/images'
-import tag from '../models/tags'
-import { RawRecipe, FullRecipe } from '../../server/recipe'
-import { TileImageSetResponse } from '../../server/file-upload'
+import axios from 'axios';
+import { UploadedFileResult } from '../models/images';
+import tag from '../models/tags';
+import { RawRecipe, FullRecipe } from '../../server/recipe';
+import { TileImageSetResponse } from '../../server/file-upload';
 
 export interface BaseStringAccessibleObjectBoolean {
   [key: string]: boolean;
@@ -18,13 +18,13 @@ export interface BaseStringAccessibleObjectRecipeInterface {
 
 export interface SortedRecipeInterface
   extends BaseStringAccessibleObjectRecipeInterface {
-  breakfast: FullRecipe[]
-  dessert: FullRecipe[]
-  dinner: FullRecipe[]
-  drinks: FullRecipe[]
-  lunch: FullRecipe[]
-  other: FullRecipe[]
-  side_dish: FullRecipe[]
+  breakfast: FullRecipe[];
+  dessert: FullRecipe[];
+  dinner: FullRecipe[];
+  drinks: FullRecipe[];
+  lunch: FullRecipe[];
+  other: FullRecipe[];
+  side_dish: FullRecipe[];
 }
 
 export interface IRecipeTags {
@@ -100,105 +100,118 @@ export interface DefaultTileExisting {
 }
 
 // TO-DO: give this meaning
-export interface ExistingFile { }
+export interface ExistingFile {}
 
 export const RecipeService = {
-  sortByTitle(
-    a: RecipeInput | FullRecipe,
-    b: RecipeInput | FullRecipe
-  ) {
-    return a.rawTitle.localeCompare(b.rawTitle)
+  sortByTitle(a: RecipeInput | FullRecipe, b: RecipeInput | FullRecipe) {
+    return a.rawTitle.localeCompare(b.rawTitle);
   },
 
-  getRecipes: async (): Promise<SortedRecipeInterface | { error: boolean, errorMessage: string }> => {
+  getRecipes: async (): Promise<
+    SortedRecipeInterface | { error: boolean; errorMessage: string }
+  > => {
     try {
-      const recipes = await axios.get('/recipe')
+      const recipes = await axios.get('/recipe');
       for (const category in recipes.data) {
         const sortedCategory = recipes.data[category].sort(
-          RecipeService.sortByTitle
-        )
-        recipes.data[category] = sortedCategory
+          RecipeService.sortByTitle,
+        );
+        recipes.data[category] = sortedCategory;
       }
-      return recipes.data
+      return recipes.data;
     } catch (error) {
-      return { error: true, errorMessage: error }
+      return { error: true, errorMessage: error };
     }
   },
 
   getRecipe: async (recipeId: string): Promise<FullRecipe> => {
-    const recipeResponse = await axios.get(`/recipe/${recipeId}`)
-    return recipeResponse.data
+    const recipeResponse = await axios.get(`/recipe/${recipeId}`);
+    return recipeResponse.data;
   },
 
-  deleteRecipe: async (recipeId: string): Promise<{ recipeDeleted: boolean }> => {
-    return await axios.delete(`/recipe/${recipeId}`)
+  deleteRecipe: async (
+    recipeId: string,
+  ): Promise<{ recipeDeleted: boolean }> => {
+    return await axios.delete(`/recipe/${recipeId}`);
   },
 
   createRecipe: async (
     recipeInput: RecipeInput,
     files: NewFileInterface[],
-    defaultTile: DefaultTile | null
+    defaultTile: DefaultTile | null,
   ): Promise<RawRecipe> => {
     try {
-      const recipeCreated = await axios.post('/recipe', recipeInput)
+      const recipeCreated = await axios.post('/recipe', recipeInput);
       if (files?.length) {
         try {
-          const uploadedImageKeys = await RecipeService.uploadFiles(recipeCreated.data.recipe_uuid, files)
-          const defaultTileImage = uploadedImageKeys.find(key => key.fileName === defaultTile?.fileName)
+          const uploadedImageKeys = await RecipeService.uploadFiles(
+            recipeCreated.data.recipe_uuid,
+            files,
+          );
+          const defaultTileImage = uploadedImageKeys.find(
+            (key) => key.fileName === defaultTile?.fileName,
+          );
 
           if (defaultTileImage) {
             try {
-              await RecipeService.handleDefaultTileImage(recipeCreated.data.recipe_uuid, defaultTileImage.awsKey)
+              await RecipeService.handleDefaultTileImage(
+                recipeCreated.data.recipe_uuid,
+                defaultTileImage.awsKey,
+              );
             } catch (error) {
-              console.log(error)
-              throw (error)
+              console.log(error);
+              throw error;
             }
           }
         } catch (error) {
-          console.log(error)
-          throw (error)
+          console.log(error);
+          throw error;
         }
       }
 
-      return recipeCreated.data
+      return recipeCreated.data;
     } catch (error) {
-      console.log(error)
-      throw (error)
+      console.log(error);
+      throw error;
     }
   },
 
   handleDefaultTileImage: (recipeId: string, awsKey: string) => {
-    return RecipeService.setTileImage(recipeId, awsKey)
+    return RecipeService.setTileImage(recipeId, awsKey);
   },
 
   uploadFiles: async (
     recipeId: string,
-    files: NewFileInterface[]
+    files: NewFileInterface[],
   ): Promise<UploadedFileResult[]> => {
     try {
       return await Promise.all(
         files.map(async (file: NewFileInterface) => {
-          const formData = new FormData()
-          formData.append('image', file.file as any)
+          const formData = new FormData();
+          formData.append('image', file.file as any);
 
           try {
-            const upload = await axios.post(`/file-upload/${recipeId}`, formData, {
-              headers: {
-                'content-type': 'multipart/form-data'
-              }
-            })
+            const upload = await axios.post(
+              `/file-upload/${recipeId}`,
+              formData,
+              {
+                headers: {
+                  'content-type': 'multipart/form-data',
+                },
+              },
+            );
             return {
               awsKey: upload.data.key,
-              fileName: file.file.name
-            }
+              fileName: file.file.name,
+            };
           } catch (error) {
-            console.log('There was an error uploading a file bitch: ', error)
-            throw (error)
+            console.log('There was an error uploading a file bitch: ', error);
+            throw error;
           }
-        })
-      )
+        }),
+      );
     } catch (error) {
-      throw (error)
+      throw error;
     }
   },
 
@@ -208,99 +221,133 @@ export const RecipeService = {
     defaultTile: DefaultTile | string | null, // string if existing image on recipe, not new one
     filesToDeleteKeys: string[],
     recipeId: string,
-    recipe: RecipeInterface
+    recipe: RecipeInterface,
   ): Promise<RawRecipe> => {
-    return axios.put('/recipe', recipeInput)
-      .then(res => {
-        const recipeUpdated: RawRecipe = res.data
-        const uploads: NewFileInterface[] = files
-        const uploading = !!uploads.length
-        const deleting = !!filesToDeleteKeys?.length
+    return axios
+      .put('/recipe', recipeInput)
+      .then((res) => {
+        const recipeUpdated: RawRecipe = res.data;
+        const uploads: NewFileInterface[] = files;
+        const uploading = !!uploads.length;
+        const deleting = !!filesToDeleteKeys?.length;
 
         // bug: uploading and deleting OR just uploading AND setting default image to a PREEXISTING image
         if (uploading && deleting) {
-          return RecipeService.uploadFiles(recipeId, uploads)
-            .then(uploadedImageKeys => {
+          return RecipeService.uploadFiles(recipeId, uploads).then(
+            (uploadedImageKeys) => {
               return RecipeService.deleteFiles(filesToDeleteKeys)
                 .then(() => {
                   if (defaultTile) {
-                    let awsKey: string
-                    if (uploadedImageKeys.find(obj => obj.fileName === (defaultTile as DefaultTile).fileName)) {
-                      awsKey = uploadedImageKeys.find(obj => obj.fileName === (defaultTile as DefaultTile).fileName).awsKey
+                    let awsKey: string;
+                    if (
+                      uploadedImageKeys.find(
+                        (obj) =>
+                          obj.fileName ===
+                          (defaultTile as DefaultTile).fileName,
+                      )
+                    ) {
+                      awsKey = uploadedImageKeys.find(
+                        (obj) =>
+                          obj.fileName ===
+                          (defaultTile as DefaultTile).fileName,
+                      ).awsKey;
                     } else {
-                      awsKey = defaultTile as string
+                      awsKey = defaultTile as string;
                     }
-                    return RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey).then(() => recipeUpdated)
+                    return RecipeService.setTileImage(
+                      recipeUpdated.recipe_uuid,
+                      awsKey,
+                    ).then(() => recipeUpdated);
                   } else if (recipe.defaultTileImageKey) {
-                    return RecipeService.removeTileImage(recipeId).then(() => recipeUpdated)
+                    return RecipeService.removeTileImage(recipeId).then(
+                      () => recipeUpdated,
+                    );
                   } else {
-                    return recipeUpdated
+                    return recipeUpdated;
                   }
                 })
-                .catch(e => e)
-            })
+                .catch((e) => e);
+            },
+          );
         } else if (uploading) {
           return RecipeService.uploadFiles(recipeId, uploads)
-            .then(uploadedImageKeys => {
+            .then((uploadedImageKeys) => {
               if (defaultTile) {
-                let awsKey: string
-                if (uploadedImageKeys.find(obj => obj.fileName === (defaultTile as DefaultTile).fileName)) {
-                  awsKey = uploadedImageKeys.find(obj => obj.fileName === (defaultTile as DefaultTile).fileName).awsKey
+                let awsKey: string;
+                if (
+                  uploadedImageKeys.find(
+                    (obj) =>
+                      obj.fileName === (defaultTile as DefaultTile).fileName,
+                  )
+                ) {
+                  awsKey = uploadedImageKeys.find(
+                    (obj) =>
+                      obj.fileName === (defaultTile as DefaultTile).fileName,
+                  ).awsKey;
                 } else {
-                  awsKey = defaultTile as string
+                  awsKey = defaultTile as string;
                 }
-                return RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey).then(() => recipeUpdated)
+                return RecipeService.setTileImage(
+                  recipeUpdated.recipe_uuid,
+                  awsKey,
+                ).then(() => recipeUpdated);
               } else if (recipe.defaultTileImageKey) {
-                return RecipeService.removeTileImage(recipeId).then(() => recipeUpdated)
+                return RecipeService.removeTileImage(recipeId).then(
+                  () => recipeUpdated,
+                );
               } else {
-                return recipeUpdated
+                return recipeUpdated;
               }
             })
-            .catch(e => e)
+            .catch((e) => e);
         } else if (deleting) {
-          return RecipeService.deleteFiles(filesToDeleteKeys)
-            .then(() => {
-              if (defaultTile) {
-                return RecipeService.setTileImage(recipeId, defaultTile)
-                  .then(() => recipeUpdated)
-              } else if (recipe.defaultTileImageKey) {
-                return RecipeService.removeTileImage(recipeId)
-                  .then(() => recipeUpdated)
-              } else {
-                return recipeUpdated
-              }
-            })
+          return RecipeService.deleteFiles(filesToDeleteKeys).then(() => {
+            if (defaultTile) {
+              return RecipeService.setTileImage(recipeId, defaultTile).then(
+                () => recipeUpdated,
+              );
+            } else if (recipe.defaultTileImageKey) {
+              return RecipeService.removeTileImage(recipeId).then(
+                () => recipeUpdated,
+              );
+            } else {
+              return recipeUpdated;
+            }
+          });
         } else {
           if (defaultTile) {
             return RecipeService.setTileImage(recipeId, defaultTile)
               .then(() => recipeUpdated)
-              .catch(e => e)
+              .catch((e) => e);
           } else if (recipe.defaultTileImageKey) {
             return RecipeService.removeTileImage(recipeId)
               .then(() => recipeUpdated)
-              .catch(e => e)
+              .catch((e) => e);
           } else {
-            return recipeUpdated
+            return recipeUpdated;
           }
         }
       })
-      .catch(e => e)
+      .catch((e) => e);
   },
 
   deleteFiles: async (filesToDeleteKeys: string[]) => {
     return await Promise.all(
       filesToDeleteKeys.map(async (url) => {
-        const key = url.split('amazonaws.com/')[1].split('?')[0]
-        return await axios.delete(`/file-upload/${key}`)
-      })
-    )
+        const key = url.split('amazonaws.com/')[1].split('?')[0];
+        return await axios.delete(`/file-upload/${key}`);
+      }),
+    );
   },
 
   removeTileImage: async (recipeId: string): Promise<TileImageSetResponse> => {
-    return axios.delete(`file-upload/tile-image/${recipeId}`)
+    return axios.delete(`file-upload/tile-image/${recipeId}`);
   },
 
-  setTileImage: async (recipeId: string, awsKey: string): Promise<TileImageSetResponse> => {
-    return axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`)
-  }
-}
+  setTileImage: async (
+    recipeId: string,
+    awsKey: string,
+  ): Promise<TileImageSetResponse> => {
+    return axios.post(`/file-upload/tile-image/${awsKey}/${recipeId}`);
+  },
+};

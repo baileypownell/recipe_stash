@@ -1,66 +1,66 @@
-import axios from 'axios'
-import { QueryCache } from 'react-query'
-import { queryClient } from '../components/App/App'
+import axios from 'axios';
+import { QueryCache } from 'react-query';
+import { queryClient } from '../components/App/App';
 
 const AuthenticationService = {
   setUserLoggedIn: (): void => {
-    window.localStorage.setItem('user_logged_in', 'true')
+    window.localStorage.setItem('user_logged_in', 'true');
   },
 
   setUserLoggedOut: (): void => {
-    window.localStorage.removeItem('user_logged_in')
+    window.localStorage.removeItem('user_logged_in');
   },
 
   authenticated: (): boolean => {
-    return !!window.localStorage.getItem('user_logged_in')
+    return !!window.localStorage.getItem('user_logged_in');
   },
 
   verifyUserSession: async (): Promise<any> => {
-    return await axios.get('/auth')
+    return await axios.get('/auth');
   },
 
   signInWithGoogle: async (tokenId: string): Promise<any> => {
     return await axios.post('/signin-with-google', {
-      token: tokenId
-    })
+      token: tokenId,
+    });
   },
 
   signIn: async (password: string, email: string): Promise<any> => {
     return await axios.post('/signin', {
       password,
-      email
-    })
+      email,
+    });
   },
 
   logout: async (): Promise<any> => {
-    queryClient.clear()
-    return await axios.get('/logout')
+    queryClient.clear();
+    return await axios.get('/logout');
   },
 
   getPasswordResetLink: async (email: string): Promise<any> => {
-    return await axios.post('/send-reset-email', { email })
+    return await axios.post('/send-reset-email', { email });
   },
 
   updatePassword: async (
     password: string,
     token: string,
-    email: string
+    email: string,
   ): Promise<any> => {
     const updatePasswordResult = await axios.put('/user/reset-password', {
       password,
-      reset_password_token: token
-    })
-    const res = await AuthenticationService.signIn(password, email)
+      reset_password_token: token,
+    });
+    const res = await AuthenticationService.signIn(password, email);
     if (res.data.success) {
-      AuthenticationService.setUserLoggedIn()
+      AuthenticationService.setUserLoggedIn();
     }
 
-    return updatePasswordResult
+    return updatePasswordResult;
   },
 
   verifyEmailResetToken: async (token: string): Promise<any> => {
-    return await axios.get(`/send-reset-email/${token}`)
-  }
-}
+    return await axios.get(`/send-reset-email/${token}`);
+  },
+};
 
-export default AuthenticationService
+export default AuthenticationService;

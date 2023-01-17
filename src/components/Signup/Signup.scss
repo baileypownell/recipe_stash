@@ -1,15 +1,14 @@
- @import '../../scss/mixins.scss';
+@import '../../scss/mixins.scss';
 
 .auth {
   @include auth;
   label {
-    color: white!important;
+    color: white !important;
   }
 }
 
 .disabled {
-  opacity: .8;
-  cursor: default!important;
-  transition: none!important;
+  opacity: 0.8;
+  cursor: default !important;
+  transition: none !important;
 }
-

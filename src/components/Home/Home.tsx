@@ -1,18 +1,17 @@
-
-import { Box, Button, Fade } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
-import mobileView from '../../images/mobile_dashboard.png'
-import transparentLogo from '../../images/white-text-transparent.svg'
-import './Home.scss'
+import { Box, Button, Fade } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import mobileView from '../../images/mobile_dashboard.png';
+import transparentLogo from '../../images/white-text-transparent.svg';
+import './Home.scss';
 
 const Home = (props: any) => {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => setVisible(true), 500)
-  }, [])
+    setTimeout(() => setVisible(true), 500);
+  }, []);
 
   return (
     <Box id="home">
@@ -29,15 +28,23 @@ const Home = (props: any) => {
             </Box>
             <Box id="phone-image">
               <img src={mobileView} alt="whisk" />
-              <Button variant="contained" color="secondary" onClick={() => navigate('/recipes')}>
-                Get Started <i className="fas fa-arrow-circle-right" style={{ marginLeft: '8px' }}></i>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => navigate('/recipes')}
+              >
+                Get Started{' '}
+                <i
+                  className="fas fa-arrow-circle-right"
+                  style={{ marginLeft: '8px' }}
+                ></i>
               </Button>
             </Box>
           </Box>
         </Fade>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

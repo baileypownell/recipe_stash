@@ -32,13 +32,15 @@
     @include flexRow;
     justify-content: space-between;
     align-items: center;
-      i {
-        color: $secondary;
-        font-size: 60px;
-        padding-right: 15px;
-      }
+    i {
+      color: $secondary;
+      font-size: 60px;
+      padding-right: 15px;
+    }
   }
-  h2, h3, p {
+  h2,
+  h3,
+  p {
     color: $secondary;
   }
   .row {
@@ -68,12 +70,12 @@
 }
 
 #delete {
-  background-color: $primary!important;
+  background-color: $primary !important;
 }
 
 .MuiAccordionDetails-root {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .MuiAccordionSummary-content i {

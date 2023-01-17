@@ -25,63 +25,63 @@
   flex-direction: column;
 }
 
-@mixin boxShadow { 
+@mixin boxShadow {
   box-shadow: 5px 1px 30px #868686;
 }
 
 @mixin auth {
-    background-image: url('../../images/ingredients.jpg');
-    background-size:cover;
-    background-position: center;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .error {
-      background-color: $orange;
-      padding: 10px;
-      border-radius: 5px;
-      margin: 5px auto;
-      font-size: 16px;
-      color: $white;
-      @include tablet {
-        margin-top: 10px;
-        width: 100%;
+  background-image: url('../../images/ingredients.jpg');
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .error {
+    background-color: $orange;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px auto;
+    font-size: 16px;
+    color: $white;
+    @include tablet {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+  form {
+    @include flexColumn;
+    margin: 0 auto;
+    padding: 5vw;
+    border-radius: 0px;
+    background-color: $secondary;
+    box-shadow: 0px 10px 30px $secondary;
+    border-radius: 10px;
+    padding: 40px;
+    > div {
+      padding: 10px 0;
+    }
+    label {
+      color: white !important;
+    }
+    input {
+      color: white !important;
+    }
+    p:not(.MuiFormHelperText-root.Mui-error) {
+      font-size: 20px;
+    }
+    .link {
+      color: $green;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .googleButton {
+      width: 225px !important;
+      background-color: white !important;
+      &:hover {
+        background-color: darken(white, 15%) !important;
       }
     }
-    form {
-      @include flexColumn;
-      margin: 0 auto;
-      padding: 5vw;
-      border-radius: 0px;
-      background-color: $secondary;
-      box-shadow: 0px 10px 30px $secondary;
-      border-radius: 10px;
-      padding: 40px;
-      > div {
-        padding: 10px 0;
-      }
-      label {
-        color: white!important;
-      }
-      input {
-        color: white!important;
-      }
-      p:not(.MuiFormHelperText-root.Mui-error) {
-        font-size: 20px;
-      }
-      .link {
-        color: $green;
-        font-weight: bold;
-        cursor: pointer;
-        text-decoration: underline;
-      }
-      .googleButton {
-        width: 225px!important;
-        background-color: white!important;
-        &:hover {
-          background-color: darken(white, 15%)!important;
-        }
-      }
-    }
+  }
 }

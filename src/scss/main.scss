@@ -1,4 +1,3 @@
-
 @import './mixins.scss';
 @import './variables.scss';
 
@@ -19,26 +18,27 @@ body {
 }
 
 label {
-  color: $secondary!important;
+  color: $secondary !important;
 }
 
-.dropdown-content li > a, .dropdown-content li > span {
-  color: $secondary!important;
+.dropdown-content li > a,
+.dropdown-content li > span {
+  color: $secondary !important;
 }
 
 .chip {
-  margin: 8px 2px!important;
+  margin: 8px 2px !important;
 }
 
 .auth {
   .input-field input {
-    border-bottom: 1px solid white!important;
+    border-bottom: 1px solid white !important;
   }
 }
 
 .quill {
   button {
-    background-color: transparent!important;
+    background-color: transparent !important;
   }
   .select-wrapper {
     display: none;
@@ -58,12 +58,12 @@ button {
   justify-content: center;
 }
 
-
 .spinner-layer {
-  border-color: white!important;
+  border-color: white !important;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -73,8 +73,8 @@ html, body {
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
-      'header'
-      'main';
+    'header'
+    'main';
 }
 
 #confirmation-modal {

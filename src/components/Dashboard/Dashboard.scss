@@ -1,6 +1,4 @@
-
 @import '../../scss/mixins.scss';
-
 
 .title-bar {
   background-color: $green;
@@ -17,14 +15,12 @@
   }
 }
 
-
 .dashboard {
   .BounceLoader {
     @include flexColumn;
     align-items: center;
     height: 100vh;
     justify-content: center;
-
   }
   width: 90%;
   margin: 0 auto;
@@ -65,14 +61,14 @@
       background-position: center;
       margin-right: 10px;
       margin-bottom: 10px;
-      color: 	$primary;
+      color: $primary;
       @include flexColumn;
       justify-content: center;
       align-items: center;
       border-radius: 5px;
       border: 2px solid $primary;
       cursor: pointer;
-      transition: background-color .5s;
+      transition: background-color 0.5s;
       &:hover {
         background-color: $primary-transparent;
         i {
@@ -86,7 +82,7 @@
       > i {
         color: $white;
         font-size: 50px;
-        transition: all .4s;
+        transition: all 0.4s;
       }
     }
   }
@@ -116,11 +112,11 @@
 }
 
 .dropdown-content li {
-  min-height: 35px!important;
+  min-height: 35px !important;
 }
 
 .category {
-  transition: all .4s;
+  transition: all 0.4s;
   padding: 10px 0;
 }
 
@@ -134,5 +130,5 @@
 
 .dashboard .recipeBox .red-background:hover {
   color: white;
-  background-color: $secondary!important;
+  background-color: $secondary !important;
 }

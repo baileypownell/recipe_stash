@@ -4,7 +4,7 @@ module.exports = {
   host: 'localhost',
   database: 'visual_cookbook',
   password: 'node_password',
-  port: 5432
+  port: 5432,
 };
 
 // for production

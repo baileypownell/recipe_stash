@@ -1,25 +1,34 @@
-import { Box, Button, Checkbox, Divider, Menu, MenuItem, Stack, Typography } from '@mui/material'
-import React from 'react'
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
+import React from 'react';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 
 export default function FilterMenu(props: {
-  numberOfSelectedFilters: number,
-  filters: any[],
-  categories: any[],
-  appliedFilt: any,
-  appliedCat: any,
-  filter: Function,
-  filterByCategory: Function
+  numberOfSelectedFilters: number;
+  filters: any[];
+  categories: any[];
+  appliedFilt: any;
+  appliedCat: any;
+  filter: Function;
+  filterByCategory: Function;
 }) {
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -29,16 +38,23 @@ export default function FilterMenu(props: {
           color: '#353531',
           '&:hover': {
             backgroundColor: 'white',
-          }
+          },
         }}
         aria-controls="menu"
         aria-haspopup="true"
-        onClick={handleClick}>
+        onClick={handleClick}
+      >
         <Stack direction="row" alignItems="center">
-          <Typography variant="body2" sx={{ marginRight: '20px' }}>Filter</Typography>
-          {props.numberOfSelectedFilters > 0
-            ? <Typography variant="body2">({props.numberOfSelectedFilters})</Typography>
-            : <FilterListRoundedIcon />}
+          <Typography variant="body2" sx={{ marginRight: '20px' }}>
+            Filter
+          </Typography>
+          {props.numberOfSelectedFilters > 0 ? (
+            <Typography variant="body2">
+              ({props.numberOfSelectedFilters})
+            </Typography>
+          ) : (
+            <FilterListRoundedIcon />
+          )}
         </Stack>
       </Button>
       <Menu
@@ -46,11 +62,22 @@ export default function FilterMenu(props: {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}>
+        onClose={handleClose}
+      >
         <Stack direction="row" spacing={2} minWidth="200px">
           <Box>
-            <Stack padding="10px" direction="row" justifyContent="space-between">
-              <Typography variant="body1" sx={{ fontWeight: 'bold', padding: '0!important' }}>Features</Typography><FilterListRoundedIcon />
+            <Stack
+              padding="10px"
+              direction="row"
+              justifyContent="space-between"
+            >
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 'bold', padding: '0!important' }}
+              >
+                Features
+              </Typography>
+              <FilterListRoundedIcon />
             </Stack>
             <Divider />
             {props.filters.map((item, index) => {
@@ -60,8 +87,14 @@ export default function FilterMenu(props: {
                   sx={{
                     paddingRight: 0,
                   }}
-                  onClick={() => props.filter(item.key)}>
-                  <Stack justifyContent="space-between" alignItems="center" direction="row" width="100%">
+                  onClick={() => props.filter(item.key)}
+                >
+                  <Stack
+                    justifyContent="space-between"
+                    alignItems="center"
+                    direction="row"
+                    width="100%"
+                  >
                     {item.name}
                     <Checkbox
                       checked={props.appliedFilt[item.key]}
@@ -70,13 +103,22 @@ export default function FilterMenu(props: {
                     />
                   </Stack>
                 </MenuItem>
-              )
+              );
             })}
           </Box>
 
           <Box>
-            <Stack padding="10px" direction="row" justifyContent="space-between">
-              <Typography variant="body1" sx={{ fontWeight: 'bold', padding: '0!important' }}>Categories</Typography>
+            <Stack
+              padding="10px"
+              direction="row"
+              justifyContent="space-between"
+            >
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 'bold', padding: '0!important' }}
+              >
+                Categories
+              </Typography>
               <FilterListRoundedIcon />
             </Stack>
             <Divider />
@@ -87,20 +129,27 @@ export default function FilterMenu(props: {
                   sx={{
                     paddingRight: 0,
                   }}
-                  onClick={() => props.filterByCategory(item.key)}>
-                  <Stack justifyContent="space-between" alignItems="center" direction="row" width="100%">
+                  onClick={() => props.filterByCategory(item.key)}
+                >
+                  <Stack
+                    justifyContent="space-between"
+                    alignItems="center"
+                    direction="row"
+                    width="100%"
+                  >
                     {item.name}
                     <Checkbox
                       checked={props.appliedCat[item.key]}
                       id={item.key}
-                      inputProps={{ 'aria-label': 'primary checkbox' }} />
+                      inputProps={{ 'aria-label': 'primary checkbox' }}
+                    />
                   </Stack>
                 </MenuItem>
-              )
+              );
             })}
           </Box>
         </Stack>
       </Menu>
     </>
-  )
+  );
 }

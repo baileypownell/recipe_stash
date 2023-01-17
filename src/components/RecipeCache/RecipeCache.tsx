@@ -1,29 +1,34 @@
-
-import { Snackbar } from '@mui/material'
-import React, { useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
-import { Route, Routes, useParams } from 'react-router-dom'
-import BounceLoader from 'react-spinners/BounceLoader'
-import { FullRecipe, RawRecipe } from '../../../server/recipe'
-import { DefaultTile, NewFileInterface, RecipeInput, RecipeService, SortedRecipeInterface } from '../../services/recipe-services'
-import { queryClient } from '../App/App'
-import Dashboard from '../Dashboard/Dashboard'
-import Recipe from '../Recipe/Recipe'
+import { Snackbar } from '@mui/material';
+import React, { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { Route, Routes, useParams } from 'react-router-dom';
+import BounceLoader from 'react-spinners/BounceLoader';
+import { FullRecipe, RawRecipe } from '../../../server/recipe';
+import {
+  DefaultTile,
+  NewFileInterface,
+  RecipeInput,
+  RecipeService,
+  SortedRecipeInterface,
+} from '../../services/recipe-services';
+import { queryClient } from '../App/App';
+import Dashboard from '../Dashboard/Dashboard';
+import Recipe from '../Recipe/Recipe';
 
 export interface MealCategoriesType {
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  side_dish: 'Side Dish',
-  dessert: 'Dessert',
-  drinks: 'Drinks',
-  other: 'Other',
+  breakfast: 'Breakfast';
+  lunch: 'Lunch';
+  dinner: 'Dinner';
+  side_dish: 'Side Dish';
+  dessert: 'Dessert';
+  drinks: 'Drinks';
+  other: 'Other';
 }
 
 export interface AddRecipeMutationParam {
-  recipeInput: RecipeInput,
-  files: NewFileInterface[],
-  defaultTile: DefaultTile | null
+  recipeInput: RecipeInput;
+  files: NewFileInterface[];
+  defaultTile: DefaultTile | null;
 }
 
 enum RecipeCategories {
@@ -33,129 +38,164 @@ enum RecipeCategories {
   Breakfast = 'Breakfast',
   Drinks = 'Drinks',
   SideDish = 'Side Dish',
-  Dinner = 'Dinner'
+  Dinner = 'Dinner',
 }
 
 const determineRecipeCategory = (recipeCategory: string): string => {
   if (recipeCategory === RecipeCategories.Other) {
-    return 'other'
+    return 'other';
   } else if (recipeCategory === RecipeCategories.Lunch) {
-    return 'lunch'
+    return 'lunch';
   } else if (recipeCategory === RecipeCategories.Dessert) {
-    return 'dessert'
+    return 'dessert';
   } else if (recipeCategory === RecipeCategories.Breakfast) {
-    return 'breakfast'
+    return 'breakfast';
   } else if (recipeCategory === RecipeCategories.Drinks) {
-    return 'drinks'
+    return 'drinks';
   } else if (recipeCategory === RecipeCategories.SideDish) {
-    return 'side_dish'
+    return 'side_dish';
   } else if (recipeCategory === RecipeCategories.Dinner) {
-    return 'dinner'
+    return 'dinner';
   }
-}
+};
 
 const RecipeCache = () => {
-  const { mutateAsync } = useMutation('recipes', async (recipeInput: AddRecipeMutationParam) => {
-    try {
-      const newRecipe: RawRecipe = await RecipeService.createRecipe(
-        recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile
-      )
-      const recipe: FullRecipe = await RecipeService.getRecipe(newRecipe.recipe_uuid)
-      return recipe
-    } catch (err) {
-      console.log(err)
-    }
-  }, {
-    onSuccess: (newRecipe: FullRecipe) => {
-      queryClient.setQueryData('recipes', (currentRecipes: SortedRecipeInterface) => {
-        const recipeCategory: string = newRecipe.category || determineRecipeCategory(newRecipe.category)
-        const updatedQueryState = {
-          ...currentRecipes,
-          [recipeCategory]: [...currentRecipes[recipeCategory], newRecipe].sort(RecipeService.sortByTitle)
-        }
-        return updatedQueryState
-      })
-    },
-    onError: (error) => {
-      console.log('Recipe could not be created: ', error);
-    }
-  })
-
-  const { refetch, isLoading, error, data } = useQuery('recipes', async () => {
-    try {
-      const result: SortedRecipeInterface | { error: boolean, errorMessage: string } = await RecipeService.getRecipes()
-      if (result.error) {
-        return null
-      } else {
-        return result
+  const { mutateAsync } = useMutation(
+    'recipes',
+    async (recipeInput: AddRecipeMutationParam) => {
+      try {
+        const newRecipe: RawRecipe = await RecipeService.createRecipe(
+          recipeInput.recipeInput,
+          recipeInput.files,
+          recipeInput.defaultTile,
+        );
+        const recipe: FullRecipe = await RecipeService.getRecipe(
+          newRecipe.recipe_uuid,
+        );
+        return recipe;
+      } catch (err) {
+        console.log(err);
       }
-    } catch (error) {
-      return error
-    }
-  }, {
-    staleTime: Infinity
-  })
+    },
+    {
+      onSuccess: (newRecipe: FullRecipe) => {
+        queryClient.setQueryData(
+          'recipes',
+          (currentRecipes: SortedRecipeInterface) => {
+            const recipeCategory: string =
+              newRecipe.category || determineRecipeCategory(newRecipe.category);
+            const updatedQueryState = {
+              ...currentRecipes,
+              [recipeCategory]: [
+                ...currentRecipes[recipeCategory],
+                newRecipe,
+              ].sort(RecipeService.sortByTitle),
+            };
+            return updatedQueryState;
+          },
+        );
+      },
+      onError: (error) => {
+        console.log('Recipe could not be created: ', error);
+      },
+    },
+  );
+
+  const { refetch, isLoading, error, data } = useQuery(
+    'recipes',
+    async () => {
+      try {
+        const result:
+          | SortedRecipeInterface
+          | { error: boolean; errorMessage: string } =
+          await RecipeService.getRecipes();
+        if (result.error) {
+          return null;
+        } else {
+          return result;
+        }
+      } catch (error) {
+        return error;
+      }
+    },
+    {
+      staleTime: Infinity,
+    },
+  );
 
   const fetchRecipes = async () => {
-    const result = await refetch()
-    return result.data
-  }
+    const result = await refetch();
+    return result.data;
+  };
 
-  const [snackBarOpen, setSnackBarOpen] = useState(false)
-  const [snackBarMessage, setSnackBarMessage] = useState('')
-  const params = useParams()
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState('');
+  const params = useParams();
 
   const openSnackBar = (message: string) => {
-    setSnackBarOpen(true)
-    setSnackBarMessage(message)
-  }
+    setSnackBarOpen(true);
+    setSnackBarMessage(message);
+  };
 
   const closeSnackBar = () => {
-    setSnackBarMessage('')
-    setSnackBarOpen(false)
-  }
+    setSnackBarMessage('');
+    setSnackBarOpen(false);
+  };
 
   if (isLoading) {
-    return <div className="BounceLoader">
-      <BounceLoader
-        size={100}
-        color={'#689943'}
-      />
-    </div>
+    return (
+      <div className="BounceLoader">
+        <BounceLoader size={100} color={'#689943'} />
+      </div>
+    );
   }
 
   if (params.id) {
     return (
       <Recipe
         openSnackBar={openSnackBar}
-        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />
-    )
+        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
+          await mutateAsync(recipeInput)
+        }
+      />
+    );
   } else {
     return (
       <>
         <Routes>
-          <Route path=":id" element={<Recipe
-            openSnackBar={openSnackBar}
-            addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />}
+          <Route
+            path=":id"
+            element={
+              <Recipe
+                openSnackBar={openSnackBar}
+                addRecipeMutation={async (
+                  recipeInput: AddRecipeMutationParam,
+                ) => await mutateAsync(recipeInput)}
+              />
+            }
           />
         </Routes>
         <Dashboard
           recipes={data}
           fetchRecipes={() => fetchRecipes()}
-          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) => await mutateAsync(recipeInput)} />
+          addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
+            await mutateAsync(recipeInput)
+          }
+        />
         <Snackbar
           open={snackBarOpen}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'center'
+            horizontal: 'center',
           }}
           onClose={closeSnackBar}
           autoHideDuration={3000}
           message={snackBarMessage}
-          key={'bottom' + 'center'} />
+          key={'bottom' + 'center'}
+        />
       </>
-    )
+    );
   }
-}
+};
 
-export default RecipeCache
+export default RecipeCache;

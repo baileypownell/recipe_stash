@@ -1,4 +1,4 @@
- @import '../../scss/mixins.scss';
+@import '../../scss/mixins.scss';
 
 .auth {
   @include auth;
@@ -6,7 +6,11 @@
 
 .gradient {
   height: 100%;
-  background: linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22));
+  background: linear-gradient(
+    120deg,
+    rgba(255, 68, 68, 0.826),
+    rgba(221, 114, 68, 0.22)
+  );
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -26,10 +30,10 @@
 }
 
 .googleButton {
-  width: 225px!important;
-  background-color: white!important;
+  width: 225px !important;
+  background-color: white !important;
   span {
     margin: 0 auto;
-    font-weight: bold!important;
+    font-weight: bold !important;
   }
 }

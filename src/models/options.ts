@@ -10,7 +10,7 @@ const options = [
   { value: 'dessert', label: 'Dessert' },
   { value: 'side_dish', label: 'Side Dish' },
   { value: 'drinks', label: 'Drinks' },
-  { value: 'other', label: 'Other' }
-]
+  { value: 'other', label: 'Other' },
+];
 
-export default options
+export default options;
