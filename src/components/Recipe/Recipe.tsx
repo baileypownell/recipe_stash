@@ -4,7 +4,7 @@ import BounceLoader from 'react-spinners/BounceLoader';
 import { BehaviorSubject } from 'rxjs';
 import { tags as recipeTags } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
-import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar';
+import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar';
 import './Recipe.scss';

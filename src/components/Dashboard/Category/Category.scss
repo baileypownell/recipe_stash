@@ -1,0 +1,61 @@
+@import '../../../scss/mixins.scss';
+@import '../../../scss/variables.scss';
+
+.recipeBox {
+  @include flexRow;
+  #breakfast {
+    background-image: url('../../../images/french_toast.jpg');
+  }
+  #lunch {
+    background-image: url('../../../images/lunch.jpg');
+  }
+  #dinner {
+    background-image: url('../../../images/pizza.jpg');
+  }
+  #side_dish {
+    background-image: url('../../../images/asparagus.jpg');
+  }
+  #drinks {
+    background-image: url('../../../images/drinks.jpg');
+  }
+  #dessert {
+    background-image: url('../../../images/dessert.jpg');
+  }
+  #other {
+    background-image: url('../../../images/bread.jpg');
+  }
+  .addRecipe {
+    @include boxShadow;
+    width: 120px;
+    height: 120px;
+    background-color: lighten($primary-transparent, 20%);
+    background-blend-mode: overlay;
+    background-size: cover;
+    background-position: center;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    color: $primary;
+    @include flexColumn;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: 2px solid $primary;
+    cursor: pointer;
+    transition: background-color 0.5s;
+    &:hover {
+      background-color: $primary-transparent;
+      i {
+        transform: scale(1.15);
+      }
+    }
+    @include tablet {
+      width: 175px;
+      height: 100px;
+    }
+    > i {
+      color: $white;
+      font-size: 50px;
+      transition: all 0.4s;
+    }
+  }
+}

@@ -4,21 +4,21 @@ import Skeleton from 'react-loading-skeleton';
 import { useNavigate } from 'react-router';
 import './Square.scss';
 
-interface Props {
+interface SquareProps {
   key: string;
   rawTitle: string;
   awsUrl: string;
   recipeId: string;
 }
 
-const Square = (props: Props) => {
+const Square = ({ key, rawTitle, awsUrl, recipeId }: SquareProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [skeletonWidth, setSkeletonWidth] = useState(120);
   const [skeletonHeight, setSkeletonHeight] = useState(120);
   const navigate = useNavigate();
 
   const viewRecipe = () => {
-    navigate(`/recipes/${props.recipeId}`);
+    navigate(`/recipes/${recipeId}`);
   };
 
   const handleWindowSizeChange = () => {
@@ -43,7 +43,6 @@ const Square = (props: Props) => {
 
   // a <Square/> should not render until the background image (if there is one) is fully loaded
   // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
-  const { rawTitle, awsUrl } = props;
   return (
     <>
       {awsUrl ? (

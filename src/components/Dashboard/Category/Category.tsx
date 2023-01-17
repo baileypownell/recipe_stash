@@ -1,7 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import { FullRecipe } from '../../../../server/recipe';
 import { GridView } from '../Dashboard';
-import ListItem from './ListItem/ListItem';
+import './Category.scss';
+import ListItem from './ListItem';
 import RecipeDialog, { Mode } from './RecipeDialog/RecipeDialog';
 import Square from './Square/Square';
 
@@ -15,7 +16,7 @@ type Props = {
 };
 
 const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
-  <Box className="category">
+  <Box>
     <Typography variant="h6" sx={{ marginBottom: 1 }}>
       {title}
     </Typography>

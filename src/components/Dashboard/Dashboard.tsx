@@ -8,7 +8,7 @@ import {
   InputAdornment,
   Stack,
   TextField,
-  Typography,
+  useTheme,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { BehaviorSubject, combineLatest } from 'rxjs';
@@ -19,9 +19,8 @@ import {
   SortedRecipeInterface,
 } from '../../services/recipe-services';
 import { queryClient } from '../App';
-import { AddRecipeMutationParam } from '../RecipeCache/RecipeCache';
+import { AddRecipeMutationParam } from '../RecipeCache';
 import Category from './Category/Category';
-import './Dashboard.scss';
 import FilterMenu from './FilterMenu';
 
 export enum GridView {
@@ -124,6 +123,7 @@ const Dashboard = (props: Props) => {
   const [filteredRecipes, setFilteredRecipes] = useState(null);
   const [gridView, setGridView] = useState(GridView.Grid);
   const [selectedFiltersNum, setSelectedFiltersNum] = useState(0);
+  const theme = useTheme();
 
   const addRecipe = async (recipeInput: AddRecipeMutationParam) => {
     await props.addRecipeMutation(recipeInput);
@@ -293,47 +293,58 @@ const Dashboard = (props: Props) => {
 
   return (
     <Box>
-      <Box className="title-bar">
-        <Box>
-          <Typography variant="h5">Recipe Box</Typography>
-          <Stack direction="row" alignItems="center">
-            <TextField
-              label="Find a recipe"
-              variant="filled"
-              onChange={handleSearchChange}
-              value={userInputSubject.getValue()}
-              sx={{
-                m: 1,
-                width: '25ch',
-                input: {
-                  color: 'white',
-                },
-                'label, svg': {
-                  color: 'white!important',
-                },
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchRoundedIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <FilterMenu
-              numberOfSelectedFilters={selectedFiltersNum}
-              filters={filterArray}
-              appliedFilt={appliedFilt}
-              appliedCat={appliedCat}
-              filter={filter}
-              filterByCategory={filterByCategory}
-              categories={filterCategoryArray}
-            />
-          </Stack>
-        </Box>
+      <Box sx={{ backgroundColor: theme.palette.secondary.main }} padding={1}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <TextField
+            label="Find a recipe"
+            variant="filled"
+            size="small"
+            onChange={handleSearchChange}
+            value={userInputSubject.getValue()}
+            sx={{
+              m: 1,
+              width: '25ch',
+              input: {
+                color: 'white',
+              },
+              'label, svg': {
+                color: 'white!important',
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchRoundedIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <FilterMenu
+            numberOfSelectedFilters={selectedFiltersNum}
+            filters={filterArray}
+            appliedFilt={appliedFilt}
+            appliedCat={appliedCat}
+            filter={filter}
+            filterByCategory={filterByCategory}
+            categories={filterCategoryArray}
+          />
+        </Stack>
       </Box>
 
-      <Box className="dashboard">
+      <Box
+        sx={{
+          margin: '0 auto',
+          width: '90%',
+          padding: '25px 0',
+          [theme.breakpoints.up('lg')]: {
+            padding: '2vw 0',
+          },
+        }}
+      >
         <IconButton color="gray" onClick={() => toggleView(GridView.List)}>
           <TableRowsRoundedIcon />
         </IconButton>
@@ -356,7 +367,7 @@ const Dashboard = (props: Props) => {
                     ]
                   }
                   addRecipe={addRecipe}
-                ></Category>
+                />
               </Collapse>
             ))
           : null}

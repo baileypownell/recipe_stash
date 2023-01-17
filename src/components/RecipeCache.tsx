@@ -1,19 +1,19 @@
 import { Snackbar } from '@mui/material';
+import { queryClient } from './App';
+import Dashboard from './Dashboard/Dashboard';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
 import BounceLoader from 'react-spinners/BounceLoader';
-import { FullRecipe, RawRecipe } from '../../../server/recipe';
+import Recipe from './Recipe/Recipe';
+import { FullRecipe, RawRecipe } from '../../server/recipe';
 import {
   DefaultTile,
   NewFileInterface,
   RecipeInput,
   RecipeService,
   SortedRecipeInterface,
-} from '../../services/recipe-services';
-import { queryClient } from '../App';
-import Dashboard from '../Dashboard/Dashboard';
-import Recipe from '../Recipe/Recipe';
+} from '../services/recipe-services';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';

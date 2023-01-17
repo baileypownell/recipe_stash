@@ -15,21 +15,20 @@ import {
   Stack,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { Field, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import { isPasswordValid } from '../../models/functions';
-import AuthenticationService from '../../services/auth-service';
+import { isPasswordValid } from '../models/functions';
+import AuthenticationService from '../services/auth-service';
 import UserService, {
   UpdateUserEmailPayload,
   UpdateUserNamePayload,
   UserData,
-} from '../../services/user-service';
-import DeleteModal from '../DeleteModal';
-import InnerNavigationBar from '../InnerNavigationBar/InnerNavigationBar';
-import './Settings.scss';
+} from '../services/user-service';
+import DeleteModal from './DeleteModal';
 
 interface Props {
   id?: string;
@@ -63,6 +62,7 @@ const Settings = (props: Props) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const openSnackBar = (message: string): void => {
     setSnackBarOpen(true);
@@ -173,11 +173,19 @@ const Settings = (props: Props) => {
     <Fade>
       <>
         <Box>
-          <InnerNavigationBar
-            title={'Settings'}
-            icon={'<i class="fas fa-cog"></i>'}
-          ></InnerNavigationBar>
-          <Box className="settings">
+          <Box
+            width="90%"
+            sx={{
+              [theme.breakpoints.up('md')]: {
+                width: '50%',
+              },
+              [theme.breakpoints.up('lg')]: {
+                width: '35%',
+              },
+            }}
+            margin={`0 auto`}
+            padding="4vh 0"
+          >
             <Stack direction="row" paddingBottom="10px">
               <AccountCircleRoundedIcon
                 sx={{
@@ -221,6 +229,7 @@ const Settings = (props: Props) => {
                           render={({ field, form }) => (
                             <TextField
                               id="email"
+                              variant="standard"
                               name="email.email"
                               type="email"
                               label="New Email"
@@ -242,6 +251,7 @@ const Settings = (props: Props) => {
                           render={({ field, form }) => (
                             <TextField
                               id="password"
+                              variant="standard"
                               type="password"
                               name="email.password"
                               label="Password"
@@ -281,6 +291,7 @@ const Settings = (props: Props) => {
                           name="names.firstName"
                           render={({ field, form }) => (
                             <TextField
+                              variant="standard"
                               name="names.firstName"
                               label="New First Name"
                               type="text"
@@ -303,6 +314,7 @@ const Settings = (props: Props) => {
                           name="names.lastName"
                           render={({ field, form }) => (
                             <TextField
+                              variant="standard"
                               name="names.lastName"
                               label="New Last Name"
                               id="lastName"

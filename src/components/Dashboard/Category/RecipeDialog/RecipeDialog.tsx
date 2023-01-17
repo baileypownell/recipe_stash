@@ -40,7 +40,7 @@ import {
 } from '../../../../services/recipe-services';
 import { queryClient } from '../../../App';
 import FileUpload from '../../../File-Upload/FileUpload';
-import { AddRecipeMutationParam } from '../../../RecipeCache/RecipeCache';
+import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache';
 import { GridView } from '../../Dashboard';
 import './RecipeDialog.scss';
 

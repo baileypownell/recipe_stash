@@ -80,15 +80,3 @@
     }
   }
 }
-
-.fade {
-  opacity: 0;
-  transform: translateY(30px);
-  transition-property: translate opacity;
-  transition-duration: 1s;
-}
-
-.fade-in {
-  opacity: 1 !important;
-  transform: translateY(0px);
-}

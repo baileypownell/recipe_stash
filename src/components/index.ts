@@ -3,7 +3,7 @@ import Login from './Login/Login';
 import Signup from './Signup/Signup';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
-import Settings from './Settings/Settings';
+import Settings from './Settings';
 import ResetPassword from './ResetPassword/ResetPassword';
 import App from './App';
 import Nav from './Nav/Nav';
