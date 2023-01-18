@@ -1,40 +1,28 @@
 @import './mixins.scss';
 @import './variables.scss';
 
-body {
-  margin: 0;
-}
-
 * {
   font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   overflow-x: hidden;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 label {
   color: $secondary !important;
 }
 
-.dropdown-content li > a,
-.dropdown-content li > span {
-  color: $secondary !important;
-}
+// .dropdown-content li > a,
+// .dropdown-content li > span {
+//   color: $secondary !important;
+// }
 
-.chip {
-  margin: 8px 2px !important;
-}
-
-.auth {
-  .input-field input {
-    border-bottom: 1px solid white !important;
-  }
-}
+// .chip {
+//   margin: 8px 2px !important;
+// }
 
 .quill {
   button {
@@ -42,12 +30,6 @@ label {
   }
   .select-wrapper {
     display: none;
-  }
-}
-
-button {
-  i {
-    font-size: 1.2rem;
   }
 }
 
@@ -75,10 +57,6 @@ body {
   grid-template-areas:
     'header'
     'main';
-}
-
-#confirmation-modal {
-  max-width: 400px;
 }
 
 .MuiSnackbarContent-message {
