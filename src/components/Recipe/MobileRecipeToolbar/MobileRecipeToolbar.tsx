@@ -1,5 +1,6 @@
-import { Button, Menu, MenuItem } from '@mui/material';
-import React from 'react';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { useState } from 'react';
 import './MobileRecipeToolbar.scss';
 
 export default function MobileRecipeToolbar(props: {
@@ -7,7 +8,7 @@ export default function MobileRecipeToolbar(props: {
   triggerDialog: Function;
   cloneRecipe: Function;
 }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -29,15 +30,15 @@ export default function MobileRecipeToolbar(props: {
 
   return props.width <= 700 ? (
     <div id="recipe-mobile-toolbar">
-      <Button
+      <IconButton
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
+        color="info"
       >
-        <i className="fas fa-ellipsis-v"></i>
-      </Button>
+        <MoreVertRoundedIcon />
+      </IconButton>
       <Menu
-        id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}

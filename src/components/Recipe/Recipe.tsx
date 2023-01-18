@@ -1,18 +1,20 @@
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import { Box, Chip, Divider, Fab, Tooltip } from '@mui/material';
 import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import BounceLoader from 'react-spinners/BounceLoader';
 import { BehaviorSubject } from 'rxjs';
 import { tags as recipeTags } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
+import RecipeDialog, {
+  Mode,
+} from '../Dashboard/Category/RecipeDialog/RecipeDialog';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar';
 import './Recipe.scss';
-import RecipeDialog, {
-  Mode,
-} from '../Dashboard/Category/RecipeDialog/RecipeDialog';
-import { useNavigate, useParams } from 'react-router';
-import { Box, Chip, Divider, Fab, Tooltip } from '@mui/material';
 
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<
   string[]
@@ -147,13 +149,13 @@ const Recipe = (props: Props) => {
         <div id="floating-buttons">
           <Tooltip title="Edit recipe" aria-label="edit recipe">
             <Fab color="secondary" onClick={triggerDialog}>
-              <i className="material-icons">mode_edit</i>
+              <EditRoundedIcon />
             </Fab>
           </Tooltip>
 
           <Tooltip title="Duplicate recipe" aria-label="duplicate">
             <Fab color="primary" onClick={cloneRecipe}>
-              <i className="far fa-clone"></i>
+              <ContentCopyRoundedIcon />
             </Fab>
           </Tooltip>
         </div>

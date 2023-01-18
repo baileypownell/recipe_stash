@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router';
 import { FullRecipe, RawRecipe } from '../../../../../server/recipe';
 import options from '../../../../models/options';
 import { tags as RecipeTags } from '../../../../models/tags';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import {
   DefaultTile,
   ExistingFile,
@@ -362,7 +363,7 @@ const RecipeDialog = (props: Props) => {
       {mode === Mode.Add ? (
         gridView === GridView.Grid ? (
           <Box onClick={toggleModal} className="addRecipe" id={id}>
-            <i className="fas fa-plus-circle"></i>
+            <AddCircleRoundedIcon color="info" sx={{ fontSize: '45px' }} />
           </Box>
         ) : (
           <Button
@@ -370,9 +371,9 @@ const RecipeDialog = (props: Props) => {
             variant="contained"
             onClick={toggleModal}
             sx={{ marginBottom: 1 }}
+            startIcon={<AddCircleRoundedIcon />}
           >
             Add Recipe
-            <i className="fas fa-plus-circle" style={{ marginLeft: '8px' }}></i>
           </Button>
         )
       ) : null}

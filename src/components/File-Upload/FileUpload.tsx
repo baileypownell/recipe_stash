@@ -1,5 +1,13 @@
-import { Button, Checkbox, FormControlLabel, Snackbar } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Snackbar,
+  Typography,
+} from '@mui/material';
 import React from 'react';
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 import './FileUpload.scss';
 const { v4: uuidv4 } = require('uuid');
 
@@ -252,8 +260,15 @@ class FileUpload extends React.Component {
             onChange={this.handleUpload}
             multiple
           ></input>
-          <div>
-            <h1>Drag & Drop an image</h1>
+          <Box
+            sx={{
+              svg: {
+                fontSize: '100px',
+                marginTop: '15px',
+              },
+            }}
+          >
+            <Typography variant="overline">Drag & drop an image</Typography>
             <Button
               variant="outlined"
               color="secondary"
@@ -263,8 +278,8 @@ class FileUpload extends React.Component {
               Choose a file
             </Button>
             <span>(Limit 5)</span>
-            <i className="fas fa-file-upload"></i>
-          </div>
+            <UploadFileRoundedIcon />
+          </Box>
         </div>
         <div className="file-list">
           {Array.from(files)?.map((file, index) => (
