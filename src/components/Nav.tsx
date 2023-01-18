@@ -1,4 +1,10 @@
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
+import RestaurantRoundedIcon from '@mui/icons-material/RestaurantRounded';
+import SettingsApplicationsRoundedIcon from '@mui/icons-material/SettingsApplicationsRounded';
 import {
   AppBar,
   Button,
@@ -17,10 +23,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import blackLogo from '../images/black-logo.png';
 import whiteLogo from '../images/white-logo.png';
-import SettingsApplicationsRoundedIcon from '@mui/icons-material/SettingsApplicationsRounded';
-import RestaurantRoundedIcon from '@mui/icons-material/RestaurantRounded';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import AuthenticationService from '../services/auth-service';
 
 const Nav = () => {
@@ -100,31 +102,56 @@ const Nav = () => {
             alt="logo"
           />
           <List>
-            <ListItem button onClick={() => handleListItemClick('/recipes')}>
-              <ListItemIcon>
-                <RestaurantRoundedIcon />
-              </ListItemIcon>
-              <ListItemText primary="Recipes"></ListItemText>
-            </ListItem>
-            <ListItem button onClick={() => handleListItemClick('/settings')}>
-              <ListItemIcon>
-                <SettingsApplicationsRoundedIcon />
-              </ListItemIcon>
-              <ListItemText primary="Settings"></ListItemText>
-            </ListItem>
-            <ListItem button onClick={() => handleListItemClick('/')}>
-              <ListItemIcon>
-                <HomeRoundedIcon />
-              </ListItemIcon>
-              <ListItemText primary="Home"></ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem button onClick={logout}>
-              <ListItemIcon>
-                <LogoutRoundedIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout"></ListItemText>
-            </ListItem>
+            {isAuthenticated ? (
+              <>
+                <ListItem
+                  button
+                  onClick={() => handleListItemClick('/recipes')}
+                >
+                  <ListItemIcon>
+                    <RestaurantRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Recipes"></ListItemText>
+                </ListItem>
+                <ListItem
+                  button
+                  onClick={() => handleListItemClick('/settings')}
+                >
+                  <ListItemIcon>
+                    <SettingsApplicationsRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Settings"></ListItemText>
+                </ListItem>
+                <ListItem button onClick={() => handleListItemClick('/')}>
+                  <ListItemIcon>
+                    <HomeRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Home"></ListItemText>
+                </ListItem>
+                <Divider />
+                <ListItem button onClick={logout}>
+                  <ListItemIcon>
+                    <LogoutRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Logout"></ListItemText>
+                </ListItem>
+              </>
+            ) : (
+              <>
+                <ListItem button onClick={() => handleListItemClick('/login')}>
+                  <ListItemIcon>
+                    <LoginRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Login"></ListItemText>
+                </ListItem>
+                <ListItem button onClick={() => handleListItemClick('/signup')}>
+                  <ListItemIcon>
+                    <PersonAddAltRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Create Account"></ListItemText>
+                </ListItem>
+              </>
+            )}
           </List>
         </Stack>
       </SwipeableDrawer>
