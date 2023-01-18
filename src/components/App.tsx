@@ -23,9 +23,14 @@ const App = () => {
 
   const theme = createTheme({
     palette: {
+      // primary: {
+      //   main: '#e66c6c',
+      //   dark: '#d35151',
+      // },
       primary: {
-        main: '#e66c6c',
-        dark: '#d35151',
+        main: '#e86054',
+        dark: '#d1564c',
+        light: '#ea7065',
       },
       secondary: {
         main: '#87ad6a',

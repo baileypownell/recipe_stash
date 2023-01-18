@@ -1,3 +1,4 @@
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -25,9 +26,15 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
 import { FullRecipe, RawRecipe } from '../../../../../server/recipe';
+import side_dish from '../../../../images/asparagus.jpg';
+import other from '../../../../images/bread.jpg';
+import dessert from '../../../../images/dessert.jpg';
+import drinks from '../../../../images/drinks.jpg';
+import breakfast from '../../../../images/french_toast.jpg';
+import lunch from '../../../../images/lunch.jpg';
+import dinner from '../../../../images/pizza.jpg';
 import options from '../../../../models/options';
 import { tags as RecipeTags } from '../../../../models/tags';
-import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import {
   DefaultTile,
   ExistingFile,
@@ -41,8 +48,8 @@ import {
 } from '../../../../services/recipe-services';
 import { queryClient } from '../../../App';
 import FileUpload from '../../../File-Upload/FileUpload';
-import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache';
 import { GridView } from '../../Dashboard';
+import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache';
 import './RecipeDialog.scss';
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -358,11 +365,37 @@ const RecipeDialog = (props: Props) => {
   const editing =
     !(props.recipeDialogInfo as EditProps).cloning && mode === Mode.Edit;
 
+  const getBackgroundImage = (categoryId: string): string => {
+    switch (categoryId) {
+      case 'breakfast':
+        return breakfast;
+      case 'lunch':
+        return lunch;
+      case 'dinner':
+        return dinner;
+      case 'side_dish':
+        return side_dish;
+      case 'drinks':
+        return drinks;
+      case 'dessert':
+        return dessert;
+      case 'other':
+        return other;
+    }
+  };
+
   return (
     <>
       {mode === Mode.Add ? (
         gridView === GridView.Grid ? (
-          <Box onClick={toggleModal} className="addRecipe" id={id}>
+          <Box
+            onClick={toggleModal}
+            className="addRecipe"
+            id={id}
+            sx={{
+              backgroundImage: `url(${getBackgroundImage(id)})`,
+            }}
+          >
             <AddCircleRoundedIcon color="info" sx={{ fontSize: '45px' }} />
           </Box>
         ) : (

@@ -1,10 +1,9 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { FullRecipe } from '../../../../server/recipe';
 import { GridView } from '../Dashboard';
-import './Category.scss';
 import ListItem from './ListItem';
 import RecipeDialog, { Mode } from './RecipeDialog/RecipeDialog';
-import Square from './Square/Square';
+import Square from './Square';
 
 type Props = {
   title: string;
@@ -20,7 +19,7 @@ const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
     <Typography variant="h6" sx={{ marginBottom: 1 }}>
       {title}
     </Typography>
-    <Box className="recipeBox">
+    <Stack direction="row" flexWrap="wrap">
       <RecipeDialog
         mode={Mode.Add}
         recipeDialogInfo={{
@@ -33,12 +32,7 @@ const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
       {recipes
         ? recipes.map((recipe) =>
             gridView === GridView.Grid ? (
-              <Square
-                key={recipe.id}
-                awsUrl={recipe.preSignedDefaultTileImageUrl}
-                recipeId={recipe.id}
-                rawTitle={recipe.rawTitle}
-              />
+              <Square recipe={recipe} />
             ) : (
               <ListItem
                 key={recipe.id}
@@ -48,7 +42,7 @@ const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
             ),
           )
         : null}
-    </Box>
+    </Stack>
   </Box>
 );
 
