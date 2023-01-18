@@ -215,6 +215,9 @@ const Login = () => {
                             sendPasswordResetLink(formik.values.email)
                           }
                           color="primary"
+                          disabled={
+                            formik.touched.email && Boolean(formik.errors.email)
+                          }
                         >
                           Reset Password
                         </Button>

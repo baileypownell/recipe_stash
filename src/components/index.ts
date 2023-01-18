@@ -6,7 +6,7 @@ import Recipe from './Recipe/Recipe';
 import Settings from './Settings';
 import ResetPassword from './ResetPassword/ResetPassword';
 import App from './App';
-import Nav from './Nav/Nav';
+import Nav from './Nav';
 
 export {
   Home,
