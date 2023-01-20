@@ -4,7 +4,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { Box, Button } from '@mui/material';
 import React, { useState } from 'react';
 import Lightbox, { ImagesListType } from 'react-spring-lightbox';
-import ImageSkeletonLoader from './ImageSkeletonLoader/ImageSkeletonLoader';
+import ImageSkeletonLoader from './ImageSkeletonLoader';
 
 interface Props {
   preSignedUrls: string[] | null;

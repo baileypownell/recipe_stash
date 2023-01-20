@@ -1,6 +1,14 @@
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import { Box, Chip, Divider, Fab, Tooltip } from '@mui/material';
+import {
+  Box,
+  Chip,
+  Divider,
+  Fab,
+  Stack,
+  Tooltip,
+  useTheme,
+} from '@mui/material';
 import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
@@ -13,8 +21,8 @@ import RecipeDialog, {
 } from '../Dashboard/Category/RecipeDialog/RecipeDialog';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
-import MobileRecipeToolbar from './MobileRecipeToolbar/MobileRecipeToolbar';
-import './Recipe.scss';
+import MobileRecipeToolbar from './MobileRecipeToolbar';
+// import './Recipe.scss';
 
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<
   string[]
@@ -38,6 +46,7 @@ const Recipe = (props: Props) => {
     setDialogOpen(!dialogOpen);
   };
   const params = useParams();
+  const theme = useTheme();
 
   const fetchData = async () => {
     try {
@@ -88,8 +97,57 @@ const Recipe = (props: Props) => {
     triggerDialog();
   };
 
+  const noGridStyles = {
+    display: 'flex',
+    padding: '30px 0',
+    justifyContent: 'center',
+    span: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    img: {
+      width: '100%',
+      maxWidth: '400px',
+      borderRadius: '5px',
+      boxShadow: `5px 1px 30px #868686`,
+    },
+    // > div {
+    //   margin: 0 auto;
+    // }
+  };
+
+  const imagesStyles = {
+    padding: '20px 0',
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    [theme.breakpoints.up('md')]: {
+      gridTemplateColumns: '1fr 1fr',
+      gridTemplateRows: 'auto',
+      gap: '0 15px',
+    },
+    img: {
+      width: '100%',
+      margin: '0 0 15px 0',
+      borderRadius: '5px',
+      boxShadow: `5px 1px 30px #868686`,
+    },
+  };
+
+  const getImageStyles = (lessThanTwoImages: boolean) => {
+    return lessThanTwoImages ? noGridStyles : imagesStyles;
+  };
+
   return !loading ? (
-    <Box id="recipe-container">
+    <Stack
+      sx={{
+        height: `calc(100% - 50px)`,
+        overflow: 'auto',
+        [theme.breakpoints.up('md')]: {
+          height: 'auto',
+        },
+      }}
+    >
       <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
       <RecipeDialog
         mode={Mode.Edit}
@@ -105,28 +163,38 @@ const Recipe = (props: Props) => {
           triggerDialog: triggerDialog,
         }}
       />
-      <div className="view-recipe">
+      <Stack margin="0 auto" padding="20px" width="100%" flexGrow="1">
         <MobileRecipeToolbar
           width={width}
           triggerDialog={triggerDialog}
           cloneRecipe={cloneRecipe}
         />
-        <div id="width-setter">
-          <div className="section">
-            <div
-              id="recipe-title"
+        <Box
+          sx={{
+            width: '100%',
+            [theme.breakpoints.up('md')]: {
+              width: '75%',
+              margin: '20px auto',
+            },
+            [theme.breakpoints.up('lg')]: {
+              width: '60%',
+            },
+          }}
+        >
+          <Box>
+            <Box
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(recipe.title),
               }}
             />
-          </div>
-          <div className="section">
-            <div dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
-          </div>
-          <div className="section">
-            <div dangerouslySetInnerHTML={{ __html: recipe.directions }} />
-          </div>
-          <div className="section">
+          </Box>
+          <Box>
+            <Box dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
+          </Box>
+          <Box>
+            <Box dangerouslySetInnerHTML={{ __html: recipe.directions }} />
+          </Box>
+          <Box>
             {tags.map((tag) =>
               tag.selected ? (
                 <Chip
@@ -136,17 +204,26 @@ const Recipe = (props: Props) => {
                 />
               ) : null,
             )}
-          </div>
+          </Box>
           <Divider style={{ margin: '20px 0 10px 0' }} />
-          <div id={recipe.preSignedUrls?.length < 2 ? 'noGrid' : 'images'}>
+          <Box sx={getImageStyles(recipe.preSignedUrls?.length < 2)}>
             <LightboxComponent
               preSignedUrls={recipe.preSignedUrls}
             ></LightboxComponent>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Stack>
       {width > 700 ? (
-        <div id="floating-buttons">
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            button: {
+              marginRight: '10px',
+            },
+          }}
+        >
           <Tooltip title="Edit recipe" aria-label="edit recipe">
             <Fab color="secondary" onClick={triggerDialog}>
               <EditRoundedIcon />
@@ -158,13 +235,13 @@ const Recipe = (props: Props) => {
               <ContentCopyRoundedIcon />
             </Fab>
           </Tooltip>
-        </div>
+        </Box>
       ) : null}
-    </Box>
+    </Stack>
   ) : (
-    <div className="BounceLoader">
+    <Box className="BounceLoader">
       <BounceLoader size={100} color={'#689943'} />
-    </div>
+    </Box>
   );
 };
 

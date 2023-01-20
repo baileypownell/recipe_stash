@@ -1,4 +1,3 @@
-@import '../../../../scss/mixins.scss';
 @import '../../../../scss/variables.scss';
 
 .minHeight {
@@ -6,7 +5,7 @@
 }
 
 .addRecipe {
-  @include boxShadow;
+  box-shadow: 5px 1px 30px #868686;
   min-width: 150px;
   background-color: lighten($primary-transparent, 20%);
   background-blend-mode: overlay;
@@ -15,7 +14,8 @@
   margin-right: 10px;
   margin-bottom: 10px;
   color: $primary;
-  @include flexColumn;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 5px;
