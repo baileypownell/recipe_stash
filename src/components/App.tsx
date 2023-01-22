@@ -47,6 +47,9 @@ const App = () => {
       gray: {
         main: '#353531',
       },
+      orange: {
+        main: '#dd7244',
+      },
     },
   });
 

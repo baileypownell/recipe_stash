@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import { FullRecipe } from '../../../../server/recipe';
 import { GridView } from '../Dashboard';
 import ListItem from './ListItem';
-import RecipeDialog, { Mode } from './RecipeDialog/RecipeDialog';
+import RecipeDialog, { Mode } from './RecipeDialog';
 import Square from './Square';
 
 type Props = {

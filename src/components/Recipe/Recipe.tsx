@@ -16,9 +16,7 @@ import BounceLoader from 'react-spinners/BounceLoader';
 import { BehaviorSubject } from 'rxjs';
 import { tags as recipeTags } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
-import RecipeDialog, {
-  Mode,
-} from '../Dashboard/Category/RecipeDialog/RecipeDialog';
+import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';

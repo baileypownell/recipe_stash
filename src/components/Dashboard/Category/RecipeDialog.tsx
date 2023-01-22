@@ -17,24 +17,28 @@ import {
   MenuItem,
   Select,
   Slide,
+  Stack,
   Typography,
+  useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import { forwardRef, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
-import { FullRecipe, RawRecipe } from '../../../../../server/recipe';
-import side_dish from '../../../../images/asparagus.jpg';
-import other from '../../../../images/bread.jpg';
-import dessert from '../../../../images/dessert.jpg';
-import drinks from '../../../../images/drinks.jpg';
-import breakfast from '../../../../images/french_toast.jpg';
-import lunch from '../../../../images/lunch.jpg';
-import dinner from '../../../../images/pizza.jpg';
-import options from '../../../../models/options';
-import { tags as RecipeTags } from '../../../../models/tags';
+import { FullRecipe, RawRecipe } from '../../../../server/recipe';
+import side_dish from '../../../images/asparagus.jpg';
+import other from '../../../images/bread.jpg';
+import dessert from '../../../images/dessert.jpg';
+import drinks from '../../../images/drinks.jpg';
+import breakfast from '../../../images/french_toast.jpg';
+import lunch from '../../../images/lunch.jpg';
+import dinner from '../../../images/pizza.jpg';
+import options from '../../../models/options';
+import { tags as RecipeTags } from '../../../models/tags';
 import {
   DefaultTile,
   ExistingFile,
@@ -45,12 +49,11 @@ import {
   RecipeService,
   SortedRecipeInterface,
   UpdateRecipeInput,
-} from '../../../../services/recipe-services';
-import { queryClient } from '../../../App';
-import FileUpload from '../../../File-Upload/FileUpload';
-import { GridView } from '../../Dashboard';
-import { AddRecipeMutationParam } from '../../RecipeCache/RecipeCache';
-import './RecipeDialog.scss';
+} from '../../../services/recipe-services';
+import { queryClient } from '../../App';
+import FileUpload from '../../File-Upload/FileUpload';
+import { GridView } from '../Dashboard';
+import { AddRecipeMutationParam } from '../../RecipeCache';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -85,23 +88,24 @@ interface Props {
   mode: Mode;
 }
 
-const determineCategory = (props: Props): string => {
-  if (props.mode === Mode.Add) {
+const determineCategory = (recipeDialogInfo, mode): string => {
+  if (mode === Mode.Add) {
     return options.find(
-      (option) =>
-        option.label === (props.recipeDialogInfo as AddProps).category,
+      (option) => option.label === (recipeDialogInfo as AddProps).category,
     ).value;
-  } else if (props.mode === Mode.Edit) {
-    return (props.recipeDialogInfo as EditProps).recipe.category;
+  } else if (mode === Mode.Edit) {
+    return (recipeDialogInfo as EditProps).recipe.category;
   }
 };
 
-const RecipeDialog = (props: Props) => {
+const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
   const [loading, setLoading] = useState(false);
   const [recipeTitle, setRecipeTitle] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [directions, setDirections] = useState('');
-  const [category, setCategory] = useState(determineCategory(props));
+  const [category, setCategory] = useState(
+    determineCategory(recipeDialogInfo, mode),
+  );
   const [recipeValid, setRecipeValid] = useState(false);
   const [newFiles, setNewFiles] = useState([]);
   const [tags, setTags] = useState(
@@ -112,17 +116,18 @@ const RecipeDialog = (props: Props) => {
   const [filesToDelete, setFilesToDelete] = useState([]);
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
+  const theme = useTheme();
 
   useEffect(() => {
-    if (props.mode === Mode.Edit) {
-      const recipe = (props.recipeDialogInfo as EditProps).recipe;
+    if (mode === Mode.Edit) {
+      const recipe = (recipeDialogInfo as EditProps).recipe;
       setRecipeTitle(recipe.title);
       setIngredients(recipe.ingredients);
       setDirections(recipe.directions);
 
       tags.map((tag) => {
         if (
-          (props.recipeDialogInfo as EditProps).recipe.tags.includes(
+          (recipeDialogInfo as EditProps).recipe.tags.includes(
             tag.recipeTagPropertyName,
           )
         ) {
@@ -134,10 +139,10 @@ const RecipeDialog = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    if (props.mode === Mode.Edit) {
-      setOpen((props.recipeDialogInfo as EditProps).open);
+    if (mode === Mode.Edit) {
+      setOpen((recipeDialogInfo as EditProps).open);
     }
-  }, [(props.recipeDialogInfo as EditProps).open]);
+  }, [(recipeDialogInfo as EditProps).open]);
 
   const clearState = () => {
     const prevOpenState = open;
@@ -165,7 +170,7 @@ const RecipeDialog = (props: Props) => {
   const saveRecipe = async (e: any) => {
     e.preventDefault();
     const titleHTML = DOMPurify.sanitize(
-      recipeTitleRaw || (props.recipeDialogInfo as EditProps).recipe.rawTitle,
+      recipeTitleRaw || (recipeDialogInfo as EditProps).recipe.rawTitle,
     );
     const rawTitle = htmlToText(titleHTML, { wordwrap: 130 });
     setLoading(true);
@@ -184,25 +189,25 @@ const RecipeDialog = (props: Props) => {
           files: newFiles,
           defaultTile,
         };
-        await (props.recipeDialogInfo as AddProps).addRecipe(param);
+        await (recipeDialogInfo as AddProps).addRecipe(param);
         clearState();
         setLoading(false);
       } else if (mode === Mode.Edit) {
-        if ((props.recipeDialogInfo as EditProps).cloning) {
+        if ((recipeDialogInfo as EditProps).cloning) {
           const param: AddRecipeMutationParam = {
             recipeInput,
             files: newFiles,
             defaultTile,
           };
           const recipe = await (
-            props.recipeDialogInfo as EditProps
+            recipeDialogInfo as EditProps
           ).addRecipeMutation(param);
           setFilesToDelete([]);
           setNewFiles([]);
           setLoading(false);
           navigate(`/recipes/${recipe.id}`);
           window.location.reload();
-          (props.recipeDialogInfo as EditProps).triggerDialog();
+          (recipeDialogInfo as EditProps).triggerDialog();
         } else {
           setLoading(true);
           const recipeUpdateInput: UpdateRecipeInput = {
@@ -210,7 +215,7 @@ const RecipeDialog = (props: Props) => {
             rawTitle,
             ingredients: ingredients,
             directions: directions,
-            recipeId: (props.recipeDialogInfo as EditProps).recipe.id,
+            recipeId: (recipeDialogInfo as EditProps).recipe.id,
             category,
             ...determineTags(),
           };
@@ -220,8 +225,8 @@ const RecipeDialog = (props: Props) => {
               newFiles,
               defaultTile,
               filesToDelete,
-              (props.recipeDialogInfo as EditProps).recipe.id,
-              (props.recipeDialogInfo as EditProps)
+              (recipeDialogInfo as EditProps).recipe.id,
+              (recipeDialogInfo as EditProps)
                 .recipe as unknown as RecipeInterface,
             );
             const formattedRecipe: FullRecipe = await RecipeService.getRecipe(
@@ -247,7 +252,7 @@ const RecipeDialog = (props: Props) => {
           } catch (err) {
             console.log(err);
             setLoading(false);
-            (props.recipeDialogInfo as EditProps).openSnackBar(
+            (recipeDialogInfo as EditProps).openSnackBar(
               'There was an error updating the recipe.',
             );
           }
@@ -260,8 +265,8 @@ const RecipeDialog = (props: Props) => {
   };
 
   const refreshRecipeView = () => {
-    (props.recipeDialogInfo as EditProps).triggerDialog();
-    (props.recipeDialogInfo as EditProps).fetchData();
+    (recipeDialogInfo as EditProps).triggerDialog();
+    (recipeDialogInfo as EditProps).fetchData();
     setFilesToDelete([]);
     setNewFiles([]);
   };
@@ -270,8 +275,8 @@ const RecipeDialog = (props: Props) => {
     const prevOpenState = open;
     setOpen(!prevOpenState);
 
-    if (props.mode === Mode.Edit) {
-      (props.recipeDialogInfo as EditProps).triggerDialog();
+    if (mode === Mode.Edit) {
+      (recipeDialogInfo as EditProps).triggerDialog();
     }
   };
 
@@ -319,14 +324,13 @@ const RecipeDialog = (props: Props) => {
     setRecipeValid(recipeValid);
   }, [recipeTitle, ingredients, directions]);
 
-  const { mode } = props;
-  const { id, gridView } = props.recipeDialogInfo as AddProps;
+  const { id, gridView } = recipeDialogInfo as AddProps;
 
   const getTitle = () => {
-    if (props.mode === Mode.Add) {
+    if (mode === Mode.Add) {
       return 'Add Recipe';
-    } else if (props.mode === Mode.Edit) {
-      return (props.recipeDialogInfo as EditProps).cloning
+    } else if (mode === Mode.Edit) {
+      return (recipeDialogInfo as EditProps).cloning
         ? 'Add Recipe'
         : 'Edit Recipe';
     }
@@ -339,13 +343,13 @@ const RecipeDialog = (props: Props) => {
   const deleteRecipe = async () => {
     try {
       await RecipeService.deleteRecipe(
-        (props.recipeDialogInfo as EditProps).recipe.id,
+        (recipeDialogInfo as EditProps).recipe.id,
       );
       const current: SortedRecipeInterface =
         queryClient.getQueryData('recipes');
       queryClient.setQueryData('recipes', () => {
         const updatedArray = current[category].filter(
-          (el) => el.id !== (props.recipeDialogInfo as EditProps).recipe.id,
+          (el) => el.id !== (recipeDialogInfo as EditProps).recipe.id,
         );
         const updatedCategory = updatedArray;
         const updatedQueryState = {
@@ -358,12 +362,12 @@ const RecipeDialog = (props: Props) => {
       navigate('/recipes');
     } catch (err) {
       console.log(err);
-      (props.recipeDialogInfo as EditProps).openSnackBar('There was an error.');
+      (recipeDialogInfo as EditProps).openSnackBar('There was an error.');
     }
   };
 
   const editing =
-    !(props.recipeDialogInfo as EditProps).cloning && mode === Mode.Edit;
+    !(recipeDialogInfo as EditProps).cloning && mode === Mode.Edit;
 
   const getBackgroundImage = (categoryId: string): string => {
     switch (categoryId) {
@@ -384,26 +388,47 @@ const RecipeDialog = (props: Props) => {
     }
   };
 
+  const selectedStyles = {
+    backgroundColor: theme.palette.orange.main,
+    color: 'white',
+  };
+
   return (
     <>
       {mode === Mode.Add ? (
         gridView === GridView.Grid ? (
-          <Box
+          <Stack
+            justifyContent="center"
+            alignItems="center"
             onClick={toggleModal}
-            className="addRecipe"
             id={id}
             sx={{
               backgroundImage: `url(${getBackgroundImage(id)})`,
+              boxShadow: '5px 1px 30px #868686',
+              minWidth: '150px',
+              backgroundBlendMode: 'overlay',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              marginRight: '10px',
+              marginBottom: '10px',
+              color: theme.palette.primary.main,
+              borderRadius: '5px',
+              border: `2px solid ${theme.palette.primary.main}`,
+              cursor: 'pointer',
+              transition: 'background-color 0.5s',
+              '&:hover': {
+                backgroundColor: 'rgba(331, 68, 68, 0.2)',
+              },
             }}
           >
             <AddCircleRoundedIcon color="info" sx={{ fontSize: '45px' }} />
-          </Box>
+          </Stack>
         ) : (
           <Button
-            className="add-button"
             variant="contained"
+            color="orange"
             onClick={toggleModal}
-            sx={{ marginBottom: 1 }}
+            sx={{ marginBottom: 1, color: theme.palette.info.main }}
             startIcon={<AddCircleRoundedIcon />}
           >
             Add Recipe
@@ -417,38 +442,43 @@ const RecipeDialog = (props: Props) => {
         onClose={toggleModal}
         TransitionComponent={Transition}
       >
-        <DialogTitle className="title">
-          <span>{getTitle()}</span>
-        </DialogTitle>
+        <DialogTitle>{getTitle()}</DialogTitle>
         <DialogContent>
-          <h3>Title</h3>
-          <ReactQuill
-            defaultValue={
-              mode === Mode.Edit
-                ? (props.recipeDialogInfo as EditProps).recipe.title
-                : null
-            }
-            onChange={handleModelChange}
-          />
-          <h3>Ingredients</h3>
-          <ReactQuill
-            defaultValue={
-              mode === Mode.Edit
-                ? (props.recipeDialogInfo as EditProps).recipe.ingredients
-                : null
-            }
-            onChange={handleModelChangeIngredients}
-          />
-          <h3>Directions</h3>
-          <ReactQuill
-            defaultValue={
-              mode === Mode.Edit
-                ? (props.recipeDialogInfo as EditProps).recipe.directions
-                : null
-            }
-            onChange={handleModelChangeDirections}
-          />
-          <div>
+          <Box paddingBottom={2}>
+            <Typography variant="overline">Recipe Name</Typography>
+            <ReactQuill
+              defaultValue={
+                mode === Mode.Edit
+                  ? (recipeDialogInfo as EditProps).recipe.title
+                  : null
+              }
+              onChange={handleModelChange}
+            />
+          </Box>
+          <Box paddingBottom={2}>
+            <Typography variant="overline">Ingredients</Typography>
+            <ReactQuill
+              defaultValue={
+                mode === Mode.Edit
+                  ? (recipeDialogInfo as EditProps).recipe.ingredients
+                  : null
+              }
+              onChange={handleModelChangeIngredients}
+            />
+          </Box>
+
+          <Box paddingBottom={2}>
+            <Typography variant="overline">Directions</Typography>
+            <ReactQuill
+              defaultValue={
+                mode === Mode.Edit
+                  ? (recipeDialogInfo as EditProps).recipe.directions
+                  : null
+              }
+              onChange={handleModelChangeDirections}
+            />
+          </Box>
+          <Box>
             <FormControl
               variant="filled"
               style={{ width: '100%', margin: '10px 0' }}
@@ -464,8 +494,7 @@ const RecipeDialog = (props: Props) => {
                 })}
               </Select>
             </FormControl>
-          </div>
-
+          </Box>
           <Accordion style={{ margin: '10px 0' }}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -479,9 +508,15 @@ const RecipeDialog = (props: Props) => {
                 {tags.map((tag, index) => {
                   return (
                     <Chip
-                      className={`chip ${
-                        tags[index].selected ? 'selectedTag' : 'null'
-                      }`}
+                      sx={{
+                        cursor: 'pointer',
+                        transition: 'all 0.4s',
+                        '&:hover': {
+                          backgroundColor: `${theme.palette.orange.main}`,
+                          color: 'white',
+                        },
+                        ...(tags[index].selected && selectedStyles),
+                      }}
                       id={index.toString()}
                       key={index}
                       onClick={() => toggleTagSelectionStatus(index)}
@@ -501,11 +536,11 @@ const RecipeDialog = (props: Props) => {
           ) : (
             <FileUpload
               defaultTileImageUUID={
-                (props.recipeDialogInfo as EditProps).defaultTileImageKey
+                (recipeDialogInfo as EditProps).defaultTileImageKey
               }
               passDefaultTileImage={setDefaultTileImage}
               preExistingImageUrls={
-                (props.recipeDialogInfo as EditProps).presignedUrls$
+                (recipeDialogInfo as EditProps).presignedUrls$
               }
               passFilesToDelete={handleFilesToDelete}
               passFiles={setFiles}
@@ -513,12 +548,27 @@ const RecipeDialog = (props: Props) => {
           )}
         </DialogContent>
         <DialogActions>
-          <div className="modal-close-buttons">
+          <Stack
+            justifyContent="space-between"
+            sx={{
+              width: '100%',
+              [theme.breakpoints.up('sm')]: {
+                flexDirection: 'row-reverse',
+              },
+              button: {
+                margin: '5px',
+                [theme.breakpoints.up('sm')]: {
+                  margin: 0,
+                },
+              },
+            }}
+          >
             <Button
               variant="contained"
               color="secondary"
               disabled={!recipeValid}
               onClick={saveRecipe}
+              startIcon={loading ? null : <AddCircleRoundedIcon />}
             >
               {loading ? (
                 <CircularProgress
@@ -526,34 +576,41 @@ const RecipeDialog = (props: Props) => {
                 />
               ) : (
                 <>
-                  {mode === Mode.Add ||
-                  (props.recipeDialogInfo as EditProps).cloning
+                  {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
                     ? 'Add Recipe'
                     : 'Update Recipe'}
-                  <i
-                    className="fas fa-check-square"
-                    style={{ marginLeft: '8px' }}
-                  ></i>
                 </>
               )}
             </Button>
-            <div className={editing ? 'edit' : null}>
+            <Box
+              className={editing ? 'edit' : null}
+              sx={{
+                display: editing ? 'flex' : 'block',
+              }}
+            >
               {editing ? (
                 <Button
                   color="primary"
                   variant="contained"
                   style={{ marginRight: '5px ' }}
                   onClick={deleteRecipe}
+                  startIcon={<DeleteOutlineRoundedIcon />}
                 >
-                  Delete Recipe{' '}
-                  <i style={{ marginLeft: '8px' }} className="fas fa-trash"></i>
+                  Delete Recipe
                 </Button>
               ) : null}
-              <Button id="cancel" onClick={toggleModal} variant="outlined">
+              <Button
+                sx={{
+                  flexGrow: editing ? 1 : 0,
+                }}
+                onClick={toggleModal}
+                variant="outlined"
+                startIcon={<CancelRoundedIcon />}
+              >
                 Cancel
               </Button>
-            </div>
-          </div>
+            </Box>
+          </Stack>
         </DialogActions>
       </Dialog>
     </>
