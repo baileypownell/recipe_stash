@@ -1,4 +1,6 @@
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -23,20 +25,11 @@ import {
 } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
-import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import { forwardRef, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
 import { FullRecipe, RawRecipe } from '../../../../server/recipe';
-import side_dish from '../../../images/asparagus.jpg';
-import other from '../../../images/bread.jpg';
-import dessert from '../../../images/dessert.jpg';
-import drinks from '../../../images/drinks.jpg';
-import breakfast from '../../../images/french_toast.jpg';
-import lunch from '../../../images/lunch.jpg';
-import dinner from '../../../images/pizza.jpg';
 import options from '../../../models/options';
 import { tags as RecipeTags } from '../../../models/tags';
 import {
@@ -52,7 +45,6 @@ import {
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
 import FileUpload from '../../File-Upload/FileUpload';
-import { GridView } from '../Dashboard';
 import { AddRecipeMutationParam } from '../../RecipeCache';
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -61,7 +53,6 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 type EditProps = {
   recipe: any;
-  open: boolean;
   cloning: boolean;
   defaultTileImageKey: string;
   openSnackBar: Function;
@@ -72,10 +63,8 @@ type EditProps = {
 };
 
 type AddProps = {
-  id: string;
   category: string;
   addRecipe: Function;
-  gridView: GridView;
 };
 
 export enum Mode {
@@ -86,6 +75,8 @@ export enum Mode {
 interface Props {
   recipeDialogInfo: AddProps | EditProps;
   mode: Mode;
+  open: boolean;
+  toggleModal: () => void;
 }
 
 const determineCategory = (recipeDialogInfo, mode): string => {
@@ -98,7 +89,7 @@ const determineCategory = (recipeDialogInfo, mode): string => {
   }
 };
 
-const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
+const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [loading, setLoading] = useState(false);
   const [recipeTitle, setRecipeTitle] = useState('');
   const [ingredients, setIngredients] = useState('');
@@ -112,7 +103,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
     RecipeTags.map((tag) => ({ ...tag, selected: false })),
   );
   const [defaultTile, setDefaultTile] = useState(null);
-  const [open, setOpen] = useState(false);
   const [filesToDelete, setFilesToDelete] = useState([]);
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
@@ -138,18 +128,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (mode === Mode.Edit) {
-      setOpen((recipeDialogInfo as EditProps).open);
-    }
-  }, [(recipeDialogInfo as EditProps).open]);
-
   const clearState = () => {
-    const prevOpenState = open;
     setRecipeTitle('');
     setIngredients('');
     setDirections('');
-    setOpen(!prevOpenState);
+    toggleModal();
     setTags(tags);
   };
 
@@ -271,15 +254,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
     setNewFiles([]);
   };
 
-  const toggleModal = (): void => {
-    const prevOpenState = open;
-    setOpen(!prevOpenState);
-
-    if (mode === Mode.Edit) {
-      (recipeDialogInfo as EditProps).triggerDialog();
-    }
-  };
-
   const updateCategory = (e) => {
     setCategory(e.target.value);
   };
@@ -324,8 +298,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
     setRecipeValid(recipeValid);
   }, [recipeTitle, ingredients, directions]);
 
-  const { id, gridView } = recipeDialogInfo as AddProps;
-
   const getTitle = () => {
     if (mode === Mode.Add) {
       return 'Add Recipe';
@@ -369,251 +341,179 @@ const RecipeDialog = ({ recipeDialogInfo, mode }: Props) => {
   const editing =
     !(recipeDialogInfo as EditProps).cloning && mode === Mode.Edit;
 
-  const getBackgroundImage = (categoryId: string): string => {
-    switch (categoryId) {
-      case 'breakfast':
-        return breakfast;
-      case 'lunch':
-        return lunch;
-      case 'dinner':
-        return dinner;
-      case 'side_dish':
-        return side_dish;
-      case 'drinks':
-        return drinks;
-      case 'dessert':
-        return dessert;
-      case 'other':
-        return other;
-    }
-  };
-
   const selectedStyles = {
     backgroundColor: theme.palette.orange.main,
     color: 'white',
   };
 
   return (
-    <>
-      {mode === Mode.Add ? (
-        gridView === GridView.Grid ? (
-          <Stack
-            justifyContent="center"
-            alignItems="center"
-            onClick={toggleModal}
-            id={id}
-            sx={{
-              backgroundImage: `url(${getBackgroundImage(id)})`,
-              boxShadow: '5px 1px 30px #868686',
-              minWidth: '150px',
-              backgroundBlendMode: 'overlay',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              marginRight: '10px',
-              marginBottom: '10px',
-              color: theme.palette.primary.main,
-              borderRadius: '5px',
-              border: `2px solid ${theme.palette.primary.main}`,
-              cursor: 'pointer',
-              transition: 'background-color 0.5s',
-              '&:hover': {
-                backgroundColor: 'rgba(331, 68, 68, 0.2)',
-              },
-            }}
+    <Dialog fullScreen open={open} TransitionComponent={Transition}>
+      <DialogTitle>{getTitle()}</DialogTitle>
+      <DialogContent>
+        <Box paddingBottom={2}>
+          <Typography variant="overline">Recipe Name</Typography>
+          <ReactQuill
+            defaultValue={
+              mode === Mode.Edit
+                ? (recipeDialogInfo as EditProps).recipe.title
+                : null
+            }
+            onChange={handleModelChange}
+          />
+        </Box>
+        <Box paddingBottom={2}>
+          <Typography variant="overline">Ingredients</Typography>
+          <ReactQuill
+            defaultValue={
+              mode === Mode.Edit
+                ? (recipeDialogInfo as EditProps).recipe.ingredients
+                : null
+            }
+            onChange={handleModelChangeIngredients}
+          />
+        </Box>
+
+        <Box paddingBottom={2}>
+          <Typography variant="overline">Directions</Typography>
+          <ReactQuill
+            defaultValue={
+              mode === Mode.Edit
+                ? (recipeDialogInfo as EditProps).recipe.directions
+                : null
+            }
+            onChange={handleModelChangeDirections}
+          />
+        </Box>
+        <Box>
+          <FormControl
+            variant="filled"
+            style={{ width: '100%', margin: '10px 0' }}
           >
-            <AddCircleRoundedIcon color="info" sx={{ fontSize: '45px' }} />
-          </Stack>
+            <InputLabel>Category</InputLabel>
+            <Select value={category} onChange={updateCategory}>
+              {options.map((val, index: number) => {
+                return (
+                  <MenuItem key={index} value={val.value}>
+                    {val.label}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+        </Box>
+        <Accordion style={{ margin: '10px 0' }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Recipe Tags</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              {tags.map((tag, index) => {
+                return (
+                  <Chip
+                    sx={{
+                      cursor: 'pointer',
+                      transition: 'all 0.4s',
+                      '&:hover': {
+                        backgroundColor: `${theme.palette.orange.main}`,
+                        color: 'white',
+                      },
+                      ...(tags[index].selected && selectedStyles),
+                    }}
+                    id={index.toString()}
+                    key={index}
+                    onClick={() => toggleTagSelectionStatus(index)}
+                    label={tag.label}
+                  />
+                );
+              })}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        {mode === Mode.Add ? (
+          <FileUpload
+            open={open}
+            passDefaultTileImage={setDefaultTileImage}
+            passFiles={setFiles}
+          />
         ) : (
+          <FileUpload
+            defaultTileImageUUID={
+              (recipeDialogInfo as EditProps).defaultTileImageKey
+            }
+            passDefaultTileImage={setDefaultTileImage}
+            preExistingImageUrls={
+              (recipeDialogInfo as EditProps).presignedUrls$
+            }
+            passFilesToDelete={handleFilesToDelete}
+            passFiles={setFiles}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Stack
+          justifyContent="space-between"
+          sx={{
+            width: '100%',
+            [theme.breakpoints.up('sm')]: {
+              flexDirection: 'row-reverse',
+            },
+            button: {
+              margin: '5px',
+              [theme.breakpoints.up('sm')]: {
+                margin: 0,
+              },
+            },
+          }}
+        >
           <Button
             variant="contained"
-            color="orange"
-            onClick={toggleModal}
-            sx={{ marginBottom: 1, color: theme.palette.info.main }}
-            startIcon={<AddCircleRoundedIcon />}
+            color="secondary"
+            disabled={!recipeValid}
+            onClick={saveRecipe}
+            startIcon={loading ? null : <AddCircleRoundedIcon />}
           >
-            Add Recipe
+            {loading ? (
+              <CircularProgress
+                style={{ color: 'white', height: '26px', width: '26px' }}
+              />
+            ) : (
+              <>
+                {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
+                  ? 'Add Recipe'
+                  : 'Update Recipe'}
+              </>
+            )}
           </Button>
-        )
-      ) : null}
-
-      <Dialog
-        fullScreen
-        open={open}
-        onClose={toggleModal}
-        TransitionComponent={Transition}
-      >
-        <DialogTitle>{getTitle()}</DialogTitle>
-        <DialogContent>
-          <Box paddingBottom={2}>
-            <Typography variant="overline">Recipe Name</Typography>
-            <ReactQuill
-              defaultValue={
-                mode === Mode.Edit
-                  ? (recipeDialogInfo as EditProps).recipe.title
-                  : null
-              }
-              onChange={handleModelChange}
-            />
-          </Box>
-          <Box paddingBottom={2}>
-            <Typography variant="overline">Ingredients</Typography>
-            <ReactQuill
-              defaultValue={
-                mode === Mode.Edit
-                  ? (recipeDialogInfo as EditProps).recipe.ingredients
-                  : null
-              }
-              onChange={handleModelChangeIngredients}
-            />
-          </Box>
-
-          <Box paddingBottom={2}>
-            <Typography variant="overline">Directions</Typography>
-            <ReactQuill
-              defaultValue={
-                mode === Mode.Edit
-                  ? (recipeDialogInfo as EditProps).recipe.directions
-                  : null
-              }
-              onChange={handleModelChangeDirections}
-            />
-          </Box>
-          <Box>
-            <FormControl
-              variant="filled"
-              style={{ width: '100%', margin: '10px 0' }}
-            >
-              <InputLabel>Category</InputLabel>
-              <Select id="category" value={category} onChange={updateCategory}>
-                {options.map((val, index: number) => {
-                  return (
-                    <MenuItem key={index} value={val.value}>
-                      {val.label}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-          </Box>
-          <Accordion style={{ margin: '10px 0' }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>Recipe Tags</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                {tags.map((tag, index) => {
-                  return (
-                    <Chip
-                      sx={{
-                        cursor: 'pointer',
-                        transition: 'all 0.4s',
-                        '&:hover': {
-                          backgroundColor: `${theme.palette.orange.main}`,
-                          color: 'white',
-                        },
-                        ...(tags[index].selected && selectedStyles),
-                      }}
-                      id={index.toString()}
-                      key={index}
-                      onClick={() => toggleTagSelectionStatus(index)}
-                      label={tag.label}
-                    />
-                  );
-                })}
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-          {mode === Mode.Add ? (
-            <FileUpload
-              open={open}
-              passDefaultTileImage={setDefaultTileImage}
-              passFiles={setFiles}
-            />
-          ) : (
-            <FileUpload
-              defaultTileImageUUID={
-                (recipeDialogInfo as EditProps).defaultTileImageKey
-              }
-              passDefaultTileImage={setDefaultTileImage}
-              preExistingImageUrls={
-                (recipeDialogInfo as EditProps).presignedUrls$
-              }
-              passFilesToDelete={handleFilesToDelete}
-              passFiles={setFiles}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Stack
-            justifyContent="space-between"
+          <Box
             sx={{
-              width: '100%',
-              [theme.breakpoints.up('sm')]: {
-                flexDirection: 'row-reverse',
-              },
-              button: {
-                margin: '5px',
-                [theme.breakpoints.up('sm')]: {
-                  margin: 0,
-                },
-              },
+              display: editing ? 'flex' : 'block',
             }}
           >
-            <Button
-              variant="contained"
-              color="secondary"
-              disabled={!recipeValid}
-              onClick={saveRecipe}
-              startIcon={loading ? null : <AddCircleRoundedIcon />}
-            >
-              {loading ? (
-                <CircularProgress
-                  style={{ color: 'white', height: '26px', width: '26px' }}
-                />
-              ) : (
-                <>
-                  {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
-                    ? 'Add Recipe'
-                    : 'Update Recipe'}
-                </>
-              )}
-            </Button>
-            <Box
-              className={editing ? 'edit' : null}
-              sx={{
-                display: editing ? 'flex' : 'block',
-              }}
-            >
-              {editing ? (
-                <Button
-                  color="primary"
-                  variant="contained"
-                  style={{ marginRight: '5px ' }}
-                  onClick={deleteRecipe}
-                  startIcon={<DeleteOutlineRoundedIcon />}
-                >
-                  Delete Recipe
-                </Button>
-              ) : null}
+            {editing ? (
               <Button
-                sx={{
-                  flexGrow: editing ? 1 : 0,
-                }}
-                onClick={toggleModal}
-                variant="outlined"
-                startIcon={<CancelRoundedIcon />}
+                color="primary"
+                variant="contained"
+                style={{ marginRight: '5px ' }}
+                onClick={deleteRecipe}
+                startIcon={<DeleteOutlineRoundedIcon />}
               >
-                Cancel
+                Delete Recipe
               </Button>
-            </Box>
-          </Stack>
-        </DialogActions>
-      </Dialog>
-    </>
+            ) : null}
+            <Button
+              sx={{
+                flexGrow: editing ? 1 : 0,
+              }}
+              onClick={toggleModal}
+              variant="outlined"
+              startIcon={<CancelRoundedIcon />}
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Stack>
+      </DialogActions>
+    </Dialog>
   );
 };
 

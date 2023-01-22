@@ -136,6 +136,10 @@ const Recipe = (props: Props) => {
     return lessThanTwoImages ? noGridStyles : imagesStyles;
   };
 
+  const toggleModal = (): void => {
+    setDialogOpen(!dialogOpen);
+  };
+
   return !loading ? (
     <Stack
       sx={{
@@ -149,9 +153,10 @@ const Recipe = (props: Props) => {
       <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
       <RecipeDialog
         mode={Mode.Edit}
+        open={dialogOpen}
+        toggleModal={toggleModal}
         recipeDialogInfo={{
           recipe,
-          open: dialogOpen,
           cloning,
           defaultTileImageKey: recipe.defaultTileImageKey,
           openSnackBar: props.openSnackBar,

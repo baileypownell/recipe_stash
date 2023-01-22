@@ -1,8 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { FullRecipe } from '../../../../server/recipe';
+import { AddRecipeMutationParam } from '../../RecipeCache';
 import { GridView } from '../Dashboard';
+import { CreateRecipeWidget } from './CreateRecipeWidget';
 import ListItem from './ListItem';
-import RecipeDialog, { Mode } from './RecipeDialog';
 import Square from './Square';
 
 type Props = {
@@ -10,8 +11,8 @@ type Props = {
   id: string;
   recipes: FullRecipe[];
   gridView: GridView;
-  addRecipe: Function;
   children: any;
+  addRecipe: (recipeInput: AddRecipeMutationParam) => void;
 };
 
 const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
@@ -20,14 +21,11 @@ const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
       {title}
     </Typography>
     <Stack direction="row" flexWrap="wrap">
-      <RecipeDialog
-        mode={Mode.Add}
-        recipeDialogInfo={{
-          id,
-          gridView,
-          category: title,
-          addRecipe: addRecipe,
-        }}
+      <CreateRecipeWidget
+        gridView={gridView}
+        id={id}
+        addRecipe={addRecipe}
+        title={title}
       />
       {recipes
         ? recipes.map((recipe) =>
