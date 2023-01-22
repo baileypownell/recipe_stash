@@ -1,15 +1,46 @@
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 import {
   Box,
   Button,
   Checkbox,
   FormControlLabel,
+  IconButton,
   Snackbar,
+  Stack,
   Typography,
 } from '@mui/material';
 import React from 'react';
-import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
-import './FileUpload.scss';
 const { v4: uuidv4 } = require('uuid');
+
+const fileCoverStyles = {
+  position: 'absolute',
+  backgroundColor: 'rgba(331, 68, 68, 0.2)',
+  color: 'white',
+  top: 0,
+  right: 0,
+  left: 0,
+  bottom: 0,
+  padding: '5px',
+  transition: 'backgroundColor 0.4s',
+  borderRadius: '5px',
+};
+
+const filePreviewStyles = {
+  boxShadow: '5px 1px 30px #868686',
+  flexGrow: 1,
+  position: 'relative',
+  height: '200px',
+  minWidth: '200px',
+  backgroundPosition: 'center',
+  backgroundSize: 'cover',
+  borderRadius: '5px',
+  margin: '5px',
+  flexGrow: 1,
+  // [theme.breakpoints.up('lg')]: {
+  //   width: '300px';
+  // }
+};
 
 class FileUpload extends React.Component {
   state = {
@@ -246,9 +277,21 @@ class FileUpload extends React.Component {
     const limitReached =
       files.length + (preExistingImageUrls?.length || 0) === 5;
     return (
-      <div className="file-upload">
-        <div
-          className="dropzone"
+      <Box padding="20px 0">
+        <Box
+          sx={{
+            border: '2px dashed #dbdbdb',
+            cursor: 'pointer',
+            position: 'relative',
+            input: {
+              minHeight: '300px',
+              display: 'block',
+              width: '100%',
+              opacity: 0,
+              position: 'absolute',
+              minHeight: '275px',
+            },
+          }}
           onDrop={this.handleDrop}
           onDragOver={this.handleDrop}
         >
@@ -262,6 +305,11 @@ class FileUpload extends React.Component {
           ></input>
           <Box
             sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '25px',
               svg: {
                 fontSize: '100px',
                 marginTop: '15px',
@@ -274,23 +322,26 @@ class FileUpload extends React.Component {
               color="secondary"
               onClick={this.openFileFinder}
               disabled={limitReached}
+              sx={{
+                margin: 1,
+              }}
             >
               Choose a file
             </Button>
-            <span>(Limit 5)</span>
+            <Typography>(Limit 5)</Typography>
             <UploadFileRoundedIcon />
           </Box>
-        </div>
-        <div className="file-list">
+        </Box>
+        <Stack padding="15px 0" direction="row" flexWrap="wrap">
           {Array.from(files)?.map((file, index) => (
-            <div
+            <Box
               key={file.id}
-              className="file-preview"
+              sx={filePreviewStyles}
               style={{
                 backgroundImage: `url(${URL.createObjectURL(file.file)})`,
               }}
             >
-              <div className="file-cover">
+              <Box sx={fileCoverStyles}>
                 <FormControlLabel
                   value="end"
                   control={
@@ -304,20 +355,27 @@ class FileUpload extends React.Component {
                   label="Use as tile background image"
                   labelPlacement="end"
                 />
-                <i
+                <IconButton
+                  color="info"
                   onClick={(e) => this.removeFile(file.id)}
-                  className="fas fa-trash"
-                ></i>
-              </div>
-            </div>
+                  sx={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    right: '10px',
+                  }}
+                >
+                  <DeleteRoundedIcon />
+                </IconButton>
+              </Box>
+            </Box>
           ))}
           {preExistingImageUrls?.map((url, index) => (
-            <div
-              className="file-preview"
+            <Box
+              sx={filePreviewStyles}
               key={index}
               style={{ backgroundImage: `url(${url})` }}
             >
-              <div className="file-cover">
+              <Box sx={fileCoverStyles}>
                 <FormControlLabel
                   value="end"
                   control={
@@ -331,14 +389,21 @@ class FileUpload extends React.Component {
                   label="Use as tile background image"
                   labelPlacement="end"
                 />
-                <i
+                <IconButton
+                  color="info"
                   onClick={(e) => this.stageAWSFileDeletion(url)}
-                  className="fas fa-trash"
-                ></i>
-              </div>
-            </div>
+                  sx={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    right: '10px',
+                  }}
+                >
+                  <DeleteRoundedIcon />
+                </IconButton>
+              </Box>
+            </Box>
           ))}
-        </div>
+        </Stack>
 
         <Snackbar
           open={snackBarOpen}
@@ -351,7 +416,7 @@ class FileUpload extends React.Component {
           message={snackBarMessage}
           key={'bottom' + 'center'}
         />
-      </div>
+      </Box>
     );
   }
 }

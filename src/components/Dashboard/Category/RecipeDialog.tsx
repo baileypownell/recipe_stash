@@ -44,7 +44,7 @@ import {
   UpdateRecipeInput,
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
-import FileUpload from '../../File-Upload/FileUpload';
+import FileUpload from './FileUpload';
 import { AddRecipeMutationParam } from '../../RecipeCache';
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -254,9 +254,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setNewFiles([]);
   };
 
-  const updateCategory = (e) => {
-    setCategory(e.target.value);
-  };
+  const updateCategory = (e) => setCategory(e.target.value);
 
   const toggleTagSelectionStatus = (index: number) => {
     const copyTags = [...tags];
@@ -267,13 +265,10 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setTags(copyTags);
   };
 
-  const setFiles = (newFiles: NewFileInterface[]) => {
-    setNewFiles(newFiles);
-  };
+  const setFiles = (newFiles: NewFileInterface[]) => setNewFiles(newFiles);
 
-  const setDefaultTileImage = (defaultTile: DefaultTile) => {
+  const setDefaultTileImage = (defaultTile: DefaultTile) =>
     setDefaultTile(defaultTile);
-  };
 
   const handleModelChange = (html: string, delta, source, editor) => {
     setRecipeTitle(html);
@@ -281,13 +276,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setRecipeTitleRaw(recipe_title_raw);
   };
 
-  const handleModelChangeIngredients = (html: string) => {
-    setIngredients(html);
-  };
+  const handleModelChangeIngredients = (html: string) => setIngredients(html);
 
-  const handleModelChangeDirections = (html: string) => {
-    setDirections(html);
-  };
+  const handleModelChangeDirections = (html: string) => setDirections(html);
 
   useEffect(() => {
     const rawDirections = htmlToText(directions);
@@ -308,9 +299,8 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     }
   };
 
-  const handleFilesToDelete = (files: ExistingFile[]) => {
+  const handleFilesToDelete = (files: ExistingFile[]) =>
     setFilesToDelete(files);
-  };
 
   const deleteRecipe = async () => {
     try {
