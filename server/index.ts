@@ -1,13 +1,13 @@
 import { Router } from 'express';
-
-import signin from './signin';
-import sendResetEmail from './sendResetEmail';
-import signinWithGoogle from './signinWithGoogle';
-import logout from './logout';
-import user from './user';
-import recipe from './recipe';
-import fileUpload from './file-upload';
 import auth from './auth';
+import fileUpload from './file-upload';
+import logout from './logout';
+import recipe from './recipe';
+import sendResetEmail from './sendResetEmail';
+import signin from './signin';
+import signinWithGoogle from './signinWithGoogle';
+import user from './user';
+
 const router = Router();
 
 router.use('/signin', signin);

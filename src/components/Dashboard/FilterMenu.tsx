@@ -1,3 +1,4 @@
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import {
   Box,
   Button,
@@ -8,8 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React from 'react';
-import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import { useState } from 'react';
 
 export default function FilterMenu(props: {
   numberOfSelectedFilters: number;
@@ -20,7 +20,7 @@ export default function FilterMenu(props: {
   filter: Function;
   filterByCategory: Function;
 }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

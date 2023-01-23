@@ -6,7 +6,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type DeleteModalProps = {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const DeleteModal = ({
   deleteFunction,
   closeModal,
 }: DeleteModalProps) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClose = () => closeModal();
 
