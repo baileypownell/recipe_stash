@@ -46,7 +46,12 @@ const Home = (props: any) => {
         </Stack>
         <Fade in={visible}>
           <Stack alignItems="center">
-            <Box textAlign="center">
+            <Box
+              textAlign="center"
+              sx={{
+                color: theme.palette.info.main,
+              }}
+            >
               <Typography variant="h6">All of your recipes.</Typography>
               <Typography variant="h6">All in one place.</Typography>
               <Typography variant="h6">And it's free.</Typography>

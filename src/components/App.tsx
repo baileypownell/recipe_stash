@@ -7,6 +7,7 @@ import { Home, Login, Nav, ResetPassword, Settings, Signup } from '.';
 import GuardedRoute from './GuardedRoute';
 import AuthenticationService from '../services/auth-service';
 import RecipeCache from './RecipeCache';
+import './index.scss';
 
 export const queryClient = new QueryClient();
 
