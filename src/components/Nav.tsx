@@ -101,7 +101,16 @@ const Nav = () => {
             src={whiteLogo}
             alt="logo"
           />
-          <List>
+          <List
+            sx={{
+              '.MuiListItemText-primary': {
+                color: theme.palette.gray.main,
+              },
+              svg: {
+                color: theme.palette.gray.main,
+              },
+            }}
+          >
             {isAuthenticated ? (
               <>
                 <ListItem

@@ -20,7 +20,6 @@ import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
-// import './Recipe.scss';
 
 const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<
   string[]

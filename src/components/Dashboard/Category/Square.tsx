@@ -68,13 +68,14 @@ const RecipeCard = ({
             <Chip
               sx={{
                 marginRight: 0.5,
+                backgroundColor: theme.palette.orange.main,
+                color: theme.palette.info.main,
               }}
               label={
                 tags.find((tag) => tag.recipeTagPropertyName === recipeTag)
                   .label
               }
-              color="secondary"
-              variant="outlined"
+              variant="filled"
             ></Chip>
           ))}
         </Box>
