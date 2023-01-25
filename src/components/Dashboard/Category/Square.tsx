@@ -93,6 +93,7 @@ const Square = ({ recipe }: SquareProps) => {
   const defaultTileImageUrl = recipe.preSignedDefaultTileImageUrl;
   const rawTitle = recipe.rawTitle;
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoadingError, setImageLoadingError] = useState(false);
   const [skeletonWidth, setSkeletonWidth] = useState(150);
   const [skeletonHeight, setSkeletonHeight] = useState(150);
   const navigate = useNavigate();
@@ -124,37 +125,38 @@ const Square = ({ recipe }: SquareProps) => {
 
   // a <Square/> should not render until the background image (if there is one) is fully loaded
   // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
-  return (
-    <>
-      {defaultTileImageUrl ? (
-        <>
-          {imageLoaded ? (
-            <RecipeCard
-              viewRecipe={viewRecipe}
-              recipe={recipe}
-              rawTitle={rawTitle}
-              defaultTileImageUrl={defaultTileImageUrl}
-            />
-          ) : (
-            <>
-              <img
-                src={defaultTileImageUrl}
-                style={{ display: 'none' }}
-                onLoad={() => setImageLoaded(true)}
-              />
-              <Skeleton width={skeletonWidth} height={skeletonHeight} />
-            </>
-          )}
-        </>
-      ) : (
-        <RecipeCard
-          viewRecipe={viewRecipe}
-          recipe={recipe}
-          rawTitle={rawTitle}
+  if (defaultTileImageUrl) {
+    return imageLoaded ? (
+      <RecipeCard
+        viewRecipe={viewRecipe}
+        recipe={recipe}
+        rawTitle={rawTitle}
+        defaultTileImageUrl={defaultTileImageUrl}
+      />
+    ) : (
+      <>
+        <img
+          src={defaultTileImageUrl}
+          style={{ display: 'none' }}
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => setImageLoadingError(true)}
         />
-      )}
-    </>
-  );
+        {!imageLoadingError ? (
+          <Skeleton width={skeletonWidth} height={skeletonHeight} />
+        ) : (
+          <RecipeCard
+            viewRecipe={viewRecipe}
+            recipe={recipe}
+            rawTitle={rawTitle}
+          />
+        )}
+      </>
+    );
+  } else {
+    return (
+      <RecipeCard viewRecipe={viewRecipe} recipe={recipe} rawTitle={rawTitle} />
+    );
+  }
 };
 
 export default Square;

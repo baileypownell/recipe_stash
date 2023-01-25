@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UploadedFileResult } from '../models/images';
+import { NewFile, UploadedFileResult } from '../models/images';
 import tag from '../models/tags';
 import { RawRecipe, FullRecipe } from '../../server/recipe';
 import { TileImageSetResponse } from '../../server/file-upload';
@@ -45,23 +45,6 @@ export interface RecipeInput extends RecipeTags {
   category: string;
   ingredients: string;
   directions: string;
-}
-
-export interface NewFileInterface {
-  file: {
-    lastModified: Date; // unix
-    lastModifiedDate: Date;
-    name: string;
-    size: number;
-    type: string;
-    webkitRelativePath: string;
-  };
-  id: string;
-}
-
-export interface DefaultTile {
-  newFile: boolean;
-  fileName: string;
 }
 
 export interface RecipeInterface {
@@ -137,8 +120,8 @@ export const RecipeService = {
 
   createRecipe: async (
     recipeInput: RecipeInput,
-    files: NewFileInterface[],
-    defaultTile: DefaultTile | null,
+    files: NewFile[],
+    defaultTile: string | null,
   ): Promise<RawRecipe> => {
     try {
       const recipeCreated = await axios.post('/recipe', recipeInput);
@@ -149,7 +132,7 @@ export const RecipeService = {
             files,
           );
           const defaultTileImage = uploadedImageKeys.find(
-            (key) => key.fileName === defaultTile?.fileName,
+            (key) => key.id === defaultTile,
           );
 
           if (defaultTileImage) {
@@ -182,11 +165,11 @@ export const RecipeService = {
 
   uploadFiles: async (
     recipeId: string,
-    files: NewFileInterface[],
+    files: NewFile[],
   ): Promise<UploadedFileResult[]> => {
     try {
       return await Promise.all(
-        files.map(async (file: NewFileInterface) => {
+        files.map(async (file: NewFile) => {
           const formData = new FormData();
           formData.append('image', file.file as any);
 
@@ -202,10 +185,10 @@ export const RecipeService = {
             );
             return {
               awsKey: upload.data.key,
-              fileName: file.file.name,
+              id: file.id,
             };
           } catch (error) {
-            console.log('There was an error uploading a file bitch: ', error);
+            console.log('There was an error uploading a file: ', error);
             throw error;
           }
         }),
@@ -217,8 +200,8 @@ export const RecipeService = {
 
   updateRecipe: (
     recipeInput: UpdateRecipeInput,
-    files: NewFileInterface[],
-    defaultTile: DefaultTile | string | null, // string if existing image on recipe, not new one
+    files: NewFile[],
+    defaultTile: string | null,
     filesToDeleteKeys: string[],
     recipeId: string,
     recipe: RecipeInterface,
@@ -227,7 +210,7 @@ export const RecipeService = {
       .put('/recipe', recipeInput)
       .then((res) => {
         const recipeUpdated: RawRecipe = res.data;
-        const uploads: NewFileInterface[] = files;
+        const uploads: NewFile[] = files;
         const uploading = !!uploads.length;
         const deleting = !!filesToDeleteKeys?.length;
 
@@ -238,22 +221,16 @@ export const RecipeService = {
               return RecipeService.deleteFiles(filesToDeleteKeys)
                 .then(() => {
                   if (defaultTile) {
-                    let awsKey: string;
-                    if (
-                      uploadedImageKeys.find(
-                        (obj) =>
-                          obj.fileName ===
-                          (defaultTile as DefaultTile).fileName,
-                      )
-                    ) {
-                      awsKey = uploadedImageKeys.find(
-                        (obj) =>
-                          obj.fileName ===
-                          (defaultTile as DefaultTile).fileName,
-                      ).awsKey;
-                    } else {
-                      awsKey = defaultTile as string;
-                    }
+                    let awsKey: string = defaultTile;
+                    // if (
+                    //   uploadedImageKeys.find((obj) => obj.id === defaultTile)
+                    // ) {
+                    //   awsKey = uploadedImageKeys.find(
+                    //     (obj) => obj.id === defaultTile,
+                    //   ).awsKey;
+                    // } else {
+                    //   awsKey = defaultTile;
+                    // }
                     return RecipeService.setTileImage(
                       recipeUpdated.recipe_uuid,
                       awsKey,
@@ -274,15 +251,9 @@ export const RecipeService = {
             .then((uploadedImageKeys) => {
               if (defaultTile) {
                 let awsKey: string;
-                if (
-                  uploadedImageKeys.find(
-                    (obj) =>
-                      obj.fileName === (defaultTile as DefaultTile).fileName,
-                  )
-                ) {
+                if (uploadedImageKeys.find((obj) => obj.id === defaultTile)) {
                   awsKey = uploadedImageKeys.find(
-                    (obj) =>
-                      obj.fileName === (defaultTile as DefaultTile).fileName,
+                    (obj) => obj.id === defaultTile,
                   ).awsKey;
                 } else {
                   awsKey = defaultTile as string;

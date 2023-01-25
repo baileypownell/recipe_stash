@@ -1,19 +1,18 @@
 import { Snackbar } from '@mui/material';
-import { queryClient } from './App';
-import Dashboard from './Dashboard/Dashboard';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
 import BounceLoader from 'react-spinners/BounceLoader';
-import Recipe from './Recipe/Recipe';
 import { FullRecipe, RawRecipe } from '../../server/recipe';
+import { NewFile } from '../models/images';
 import {
-  DefaultTile,
-  NewFileInterface,
   RecipeInput,
   RecipeService,
   SortedRecipeInterface,
 } from '../services/recipe-services';
+import { queryClient } from './App';
+import Dashboard from './Dashboard/Dashboard';
+import Recipe from './Recipe/Recipe';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';
@@ -27,8 +26,8 @@ export interface MealCategoriesType {
 
 export interface AddRecipeMutationParam {
   recipeInput: RecipeInput;
-  files: NewFileInterface[];
-  defaultTile: DefaultTile | null;
+  files: NewFile[];
+  defaultTile: string | null;
 }
 
 enum RecipeCategories {

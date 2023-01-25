@@ -13,18 +13,12 @@ import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import BounceLoader from 'react-spinners/BounceLoader';
-import { BehaviorSubject } from 'rxjs';
 import { tags as recipeTags } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
 import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
-
-const presignedUrlsSubject: BehaviorSubject<string[]> = new BehaviorSubject<
-  string[]
->([]);
-const presignedUrls$ = presignedUrlsSubject.asObservable();
 
 interface Props {
   openSnackBar: Function;
@@ -38,6 +32,7 @@ const Recipe = (props: Props) => {
   const [cloning, setCloning] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [preSignedUrls, setPresignedUrls] = useState(null);
   const navigate = useNavigate();
   const triggerDialog = (): void => {
     setDialogOpen(!dialogOpen);
@@ -52,9 +47,9 @@ const Recipe = (props: Props) => {
       setLoading(false);
 
       if (recipe.preSignedUrls) {
-        presignedUrlsSubject.next(recipe.preSignedUrls);
+        setPresignedUrls(recipe.preSignedUrls);
       } else {
-        presignedUrlsSubject.next([]);
+        setPresignedUrls([]);
       }
 
       const tagState = tags.map((tag) => {
@@ -89,7 +84,7 @@ const Recipe = (props: Props) => {
   };
 
   const cloneRecipe = (): void => {
-    presignedUrlsSubject.next([]);
+    setPresignedUrls([]);
     setCloning(true);
     triggerDialog();
   };
@@ -159,7 +154,7 @@ const Recipe = (props: Props) => {
           cloning,
           defaultTileImageKey: recipe.defaultTileImageKey,
           openSnackBar: props.openSnackBar,
-          presignedUrls$: presignedUrls$,
+          presignedUrls: preSignedUrls,
           fetchData: fetchData,
           addRecipeMutation: props.addRecipeMutation,
           triggerDialog: triggerDialog,

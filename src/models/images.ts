@@ -1,4 +1,9 @@
 export interface UploadedFileResult {
   awsKey: string;
-  fileName: string;
+  id: string;
+}
+
+export interface NewFile {
+  file: File;
+  id: string;
 }

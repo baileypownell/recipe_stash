@@ -33,10 +33,8 @@ import { FullRecipe, RawRecipe } from '../../../../server/recipe';
 import options from '../../../models/options';
 import { tags as RecipeTags } from '../../../models/tags';
 import {
-  DefaultTile,
   ExistingFile,
   IRecipeTags,
-  NewFileInterface,
   RecipeInput,
   RecipeInterface,
   RecipeService,
@@ -44,8 +42,8 @@ import {
   UpdateRecipeInput,
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
-import FileUpload from './FileUpload';
 import { AddRecipeMutationParam } from '../../RecipeCache';
+import FileUpload from './FileUpload';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -56,7 +54,7 @@ type EditProps = {
   cloning: boolean;
   defaultTileImageKey: string;
   openSnackBar: Function;
-  presignedUrls$: any;
+  presignedUrls: string[];
   fetchData: Function;
   addRecipeMutation: Function;
   triggerDialog: Function;
@@ -102,7 +100,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [tags, setTags] = useState(
     RecipeTags.map((tag) => ({ ...tag, selected: false })),
   );
-  const [defaultTile, setDefaultTile] = useState(null);
+  const [defaultTile, setDefaultTile] = useState<string | null>(null);
   const [filesToDelete, setFilesToDelete] = useState([]);
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
@@ -265,11 +263,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setTags(copyTags);
   };
 
-  const setFiles = (newFiles: NewFileInterface[]) => setNewFiles(newFiles);
-
-  const setDefaultTileImage = (defaultTile: DefaultTile) =>
-    setDefaultTile(defaultTile);
-
   const handleModelChange = (html: string, delta, source, editor) => {
     setRecipeTitle(html);
     const recipe_title_raw = editor.getText();
@@ -421,21 +414,18 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         </Accordion>
         {mode === Mode.Add ? (
           <FileUpload
-            open={open}
-            passDefaultTileImage={setDefaultTileImage}
-            passFiles={setFiles}
+            passDefaultTileImage={(fileId) => setDefaultTile(fileId)}
+            passFiles={(newFiles) => setNewFiles(newFiles)}
           />
         ) : (
           <FileUpload
             defaultTileImageUUID={
               (recipeDialogInfo as EditProps).defaultTileImageKey
             }
-            passDefaultTileImage={setDefaultTileImage}
-            preExistingImageUrls={
-              (recipeDialogInfo as EditProps).presignedUrls$
-            }
+            passDefaultTileImage={(fileId) => setDefaultTile(fileId)}
+            preExistingImageUrls={(recipeDialogInfo as EditProps).presignedUrls}
             passFilesToDelete={handleFilesToDelete}
-            passFiles={setFiles}
+            passFiles={(newFiles) => setNewFiles(newFiles)}
           />
         )}
       </DialogContent>
