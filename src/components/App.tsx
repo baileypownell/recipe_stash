@@ -1,5 +1,4 @@
 import { createTheme, ThemeProvider } from '@mui/material';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -55,46 +54,44 @@ const App = () => {
   });
 
   return (
-    <GoogleOAuthProvider clientId={process.env.GOOGLE_LOGIN_CLIENT_ID}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <BrowserRouter>
-            <Nav />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/reset/:token" element={<ResetPassword />} />
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Nav />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/reset/:token" element={<ResetPassword />} />
+            <Route
+              path="/recipes"
+              element={
+                <GuardedRoute>
+                  <RecipeCache />
+                </GuardedRoute>
+              }
+            >
               <Route
-                path="/recipes"
+                path=":id"
                 element={
                   <GuardedRoute>
                     <RecipeCache />
                   </GuardedRoute>
                 }
-              >
-                <Route
-                  path=":id"
-                  element={
-                    <GuardedRoute>
-                      <RecipeCache />
-                    </GuardedRoute>
-                  }
-                ></Route>
-              </Route>
-              <Route
-                path="/settings"
-                element={
-                  <GuardedRoute>
-                    <Settings />
-                  </GuardedRoute>
-                }
               ></Route>
-            </Routes>
-          </BrowserRouter>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </GoogleOAuthProvider>
+            </Route>
+            <Route
+              path="/settings"
+              element={
+                <GuardedRoute>
+                  <Settings />
+                </GuardedRoute>
+              }
+            ></Route>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
