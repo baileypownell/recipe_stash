@@ -103,8 +103,7 @@ const Login = () => {
 
   useEffect(() => {
     google.accounts.id.initialize({
-      client_id:
-        '448227348202-97da7vci3t474ch3ah6goms41nlghb1l.apps.googleusercontent.com',
+      client_id: `${process.env.GOOGLE_LOGIN_CLIENT_ID}`,
       callback: authenticateWithGoogle,
     });
     google.accounts.id.renderButton(
