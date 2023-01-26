@@ -176,21 +176,19 @@ const Recipe = (props: Props) => {
             [theme.breakpoints.up('lg')]: {
               width: '60%',
             },
+            p: {
+              fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+            },
           }}
         >
-          <Box>
-            <Box
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(recipe.title),
-              }}
-            />
-          </Box>
-          <Box>
-            <Box dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
-          </Box>
-          <Box>
-            <Box dangerouslySetInnerHTML={{ __html: recipe.directions }} />
-          </Box>
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(recipe.title),
+            }}
+          />
+
+          <Box dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
+          <Box dangerouslySetInnerHTML={{ __html: recipe.directions }} />
           <Box>
             {tags.map((tag) =>
               tag.selected ? (

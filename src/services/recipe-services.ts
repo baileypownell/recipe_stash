@@ -198,7 +198,7 @@ export const RecipeService = {
     }
   },
 
-  updateRecipe: (
+  updateRecipe: async (
     recipeInput: UpdateRecipeInput,
     files: NewFile[],
     defaultTile: string | null,
@@ -206,77 +206,51 @@ export const RecipeService = {
     recipeId: string,
     recipe: RecipeInterface,
   ): Promise<RawRecipe> => {
-    return axios
-      .put('/recipe', recipeInput)
-      .then((res) => {
-        const recipeUpdated: RawRecipe = res.data;
-        const uploads: NewFile[] = files;
-        const uploading = !!uploads.length;
-        const deleting = !!filesToDeleteKeys?.length;
+    try {
+      const res = await axios.put('/recipe', recipeInput);
 
-        // bug: uploading and deleting OR just uploading AND setting default image to a PREEXISTING image
-        if (uploading && deleting) {
-          return RecipeService.uploadFiles(recipeId, uploads).then(
-            (uploadedImageKeys) => {
-              return RecipeService.deleteFiles(filesToDeleteKeys)
-                .then(() => {
-                  if (defaultTile) {
-                    let awsKey: string = defaultTile;
-                    // if (
-                    //   uploadedImageKeys.find((obj) => obj.id === defaultTile)
-                    // ) {
-                    //   awsKey = uploadedImageKeys.find(
-                    //     (obj) => obj.id === defaultTile,
-                    //   ).awsKey;
-                    // } else {
-                    //   awsKey = defaultTile;
-                    // }
-                    return RecipeService.setTileImage(
-                      recipeUpdated.recipe_uuid,
-                      awsKey,
-                    ).then(() => recipeUpdated);
-                  } else if (recipe.defaultTileImageKey) {
-                    return RecipeService.removeTileImage(recipeId).then(
-                      () => recipeUpdated,
-                    );
-                  } else {
-                    return recipeUpdated;
-                  }
-                })
-                .catch((e) => e);
-            },
-          );
-        } else if (uploading) {
-          return RecipeService.uploadFiles(recipeId, uploads)
-            .then((uploadedImageKeys) => {
-              if (defaultTile) {
-                let awsKey: string;
-                if (uploadedImageKeys.find((obj) => obj.id === defaultTile)) {
-                  awsKey = uploadedImageKeys.find(
-                    (obj) => obj.id === defaultTile,
-                  ).awsKey;
+      const recipeUpdated: RawRecipe = res.data;
+      const uploads: NewFile[] = files;
+      const uploading = !!uploads.length;
+      const deleting = !!filesToDeleteKeys?.length;
+
+      if (uploading && deleting) {
+        return RecipeService.uploadFiles(recipeId, uploads).then(
+          (uploadedImageKeys) => {
+            return RecipeService.deleteFiles(filesToDeleteKeys)
+              .then(() => {
+                if (defaultTile) {
+                  return RecipeService.setTileImage(
+                    recipeUpdated.recipe_uuid,
+                    defaultTile,
+                  ).then(() => recipeUpdated);
+                } else if (recipe.defaultTileImageKey) {
+                  return RecipeService.removeTileImage(recipeId).then(
+                    () => recipeUpdated,
+                  );
                 } else {
-                  awsKey = defaultTile as string;
+                  return recipeUpdated;
                 }
-                return RecipeService.setTileImage(
-                  recipeUpdated.recipe_uuid,
-                  awsKey,
-                ).then(() => recipeUpdated);
-              } else if (recipe.defaultTileImageKey) {
-                return RecipeService.removeTileImage(recipeId).then(
-                  () => recipeUpdated,
-                );
-              } else {
-                return recipeUpdated;
-              }
-            })
-            .catch((e) => e);
-        } else if (deleting) {
-          return RecipeService.deleteFiles(filesToDeleteKeys).then(() => {
+              })
+              .catch((e) => e);
+          },
+        );
+      } else if (uploading) {
+        return RecipeService.uploadFiles(recipeId, uploads)
+          .then((uploadedImageKeys) => {
             if (defaultTile) {
-              return RecipeService.setTileImage(recipeId, defaultTile).then(
-                () => recipeUpdated,
-              );
+              let awsKey: string;
+              if (uploadedImageKeys.find((obj) => obj.id === defaultTile)) {
+                awsKey = uploadedImageKeys.find(
+                  (obj) => obj.id === defaultTile,
+                ).awsKey;
+              } else {
+                awsKey = defaultTile as string;
+              }
+              return RecipeService.setTileImage(
+                recipeUpdated.recipe_uuid,
+                awsKey,
+              ).then(() => recipeUpdated);
             } else if (recipe.defaultTileImageKey) {
               return RecipeService.removeTileImage(recipeId).then(
                 () => recipeUpdated,
@@ -284,22 +258,48 @@ export const RecipeService = {
             } else {
               return recipeUpdated;
             }
-          });
-        } else {
+          })
+          .catch((e) => e);
+      } else if (deleting) {
+        try {
+          await RecipeService.deleteFiles(filesToDeleteKeys);
+
           if (defaultTile) {
-            return RecipeService.setTileImage(recipeId, defaultTile)
-              .then(() => recipeUpdated)
-              .catch((e) => e);
+            try {
+              await RecipeService.setTileImage(recipeId, defaultTile);
+              return recipeUpdated;
+            } catch (e) {
+              throw e;
+            }
           } else if (recipe.defaultTileImageKey) {
-            return RecipeService.removeTileImage(recipeId)
-              .then(() => recipeUpdated)
-              .catch((e) => e);
+            try {
+              await RecipeService.removeTileImage(recipeId);
+              return recipeUpdated;
+            } catch (e) {
+              throw e;
+            }
           } else {
             return recipeUpdated;
           }
+        } catch (error) {
+          throw error;
         }
-      })
-      .catch((e) => e);
+      } else {
+        if (defaultTile) {
+          return RecipeService.setTileImage(recipeId, defaultTile)
+            .then(() => recipeUpdated)
+            .catch((e) => e);
+        } else if (recipe.defaultTileImageKey) {
+          return RecipeService.removeTileImage(recipeId)
+            .then(() => recipeUpdated)
+            .catch((e) => e);
+        } else {
+          return recipeUpdated;
+        }
+      }
+    } catch (e) {
+      throw e;
+    }
   },
 
   deleteFiles: async (filesToDeleteKeys: string[]) => {
