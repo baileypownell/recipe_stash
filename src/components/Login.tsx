@@ -8,14 +8,13 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { GoogleLogin } from '@react-oauth/google';
 import { Form, Formik } from 'formik';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import ClipLoader from 'react-spinners/ClipLoader';
 import * as yup from 'yup';
-import AuthenticationService from '../services/auth-service';
 import backgroundImage from '../images/ingredients.jpg';
+import AuthenticationService from '../services/auth-service';
 
 interface FormInputs {
   email: string;
@@ -101,6 +100,19 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id:
+        '448227348202-97da7vci3t474ch3ah6goms41nlghb1l.apps.googleusercontent.com',
+      callback: authenticateWithGoogle,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('google-button-anchor'),
+      { theme: 'outline', size: 'large' }, // customization attributes
+    );
+    google.accounts.id.prompt(); // also display the One Tap dialog
+  }, []);
 
   return (
     <>
@@ -197,16 +209,9 @@ const Login = () => {
                         )}
                       </Button>
 
-                      {!googleLoginHidden ? (
-                        <Box marginTop={2} marginBottom={2}>
-                          <GoogleLogin
-                            onSuccess={authenticateWithGoogle}
-                            onError={() => {
-                              console.log('Login Failed');
-                            }}
-                          />
-                        </Box>
-                      ) : null}
+                      <Box marginTop={2} marginBottom={2}>
+                        <div id="google-button-anchor"></div>
+                      </Box>
 
                       {signInError ? (
                         <Button
