@@ -61,7 +61,7 @@ export const CreateRecipeWidget = ({
           id={id}
           sx={{
             backgroundImage: `url(${getBackgroundImage(id)})`,
-            boxShadow: '5px 1px 30px #868686',
+            boxShadow: `5px 1px 30px ${theme.palette.boxShadow.main}`,
             minWidth: '150px',
             backgroundBlendMode: 'overlay',
             backgroundSize: 'cover',

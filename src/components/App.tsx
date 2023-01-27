@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
 import React, { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -7,6 +7,7 @@ import GuardedRoute from './GuardedRoute';
 import AuthenticationService from '../services/auth-service';
 import RecipeCache from './RecipeCache';
 import './index.scss';
+import { theme } from './theme';
 
 export const queryClient = new QueryClient();
 
@@ -20,38 +21,6 @@ const App = () => {
       )
       .catch((err) => console.log(err));
   }, []);
-
-  const theme = createTheme({
-    palette: {
-      // primary: {
-      //   main: '#e66c6c',
-      //   dark: '#d35151',
-      // },
-      primary: {
-        main: '#e86054',
-        dark: '#d1564c',
-        light: '#ea7065',
-      },
-      secondary: {
-        main: '#87ad6a',
-        contrastText: '#fff',
-      },
-      error: {
-        main: '#dd7244',
-        dark: '#c23c3c',
-      },
-      info: {
-        main: '#f7f7f7',
-        contrastText: '#353531',
-      },
-      gray: {
-        main: '#353531',
-      },
-      orange: {
-        main: '#dd7244',
-      },
-    },
-  });
 
   return (
     <QueryClientProvider client={queryClient}>

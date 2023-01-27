@@ -1,4 +1,10 @@
-import { Box, Checkbox, FormControlLabel, IconButton } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  useTheme,
+} from '@mui/material';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { NewFile } from '../../../models/images';
 
@@ -15,8 +21,9 @@ export const FileUploadPreview = ({
   setDefaultTileImage,
   removeFile,
 }: FileUploadPreviewProps) => {
+  const theme = useTheme();
   const filePreviewStyles = {
-    boxShadow: '5px 1px 30px #868686',
+    boxShadow: `5px 1px 30px ${theme.palette.boxShadow.main}`,
     flexGrow: 1,
     position: 'relative',
     height: '200px',

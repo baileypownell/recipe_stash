@@ -102,11 +102,8 @@ const Recipe = (props: Props) => {
       width: '100%',
       maxWidth: '400px',
       borderRadius: '5px',
-      boxShadow: `5px 1px 30px #868686`,
+      boxShadow: `5px 1px 30px ${theme.palette.boxShadow.main}`,
     },
-    // > div {
-    //   margin: 0 auto;
-    // }
   };
 
   const imagesStyles = {
@@ -122,7 +119,7 @@ const Recipe = (props: Props) => {
       width: '100%',
       margin: '0 0 15px 0',
       borderRadius: '5px',
-      boxShadow: `5px 1px 30px #868686`,
+      boxShadow: `5px 1px 30px ${theme.palette.boxShadow.main}`,
     },
   };
 

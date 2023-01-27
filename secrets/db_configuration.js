@@ -6,5 +6,3 @@ module.exports = {
   password: 'node_password',
   port: 5432,
 };
-
-// for production

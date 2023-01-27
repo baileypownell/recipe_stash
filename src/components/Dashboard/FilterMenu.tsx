@@ -8,6 +8,7 @@ import {
   MenuItem,
   Stack,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useState } from 'react';
 
@@ -21,6 +22,7 @@ export default function FilterMenu(props: {
   filterByCategory: Function;
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
+  const theme = useTheme();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -35,7 +37,7 @@ export default function FilterMenu(props: {
       <Button
         sx={{
           backgroundColor: 'white',
-          color: '#353531',
+          color: theme.palette.gray.main,
           '&:hover': {
             backgroundColor: 'white',
           },
@@ -99,6 +101,7 @@ export default function FilterMenu(props: {
                     <Checkbox
                       checked={props.appliedFilt[item.key]}
                       id={item.key}
+                      color="orange"
                       inputProps={{ 'aria-label': 'primary checkbox' }}
                     />
                   </Stack>
@@ -141,6 +144,7 @@ export default function FilterMenu(props: {
                     <Checkbox
                       checked={props.appliedCat[item.key]}
                       id={item.key}
+                      color="orange"
                       inputProps={{ 'aria-label': 'primary checkbox' }}
                     />
                   </Stack>

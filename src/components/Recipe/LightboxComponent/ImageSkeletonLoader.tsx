@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import React, { useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
-
 import 'react-loading-skeleton/dist/skeleton.css';
 
 function ImageSkeletonLoader({ url, openLightBox }) {
@@ -16,7 +15,10 @@ function ImageSkeletonLoader({ url, openLightBox }) {
     />
   ) : (
     <Box
-      sx={{ height: '300px', backgroundColor: '#eaeaea', marginBottom: '10px' }}
+      sx={{
+        height: '300px',
+        marginBottom: '10px',
+      }}
     >
       <img
         src={url}

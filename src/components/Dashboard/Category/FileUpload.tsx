@@ -1,5 +1,12 @@
 import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
-import { Box, Button, Snackbar, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Snackbar,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { NewFile } from '../../../models/images';
 import { FileUploadPreview } from './FileUploadPreview';
@@ -28,6 +35,7 @@ const FileUpload = ({
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const input = useRef(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (defaultTileImageUUID) {
@@ -109,11 +117,10 @@ const FileUpload = ({
     <Box padding="20px 0">
       <Box
         sx={{
-          border: '2px dashed #dbdbdb',
+          border: `2px dashed  ${theme.palette.boxShadow.main}`,
           cursor: 'pointer',
           position: 'relative',
           input: {
-            // minHeight: '300px',
             display: 'block',
             width: '100%',
             opacity: 0,
