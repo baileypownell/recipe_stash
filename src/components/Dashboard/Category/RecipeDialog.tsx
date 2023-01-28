@@ -31,10 +31,9 @@ import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
 import { FullRecipe, RawRecipe } from '../../../../server/recipe';
 import options from '../../../models/options';
-import { tags as RecipeTags } from '../../../models/tags';
+import { recipeTagChips } from '../../../models/tags';
 import {
-  ExistingFile,
-  IRecipeTags,
+  RecipeTags,
   RecipeInput,
   RecipeInterface,
   RecipeService,
@@ -98,10 +97,10 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [recipeValid, setRecipeValid] = useState(false);
   const [newFiles, setNewFiles] = useState([]);
   const [tags, setTags] = useState(
-    RecipeTags.map((tag) => ({ ...tag, selected: false })),
+    recipeTagChips.map((tag) => ({ ...tag, selected: false })),
   );
   const [defaultTile, setDefaultTile] = useState<string | null>(null);
-  const [filesToDelete, setFilesToDelete] = useState([]);
+  const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
   const theme = useTheme();
@@ -134,7 +133,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setTags(tags);
   };
 
-  const determineTags = (): IRecipeTags => {
+  const determineTags = (): RecipeTags => {
     return {
       isNoBake: tags[0].selected,
       isEasy: tags[1].selected,
@@ -292,9 +291,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     }
   };
 
-  const handleFilesToDelete = (files: ExistingFile[]) =>
-    setFilesToDelete(files);
-
   const deleteRecipe = async () => {
     try {
       await RecipeService.deleteRecipe(
@@ -424,7 +420,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             }
             passDefaultTileImage={(fileId) => setDefaultTile(fileId)}
             preExistingImageUrls={(recipeDialogInfo as EditProps).presignedUrls}
-            passFilesToDelete={handleFilesToDelete}
+            passFilesToDelete={setFilesToDelete}
             passFiles={(newFiles) => setNewFiles(newFiles)}
           />
         )}

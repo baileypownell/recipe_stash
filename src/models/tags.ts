@@ -1,10 +1,10 @@
-export default interface Tag {
+export default interface RecipeTagChip {
   selected: boolean;
   recipeTagPropertyName: string;
   label: string;
 }
 
-export const tags: Tag[] = [
+export const recipeTagChips: RecipeTagChip[] = [
   {
     selected: false,
     recipeTagPropertyName: 'no_bake',

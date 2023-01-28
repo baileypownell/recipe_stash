@@ -13,7 +13,7 @@ import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import BounceLoader from 'react-spinners/BounceLoader';
-import { tags as recipeTags } from '../../models/tags';
+import { recipeTagChips } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
 import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import InnerNavigationBar from './InnerNavigationBar';
@@ -28,7 +28,7 @@ interface Props {
 const Recipe = (props: Props) => {
   const [loading, setLoading] = useState(true);
   const [recipe, setRecipe] = useState(null);
-  const [tags, setTags] = useState(recipeTags);
+  const [tags, setTags] = useState(recipeTagChips);
   const [cloning, setCloning] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
   const [dialogOpen, setDialogOpen] = useState(false);

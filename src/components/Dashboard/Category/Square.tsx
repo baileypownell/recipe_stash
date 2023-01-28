@@ -1,11 +1,8 @@
 import {
   Box,
-  Button,
   Card,
-  CardActions,
   CardContent,
   Chip,
-  Stack,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -13,7 +10,7 @@ import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useNavigate } from 'react-router';
 import { FullRecipe } from '../../../../server/recipe';
-import { tags } from '../../../models/tags';
+import { recipeTagChips } from '../../../models/tags';
 
 const RecipeCard = ({
   viewRecipe,
@@ -72,8 +69,9 @@ const RecipeCard = ({
                 color: theme.palette.info.main,
               }}
               label={
-                tags.find((tag) => tag.recipeTagPropertyName === recipeTag)
-                  .label
+                recipeTagChips.find(
+                  (tag) => tag.recipeTagPropertyName === recipeTag,
+                ).label
               }
               variant="filled"
             ></Chip>
