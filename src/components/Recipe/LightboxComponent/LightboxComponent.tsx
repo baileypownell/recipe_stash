@@ -1,7 +1,7 @@
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { Box, Button } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import Lightbox, { ImagesListType } from 'react-spring-lightbox';
 import ImageSkeletonLoader from './ImageSkeletonLoader';
@@ -57,10 +57,10 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
         currentIndex={currentImageIndex}
         onClose={onClose}
         renderHeader={() => (
-          <Box padding={1} textAlign="right">
-            <Button color="info" onClick={onClose}>
+          <Box padding={1} textAlign="right" marginTop="64px">
+            <IconButton color="info" onClick={onClose}>
               <CloseRoundedIcon />
-            </Button>
+            </IconButton>
           </Box>
         )}
         renderPrevButton={({ canPrev }) => (
