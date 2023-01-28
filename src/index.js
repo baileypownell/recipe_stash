@@ -1,4 +1,3 @@
-import React from 'react'; // documentation suggests this isn't necessary, but at least with my current configuration, it is...
 import { createRoot } from 'react-dom/client';
 import { App } from './components/index';
 
