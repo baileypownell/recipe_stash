@@ -1,8 +1,8 @@
-import { Button, TextField, Snackbar } from '@mui/material';
-import { Field, Form, Formik } from 'formik';
+import { LoadingButton } from '@mui/lab';
+import { Box, Button, Snackbar, TextField, Typography } from '@mui/material';
+import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import ClipLoader from 'react-spinners/ClipLoader';
 import * as yup from 'yup';
 import { isPasswordValid } from '../../models/functions';
 import AuthenticationService from '../../services/auth-service';
@@ -82,8 +82,8 @@ const ResetPassword = (props) => {
 
   return invalidLink ? (
     <>
-      <div className="invalid-link">
-        <h3>The link is invalid or expired.</h3>
+      <Box className="invalid-link">
+        <Typography variant="body1">The link is invalid or expired.</Typography>
         <Button
           variant="contained"
           onClick={goHome}
@@ -92,11 +92,11 @@ const ResetPassword = (props) => {
         >
           Home
         </Button>
-      </div>
+      </Box>
     </>
   ) : (
     <>
-      <div className="resetPassword">
+      <Box className="resetPassword">
         <Formik
           initialValues={{
             password: '',
@@ -118,27 +118,19 @@ const ResetPassword = (props) => {
                 }
                 helperText={formik.touched.password && formik.errors.password}
               ></TextField>
-              <Button
+              <LoadingButton
                 disabled={!formik.isValid}
                 variant="contained"
                 color="secondary"
                 type="submit"
+                loading={loading}
               >
-                {loading ? (
-                  <ClipLoader
-                    css={'border-color: white;'}
-                    size={30}
-                    color={'#689943'}
-                    loading={loading}
-                  />
-                ) : (
-                  'Submit'
-                )}
-              </Button>
+                Submit
+              </LoadingButton>
             </Form>
           )}
         ></Formik>
-      </div>
+      </Box>
 
       <Snackbar
         open={snackBarOpen}

@@ -12,10 +12,10 @@ import {
 import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import BounceLoader from 'react-spinners/BounceLoader';
 import { recipeTagChips } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
 import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
+import { Spinner } from '../Spinner';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
@@ -231,9 +231,7 @@ const Recipe = (props: Props) => {
       ) : null}
     </Stack>
   ) : (
-    <Box className="BounceLoader">
-      <BounceLoader size={100} color={'#689943'} />
-    </Box>
+    <Spinner />
   );
 };
 

@@ -1,6 +1,6 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Box,
-  Button,
   Fade,
   Link,
   Snackbar,
@@ -12,15 +12,14 @@ import {
 import { Form, Formik } from 'formik';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import ClipLoader from 'react-spinners/ClipLoader';
 import * as yup from 'yup';
+import backgroundImage from '../images/ingredients.jpg';
 import { isPasswordValid } from '../models/functions';
 import AuthenticationService from '../services/auth-service';
 import UserService, {
   UserCreatedResponse,
   UserInputInterface,
 } from '../services/user-service';
-import backgroundImage from '../images/ingredients.jpg';
 
 const validationSchema = yup.object({
   firstName: yup.string().required('First name is required.'),
@@ -66,13 +65,15 @@ const Signup = (props) => {
         password: values.password,
         email: values.email,
       };
-      const user: UserCreatedResponse = await UserService.createUser(userInput);
-      if (user.success) {
+      const response: UserCreatedResponse = await UserService.createUser(
+        userInput,
+      );
+      if (response.success) {
         AuthenticationService.setUserLoggedIn();
         navigate('/recipes');
       } else {
         setLoading(false);
-        openSnackBar(user.message);
+        openSnackBar(response.message);
       }
     } catch (err) {
       setLoading(false);
@@ -123,6 +124,7 @@ const Signup = (props) => {
             }}
             validationSchema={validationSchema}
             onSubmit={(values) => signup(values)}
+            validateOnMount
             render={(formik) => (
               <Form>
                 <Box
@@ -217,23 +219,15 @@ const Signup = (props) => {
                       }
                     />
                   </Stack>
-                  <Button
-                    variant="contained"
+                  <LoadingButton
                     color="secondary"
-                    type="submit"
                     disabled={!formik.isValid}
+                    type="submit"
+                    loading={loading}
+                    variant="contained"
                   >
-                    {loading ? (
-                      <ClipLoader
-                        css={'border-color: white;'}
-                        size={30}
-                        color={'white'}
-                        loading={loading}
-                      />
-                    ) : (
-                      'Submit'
-                    )}
-                  </Button>
+                    Create Account
+                  </LoadingButton>
 
                   <Typography variant="body1" marginTop={3}>
                     Already have an account?{' '}

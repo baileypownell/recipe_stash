@@ -64,30 +64,27 @@ router.post('/', (request: any, response, next) => {
                   const email = res.rows[0].email;
                   const firstName = res.rows[0].first_name;
                   const lastName = res.rows[0].last_name;
-                  request.session.regenerate(() => {
-                    request.session.save();
-                    // update the session table with the user's sessionID
-                    client.query(
-                      'UPDATE session SET user_uuid=$1 WHERE sid=$2',
-                      [user_uuid, request.sessionID],
-                      (err, res) => {
-                        if (err) return next(err);
-                        if (res.rowCount) {
-                          return response.status(201).json({
-                            success: true,
-                            message: 'User created',
-                            sessionID: request.sessionID,
-                            userData: {
-                              id: user_uuid,
-                              email,
-                              firstName,
-                              lastName,
-                            },
-                          });
-                        }
-                      },
-                    );
-                  });
+                  // update the session table with the user's sessionID
+                  client.query(
+                    'UPDATE session SET user_uuid=$1 WHERE sid=$2',
+                    [user_uuid, request.sessionID],
+                    (err, res) => {
+                      if (err) return next(err);
+                      if (res.rowCount) {
+                        return response.status(201).json({
+                          success: true,
+                          message: 'User created',
+                          sessionID: request.sessionID,
+                          userData: {
+                            id: user_uuid,
+                            email,
+                            firstName,
+                            lastName,
+                          },
+                        });
+                      }
+                    },
+                  );
                 }
               },
             );

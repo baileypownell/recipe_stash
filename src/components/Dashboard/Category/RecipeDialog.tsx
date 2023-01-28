@@ -2,6 +2,7 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { LoadingButton } from '@mui/lab';
 import {
   Accordion,
   AccordionDetails,
@@ -9,7 +10,6 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,10 +33,10 @@ import { FullRecipe, RawRecipe } from '../../../../server/recipe';
 import options from '../../../models/options';
 import { recipeTagChips } from '../../../models/tags';
 import {
-  RecipeTags,
   RecipeInput,
   RecipeInterface,
   RecipeService,
+  RecipeTags,
   SortedRecipeInterface,
   UpdateRecipeInput,
 } from '../../../services/recipe-services';
@@ -441,25 +441,18 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             },
           }}
         >
-          <Button
+          <LoadingButton
             variant="contained"
             color="secondary"
             disabled={!recipeValid}
+            loading={loading}
             onClick={saveRecipe}
             startIcon={loading ? null : <AddCircleRoundedIcon />}
           >
-            {loading ? (
-              <CircularProgress
-                style={{ color: 'white', height: '26px', width: '26px' }}
-              />
-            ) : (
-              <>
-                {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
-                  ? 'Add Recipe'
-                  : 'Update Recipe'}
-              </>
-            )}
-          </Button>
+            {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
+              ? 'Add Recipe'
+              : 'Update Recipe'}
+          </LoadingButton>
           <Box
             sx={{
               display: editing ? 'flex' : 'block',

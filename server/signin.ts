@@ -22,7 +22,6 @@ router.post('/', (request: any, response, next) => {
       bcrypt.compare(password, hashedPassword, (err, res) => {
         if (err) return next(err);
         if (res) {
-          // request.session.regenerate(() => {
           request.session.save();
           const sessionIdentifier = request.sessionID;
           // update the session table with the user's sessionID
@@ -52,7 +51,6 @@ router.post('/', (request: any, response, next) => {
               }
             },
           );
-          // })
         } else {
           return response
             .status(403)

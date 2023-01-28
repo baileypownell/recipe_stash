@@ -8,10 +8,10 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Form, Formik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import ClipLoader from 'react-spinners/ClipLoader';
 import * as yup from 'yup';
 import backgroundImage from '../images/ingredients.jpg';
 import AuthenticationService from '../services/auth-service';
@@ -34,7 +34,6 @@ const Login = () => {
   const [signInError, setSignInError] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(null);
   const [snackBarMessage, setSnackBarMessage] = useState(null);
-  const [googleLoginHidden, setGoogleLoginHidden] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -146,6 +145,7 @@ const Login = () => {
                 password: '',
               }}
               validationSchema={validationSchema}
+              validateOnMount
               onSubmit={(values) => signin(values)}
               render={(formik) => (
                 <Form>
@@ -193,27 +193,24 @@ const Login = () => {
                       />
                     </Stack>
                     <Box>
-                      <Button
-                        type="submit"
-                        variant="outlined"
+                      <LoadingButton
                         color="secondary"
                         disabled={!formik.isValid}
+                        type="submit"
+                        loading={loading}
+                        variant="outlined"
                       >
-                        {loading ? (
-                          <ClipLoader
-                            cssOverride={{ borderColor: 'white' }}
-                            size={30}
-                            color={'#689943'}
-                            loading={loading}
-                          />
-                        ) : (
-                          'Submit'
-                        )}
-                      </Button>
+                        Login
+                      </LoadingButton>
 
-                      <Box marginTop={2} marginBottom={2}>
+                      <Stack
+                        justifyContent="center"
+                        alignItems="center"
+                        marginTop={2}
+                        marginBottom={2}
+                      >
                         <div id="google-button-anchor"></div>
-                      </Box>
+                      </Stack>
 
                       {signInError ? (
                         <Button

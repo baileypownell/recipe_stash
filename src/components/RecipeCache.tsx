@@ -1,8 +1,7 @@
-import { Snackbar } from '@mui/material';
+import { CircularProgress, Snackbar } from '@mui/material';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
-import BounceLoader from 'react-spinners/BounceLoader';
 import { FullRecipe, RawRecipe } from '../../server/recipe';
 import { NewFile } from '../models/images';
 import {
@@ -142,11 +141,7 @@ const RecipeCache = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="BounceLoader">
-        <BounceLoader size={100} color={'#689943'} />
-      </div>
-    );
+    return <CircularProgress />;
   }
 
   if (params.id) {
