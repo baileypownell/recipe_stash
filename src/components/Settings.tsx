@@ -10,6 +10,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Divider,
   Fade,
   Snackbar,
   Stack,
@@ -374,9 +375,17 @@ const Settings = (props: Props) => {
                       </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Typography variant="body1" paddingBottom={1}>
+                      <Typography variant="body1" paddingBottom={2}>
                         If you are sure you want to delete your account, click
-                        the button below. This action
+                        the button below.
+                      </Typography>
+                      <Divider light />
+                      <Typography
+                        variant="body1"
+                        paddingTop={2}
+                        paddingBottom={4}
+                      >
+                        This action
                         <span
                           style={{
                             fontWeight: 'bold',
