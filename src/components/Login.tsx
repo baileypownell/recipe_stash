@@ -134,6 +134,9 @@ const Login = () => {
               'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
             width: '100%',
             color: 'white',
+            input: {
+              color: theme.palette.info.main,
+            },
           }}
         >
           <Fade>
