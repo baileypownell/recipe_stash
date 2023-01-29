@@ -4,7 +4,7 @@ import Signup from './Signup';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import Settings from './Settings';
-import ResetPassword from './ResetPassword/ResetPassword';
+import ResetPassword from './ResetPassword';
 import App from './App';
 import Nav from './Nav';
 
