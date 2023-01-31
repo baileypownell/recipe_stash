@@ -56,6 +56,9 @@ router.post('/', (request: any, response, next) => {
                 refreshToken:
                   process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
                 accessToken,
+                tls: {
+                  rejectUnauthorized: false,
+                },
               },
             });
             const emailToSend = {
@@ -66,6 +69,7 @@ router.post('/', (request: any, response, next) => {
             };
             mailer.sendMail(emailToSend, (err, _) => {
               if (err) {
+                console.log('Error: ', err);
                 return response.status(500).json({
                   success: false,
                   message: 'There was an error sending the email.',
