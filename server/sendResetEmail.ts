@@ -56,6 +56,9 @@ router.post('/', (request: any, response, next) => {
                 refreshToken:
                   process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
                 accessToken,
+                tls: {
+                  rejectUnauthorized: false,
+                },
               },
             });
             const emailToSend = {
