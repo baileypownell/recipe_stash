@@ -1,16 +1,15 @@
 import { Router } from 'express';
 import client from './client';
 import nodemailer from 'nodemailer';
-const sgTransport = require('nodemailer-sendgrid-transport');
 const crypto = require('crypto');
 const router = Router();
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 
 const environment = process.env.NODE_ENV || 'development';
 
 if (environment === 'development') {
-  require('dotenv').config({
-    path: './.env.development',
-  });
+  require('dotenv').config();
 }
 
 router.post('/', (request: any, response, next) => {
@@ -34,20 +33,38 @@ router.post('/', (request: any, response, next) => {
         (err, res) => {
           if (err) return next(err);
           if (res.rowCount) {
-            // now create  transport, which is actually the account sending the password reset email link
-            const options = {
+            const oauth2Client = new OAuth2(
+              process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+              process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+              process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN, // Redirect URL
+            );
+
+            oauth2Client.setCredentials({
+              refresh_token:
+                process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+            });
+            const accessToken = oauth2Client.getAccessToken();
+
+            const mailer = nodemailer.createTransport({
+              service: 'gmail',
               auth: {
-                api_key: `${process.env.SENDGRID_API_KEY}`,
+                type: 'OAuth2',
+                user: process.env.GOOGLE_EMAIL,
+                clientId: process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+                clientSecret:
+                  process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+                refreshToken:
+                  process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                accessToken,
               },
-            };
-            const mailer = nodemailer.createTransport(sgTransport(options));
+            });
             const emailToSend = {
-              from: 'virtualcookbook@outlook.com',
+              from: process.env.GOOGLE_EMAIL,
               to: `${email}`,
-              subject: 'Reset Password Link',
+              subject: 'Reset your Recipe Stash Password',
               html: `<h1>recipe stash</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button>Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`,
             };
-            mailer.sendMail(emailToSend, function (err, _) {
+            mailer.sendMail(emailToSend, (err, _) => {
               if (err) {
                 return response.status(500).json({
                   success: false,

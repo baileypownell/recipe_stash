@@ -1,11 +1,12 @@
-import * as Router from 'express';
-import client from './client';
-import nodemailer from 'nodemailer';
-import sgTransport from 'nodemailer-sendgrid-transport';
 import bcrypt from 'bcryptjs';
-import { deleteAWSFiles } from './aws-s3';
 import * as dotenv from 'dotenv';
+import * as Router from 'express';
+import nodemailer from 'nodemailer';
 import { authMiddleware } from './authMiddleware';
+import { deleteAWSFiles } from './aws-s3';
+import client from './client';
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 const router = Router.Router();
 
 if (process.env.NODE_ENV !== 'production') {
@@ -185,16 +186,35 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                       if (err) return next(err);
                       if (res) {
                         // then send notification to the old email
-                        const options = {
-                          auth: {
-                            api_key: `${process.env.SENDGRID_API_KEY}`,
-                          },
-                        };
-                        const mailer = nodemailer.createTransport(
-                          sgTransport(options),
+                        const oauth2Client = new OAuth2(
+                          process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+                          process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+                          process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN, // Redirect URL
                         );
+                        oauth2Client.setCredentials({
+                          refresh_token:
+                            process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                        });
+                        const accessToken = oauth2Client.getAccessToken();
+
+                        const mailer = nodemailer.createTransport({
+                          service: 'gmail',
+                          auth: {
+                            type: 'OAuth2',
+                            user: process.env.GOOGLE_EMAIL,
+                            clientId:
+                              process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+                            clientSecret:
+                              process.env
+                                .GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+                            refreshToken:
+                              process.env
+                                .GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                            accessToken,
+                          },
+                        });
                         const email = {
-                          from: 'virtualcookbook@outlook.com',
+                          from: process.env.GOOGLE_EMAIL,
                           to: `${oldEmail}`,
                           subject: 'Your Email Address Has Been Changed',
                           html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",

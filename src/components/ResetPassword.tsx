@@ -1,12 +1,18 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Snackbar, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import * as yup from 'yup';
-import { isPasswordValid } from '../../models/functions';
-import AuthenticationService from '../../services/auth-service';
-import './ResetPassword.scss';
+import { isPasswordValid } from '../models/functions';
+import AuthenticationService from '../services/auth-service';
 
 const validationSchema = yup.object({
   password: yup
@@ -27,9 +33,9 @@ const ResetPassword = (props) => {
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const [email, setUserEmail] = useState(null);
   const navigate = useNavigate();
+  const { token } = useParams();
 
   const verifyToken = async () => {
-    const token = props.match.params.token;
     try {
       const res = await AuthenticationService.verifyEmailResetToken(token);
       if (!res.data.success) {
@@ -65,12 +71,7 @@ const ResetPassword = (props) => {
   const updatePassword = async (values) => {
     setLoading(true);
     try {
-      const reset_password_token = props.match.params.token;
-      await AuthenticationService.updatePassword(
-        values.password,
-        reset_password_token,
-        email,
-      );
+      await AuthenticationService.updatePassword(values.password, token, email);
       openSnackBar('Password updated! Redirecting...');
       setLoading(false);
       navigate('/recipes');
@@ -82,8 +83,16 @@ const ResetPassword = (props) => {
 
   return invalidLink ? (
     <>
-      <Box className="invalid-link">
-        <Typography variant="body1">The link is invalid or expired.</Typography>
+      <Box
+        sx={{
+          margin: '0 auto',
+          textAlign: 'center',
+          paddingTop: '10vh',
+        }}
+      >
+        <Typography marginBottom="15px" textAlign="center" variant="body1">
+          The link is invalid or expired.
+        </Typography>
         <Button
           variant="contained"
           onClick={goHome}
@@ -96,37 +105,49 @@ const ResetPassword = (props) => {
     </>
   ) : (
     <>
-      <Box className="resetPassword">
+      <Box
+        sx={{
+          width: '80%',
+          margin: '0 auto',
+          textAlign: 'center',
+          paddingTop: '10vh',
+        }}
+      >
         <Formik
           initialValues={{
             password: '',
           }}
           validationSchema={validationSchema}
+          validateOnMount
           onSubmit={(values) => updatePassword(values)}
           render={(formik) => (
             <Form>
-              <TextField
-                type="password"
-                name="password"
-                required
-                label="New Password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.password && Boolean(formik.errors.password)
-                }
-                helperText={formik.touched.password && formik.errors.password}
-              ></TextField>
-              <LoadingButton
-                disabled={!formik.isValid}
-                variant="contained"
-                color="secondary"
-                type="submit"
-                loading={loading}
-              >
-                Submit
-              </LoadingButton>
+              <Stack maxWidth="400px" margin="0 auto" spacing={2}>
+                <TextField
+                  variant="standard"
+                  type="password"
+                  name="password"
+                  required
+                  label="New Password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
+                  helperText={formik.touched.password && formik.errors.password}
+                ></TextField>
+                <LoadingButton
+                  sx={{ margintop: '10px' }}
+                  disabled={!formik.isValid}
+                  variant="contained"
+                  color="secondary"
+                  type="submit"
+                  loading={loading}
+                >
+                  Submit
+                </LoadingButton>
+              </Stack>
             </Form>
           )}
         ></Formik>
