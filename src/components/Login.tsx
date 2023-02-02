@@ -1,3 +1,4 @@
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
   Button,
@@ -8,7 +9,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton';
 import { Form, Formik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
