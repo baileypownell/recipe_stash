@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import client from './client';
 import nodemailer from 'nodemailer';
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 const crypto = require('crypto');
 const router = Router();
 
@@ -31,11 +33,27 @@ router.post('/', (request: any, response, next) => {
         (err, res) => {
           if (err) return next(err);
           if (res.rowCount) {
+            const oauth2Client = new OAuth2(
+              process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+              process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+              process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+            );
+            oauth2Client.setCredentials({
+              refresh_token:
+                process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+            });
+            const accessToken = oauth2Client.getAccessToken();
             const mailer = nodemailer.createTransport({
               service: 'gmail',
               auth: {
+                type: 'OAuth2',
                 user: process.env.GOOGLE_EMAIL,
-                pass: process.env.GOOGLE_APP_PASSWORD,
+                clientId: process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+                clientSecret:
+                  process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+                refreshToken:
+                  process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                accessToken,
               },
             });
             const emailToSend = {

@@ -5,6 +5,8 @@ import nodemailer from 'nodemailer';
 import { authMiddleware } from './authMiddleware';
 import { deleteAWSFiles } from './aws-s3';
 import client from './client';
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 const router = Router.Router();
 
 if (process.env.NODE_ENV !== 'production') {
@@ -184,11 +186,30 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                       if (err) return next(err);
                       if (res) {
                         // then send notification to the old email
+                        const oauth2Client = new OAuth2(
+                          process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+                          process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+                          process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                        );
+                        oauth2Client.setCredentials({
+                          refresh_token:
+                            process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                        });
+                        const accessToken = oauth2Client.getAccessToken();
                         const mailer = nodemailer.createTransport({
                           service: 'gmail',
                           auth: {
+                            type: 'OAuth2',
                             user: process.env.GOOGLE_EMAIL,
-                            pass: process.env.GOOGLE_APP_PASSWORD,
+                            clientId:
+                              process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
+                            clientSecret:
+                              process.env
+                                .GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
+                            refreshToken:
+                              process.env
+                                .GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
+                            accessToken,
                           },
                         });
                         const email = {
