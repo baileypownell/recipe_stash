@@ -47,9 +47,6 @@ router.post('/', (request: any, response, next) => {
 
             const mailer = nodemailer.createTransport({
               service: 'gmail',
-              host: 'smtp.gmail.com',
-              port: 465,
-              secure: true,
               auth: {
                 user: process.env.GOOGLE_EMAIL,
                 pass: process.env.GOOGLE_APP_PASSWORD,
