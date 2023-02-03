@@ -1,4 +1,4 @@
-import { CircularProgress, Snackbar } from '@mui/material';
+import { Snackbar } from '@mui/material';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
@@ -12,6 +12,7 @@ import {
 import { queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
+import { Spinner } from './Spinner';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';
@@ -141,7 +142,7 @@ const RecipeCache = () => {
   };
 
   if (isLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
 
   if (params.id) {
