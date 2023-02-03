@@ -54,9 +54,6 @@ const RecipeCard = ({
       }}
     >
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Title
-        </Typography>
         <Typography variant="h6" component="div" marginBottom={1}>
           {rawTitle}
         </Typography>
