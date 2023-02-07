@@ -8,10 +8,5 @@
 
 ## [Visit the web app](https://recipe-stash-1.herokuapp.com/)
 
-<img src="src/images/mobile_dashboard.png" width="300">
-<img src="src/images/recipe_mobile.png" width="300">
-<img src="src/images/recipe_mobile_2.png" width="300">
-<img src="src/images/settings_mobile.png" width="300">
-<img src="src/images/recipe_desktop.png" width="800">
-<img src="src/images/desktop_dashboard.png" width="800">
-<img src="src/images/desktop_dashboard_filtering.png" width="800">
+<img src="src/images/dashboard.png" width="800">
+<img src="src/images/recipe-view.png" width="800">
