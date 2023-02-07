@@ -55,7 +55,8 @@ export const CreateRecipeWidget = ({
         <Stack
           justifyContent="center"
           alignItems="center"
-          minHeight="155px"
+          padding={2}
+          minHeight="120px"
           onClick={toggleModal}
           id={id}
           sx={{

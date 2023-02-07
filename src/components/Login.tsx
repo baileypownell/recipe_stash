@@ -107,9 +107,9 @@ const Login = () => {
     });
     google.accounts.id.renderButton(
       document.getElementById('google-button-anchor'),
-      { theme: 'outline', size: 'large' }, // customization attributes
+      { theme: 'outline', size: 'large' },
     );
-    google.accounts.id.prompt(); // also display the One Tap dialog
+    google.accounts.id.prompt();
   }, []);
 
   return (

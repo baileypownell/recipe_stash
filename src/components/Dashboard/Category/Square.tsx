@@ -41,6 +41,7 @@ const RecipeCard = ({
     marginBottom: '10px',
     borderRadius: '5px',
     cursor: 'pointer',
+    minHeight: '120px',
   };
 
   return (
