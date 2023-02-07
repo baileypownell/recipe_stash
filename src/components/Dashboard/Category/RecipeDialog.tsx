@@ -428,13 +428,13 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       <DialogActions>
         <Stack
           justifyContent="space-between"
+          spacing={1}
           sx={{
             width: '100%',
             [theme.breakpoints.up('sm')]: {
               flexDirection: 'row-reverse',
             },
             button: {
-              margin: '5px',
               [theme.breakpoints.up('sm')]: {
                 margin: 0,
               },
@@ -462,7 +462,12 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               <Button
                 color="primary"
                 variant="contained"
-                style={{ marginRight: '5px ' }}
+                style={{
+                  marginRight: '5px ',
+                  width: '100%',
+                  whiteSpace: 'nowrap',
+                  minWidth: 'auto',
+                }}
                 onClick={deleteRecipe}
                 startIcon={<DeleteOutlineRoundedIcon />}
               >
@@ -472,6 +477,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             <Button
               sx={{
                 flexGrow: editing ? 1 : 0,
+                width: '100%',
               }}
               onClick={toggleModal}
               variant="outlined"
