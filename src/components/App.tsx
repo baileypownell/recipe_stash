@@ -23,6 +23,8 @@ const App = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  console.log(AuthenticationService.authenticated());
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
