@@ -1,29 +1,11 @@
-import client from './client';
-
-const authMiddleware = (req, response, next) => {
-  if (req.sessionID) {
-    client.query(
-      'SELECT user_uuid FROM session WHERE sid=$1',
-      [req.sessionID],
-      (err, res) => {
-        if (err) return next(err);
-        if (res.rows.length && res.rows[0].user_uuid) {
-          req.userID = res.rows[0].user_uuid;
-          next();
-        } else {
-          return response.status(401).json({
-            success: false,
-            message: 'Access denied: No session for the user.',
-          });
-        }
-      },
-    );
+export const authMiddleware = (req, res, next) => {
+  if (req.session.isAuthenticated) {
+    next();
   } else {
-    return response.status(401).json({
+    req.session.error = 'Unauthenticated';
+    return res.status(401).json({
       success: false,
-      message: 'Access denied: No session for the user.',
+      message: 'User unauthenticated',
     });
   }
 };
-
-export { authMiddleware };

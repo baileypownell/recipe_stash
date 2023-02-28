@@ -78,10 +78,9 @@ const formatRecipeResponse = (recipe: any): any => {
 router.use(authMiddleware);
 
 router.get('/', authMiddleware, (request: any, response, next) => {
-  const userId = request.userID;
   client.query(
     'SELECT * FROM recipes WHERE user_uuid=$1',
-    [userId],
+    [request.session.userID],
     (err, res) => {
       if (err) return next(err);
       const responseObject: any = {
@@ -151,7 +150,7 @@ router.get('/', authMiddleware, (request: any, response, next) => {
 });
 
 router.post('/', (request: any, response, next): Promise<RawRecipe> => {
-  const userId = request.userID;
+  const userId = request.session.userID;
   const {
     title,
     rawTitle,
@@ -222,7 +221,7 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
 });
 
 router.put('/', (request: any, response, next): Promise<RawRecipe> => {
-  const userId = request.userID;
+  const userId = request.session.userID;
   const {
     recipeId,
     title,
@@ -323,7 +322,7 @@ router.get(
   '/:recipeId',
   (request: any, response, next): Promise<FullRecipe | null> => {
     const { recipeId } = request.params;
-    const userId = request.userID;
+    const userId = request.session.userID;
     return client.query(
       'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
       [userId, recipeId],
@@ -371,7 +370,7 @@ router.get(
 router.delete(
   '/:recipeId',
   (request: any, response, next): Promise<{ recipeDeleted: boolean }> => {
-    const userId = request.userID;
+    const userId = request.session.userID;
     const { recipeId } = request.params;
     return client.query(
       'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',

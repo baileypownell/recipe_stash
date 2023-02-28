@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Home, Login, Nav, ResetPassword, Settings, Signup } from '.';
@@ -13,17 +13,21 @@ import { theme } from './theme';
 export const queryClient = new QueryClient();
 
 const App = () => {
+  const [authStateVerified, setAuthStateVerified] = useState(false);
   useEffect(() => {
     AuthenticationService.verifyUserSession()
-      .then((res) =>
+      .then((res) => {
         res.data.authenticated
           ? AuthenticationService.setUserLoggedIn()
-          : AuthenticationService.setUserLoggedOut(),
-      )
-      .catch((err) => console.log(err));
+          : AuthenticationService.setUserLoggedOut();
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setAuthStateVerified(true));
   }, []);
 
-  console.log(AuthenticationService.authenticated());
+  if (!authStateVerified) {
+    return null;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
