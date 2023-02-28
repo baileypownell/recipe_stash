@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import * as dotenv from 'dotenv';
 import * as Router from 'express';
 import nodemailer from 'nodemailer';
 import { authMiddleware } from './authMiddleware';
@@ -9,12 +8,14 @@ const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const router = Router.Router();
 
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: __dirname + '/.env' });
+const environment = process.env.NODE_ENV || 'development';
+
+if (environment === 'development') {
+  require('dotenv').config();
 }
 
 router.get('/', authMiddleware, (request: any, response, next) => {
-  const userId = request.userID;
+  const userId = request.session.userID;
   client.query(
     'SELECT email, first_name, last_name FROM users WHERE user_uuid=$1',
     [userId],
@@ -65,27 +66,18 @@ router.post('/', (request: any, response, next) => {
                   const email = res.rows[0].email;
                   const firstName = res.rows[0].first_name;
                   const lastName = res.rows[0].last_name;
-                  // update the session table with the user's sessionID
-                  client.query(
-                    'UPDATE session SET user_uuid=$1 WHERE sid=$2',
-                    [user_uuid, request.sessionID],
-                    (err, res) => {
-                      if (err) return next(err);
-                      if (res.rowCount) {
-                        return response.status(201).json({
-                          success: true,
-                          message: 'User created',
-                          sessionID: request.sessionID,
-                          userData: {
-                            id: user_uuid,
-                            email,
-                            firstName,
-                            lastName,
-                          },
-                        });
-                      }
+
+                  return response.status(201).json({
+                    success: true,
+                    message: 'User created',
+                    sessionID: request.sessionID,
+                    userData: {
+                      id: user_uuid,
+                      email,
+                      firstName,
+                      lastName,
                     },
-                  );
+                  });
                 }
               },
             );
@@ -137,7 +129,7 @@ router.put('/reset-password', (request, response, next) => {
 
 router.put('/', authMiddleware, (request: any, response, next) => {
   const { firstName, lastName, password, newEmail } = request.body;
-  const userId = request.userID;
+  const userId = request.session.userID;
   if (firstName && lastName) {
     client.query(
       'UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
@@ -155,7 +147,6 @@ router.put('/', authMiddleware, (request: any, response, next) => {
     );
   }
   if (newEmail) {
-    // make sure password is correct, if not, reject
     client.query(
       'SELECT * FROM users WHERE user_uuid=$1',
       [userId],
@@ -166,8 +157,6 @@ router.put('/', authMiddleware, (request: any, response, next) => {
         bcrypt.compare(password, hashedPassword, (err, res) => {
           if (err) return next(err);
           if (res) {
-            // update record in DB
-            // but first ensure it is unique!
             client.query(
               'SELECT * FROM users WHERE email=$1',
               [newEmail],
@@ -185,7 +174,6 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                     (err, res) => {
                       if (err) return next(err);
                       if (res) {
-                        // then send notification to the old email
                         const oauth2Client = new OAuth2(
                           process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
                           process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
@@ -218,11 +206,13 @@ router.put('/', authMiddleware, (request: any, response, next) => {
                           subject: 'Your Email Address Has Been Changed',
                           html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
                         };
-                        mailer.sendMail(email, function (err, _) {
+                        mailer.sendMail(email, (err, _) => {
                           if (err) {
                             response.status(500).json({
                               success: false,
                               message: 'There was an error sending the email.',
+                              error: err.message,
+                              name: err.name,
                             });
                           } else {
                             return response.status(200).json({
@@ -250,7 +240,7 @@ router.put('/', authMiddleware, (request: any, response, next) => {
 });
 
 router.delete('/', authMiddleware, (request: any, response, next) => {
-  const id = request.userID;
+  const id = request.session.userID;
   client.query(
     'SELECT key FROM files WHERE user_uuid=$1',
     [id],

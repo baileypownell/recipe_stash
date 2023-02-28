@@ -1,10 +1,9 @@
-const { Router } = require('express');
+import { Router } from 'express';
 const router = Router();
 
-router.get('/', (request, response, _) => {
-  request.session.regenerate(() => {
-    return response.status(200).json({ success: true });
-  });
+router.get('/', (request: any, response, _) => {
+  request.session.destroy();
+  return response.status(200).json({ success: true });
 });
 
 export default router;

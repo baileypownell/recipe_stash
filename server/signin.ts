@@ -22,35 +22,19 @@ router.post('/', (request: any, response, next) => {
       bcrypt.compare(password, hashedPassword, (err, res) => {
         if (err) return next(err);
         if (res) {
-          request.session.save();
+          request.session.isAuthenticated = true;
+          request.session.userID = user_uuid;
           const sessionIdentifier = request.sessionID;
-          // update the session table with the user's sessionID
-          client.query(
-            'UPDATE session SET user_uuid=$1 WHERE sid=$2',
-            [user_uuid, sessionIdentifier],
-            (err, res) => {
-              if (err) return next(err);
-              if (res.rowCount) {
-                return response.status(200).json({
-                  success: true,
-                  sessionID: sessionIdentifier,
-                  userData: {
-                    id: user_uuid,
-                    first_name: first_name,
-                    last_name: last_name,
-                    email: email,
-                  },
-                });
-              } else {
-                console.log(
-                  `There was an error: No user found to update with SID: ${sessionIdentifier}`,
-                );
-                return response
-                  .status(500)
-                  .json({ error: 'There was an error.' });
-              }
+          return response.status(200).json({
+            success: true,
+            sessionID: sessionIdentifier,
+            userData: {
+              id: user_uuid,
+              first_name: first_name,
+              last_name: last_name,
+              email: email,
             },
-          );
+          });
         } else {
           return response
             .status(403)

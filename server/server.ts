@@ -1,9 +1,9 @@
-import express, { Response } from 'express';
 import bodyParser from 'body-parser';
-import routes from './index';
+import express, { Response } from 'express';
+import session from 'express-session';
 import client from './client';
+import routes from './index';
 const app = express();
-const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 
 app.use(bodyParser.json());
@@ -32,18 +32,17 @@ app.use(
     }),
     secret: process.env.SESSION_SECRET || secret,
     resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 3600000, secure: false }, // 1 hour
+    saveUninitialized: false,
+    cookie: { maxAge: 3600000 }, // 1 hour
   }),
 );
 
 app.use('/', routes);
 
-app.use(express.static('./dist')); // this is key for serving up the bundle.js file and not the index.html file
+app.use(express.static('./dist'));
 
 const port = process.env.PORT || 3000;
 
-// because I'm too cheap to pay $7/month for TLS (never do this for legit app)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 app.get('*', (_, res: Response) => {
