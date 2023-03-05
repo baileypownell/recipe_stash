@@ -24,10 +24,8 @@ router.post('/', (request: any, response, next) => {
         if (res) {
           request.session.isAuthenticated = true;
           request.session.userID = user_uuid;
-          const sessionIdentifier = request.sessionID;
           return response.status(200).json({
             success: true,
-            sessionID: sessionIdentifier,
             userData: {
               id: user_uuid,
               first_name: first_name,

@@ -70,7 +70,6 @@ router.post('/', (request: any, response, next) => {
                   return response.status(201).json({
                     success: true,
                     message: 'User created',
-                    sessionID: request.sessionID,
                     userData: {
                       id: user_uuid,
                       email,

@@ -31,7 +31,6 @@ export interface GenericResponse {
 }
 
 export interface UserCreatedResponse extends GenericResponse {
-  sessionID: string;
   userData: {
     id: string;
     email: string;
