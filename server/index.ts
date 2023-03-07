@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import auth from './auth';
 import fileUpload from './file-upload';
 import logout from './logout';
 import recipe from './recipe';
@@ -6,7 +7,6 @@ import sendResetEmail from './sendResetEmail';
 import signin from './signin';
 import signinWithGoogle from './signinWithGoogle';
 import user from './user';
-import auth from './auth';
 
 const router = Router();
 

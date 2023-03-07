@@ -1,9 +1,15 @@
-export const authMiddleware = (req, res, next) => {
-  if (req.session.isAuthenticated) {
+import { Request, Response, NextFunction } from 'express';
+
+export const authMiddleware = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  if (request.session.isAuthenticated) {
     next();
   } else {
-    req.session.error = 'Unauthenticated';
-    return res.status(401).json({
+    request.session.error = 'Unauthenticated';
+    return response.status(401).json({
       success: false,
       message: 'User unauthenticated',
     });

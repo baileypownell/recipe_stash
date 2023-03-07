@@ -6,6 +6,14 @@ import routes from './index';
 const app = express();
 const pgSession = require('connect-pg-simple')(session);
 
+declare global {
+  namespace Express {
+    interface Request {
+      session: any;
+    }
+  }
+}
+
 app.use(bodyParser.json());
 
 app.use(express.json());

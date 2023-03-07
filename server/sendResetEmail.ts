@@ -1,9 +1,10 @@
-import { Router } from 'express';
-import client from './client';
+import crypto from 'crypto';
+import { NextFunction, Request, Response, Router } from 'express';
 import nodemailer from 'nodemailer';
+import client from './client';
 const { google } = require('googleapis');
+
 const OAuth2 = google.auth.OAuth2;
-const crypto = require('crypto');
 const router = Router();
 
 const environment = process.env.NODE_ENV || 'development';
@@ -12,7 +13,7 @@ if (environment === 'development') {
   require('dotenv').config();
 }
 
-router.post('/', (request: any, response, next) => {
+router.post('/', (request: Request, response: Response, next: NextFunction) => {
   const { email } = request.body;
   if (!email) {
     return response
@@ -85,37 +86,40 @@ router.post('/', (request: any, response, next) => {
   });
 });
 
-router.get('/:token', (request, response, next) => {
-  const token = request.params.token;
-  client.query(
-    'SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1',
-    [token],
-    (err, res) => {
-      if (err) return next(err);
-      if (
-        res.rows.length &&
-        res.rows[0].reset_password_token &&
-        res.rows[0].reset_password_expires
-      ) {
-        const now = Date.now();
-        if (res.rows[0].reset_password_expires > now) {
-          return response.status(200).send({
-            success: true,
-            message: 'Password reset link is valid.',
-            user_email: res.rows[0].email,
-          });
+router.get(
+  '/:token',
+  (request: Request, response: Response, next: NextFunction) => {
+    const token = request.params.token;
+    client.query(
+      'SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1',
+      [token],
+      (err, res) => {
+        if (err) return next(err);
+        if (
+          res.rows.length &&
+          res.rows[0].reset_password_token &&
+          res.rows[0].reset_password_expires
+        ) {
+          const now = Date.now();
+          if (res.rows[0].reset_password_expires > now) {
+            return response.status(200).send({
+              success: true,
+              message: 'Password reset link is valid.',
+              user_email: res.rows[0].email,
+            });
+          } else {
+            return response
+              .status(403)
+              .send({ message: 'The token is expired.' });
+          }
         } else {
           return response
             .status(403)
-            .send({ message: 'The token is expired.' });
+            .send({ message: 'No user could be found with that token.' });
         }
-      } else {
-        return response
-          .status(403)
-          .send({ message: 'No user could be found with that token.' });
-      }
-    },
-  );
-});
+      },
+    );
+  },
+);
 
 export default router;

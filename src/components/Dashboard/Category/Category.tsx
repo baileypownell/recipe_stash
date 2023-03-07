@@ -11,7 +11,6 @@ type Props = {
   id: string;
   recipes: FullRecipe[];
   gridView: GridView;
-  children: any;
   addRecipe: (recipeInput: AddRecipeMutationParam) => void;
 };
 

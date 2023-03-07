@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 const router = Router();
 
 export interface AuthenticationState {
   authenticated: boolean;
 }
 
-router.get('/', (request: any, response) => {
+router.get('/', (request: Request, response: Response, _: NextFunction) => {
   if (request.session.userID) {
     const authState: AuthenticationState = {
       authenticated: true,

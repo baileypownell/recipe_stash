@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import client from './client';
 const bcrypt = require('bcryptjs');
 const router = Router();
 
-router.post('/', (request: any, response, next) => {
+router.post('/', (request: Request, response: Response, next: NextFunction) => {
   const { password, email } = request.body;
   if (!password || !email) {
     return response.status(400).json({

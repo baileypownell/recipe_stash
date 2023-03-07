@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import client from './client';
 const router = Router();
 const jwt_decode = require('jwt-decode');
 
-router.post('/', (request: any, response, next) => {
+router.post('/', (request: Request, response: Response, next: NextFunction) => {
   const { token } = request.body;
   if (!token) {
     return response.status(400).json({
