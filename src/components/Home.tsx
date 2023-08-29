@@ -24,6 +24,8 @@ const Home = (props: any) => {
       }}
     >
       <Stack
+        paddingTop="30px"
+        paddingBottom="30px"
         alignItems="center"
         justifyContent="center"
         sx={{
