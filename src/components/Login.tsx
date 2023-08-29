@@ -101,15 +101,15 @@ const Login = () => {
   };
 
   useEffect(() => {
-    google.accounts.id.initialize({
+    window.google.accounts.id.initialize({
       client_id: `${process.env.GOOGLE_LOGIN_CLIENT_ID}`,
       callback: authenticateWithGoogle,
     });
-    google.accounts.id.renderButton(
+    window.google.accounts.id.renderButton(
       document.getElementById('google-button-anchor'),
       { theme: 'outline', size: 'large' },
     );
-    google.accounts.id.prompt();
+    window.google.accounts.id.prompt();
   }, []);
 
   return (
