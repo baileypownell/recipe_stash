@@ -50,6 +50,7 @@ ALTER TABLE recipes ADD COLUMN IF NOT EXISTS dairy_free boolean;
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS vegetarian boolean;
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS vegan boolean;
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS keto boolean;
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS high_protein boolean;
 
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS raw_title character varying(100);
 

@@ -385,7 +385,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             <Typography>Recipe Tags</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography mb={2}>
+              Use tags to characterize your recipe so that you can easily find
+              recipes with similar tags through the dashboard filter.
+            </Typography>
+            <Stack spacing={1} direction="row">
               {tags.map((tag, index) => {
                 return (
                   <Chip
@@ -399,13 +403,13 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
                       ...(tags[index].selected && selectedStyles),
                     }}
                     id={index.toString()}
-                    key={index}
+                    key={tag.label}
                     onClick={() => toggleTagSelectionStatus(index)}
                     label={tag.label}
                   />
                 );
               })}
-            </Typography>
+            </Stack>
           </AccordionDetails>
         </Accordion>
         {mode === Mode.Add ? (
