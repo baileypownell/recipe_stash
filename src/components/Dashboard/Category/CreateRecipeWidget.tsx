@@ -28,6 +28,8 @@ const getBackgroundImage = (categoryId: string): string => {
       return dessert;
     case 'other':
       return other;
+    default:
+      return '';
   }
 };
 

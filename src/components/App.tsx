@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Home, Login, Nav, ResetPassword, Settings, Signup } from '.';

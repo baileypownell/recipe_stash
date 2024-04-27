@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Form, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import * as yup from 'yup';
 import { isPasswordValid } from '../models/functions';

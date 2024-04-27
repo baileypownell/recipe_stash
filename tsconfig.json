@@ -27,7 +27,8 @@
   "include": [
     "server/**/*",
     "server/server.ts", // *** The files TypeScript should type check ***
-    "**/*.tsx"
+    "**/*.tsx",
+    "**/*.ts"
   ],
   "exclude": ["node_modules", "build"] // *** The files to not type check ***
 }

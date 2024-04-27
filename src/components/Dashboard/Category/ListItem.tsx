@@ -10,9 +10,7 @@ interface ListItemProps {
 const ListItem = ({ recipeId, key, rawTitle }: ListItemProps) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const viewRecipe = () => {
-    navigate(`/recipes/${recipeId}`);
-  };
+  const viewRecipe = () => navigate(`/recipes/${recipeId}`);
 
   return (
     <Box

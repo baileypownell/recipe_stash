@@ -69,7 +69,7 @@ const RecipeCard = ({
               label={
                 recipeTagChips.find(
                   (tag) => tag.recipeTagPropertyName === recipeTag,
-                ).label
+                )!.label
               }
               variant="filled"
             ></Chip>
@@ -93,7 +93,6 @@ const Square = ({ recipe }: SquareProps) => {
   const [skeletonWidth, setSkeletonWidth] = useState(150);
   const [skeletonHeight, setSkeletonHeight] = useState(150);
   const navigate = useNavigate();
-  const theme = useTheme();
 
   const viewRecipe = () => {
     navigate(`/recipes/${recipeId}`);
@@ -136,6 +135,7 @@ const Square = ({ recipe }: SquareProps) => {
           style={{ display: 'none' }}
           onLoad={() => setImageLoaded(true)}
           onError={(e) => setImageLoadingError(true)}
+          alt={`Image of ${rawTitle}`}
         />
         {!imageLoadingError ? (
           <Skeleton width={skeletonWidth} height={skeletonHeight} />

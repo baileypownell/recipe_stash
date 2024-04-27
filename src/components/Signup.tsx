@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Form, Formik } from 'formik';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 import backgroundImage from '../images/ingredients.jpg';

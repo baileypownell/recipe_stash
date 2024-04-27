@@ -127,7 +127,9 @@ const Dashboard = (props: Props) => {
 
   const addRecipe = async (recipeInput: AddRecipeMutationParam) => {
     await props.addRecipeMutation(recipeInput);
-    const current: SortedRecipeInterface = queryClient.getQueryData('recipes');
+    const current = queryClient.getQueryData(
+      'recipes',
+    ) as SortedRecipeInterface;
     unfilteredRecipesSubject.next(current);
   };
 

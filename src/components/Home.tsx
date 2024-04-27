@@ -1,12 +1,12 @@
 import { Box, Button, Fade, Stack, Typography, useTheme } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import mobileView from '../images/mobile_dashboard.png';
 import transparentLogo from '../images/white-text-transparent.svg';
 import veggies from '../images/cutting_vegetables.jpg';
 import DoubleArrowRoundedIcon from '@mui/icons-material/DoubleArrowRounded';
 
-const Home = (props: any) => {
+const Home = () => {
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -44,7 +44,10 @@ const Home = (props: any) => {
             },
           }}
         >
-          <img src={transparentLogo} />
+          <img
+            src={transparentLogo}
+            alt="Woman chopping greens on a cutting board"
+          />
         </Stack>
         <Fade in={visible}>
           <Stack alignItems="center">
