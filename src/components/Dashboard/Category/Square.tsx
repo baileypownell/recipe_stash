@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   Chip,
+  Stack,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -58,24 +59,18 @@ const RecipeCard = ({
         <Typography variant="h6" component="div" marginBottom={1}>
           {rawTitle}
         </Typography>
-        <Box marginTop={2}>
+        <Stack marginTop={2} spacing={0.5} direction="row">
           {recipe.tags.map((recipeTag) => (
             <Chip
               key={recipeTag}
-              sx={{
-                marginRight: 0.5,
-                backgroundColor: theme.palette.orange.main,
-                color: theme.palette.info.main,
-              }}
               label={
                 recipeTagChips.find(
                   (tag) => tag.recipeTagPropertyName === recipeTag,
                 )!.label
               }
-              variant="filled"
             ></Chip>
           ))}
-        </Box>
+        </Stack>
       </CardContent>
     </Card>
   );

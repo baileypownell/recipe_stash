@@ -189,17 +189,7 @@ const Recipe = (props: Props) => {
           <Box dangerouslySetInnerHTML={{ __html: recipe.directions }} />
           <Stack spacing={1} direction="row">
             {tags.map((tag) =>
-              tag.selected ? (
-                <Chip
-                  key={tag.label}
-                  className={'chip selectedTag'}
-                  label={tag.label}
-                  sx={{
-                    backgroundColor: theme.palette.orange.main,
-                    color: 'white',
-                  }}
-                />
-              ) : null,
+              tag.selected ? <Chip key={tag.label} label={tag.label} /> : null,
             )}
           </Stack>
           <Divider style={{ margin: '20px 0 10px 0' }} />

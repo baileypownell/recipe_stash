@@ -28,49 +28,39 @@ const Home = () => {
         paddingBottom="30px"
         alignItems="center"
         justifyContent="center"
+        height="100%"
         sx={{
-          height: '100%',
           background:
             'linear-gradient(120deg, rgba(230, 108, 108, 0.29), rgba(221, 114, 68, 0.42))',
         }}
       >
-        <Stack
-          sx={{
-            img: {
+        <Box>
+          <img
+            style={{
               height: '50px',
               [theme.breakpoints.up('lg')]: {
                 height: '75px',
               },
-            },
-          }}
-        >
-          <img
+            }}
             src={transparentLogo}
             alt="Woman chopping greens on a cutting board"
           />
-        </Stack>
+        </Box>
         <Fade in={visible}>
           <Stack alignItems="center">
-            <Box
-              textAlign="center"
-              sx={{
-                color: theme.palette.info.main,
-              }}
-            >
+            <Box textAlign="center" color={theme.palette.info.main}>
               <Typography variant="h6">All of your recipes.</Typography>
               <Typography variant="h6">All in one place.</Typography>
               <Typography variant="h6">And it's free.</Typography>
             </Box>
-            <Box
-              margin={2}
-              sx={{
-                width: '200px',
-                img: {
+            <Box margin={2} width="200px">
+              <img
+                style={{
                   width: '100%',
-                },
-              }}
-            >
-              <img src={mobileView} alt="whisk" />
+                }}
+                src={mobileView}
+                alt="Preview of what the application looks like on a phone"
+              />
             </Box>
             <Button
               variant="contained"

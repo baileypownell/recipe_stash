@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material';
+import { Theme, ThemeOptions, createTheme } from '@mui/material';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -25,7 +25,7 @@ declare module '@mui/material/Button' {
   }
 }
 
-export const theme = createTheme({
+const base = createTheme({
   palette: {
     primary: {
       main: '#e86054',
@@ -55,3 +55,70 @@ export const theme = createTheme({
     },
   },
 });
+
+const getAppBar = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: theme.palette.gray.main,
+          position: 'sticky',
+        },
+      },
+    },
+  },
+});
+
+const getList = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiList: {
+      styleOverrides: {
+        root: {
+          color: theme.palette.gray.main,
+          svg: {
+            color: theme.palette.gray.main,
+          },
+        },
+      },
+    },
+  },
+});
+
+// export const getListItem = (theme: Theme): ThemeOptions => ({
+//   components: {
+//     MuiListItem: {
+//       styleOverrides: {
+//         root: {
+//           cursor: 'pointer',
+//         },
+//       },
+//     },
+//   },
+// });
+
+export const getChip = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiChip: {
+      defaultProps: {
+        variant: 'filled',
+        color: 'primary',
+      },
+      styleOverrides: {
+        root: {
+          transition: 'all 0.4s',
+        },
+        colorPrimary: {
+          backgroundColor: theme.palette.orange.main,
+          color: theme.palette.info.main,
+        },
+      },
+    },
+  },
+});
+
+export const theme = createTheme(
+  base,
+  getAppBar(base),
+  getList(base),
+  getChip(base),
+);

@@ -14,10 +14,8 @@ const InnerNavigationBar = ({ title }: Props) => {
       direction="row"
       alignItems="center"
       padding={1}
-      sx={{
-        backgroundColor: theme.palette.secondary.main,
-        color: theme.palette.info.main,
-      }}
+      backgroundColor={theme.palette.secondary.main}
+      color={theme.palette.info.main}
     >
       <IconButton color="info" onClick={() => navigate('/recipes')}>
         <ArrowBackIosRoundedIcon />

@@ -135,15 +135,12 @@ const Login = () => {
           alignItems="center"
           justifyContent="center"
           textAlign="center"
+          height="100%"
+          width="100%"
+          color="white"
           sx={{
-            height: '100%',
             background:
               'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
-            width: '100%',
-            color: 'white',
-            input: {
-              color: theme.palette.info.main,
-            },
           }}
         >
           <Fade>
@@ -165,6 +162,9 @@ const Login = () => {
                       padding: '40px',
                       label: {
                         color: `${theme.palette.info.main}!important`,
+                      },
+                      input: {
+                        color: theme.palette.info.main,
                       },
                     }}
                   >

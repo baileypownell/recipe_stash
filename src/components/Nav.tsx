@@ -60,10 +60,7 @@ const Nav = () => {
 
   return (
     <>
-      <AppBar
-        position="sticky"
-        sx={{ backgroundColor: theme.palette.gray.main }}
-      >
+      <AppBar>
         <Toolbar>
           <IconButton
             size="large"
@@ -101,16 +98,7 @@ const Nav = () => {
             src={whiteLogo}
             alt="logo"
           />
-          <List
-            sx={{
-              '.MuiListItemText-primary': {
-                color: theme.palette.gray.main,
-              },
-              svg: {
-                color: theme.palette.gray.main,
-              },
-            }}
-          >
+          <List>
             {isAuthenticated ? (
               <>
                 <ListItemButton onClick={() => handleListItemClick('/recipes')}>

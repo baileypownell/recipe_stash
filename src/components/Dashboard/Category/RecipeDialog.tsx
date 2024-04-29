@@ -323,11 +323,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const editing =
     !(recipeDialogInfo as EditProps).cloning && mode === Mode.Edit;
 
-  const selectedStyles = {
-    backgroundColor: theme.palette.orange.main,
-    color: 'white',
-  };
-
   return (
     <Dialog fullScreen open={open}>
       <DialogTitle>{getTitle()}</DialogTitle>
@@ -396,15 +391,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               {tags.map((tag, index) => {
                 return (
                   <Chip
-                    sx={{
-                      cursor: 'pointer',
-                      transition: 'all 0.4s',
-                      '&:hover': {
-                        backgroundColor: `${theme.palette.orange.main}`,
-                        color: 'white',
-                      },
-                      ...(tags[index].selected && selectedStyles),
-                    }}
+                    color={tags[index].selected ? 'primary' : 'default'}
                     id={index.toString()}
                     key={tag.label}
                     onClick={() => toggleTagSelectionStatus(index)}
