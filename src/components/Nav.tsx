@@ -11,7 +11,7 @@ import {
   Divider,
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   SwipeableDrawer,
@@ -19,14 +19,14 @@ import {
   useTheme,
 } from '@mui/material';
 import { Stack } from '@mui/system';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import blackLogo from '../images/black-logo.png';
 import whiteLogo from '../images/white-logo.png';
 import AuthenticationService from '../services/auth-service';
 
 const Nav = () => {
-  const [open, setOpenState] = useState(false);
+  const [open, setOpen] = useState(false);
   const isAuthenticated = AuthenticationService.authenticated();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -35,7 +35,7 @@ const Nav = () => {
     try {
       await AuthenticationService.logout();
       AuthenticationService.setUserLoggedOut();
-      setOpenState(false);
+      setOpen(false);
       navigate('/');
     } catch (err) {
       console.log(err);
@@ -44,7 +44,7 @@ const Nav = () => {
 
   const handleListItemClick = (route: string) => {
     navigate(route);
-    setOpenState(false);
+    setOpen(false);
   };
 
   const toggleDrawer = (openState) => (event) => {
@@ -55,7 +55,7 @@ const Nav = () => {
     ) {
       return;
     }
-    setOpenState(openState);
+    setOpen(openState);
   };
 
   return (
@@ -113,52 +113,48 @@ const Nav = () => {
           >
             {isAuthenticated ? (
               <>
-                <ListItem
-                  button
-                  onClick={() => handleListItemClick('/recipes')}
-                >
+                <ListItemButton onClick={() => handleListItemClick('/recipes')}>
                   <ListItemIcon>
                     <RestaurantRoundedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Recipes"></ListItemText>
-                </ListItem>
-                <ListItem
-                  button
+                </ListItemButton>
+                <ListItemButton
                   onClick={() => handleListItemClick('/settings')}
                 >
                   <ListItemIcon>
                     <SettingsApplicationsRoundedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Settings"></ListItemText>
-                </ListItem>
-                <ListItem button onClick={() => handleListItemClick('/')}>
+                </ListItemButton>
+                <ListItemButton onClick={() => handleListItemClick('/')}>
                   <ListItemIcon>
                     <HomeRoundedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Home"></ListItemText>
-                </ListItem>
+                </ListItemButton>
                 <Divider />
-                <ListItem button onClick={logout}>
+                <ListItemButton onClick={logout}>
                   <ListItemIcon>
                     <LogoutRoundedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Logout"></ListItemText>
-                </ListItem>
+                </ListItemButton>
               </>
             ) : (
               <>
-                <ListItem button onClick={() => handleListItemClick('/login')}>
+                <ListItemButton onClick={() => handleListItemClick('/login')}>
                   <ListItemIcon>
                     <LoginRoundedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Login"></ListItemText>
-                </ListItem>
-                <ListItem button onClick={() => handleListItemClick('/signup')}>
+                </ListItemButton>
+                <ListItemButton onClick={() => handleListItemClick('/signup')}>
                   <ListItemIcon>
                     <PersonAddAltRoundedIcon />
                   </ListItemIcon>
                   <ListItemText primary="Create Account"></ListItemText>
-                </ListItem>
+                </ListItemButton>
               </>
             )}
           </List>

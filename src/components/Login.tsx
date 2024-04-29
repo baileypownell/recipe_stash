@@ -2,6 +2,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
   Button,
+  Divider,
   Fade,
   Snackbar,
   Stack,
@@ -13,6 +14,7 @@ import { Form, Formik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as yup from 'yup';
+import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import backgroundImage from '../images/ingredients.jpg';
 import AuthenticationService from '../services/auth-service';
 
@@ -30,10 +32,10 @@ const validationSchema = yup.object({
 });
 
 const Login = () => {
-  const [loading, setLoading] = useState(null);
-  const [signInError, setSignInError] = useState(null);
-  const [snackBarOpen, setSnackBarOpen] = useState(null);
-  const [snackBarMessage, setSnackBarMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [signInError, setSignInError] = useState(false);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState('');
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -73,7 +75,7 @@ const Login = () => {
         openSnackBar(res.data.message);
         setSignInError(true);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       openSnackBar(err.data ? err.data.message : 'Could not authenticate.');
       setSignInError(true);
@@ -92,7 +94,7 @@ const Login = () => {
         setSignInError(true);
         openSnackBar(res.data.message);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       openSnackBar(err.response.data?.error || 'There was an error.');
       setSignInError(true);
@@ -227,6 +229,16 @@ const Login = () => {
                         </Button>
                       ) : null}
                     </Box>
+                    <Divider sx={{ backgroundColor: 'white' }} />
+                    <Stack spacing={1} marginTop={1} alignItems="center">
+                      <Typography>Don't have an account?</Typography>
+                      <Button
+                        startIcon={<PersonAddAltRoundedIcon />}
+                        onClick={() => navigate('/signup')}
+                      >
+                        Sign up
+                      </Button>
+                    </Stack>
                   </Box>
                 </Form>
               )}

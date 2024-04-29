@@ -15,8 +15,8 @@ type Props = {
 };
 
 const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
-  <Box paddingTop={2} sx={{ '.MuiPaper-root': { flexGrow: 1 } }}>
-    <Typography variant="h6" sx={{ marginBottom: 1 }}>
+  <Box paddingTop={2}>
+    <Typography variant="h6" marginBottom={1}>
       {title}
     </Typography>
     <Stack direction="row" flexWrap="wrap">

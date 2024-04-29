@@ -433,6 +433,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         <Stack
           justifyContent="space-between"
           spacing={1}
+          alignItems="center"
           sx={{
             width: '100%',
             [theme.breakpoints.up('sm')]: {
@@ -460,6 +461,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           <Box
             sx={{
               display: editing ? 'flex' : 'block',
+              marginTop: `0!important`,
             }}
           >
             {editing ? (

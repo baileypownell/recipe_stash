@@ -61,6 +61,7 @@ const RecipeCard = ({
         <Box marginTop={2}>
           {recipe.tags.map((recipeTag) => (
             <Chip
+              key={recipeTag}
               sx={{
                 marginRight: 0.5,
                 backgroundColor: theme.palette.orange.main,
@@ -134,8 +135,8 @@ const Square = ({ recipe }: SquareProps) => {
           src={defaultTileImageUrl}
           style={{ display: 'none' }}
           onLoad={() => setImageLoaded(true)}
-          onError={(e) => setImageLoadingError(true)}
-          alt={`Image of ${rawTitle}`}
+          onError={() => setImageLoadingError(true)}
+          alt={`${rawTitle}`}
         />
         {!imageLoadingError ? (
           <Skeleton width={skeletonWidth} height={skeletonHeight} />
