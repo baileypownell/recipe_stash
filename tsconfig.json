@@ -30,5 +30,5 @@
     "**/*.tsx",
     "**/*.ts"
   ],
-  "exclude": ["node_modules", "build"] // *** The files to not type check ***
+  "exclude": ["node_modules", "build", "**/*.d.ts"] // *** The files to not type check ***
 }
