@@ -1,6 +1,5 @@
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { IconButton, Stack, Typography, useTheme } from '@mui/material';
-import React from 'react';
 import { useNavigate } from 'react-router';
 
 interface Props {

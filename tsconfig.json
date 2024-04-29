@@ -3,7 +3,6 @@
     "types": [],
     "target": "esnext", // Specify ECMAScript target version
     "outDir": "./public",
-    "rootDir": "./server",
     "noImplicitAny": false,
     "lib": ["dom", "dom.iterable", "esnext"], // List of library files to be included in the compilation
     "allowJs": false, // Allow JavaScript files to be compiled
@@ -24,11 +23,9 @@
     "noUnusedParameters": true, // Report errors on unused parameters
     "noFallthroughCasesInSwitch": true // Report errors for fallthrough cases in switch statement
   },
-  "include": [
-    "server/**/*",
-    "server/server.ts", // *** The files TypeScript should type check ***
-    "**/*.tsx",
-    "**/*.ts"
-  ],
-  "exclude": ["node_modules", "build", "**/*.d.ts"] // *** The files to not type check ***
+  "include": ["**/*.tsx", "**/*.ts", ".d.ts"],
+  "exclude": ["node_modules", "build", "**/public/**"], // *** The files to not type check ***
+  "paths": {
+    "react": ["./node_modules/@types/react"]
+  }
 }

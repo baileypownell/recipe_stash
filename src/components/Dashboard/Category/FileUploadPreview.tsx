@@ -9,7 +9,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { NewFile } from '../../../models/images';
 
 interface FileUploadPreviewProps {
-  defaultTileImageKey: string;
+  defaultTileImageKey: string | null;
   fileIdentifier: NewFile | string;
   setDefaultTileImage: (fileId: string | null) => void;
   removeFile: (fileId: string) => void;
@@ -82,7 +82,7 @@ export const FileUploadPreview = ({
           />
           <IconButton
             color="info"
-            onClick={(e) => removeFile(fileIdentifier)}
+            onClick={() => removeFile(fileIdentifier)}
             sx={{
               position: 'absolute',
               bottom: '10px',
@@ -123,7 +123,7 @@ export const FileUploadPreview = ({
           />
           <IconButton
             color="info"
-            onClick={(e) => removeFile(fileIdentifier.id)}
+            onClick={() => removeFile(fileIdentifier.id)}
             sx={{
               position: 'absolute',
               bottom: '10px',

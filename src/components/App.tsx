@@ -2,13 +2,18 @@ import { ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Home, Login, Nav, ResetPassword, Settings, Signup } from '.';
 import AuthenticationService from '../services/auth-service';
 import ErrorBoundary from './ErrorBoundary';
 import GuardedRoute from './GuardedRoute';
 import './index.scss';
 import RecipeCache from './RecipeCache';
 import { theme } from './theme';
+import Nav from './Nav';
+import Home from './Home';
+import Login from './Login';
+import Signup from './Signup';
+import ResetPassword from './ResetPassword';
+import Settings from './Settings';
 
 export const queryClient = new QueryClient();
 

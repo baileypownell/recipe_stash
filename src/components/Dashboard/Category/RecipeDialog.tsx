@@ -18,14 +18,13 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Slide,
   Stack,
   Typography,
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
-import { forwardRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
@@ -43,15 +42,16 @@ import {
 import { queryClient } from '../../App';
 import { AddRecipeMutationParam } from '../../RecipeCache';
 import FileUpload from './FileUpload';
+import { NewFile } from '../../../models/images';
 
-const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+// const Transition = forwardRef(function Transition(props, ref) {
+//   return <Slide direction="up" ref={ref} {...props}></Slide>;
+// });
 
 type EditProps = {
   recipe: any;
   cloning: boolean;
-  defaultTileImageKey: string;
+  defaultTileImageKey: string | null;
   openSnackBar: Function;
   presignedUrls: string[];
   fetchData: Function;
@@ -80,9 +80,11 @@ const determineCategory = (recipeDialogInfo, mode): string => {
   if (mode === Mode.Add) {
     return options.find(
       (option) => option.label === (recipeDialogInfo as AddProps).category,
-    ).value;
+    )!.value;
   } else if (mode === Mode.Edit) {
     return (recipeDialogInfo as EditProps).recipe.category;
+  } else {
+    return '';
   }
 };
 
@@ -95,7 +97,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     determineCategory(recipeDialogInfo, mode),
   );
   const [recipeValid, setRecipeValid] = useState(false);
-  const [newFiles, setNewFiles] = useState([]);
+  const [newFiles, setNewFiles] = useState<(File | NewFile)[]>([]);
   const [tags, setTags] = useState(
     recipeTagChips.map((tag) => ({ ...tag, selected: false })),
   );
@@ -166,7 +168,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       if (mode === Mode.Add) {
         const param: AddRecipeMutationParam = {
           recipeInput,
-          files: newFiles,
+          files: newFiles as NewFile[],
           defaultTile,
         };
         await (recipeDialogInfo as AddProps).addRecipe(param);
@@ -176,7 +178,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         if ((recipeDialogInfo as EditProps).cloning) {
           const param: AddRecipeMutationParam = {
             recipeInput,
-            files: newFiles,
+            files: newFiles as NewFile[],
             defaultTile,
           };
           const recipe = await (
@@ -213,8 +215,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               updatedRecipe.recipe_uuid,
             );
             queryClient.setQueryData('recipes', () => {
-              const current: SortedRecipeInterface =
-                queryClient.getQueryData('recipes');
+              const current = queryClient.getQueryData(
+                'recipes',
+              ) as SortedRecipeInterface;
               const updatedArray = current[category].map((recipe) => {
                 if (recipe.id === updatedRecipe.recipe_uuid) {
                   return formattedRecipe;
@@ -262,7 +265,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setTags(copyTags);
   };
 
-  const handleModelChange = (html: string, delta, source, editor) => {
+  const handleModelChange = (html: string, _, __, editor) => {
     setRecipeTitle(html);
     const recipe_title_raw = editor.getText();
     setRecipeTitleRaw(recipe_title_raw);
@@ -296,8 +299,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       await RecipeService.deleteRecipe(
         (recipeDialogInfo as EditProps).recipe.id,
       );
-      const current: SortedRecipeInterface =
-        queryClient.getQueryData('recipes');
+      const current = queryClient.getQueryData(
+        'recipes',
+      ) as SortedRecipeInterface;
       queryClient.setQueryData('recipes', () => {
         const updatedArray = current[category].filter(
           (el) => el.id !== (recipeDialogInfo as EditProps).recipe.id,
@@ -309,7 +313,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         };
         return updatedQueryState;
       });
-      // (props.recipeDialogInfo as EditProps).openSnackBar('Recipe deleted.')
       navigate('/recipes');
     } catch (err) {
       console.log(err);
@@ -326,7 +329,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   };
 
   return (
-    <Dialog fullScreen open={open} TransitionComponent={Transition}>
+    <Dialog fullScreen open={open}>
       <DialogTitle>{getTitle()}</DialogTitle>
       <DialogContent>
         <Box paddingBottom={2}>

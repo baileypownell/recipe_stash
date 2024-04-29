@@ -87,7 +87,7 @@ export const RecipeService = {
       }
       return recipes.data;
     } catch (error) {
-      return { error: true, errorMessage: error };
+      return { error: true, errorMessage: error as string };
     }
   },
 
@@ -184,7 +184,7 @@ export const RecipeService = {
 
   updateRecipe: async (
     recipeInput: UpdateRecipeInput,
-    files: NewFile[],
+    files: (File | NewFile)[],
     defaultTile: string | null,
     fileUrlsToDelete: string[],
     recipeId: string,
@@ -194,13 +194,13 @@ export const RecipeService = {
       const res = await axios.put('/recipe', recipeInput);
 
       const recipeUpdated: RawRecipe = res.data;
-      const uploads: NewFile[] = files;
+      const uploads = files;
       const uploading = !!uploads.length;
       const deleting = !!fileUrlsToDelete?.length;
 
       if (uploading && deleting) {
-        return RecipeService.uploadFiles(recipeId, uploads).then(
-          (uploadedImageKeys) => {
+        return RecipeService.uploadFiles(recipeId, uploads as NewFile[]).then(
+          () => {
             return RecipeService.deleteFiles(fileUrlsToDelete)
               .then(() => {
                 if (defaultTile) {
@@ -220,16 +220,16 @@ export const RecipeService = {
           },
         );
       } else if (uploading) {
-        return RecipeService.uploadFiles(recipeId, uploads)
+        return RecipeService.uploadFiles(recipeId, uploads as NewFile[])
           .then((uploadedImageKeys) => {
             if (defaultTile) {
               let awsKey: string;
               if (uploadedImageKeys.find((obj) => obj.id === defaultTile)) {
                 awsKey = uploadedImageKeys.find(
                   (obj) => obj.id === defaultTile,
-                ).awsKey;
+                )!.awsKey;
               } else {
-                awsKey = defaultTile as string;
+                awsKey = defaultTile;
               }
               return RecipeService.setTileImage(
                 recipeUpdated.recipe_uuid,

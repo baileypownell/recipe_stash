@@ -19,7 +19,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Field, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { isPasswordValid } from '../models/functions';
@@ -61,7 +61,7 @@ const Settings = (props: Props) => {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserData>();
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -102,9 +102,9 @@ const Settings = (props: Props) => {
 
     try {
       const payload: UpdateUserNamePayload = {
-        firstName: values.names.firstName || user.firstName,
-        lastName: values.names.lastName || user.lastName,
-        id,
+        firstName: values.names.firstName || (user as UserData).firstName,
+        lastName: values.names.lastName || (user as UserData).lastName,
+        id: id as string,
       };
       await UserService.updateUser(payload);
       openSnackBar('Profile updated successfully.');
@@ -146,7 +146,9 @@ const Settings = (props: Props) => {
 
   const updatePassword = async () => {
     try {
-      const res = await AuthenticationService.getPasswordResetLink(user.email);
+      const res = await AuthenticationService.getPasswordResetLink(
+        (user as UserData).email,
+      );
       setSnackBarOpen(res.data.message);
       if (res.data.success) {
         logout();
@@ -213,7 +215,7 @@ const Settings = (props: Props) => {
                 },
               }}
               validationSchema={validationSchema}
-              onSubmit={null}
+              onSubmit={() => void 0}
               render={(formik) => (
                 <>
                   <Accordion>
@@ -227,7 +229,7 @@ const Settings = (props: Props) => {
                       <Stack marginBottom={2} spacing={2}>
                         <Field
                           name="email.email"
-                          render={({ field, form }) => (
+                          render={({ form }) => (
                             <TextField
                               id="email"
                               variant="standard"
@@ -249,7 +251,7 @@ const Settings = (props: Props) => {
                         />
                         <Field
                           name="email.password"
-                          render={({ field, form }) => (
+                          render={({ form }) => (
                             <TextField
                               id="password"
                               variant="standard"
@@ -290,7 +292,7 @@ const Settings = (props: Props) => {
                       <Stack marginBottom={2} spacing={2}>
                         <Field
                           name="names.firstName"
-                          render={({ field, form }) => (
+                          render={({ form }) => (
                             <TextField
                               variant="standard"
                               name="names.firstName"
@@ -313,7 +315,7 @@ const Settings = (props: Props) => {
                         />
                         <Field
                           name="names.lastName"
-                          render={({ field, form }) => (
+                          render={({ form }) => (
                             <TextField
                               variant="standard"
                               name="names.lastName"

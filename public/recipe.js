@@ -7,8 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const client_1 = __importDefault(require("./client"));
 const authMiddleware_1 = require("./authMiddleware");
-const router = express_1.Router();
-const { getPresignedUrls, getPresignedUrl, deleteAWSFiles } = require('./aws-s3');
+const router = (0, express_1.Router)();
+const { getPresignedUrls, getPresignedUrl, deleteAWSFiles, } = require('./aws-s3');
 const constructTags = (recipe) => {
     const tagArray = [];
     if (recipe.no_bake) {
@@ -51,13 +51,12 @@ const formatRecipeResponse = (recipe) => {
         directions: recipe.directions,
         tags: constructTags(recipe),
         defaultTileImageKey: recipe.default_tile_image_key,
-        preSignedDefaultTileImageUrl: recipe.preSignedDefaultTileImageUrl
+        preSignedDefaultTileImageUrl: recipe.preSignedDefaultTileImageUrl,
     };
 };
 router.use(authMiddleware_1.authMiddleware);
 router.get('/', authMiddleware_1.authMiddleware, (request, response, next) => {
-    const userId = request.userID;
-    client_1.default.query('SELECT * FROM recipes WHERE user_uuid=$1', [userId], (err, res) => {
+    client_1.default.query('SELECT * FROM recipes WHERE user_uuid=$1', [request.session.userID], (err, res) => {
         if (err)
             return next(err);
         const responseObject = {
@@ -67,15 +66,15 @@ router.get('/', authMiddleware_1.authMiddleware, (request, response, next) => {
             dessert: [],
             other: [],
             side_dish: [],
-            drinks: []
+            drinks: [],
         };
         if (res.rows.length) {
-            const results = res.rows.map(recipe => {
+            const results = res.rows.map((recipe) => {
                 if (recipe.default_tile_image_key) {
                     const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key);
                     return {
                         ...recipe,
-                        preSignedDefaultTileImageUrl
+                        preSignedDefaultTileImageUrl,
                     };
                 }
                 else {
@@ -86,22 +85,28 @@ router.get('/', authMiddleware_1.authMiddleware, (request, response, next) => {
                 if (recipe.category === 'Dinner' || recipe.category === 'dinner') {
                     responseObject.dinner.push(formatRecipeResponse(recipe));
                 }
-                else if (recipe.category === 'Dessert' || recipe.category === 'dessert') {
+                else if (recipe.category === 'Dessert' ||
+                    recipe.category === 'dessert') {
                     responseObject.dessert.push(formatRecipeResponse(recipe));
                 }
-                else if (recipe.category === 'Drinks' || recipe.category === 'drinks') {
+                else if (recipe.category === 'Drinks' ||
+                    recipe.category === 'drinks') {
                     responseObject.drinks.push(formatRecipeResponse(recipe));
                 }
-                else if (recipe.category === 'Lunch' || recipe.category === 'lunch') {
+                else if (recipe.category === 'Lunch' ||
+                    recipe.category === 'lunch') {
                     responseObject.lunch.push(formatRecipeResponse(recipe));
                 }
-                else if (recipe.category === 'Breakfast' || recipe.category === 'breakfast') {
+                else if (recipe.category === 'Breakfast' ||
+                    recipe.category === 'breakfast') {
                     responseObject.breakfast.push(formatRecipeResponse(recipe));
                 }
-                else if (recipe.category === 'Other' || recipe.category === 'other') {
+                else if (recipe.category === 'Other' ||
+                    recipe.category === 'other') {
                     responseObject.other.push(formatRecipeResponse(recipe));
                 }
-                else if (recipe.category === 'Side Dish' || recipe.category === 'side_dish') {
+                else if (recipe.category === 'Side Dish' ||
+                    recipe.category === 'side_dish') {
                     responseObject.side_dish.push(formatRecipeResponse(recipe));
                 }
             });
@@ -113,13 +118,9 @@ router.get('/', authMiddleware_1.authMiddleware, (request, response, next) => {
     });
 });
 router.post('/', (request, response, next) => {
-    const userId = request.userID;
-    const { title, rawTitle, category, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
-    if (!!rawTitle &&
-        !!title &&
-        !!category &&
-        !!ingredients &&
-        !!directions) {
+    const userId = request.session.userID;
+    const { title, rawTitle, category, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, } = request.body;
+    if (!!rawTitle && !!title && !!category && !!ingredients && !!directions) {
         return client_1.default.query(`INSERT INTO recipes(
         title,
         raw_title,
@@ -151,7 +152,7 @@ router.post('/', (request, response, next) => {
             isSugarFree,
             isVegetarian,
             isVegan,
-            isKeto
+            isKeto,
         ], (err, res) => {
             if (err)
                 return next(err);
@@ -166,13 +167,13 @@ router.post('/', (request, response, next) => {
     else {
         return response.status(400).json({
             success: false,
-            message: 'Invalid request sent.'
+            message: 'Invalid request sent.',
         });
     }
 });
 router.put('/', (request, response, next) => {
-    const userId = request.userID;
-    const { recipeId, title, rawTitle, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto } = request.body;
+    const userId = request.session.userID;
+    const { recipeId, title, rawTitle, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, } = request.body;
     return client_1.default.query(`UPDATE recipes SET
     title=$1,
     raw_title=$16,
@@ -206,7 +207,7 @@ router.put('/', (request, response, next) => {
         isKeto,
         recipeId,
         userId,
-        rawTitle
+        rawTitle,
     ], (err, res) => {
         if (err)
             return next(err);
@@ -233,7 +234,7 @@ const getImageAWSKeys = (recipeId) => {
 };
 router.get('/:recipeId', (request, response, next) => {
     const { recipeId } = request.params;
-    const userId = request.userID;
+    const userId = request.session.userID;
     return client_1.default.query('SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2', [userId, recipeId], async (err, res) => {
         if (err)
             return next(err);
@@ -250,7 +251,7 @@ router.get('/:recipeId', (request, response, next) => {
                 tags: constructTags(recipe),
                 defaultTileImageKey: recipe.default_tile_image_key,
                 preSignedUrls: null,
-                preSignedDefaultTileImageUrl: null
+                preSignedDefaultTileImageUrl: null,
             };
             if (recipe.has_images) {
                 const urls = await getImageAWSKeys(recipeId);
@@ -258,7 +259,8 @@ router.get('/:recipeId', (request, response, next) => {
                     recipeResponse.preSignedUrls = getPresignedUrls(urls);
                     if (recipe.default_tile_image_key) {
                         const preSignedDefaultTileImageUrl = getPresignedUrl(recipe.default_tile_image_key);
-                        recipeResponse.preSignedDefaultTileImageUrl = preSignedDefaultTileImageUrl;
+                        recipeResponse.preSignedDefaultTileImageUrl =
+                            preSignedDefaultTileImageUrl;
                     }
                 }
                 response.status(200).json(recipeResponse);
@@ -273,7 +275,7 @@ router.get('/:recipeId', (request, response, next) => {
     });
 });
 router.delete('/:recipeId', (request, response, next) => {
-    const userId = request.userID;
+    const userId = request.session.userID;
     const { recipeId } = request.params;
     return client_1.default.query('DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid', [recipeId, userId], (err, res) => {
         if (err)
@@ -288,7 +290,7 @@ router.delete('/:recipeId', (request, response, next) => {
                         return response.status(500).json({ recipeDeleted: false });
                     // set recipe's "has_images" property to false if necessary
                     if (res) {
-                        const awsKeys = res.rows.map(row => row.key);
+                        const awsKeys = res.rows.map((row) => row.key);
                         // then delete from AWS S3
                         const awsDeletions = await deleteAWSFiles(awsKeys);
                         if (awsDeletions) {

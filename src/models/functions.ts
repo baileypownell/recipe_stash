@@ -2,10 +2,10 @@
 // (?=.*\d)(?=.*[a-z])(?=.*[A-Z])
 export const isPasswordValid = (password: string | undefined): boolean => {
   if (
-    password?.length < 8 ||
-    !/([A-Z]+)/g.test(password) ||
-    !/([a-z]+)/g.test(password) ||
-    !/([0-9]+)/g.test(password)
+    (password?.length !== undefined && password?.length < 8) ||
+    !/([A-Z]+)/g.test(password as string) ||
+    !/([a-z]+)/g.test(password as string) ||
+    !/([0-9]+)/g.test(password as string)
   ) {
     return false;
   } else {

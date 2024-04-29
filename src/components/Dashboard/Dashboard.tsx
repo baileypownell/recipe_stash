@@ -10,7 +10,7 @@ import {
   TextField,
   useTheme,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
@@ -120,7 +120,8 @@ interface Props {
 }
 
 const Dashboard = (props: Props) => {
-  const [filteredRecipes, setFilteredRecipes] = useState(null);
+  const [filteredRecipes, setFilteredRecipes] =
+    useState<SortedRecipeInterface | null>(null);
   const [gridView, setGridView] = useState(GridView.Grid);
   const [selectedFiltersNum, setSelectedFiltersNum] = useState(0);
   const theme = useTheme();
@@ -347,10 +348,10 @@ const Dashboard = (props: Props) => {
           },
         }}
       >
-        <IconButton color="gray" onClick={() => toggleView(GridView.List)}>
+        <IconButton onClick={() => toggleView(GridView.List)}>
           <TableRowsRoundedIcon />
         </IconButton>
-        <IconButton color="gray" onClick={() => toggleView(GridView.Grid)}>
+        <IconButton onClick={() => toggleView(GridView.Grid)}>
           <ViewModuleRoundedIcon />
         </IconButton>
         {filteredRecipes !== null

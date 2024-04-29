@@ -1,5 +1,5 @@
 import { Snackbar } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { FullRecipe, RawRecipe } from '../../server/recipe';
@@ -55,12 +55,15 @@ const determineRecipeCategory = (recipeCategory: string): string => {
     return 'side_dish';
   } else if (recipeCategory === RecipeCategories.Dinner) {
     return 'dinner';
+  } else {
+    return '';
   }
 };
 
 const RecipeCache = () => {
   const { mutateAsync } = useMutation(
     'recipes',
+    // @ts-expect-error
     async (recipeInput: AddRecipeMutationParam) => {
       try {
         const newRecipe: RawRecipe = await RecipeService.createRecipe(
@@ -78,21 +81,18 @@ const RecipeCache = () => {
     },
     {
       onSuccess: (newRecipe: FullRecipe) => {
-        queryClient.setQueryData(
-          'recipes',
-          (currentRecipes: SortedRecipeInterface) => {
-            const recipeCategory: string =
-              newRecipe.category || determineRecipeCategory(newRecipe.category);
-            const updatedQueryState = {
-              ...currentRecipes,
-              [recipeCategory]: [
-                ...currentRecipes[recipeCategory],
-                newRecipe,
-              ].sort(RecipeService.sortByTitle),
-            };
-            return updatedQueryState;
-          },
-        );
+        queryClient.setQueryData('recipes', (currentRecipes: any) => {
+          const recipeCategory: string =
+            newRecipe.category || determineRecipeCategory(newRecipe.category);
+          const updatedQueryState = {
+            ...currentRecipes,
+            [recipeCategory]: [
+              ...currentRecipes[recipeCategory],
+              newRecipe,
+            ].sort(RecipeService.sortByTitle),
+          };
+          return updatedQueryState;
+        });
       },
       onError: (error) => {
         console.log('Recipe could not be created: ', error);
@@ -100,7 +100,7 @@ const RecipeCache = () => {
     },
   );
 
-  const { refetch, isLoading, error, data } = useQuery(
+  const { refetch, isLoading, data } = useQuery(
     'recipes',
     async () => {
       try {
@@ -171,7 +171,7 @@ const RecipeCache = () => {
           />
         </Routes>
         <Dashboard
-          recipes={data}
+          recipes={data as SortedRecipeInterface}
           fetchRecipes={() => fetchRecipes()}
           addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
             await mutateAsync(recipeInput)

@@ -2,7 +2,7 @@ import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRound
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { Box, Button, IconButton } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Lightbox, { ImagesListType } from 'react-spring-lightbox';
 import ImageSkeletonLoader from './ImageSkeletonLoader';
 
@@ -12,14 +12,14 @@ interface Props {
 
 const LightboxComponent = ({ preSignedUrls }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentImageIndex, setCurrentIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const gotoPrevious = () =>
-    currentImageIndex > 0 && setCurrentIndex(currentImageIndex - 1);
+    currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1);
 
   const gotoNext = () =>
-    currentImageIndex + 1 < images.length &&
-    setCurrentIndex(currentImageIndex + 1);
+    currentImageIndex + 1 < images?.length &&
+    setCurrentImageIndex(currentImageIndex + 1);
 
   const images: ImagesListType = preSignedUrls
     ? preSignedUrls.map((url) => ({
@@ -27,16 +27,16 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
         loading: 'lazy',
         alt: 'Alt text',
       }))
-    : null;
+    : [];
 
   const triggerLightbox = (photoIndex: number): void => {
     setIsOpen(true);
-    setCurrentIndex(photoIndex);
+    setCurrentImageIndex(photoIndex);
   };
 
   const onClose = (): void => {
     setIsOpen(false);
-    setTimeout(() => setCurrentIndex(0), 500);
+    setTimeout(() => setCurrentImageIndex(0), 500);
   };
 
   return (
@@ -45,7 +45,7 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
         <ImageSkeletonLoader
           openLightBox={() => triggerLightbox(i)}
           url={url}
-          key={i}
+          key={url}
         ></ImageSkeletonLoader>
       ))}
 
@@ -63,13 +63,21 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
             </IconButton>
           </Box>
         )}
-        renderPrevButton={({ canPrev }) => (
-          <Button color="info" disabled={!canPrev} onClick={gotoPrevious}>
+        renderPrevButton={() => (
+          <Button
+            color="info"
+            // disabled={!canPrev}
+            onClick={gotoPrevious}
+          >
             <ArrowBackIosNewRoundedIcon />
           </Button>
         )}
-        renderNextButton={({ canNext }) => (
-          <Button color="info" disabled={!canNext} onClick={gotoNext}>
+        renderNextButton={() => (
+          <Button
+            color="info"
+            // disabled={!canNext}
+            onClick={gotoNext}
+          >
             <ArrowForwardIosRoundedIcon />
           </Button>
         )}

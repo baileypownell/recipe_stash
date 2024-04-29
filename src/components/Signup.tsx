@@ -44,7 +44,7 @@ const validationSchema = yup.object({
     .required('Password confirmation is required.'),
 });
 
-const Signup = (props) => {
+const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState('');
@@ -73,9 +73,9 @@ const Signup = (props) => {
         navigate('/recipes');
       } else {
         setLoading(false);
-        openSnackBar(response.message);
+        openSnackBar(response.message as string);
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
       openSnackBar(err.response.data.error);
     }

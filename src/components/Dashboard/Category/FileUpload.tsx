@@ -15,7 +15,7 @@ const { v4: uuidv4 } = require('uuid');
 interface FileUploadProps {
   passDefaultTileImage: (key: string | null) => void;
   preExistingImageUrls?: string[];
-  defaultTileImageUUID?: string;
+  defaultTileImageUUID?: string | null;
   passFiles: (files: (File | NewFile)[]) => void;
   passFilesToDelete?: (files: string[]) => void;
 }
@@ -43,7 +43,9 @@ const FileUpload = ({
     }
   }, []);
 
-  const openFileFinder = () => input.current.click();
+  const openFileFinder = () => {
+    if (input.current) (input.current as any).click();
+  };
 
   const openSnackBar = (message: string) => {
     setSnackBarOpen(true);
@@ -137,6 +139,7 @@ const FileUpload = ({
           disabled={limitReached}
           onChange={handleUpload}
           multiple
+          title="Upload a file"
         ></input>
         <Box
           sx={{

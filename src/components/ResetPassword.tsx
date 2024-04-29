@@ -26,18 +26,20 @@ const validationSchema = yup.object({
     .required('Password is required.'),
 });
 
-const ResetPassword = (props) => {
+const ResetPassword = () => {
   const [invalidLink, setInvalidLink] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState('');
-  const [email, setUserEmail] = useState(null);
+  const [email, setUserEmail] = useState('');
   const navigate = useNavigate();
   const { token } = useParams();
 
   const verifyToken = async () => {
     try {
-      const res = await AuthenticationService.verifyEmailResetToken(token);
+      const res = await AuthenticationService.verifyEmailResetToken(
+        token as string,
+      );
       if (!res.data.success) {
         setInvalidLink(true);
       } else {
@@ -71,7 +73,11 @@ const ResetPassword = (props) => {
   const updatePassword = async (values) => {
     setLoading(true);
     try {
-      await AuthenticationService.updatePassword(values.password, token, email);
+      await AuthenticationService.updatePassword(
+        values.password,
+        token as string,
+        email,
+      );
       openSnackBar('Password updated! Redirecting...');
       setLoading(false);
       navigate('/recipes');

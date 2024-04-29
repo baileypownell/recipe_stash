@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { recipeTagChips } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
@@ -19,6 +19,7 @@ import { Spinner } from '../Spinner';
 import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
+import { FullRecipe } from '../../../server/recipe';
 
 interface Props {
   openSnackBar: Function;
@@ -27,12 +28,12 @@ interface Props {
 
 const Recipe = (props: Props) => {
   const [loading, setLoading] = useState(true);
-  const [recipe, setRecipe] = useState(null);
+  const [recipe, setRecipe] = useState<FullRecipe | null>(null);
   const [tags, setTags] = useState(recipeTagChips);
   const [cloning, setCloning] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [preSignedUrls, setPresignedUrls] = useState(null);
+  const [preSignedUrls, setPresignedUrls] = useState<string[]>([]);
   const navigate = useNavigate();
   const triggerDialog = (): void => {
     setDialogOpen(!dialogOpen);
@@ -42,7 +43,7 @@ const Recipe = (props: Props) => {
 
   const fetchData = async () => {
     try {
-      const recipe = await RecipeService.getRecipe(params.id);
+      const recipe = await RecipeService.getRecipe(params.id as string);
       setRecipe(recipe);
       setLoading(false);
 
@@ -57,7 +58,7 @@ const Recipe = (props: Props) => {
         return tag;
       });
       setTags(tagState);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       if (err.response?.status === 401) {
         // unathenticated; redirect to log in
@@ -131,7 +132,7 @@ const Recipe = (props: Props) => {
     setDialogOpen(!dialogOpen);
   };
 
-  return !loading ? (
+  return !loading && recipe ? (
     <Stack
       sx={{
         height: `calc(100% - 50px)`,
@@ -202,7 +203,11 @@ const Recipe = (props: Props) => {
             )}
           </Stack>
           <Divider style={{ margin: '20px 0 10px 0' }} />
-          <Box sx={getImageStyles(recipe.preSignedUrls?.length < 2)}>
+          <Box
+            sx={getImageStyles(
+              recipe.preSignedUrls ? recipe.preSignedUrls?.length < 2 : false,
+            )}
+          >
             <LightboxComponent
               preSignedUrls={recipe.preSignedUrls}
             ></LightboxComponent>

@@ -18,6 +18,12 @@ import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import backgroundImage from '../images/ingredients.jpg';
 import AuthenticationService from '../services/auth-service';
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 interface FormInputs {
   email: string;
   password: string;

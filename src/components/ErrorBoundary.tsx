@@ -1,6 +1,6 @@
 import BlenderRoundedIcon from '@mui/icons-material/BlenderRounded';
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import React, { ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const withNavigate = (Component) => (props) => {
@@ -12,7 +12,7 @@ const withNavigate = (Component) => (props) => {
   return <Component {...props} navigate={goHome} />;
 };
 
-class ErrorBoundary extends React.Component<
+class ErrorBoundary extends Component<
   { navigate: () => void; children: ReactNode },
   { hasError: boolean }
 > {
@@ -21,7 +21,7 @@ class ErrorBoundary extends React.Component<
     this.state = { hasError: false };
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch() {
     this.setState({ hasError: true });
   }
 
