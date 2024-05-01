@@ -103,23 +103,15 @@ const Signup = () => {
                     background: 'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
                     width: '100%',
                     color: 'white',
-                    input: {
-                        color: theme.palette.info.main,
-                    },
                 }, children: (0, jsx_runtime_1.jsx)(material_1.Fade, { children: (0, jsx_runtime_1.jsx)(formik_1.Formik, { initialValues: {
                             firstName: '',
                             lastName: '',
                             email: '',
                             password: '',
                             confirmPassword: '',
-                        }, validationSchema: validationSchema, onSubmit: (values) => signup(values), validateOnMount: true, render: (formik) => ((0, jsx_runtime_1.jsx)(formik_1.Form, { children: (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
+                        }, validationSchema: validationSchema, onSubmit: (values) => signup(values), validateOnMount: true, render: (formik) => ((0, jsx_runtime_1.jsx)(formik_1.Form, { children: (0, jsx_runtime_1.jsxs)(material_1.Box, { padding: "40px", borderRadius: 1, sx: {
                                     backgroundColor: theme.palette.gray.main,
                                     boxShadow: `0px 10px 30px ${theme.palette.gray.main}`,
-                                    borderRadius: 1,
-                                    padding: '40px',
-                                    label: {
-                                        color: `${theme.palette.info.main}!important`,
-                                    },
                                 }, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h4", children: "Signup" }), (0, jsx_runtime_1.jsxs)(material_1.Stack, { paddingTop: 2, spacing: 2, paddingBottom: 2, children: [(0, jsx_runtime_1.jsx)(material_1.TextField, { name: "firstName", type: "text", variant: "filled", label: "First Name", value: formik.values.firstName, onChange: formik.handleChange, onBlur: formik.handleBlur, error: formik.touched.firstName &&
                                                     Boolean(formik.errors.firstName), helperText: formik.touched.firstName && formik.errors.firstName }), (0, jsx_runtime_1.jsx)(material_1.TextField, { name: "lastName", type: "text", variant: "filled", label: "Last Name", value: formik.values.lastName, onChange: formik.handleChange, onBlur: formik.handleBlur, error: formik.touched.lastName &&
                                                     Boolean(formik.errors.lastName), helperText: formik.touched.lastName && formik.errors.lastName }), (0, jsx_runtime_1.jsx)(material_1.TextField, { name: "email", type: "email", variant: "filled", label: "Email", value: formik.values.email, onBlur: formik.handleBlur, onChange: formik.handleChange, error: formik.touched.email && Boolean(formik.errors.email), helperText: formik.touched.email && formik.errors.email }), (0, jsx_runtime_1.jsx)(material_1.TextField, { name: "password", type: "password", variant: "filled", label: "Password", value: formik.values.password, onChange: formik.handleChange, onBlur: formik.handleBlur, error: formik.touched.password &&

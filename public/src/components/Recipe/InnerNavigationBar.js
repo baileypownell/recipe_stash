@@ -12,8 +12,7 @@ const InnerNavigationBar = ({ title }) => {
     const navigate = (0, react_router_1.useNavigate)();
     return ((0, jsx_runtime_1.jsxs)(material_1.Stack, { direction: "row", alignItems: "center", padding: 1, sx: {
             backgroundColor: theme.palette.secondary.main,
-            color: theme.palette.info.main,
-        }, children: [(0, jsx_runtime_1.jsx)(material_1.IconButton, { color: "info", onClick: () => navigate('/recipes'), children: (0, jsx_runtime_1.jsx)(ArrowBackIosRounded_1.default, {}) }), (0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: title })] }));
+        }, color: theme.palette.info.main, children: [(0, jsx_runtime_1.jsx)(material_1.IconButton, { color: "info", onClick: () => navigate('/recipes'), children: (0, jsx_runtime_1.jsx)(ArrowBackIosRounded_1.default, {}) }), (0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: title })] }));
 };
 exports.default = InnerNavigationBar;
 //# sourceMappingURL=InnerNavigationBar.js.map

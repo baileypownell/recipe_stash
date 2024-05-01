@@ -16,7 +16,6 @@ import {
   ListItemText,
   SwipeableDrawer,
   Toolbar,
-  useTheme,
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useState } from 'react';
@@ -29,7 +28,6 @@ const Nav = () => {
   const [open, setOpen] = useState(false);
   const isAuthenticated = AuthenticationService.authenticated();
   const navigate = useNavigate();
-  const theme = useTheme();
 
   const logout = async () => {
     try {

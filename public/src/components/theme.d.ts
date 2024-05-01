@@ -1,3 +1,4 @@
+import { Theme, ThemeOptions } from '@mui/material';
 declare module '@mui/material/styles' {
     interface Palette {
         gray: Palette['primary'];
@@ -20,4 +21,7 @@ declare module '@mui/material/Button' {
         orange: any;
     }
 }
-export declare const theme: import("@mui/material").Theme;
+export declare const getChip: (theme: Theme) => ThemeOptions;
+export declare const getInput: (theme: Theme) => ThemeOptions;
+export declare const getForm: (theme: Theme) => ThemeOptions;
+export declare const theme: Theme;

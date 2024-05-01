@@ -41,7 +41,9 @@ export default function MobileRecipeToolbar({
       bottom="0"
       right="0"
       left="0"
-      backgroundColor={theme.palette.gray.main}
+      sx={{
+        backgroundColor: theme.palette.gray.main,
+      }}
       width="100%"
       margin="0"
       padding="15px"

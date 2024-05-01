@@ -33,11 +33,7 @@ const RecipeCard = ({ viewRecipe, recipe, rawTitle, defaultTileImageUrl, }) => {
             backgroundImage: defaultTileImageUrl
                 ? `url(${defaultTileImageUrl})`
                 : 'none',
-        }, children: (0, jsx_runtime_1.jsxs)(material_1.CardContent, { children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", component: "div", marginBottom: 1, children: rawTitle }), (0, jsx_runtime_1.jsx)(material_1.Box, { marginTop: 2, children: recipe.tags.map((recipeTag) => ((0, jsx_runtime_1.jsx)(material_1.Chip, { sx: {
-                            marginRight: 0.5,
-                            backgroundColor: theme.palette.orange.main,
-                            color: theme.palette.info.main,
-                        }, label: tags_1.recipeTagChips.find((tag) => tag.recipeTagPropertyName === recipeTag).label, variant: "filled" }, recipeTag))) })] }) }));
+        }, children: (0, jsx_runtime_1.jsxs)(material_1.CardContent, { children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", component: "div", marginBottom: 1, children: rawTitle }), (0, jsx_runtime_1.jsx)(material_1.Stack, { marginTop: 2, spacing: 0.5, direction: "row", children: recipe.tags.map((recipeTag) => ((0, jsx_runtime_1.jsx)(material_1.Chip, { label: tags_1.recipeTagChips.find((tag) => tag.recipeTagPropertyName === recipeTag).label }, recipeTag))) })] }) }));
 };
 const Square = ({ recipe }) => {
     const recipeId = recipe.id;

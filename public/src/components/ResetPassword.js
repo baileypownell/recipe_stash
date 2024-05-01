@@ -93,16 +93,7 @@ const ResetPassword = () => {
             setLoading(false);
         }
     };
-    return invalidLink ? ((0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
-                margin: '0 auto',
-                textAlign: 'center',
-                paddingTop: '10vh',
-            }, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { marginBottom: "15px", textAlign: "center", variant: "body1", children: "The link is invalid or expired." }), (0, jsx_runtime_1.jsx)(material_1.Button, { variant: "contained", onClick: goHome, color: "secondary", type: "submit", children: "Home" })] }) })) : ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(material_1.Box, { sx: {
-                    width: '80%',
-                    margin: '0 auto',
-                    textAlign: 'center',
-                    paddingTop: '10vh',
-                }, children: (0, jsx_runtime_1.jsx)(formik_1.Formik, { initialValues: {
+    return invalidLink ? ((0, jsx_runtime_1.jsxs)(material_1.Box, { margin: "0 auto", textAlign: "center", paddingTop: "10vh", children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { marginBottom: "15px", textAlign: "center", variant: "body1", children: "The link is invalid or expired." }), (0, jsx_runtime_1.jsx)(material_1.Button, { variant: "contained", onClick: goHome, color: "secondary", type: "submit", children: "Home" })] })) : ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(material_1.Box, { width: "80%", margin: "0 auto", textAlign: "center", paddingTop: "10vh", children: (0, jsx_runtime_1.jsx)(formik_1.Formik, { initialValues: {
                         password: '',
                     }, validationSchema: validationSchema, validateOnMount: true, onSubmit: (values) => updatePassword(values), render: (formik) => ((0, jsx_runtime_1.jsx)(formik_1.Form, { children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { maxWidth: "400px", margin: "0 auto", spacing: 2, children: [(0, jsx_runtime_1.jsx)(material_1.TextField, { variant: "standard", type: "password", name: "password", required: true, label: "New Password", value: formik.values.password, onChange: formik.handleChange, onBlur: formik.handleBlur, error: formik.touched.password && Boolean(formik.errors.password), helperText: formik.touched.password && formik.errors.password }), (0, jsx_runtime_1.jsx)(lab_1.LoadingButton, { sx: { margintop: '10px' }, disabled: !formik.isValid, variant: "contained", color: "secondary", type: "submit", loading: loading, children: "Submit" })] }) })) }) }), (0, jsx_runtime_1.jsx)(material_1.Snackbar, { open: snackBarOpen, anchorOrigin: {
                     vertical: 'bottom',

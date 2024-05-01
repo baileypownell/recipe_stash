@@ -165,13 +165,7 @@ const Recipe = (props) => {
                             },
                         }, children: [(0, jsx_runtime_1.jsx)(material_1.Box, { dangerouslySetInnerHTML: {
                                     __html: dompurify_1.default.sanitize(recipe.title),
-                                } }), (0, jsx_runtime_1.jsx)(material_1.Box, { dangerouslySetInnerHTML: { __html: recipe.ingredients } }), (0, jsx_runtime_1.jsx)(material_1.Box, { dangerouslySetInnerHTML: { __html: recipe.directions } }), (0, jsx_runtime_1.jsx)(material_1.Stack, { spacing: 1, direction: "row", children: tags.map((tag) => tag.selected ? ((0, jsx_runtime_1.jsx)(material_1.Chip, { className: 'chip selectedTag', label: tag.label, sx: {
-                                        backgroundColor: theme.palette.orange.main,
-                                        color: 'white',
-                                    } }, tag.label)) : null) }), (0, jsx_runtime_1.jsx)(material_1.Divider, { style: { margin: '20px 0 10px 0' } }), (0, jsx_runtime_1.jsx)(material_1.Box, { sx: getImageStyles(recipe.preSignedUrls ? recipe.preSignedUrls?.length < 2 : false), children: (0, jsx_runtime_1.jsx)(LightboxComponent_1.default, { preSignedUrls: recipe.preSignedUrls }) })] })] }), width > 700 ? ((0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
-                    position: 'fixed',
-                    bottom: '20px',
-                    right: '20px',
+                                } }), (0, jsx_runtime_1.jsx)(material_1.Box, { dangerouslySetInnerHTML: { __html: recipe.ingredients } }), (0, jsx_runtime_1.jsx)(material_1.Box, { dangerouslySetInnerHTML: { __html: recipe.directions } }), (0, jsx_runtime_1.jsx)(material_1.Stack, { spacing: 1, direction: "row", children: tags.map((tag) => tag.selected ? (0, jsx_runtime_1.jsx)(material_1.Chip, { label: tag.label }, tag.label) : null) }), (0, jsx_runtime_1.jsx)(material_1.Divider, { style: { margin: '20px 0 10px 0' } }), (0, jsx_runtime_1.jsx)(material_1.Box, { sx: getImageStyles(recipe.preSignedUrls ? recipe.preSignedUrls?.length < 2 : false), children: (0, jsx_runtime_1.jsx)(LightboxComponent_1.default, { preSignedUrls: recipe.preSignedUrls }) })] })] }), width > 700 ? ((0, jsx_runtime_1.jsxs)(material_1.Box, { position: "fixed", bottom: "20px", right: "20px", sx: {
                     button: {
                         marginRight: '10px',
                     },

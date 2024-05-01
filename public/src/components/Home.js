@@ -22,24 +22,16 @@ const Home = () => {
             backgroundImage: `url(${cutting_vegetables_jpg_1.default})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-        }, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { paddingTop: "30px", paddingBottom: "30px", alignItems: "center", justifyContent: "center", sx: {
-                height: '100%',
+        }, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { paddingTop: "30px", paddingBottom: "30px", alignItems: "center", justifyContent: "center", height: "100%", sx: {
                 background: 'linear-gradient(120deg, rgba(230, 108, 108, 0.29), rgba(221, 114, 68, 0.42))',
-            }, children: [(0, jsx_runtime_1.jsx)(material_1.Stack, { sx: {
-                        img: {
+            }, children: [(0, jsx_runtime_1.jsx)(material_1.Box, { children: (0, jsx_runtime_1.jsx)("img", { style: {
                             height: '50px',
                             [theme.breakpoints.up('lg')]: {
                                 height: '75px',
                             },
-                        },
-                    }, children: (0, jsx_runtime_1.jsx)("img", { src: white_text_transparent_svg_1.default, alt: "Woman chopping greens on a cutting board" }) }), (0, jsx_runtime_1.jsx)(material_1.Fade, { in: visible, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { alignItems: "center", children: [(0, jsx_runtime_1.jsxs)(material_1.Box, { textAlign: "center", sx: {
-                                    color: theme.palette.info.main,
-                                }, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: "All of your recipes." }), (0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: "All in one place." }), (0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: "And it's free." })] }), (0, jsx_runtime_1.jsx)(material_1.Box, { margin: 2, sx: {
-                                    width: '200px',
-                                    img: {
+                        }, src: white_text_transparent_svg_1.default, alt: "Woman chopping greens on a cutting board" }) }), (0, jsx_runtime_1.jsx)(material_1.Fade, { in: visible, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { alignItems: "center", children: [(0, jsx_runtime_1.jsxs)(material_1.Box, { textAlign: "center", color: theme.palette.info.main, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: "All of your recipes." }), (0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: "All in one place." }), (0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", children: "And it's free." })] }), (0, jsx_runtime_1.jsx)(material_1.Box, { margin: 2, width: "200px", children: (0, jsx_runtime_1.jsx)("img", { style: {
                                         width: '100%',
-                                    },
-                                }, children: (0, jsx_runtime_1.jsx)("img", { src: mobile_dashboard_png_1.default, alt: "whisk" }) }), (0, jsx_runtime_1.jsx)(material_1.Button, { variant: "contained", color: "secondary", onClick: () => navigate('/recipes'), startIcon: (0, jsx_runtime_1.jsx)(DoubleArrowRounded_1.default, {}), children: "Get Started" })] }) })] }) }));
+                                    }, src: mobile_dashboard_png_1.default, alt: "Preview of what the application looks like on a phone" }) }), (0, jsx_runtime_1.jsx)(material_1.Button, { variant: "contained", color: "secondary", onClick: () => navigate('/recipes'), startIcon: (0, jsx_runtime_1.jsx)(DoubleArrowRounded_1.default, {}), children: "Get Started" })] }) })] }) }));
 };
 exports.default = Home;
 //# sourceMappingURL=Home.js.map

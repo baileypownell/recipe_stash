@@ -230,10 +230,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
         }
     };
     const editing = !recipeDialogInfo.cloning && mode === Mode.Edit;
-    const selectedStyles = {
-        backgroundColor: theme.palette.orange.main,
-        color: 'white',
-    };
     return ((0, jsx_runtime_1.jsxs)(material_1.Dialog, { fullScreen: true, open: open, children: [(0, jsx_runtime_1.jsx)(material_1.DialogTitle, { children: getTitle() }), (0, jsx_runtime_1.jsxs)(material_1.DialogContent, { children: [(0, jsx_runtime_1.jsxs)(material_1.Box, { paddingBottom: 2, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Recipe Name" }), (0, jsx_runtime_1.jsx)(react_quill_1.default, { defaultValue: mode === Mode.Edit
                                     ? recipeDialogInfo.recipe.title
                                     : null, onChange: handleModelChange })] }), (0, jsx_runtime_1.jsxs)(material_1.Box, { paddingBottom: 2, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Ingredients" }), (0, jsx_runtime_1.jsx)(react_quill_1.default, { defaultValue: mode === Mode.Edit
@@ -243,15 +239,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
                                     : null, onChange: handleModelChangeDirections })] }), (0, jsx_runtime_1.jsx)(material_1.Box, { children: (0, jsx_runtime_1.jsxs)(material_1.FormControl, { variant: "filled", style: { width: '100%', margin: '10px 0' }, children: [(0, jsx_runtime_1.jsx)(material_1.InputLabel, { children: "Category" }), (0, jsx_runtime_1.jsx)(material_1.Select, { value: category, onChange: updateCategory, children: options_1.default.map((val, index) => {
                                         return ((0, jsx_runtime_1.jsx)(material_1.MenuItem, { value: val.value, children: val.label }, index));
                                     }) })] }) }), (0, jsx_runtime_1.jsxs)(material_1.Accordion, { style: { margin: '10px 0' }, children: [(0, jsx_runtime_1.jsx)(material_1.AccordionSummary, { expandIcon: (0, jsx_runtime_1.jsx)(ExpandMore_1.default, {}), children: (0, jsx_runtime_1.jsx)(material_1.Typography, { children: "Recipe Tags" }) }), (0, jsx_runtime_1.jsxs)(material_1.AccordionDetails, { children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { mb: 2, children: "Use tags to characterize your recipe so that you can easily find recipes with similar tags through the dashboard filter." }), (0, jsx_runtime_1.jsx)(material_1.Stack, { spacing: 1, direction: "row", children: tags.map((tag, index) => {
-                                            return ((0, jsx_runtime_1.jsx)(material_1.Chip, { sx: {
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.4s',
-                                                    '&:hover': {
-                                                        backgroundColor: `${theme.palette.orange.main}`,
-                                                        color: 'white',
-                                                    },
-                                                    ...(tags[index].selected && selectedStyles),
-                                                }, id: index.toString(), onClick: () => toggleTagSelectionStatus(index), label: tag.label }, tag.label));
+                                            return ((0, jsx_runtime_1.jsx)(material_1.Chip, { color: tags[index].selected ? 'primary' : 'default', id: index.toString(), onClick: () => toggleTagSelectionStatus(index), label: tag.label }, tag.label));
                                         }) })] })] }), mode === Mode.Add ? ((0, jsx_runtime_1.jsx)(FileUpload_1.default, { passDefaultTileImage: (fileId) => setDefaultTile(fileId), passFiles: (newFiles) => setNewFiles(newFiles) })) : ((0, jsx_runtime_1.jsx)(FileUpload_1.default, { defaultTileImageUUID: recipeDialogInfo.defaultTileImageKey, passDefaultTileImage: (fileId) => setDefaultTile(fileId), preExistingImageUrls: recipeDialogInfo.presignedUrls, passFilesToDelete: setFilesToDelete, passFiles: (newFiles) => setNewFiles(newFiles) }))] }), (0, jsx_runtime_1.jsx)(material_1.DialogActions, { children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { justifyContent: "space-between", spacing: 1, alignItems: "center", sx: {
                         width: '100%',
                         [theme.breakpoints.up('sm')]: {

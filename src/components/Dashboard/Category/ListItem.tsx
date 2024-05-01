@@ -16,7 +16,9 @@ const ListItem = ({ recipeId, key, rawTitle }: ListItemProps) => {
     <Box
       width="100%"
       borderBottom={`1px solid ${theme.palette.gray.main}`}
-      cursor="pointer"
+      sx={{
+        cursor: 'pointer',
+      }}
       padding={1}
       key={key}
       onClick={viewRecipe}
