@@ -64,20 +64,12 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
           </Box>
         )}
         renderPrevButton={() => (
-          <Button
-            color="info"
-            // disabled={!canPrev}
-            onClick={gotoPrevious}
-          >
+          <Button color="info" onClick={gotoPrevious}>
             <ArrowBackIosNewRoundedIcon />
           </Button>
         )}
         renderNextButton={() => (
-          <Button
-            color="info"
-            // disabled={!canNext}
-            onClick={gotoNext}
-          >
+          <Button color="info" onClick={gotoNext}>
             <ArrowForwardIosRoundedIcon />
           </Button>
         )}

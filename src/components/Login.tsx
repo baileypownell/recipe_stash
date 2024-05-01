@@ -160,12 +160,6 @@ const Login = () => {
                       boxShadow: `0px 10px 30px ${theme.palette.gray.main}`,
                       borderRadius: 1,
                       padding: '40px',
-                      label: {
-                        color: `${theme.palette.info.main}!important`,
-                      },
-                      input: {
-                        color: theme.palette.info.main,
-                      },
                     }}
                   >
                     <Typography variant="h4">Login</Typography>

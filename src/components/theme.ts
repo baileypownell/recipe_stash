@@ -116,9 +116,36 @@ export const getChip = (theme: Theme): ThemeOptions => ({
   },
 });
 
+export const getInput = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          color: theme.palette.info.main,
+        },
+      },
+    },
+    // MuiLabel
+  },
+});
+
+export const getForm = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          color: theme.palette.info.main,
+        },
+      },
+    },
+  },
+});
+
 export const theme = createTheme(
   base,
   getAppBar(base),
   getList(base),
   getChip(base),
+  getInput(base),
+  getForm(base),
 );

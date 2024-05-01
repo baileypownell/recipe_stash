@@ -7,10 +7,6 @@ body {
   overflow-x: hidden;
 }
 
-label {
-  color: '#353531' !important;
-}
-
 .quill {
   button {
     background-color: transparent !important;
@@ -38,4 +34,10 @@ body {
 .MuiSnackbarContent-message {
   width: 100%;
   text-align: center;
+}
+
+.lightbox-image-stage {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
 }

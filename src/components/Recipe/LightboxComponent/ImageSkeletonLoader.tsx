@@ -12,6 +12,7 @@ function ImageSkeletonLoader({ url, openLightBox }) {
       style={{ cursor: 'pointer' }}
       key={url}
       src={url}
+      alt={url}
     />
   ) : (
     <Box height="300px" marginBottom="10px">
@@ -19,6 +20,7 @@ function ImageSkeletonLoader({ url, openLightBox }) {
         src={url}
         style={{ display: 'none' }}
         onLoad={() => setImageLoaded(true)}
+        alt={url}
       />
       <Skeleton height="100%" />
     </Box>

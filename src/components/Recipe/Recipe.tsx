@@ -206,10 +206,10 @@ const Recipe = (props: Props) => {
       </Stack>
       {width > 700 ? (
         <Box
+          position="fixed"
+          bottom="20px"
+          right="20px"
           sx={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
             button: {
               marginRight: '10px',
             },

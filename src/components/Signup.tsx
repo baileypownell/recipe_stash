@@ -108,9 +108,6 @@ const Signup = () => {
             'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
           width: '100%',
           color: 'white',
-          input: {
-            color: theme.palette.info.main,
-          },
         }}
       >
         <Fade>
@@ -128,14 +125,11 @@ const Signup = () => {
             render={(formik) => (
               <Form>
                 <Box
+                  padding="40px"
+                  borderRadius={1}
                   sx={{
                     backgroundColor: theme.palette.gray.main,
                     boxShadow: `0px 10px 30px ${theme.palette.gray.main}`,
-                    borderRadius: 1,
-                    padding: '40px',
-                    label: {
-                      color: `${theme.palette.info.main}!important`,
-                    },
                   }}
                 >
                   <Typography variant="h4">Signup</Typography>
