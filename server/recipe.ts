@@ -57,6 +57,9 @@ const constructTags = (recipe): string[] => {
   if (recipe.sugar_free) {
     tagArray.push('sugar_free');
   }
+  if (recipe.high_protein) {
+    tagArray.push('high_protein');
+  }
   return tagArray;
 };
 
@@ -166,7 +169,9 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
     isVegetarian,
     isVegan,
     isKeto,
+    isHighProtein,
   } = request.body;
+  console.log('isHighProtein: ', isHighProtein);
   if (!!rawTitle && !!title && !!category && !!ingredients && !!directions) {
     return client.query(
       `INSERT INTO recipes(
@@ -184,8 +189,9 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
         sugar_free,
         vegetarian,
         vegan,
-        keto
-      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
+        keto,
+        high_protein
+      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`,
       [
         title,
         rawTitle,
@@ -202,6 +208,7 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
         isVegetarian,
         isVegan,
         isKeto,
+        isHighProtein,
       ],
       (err, res) => {
         if (err) return next(err);
@@ -238,6 +245,7 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
     isVegetarian,
     isVegan,
     isKeto,
+    isHighProtein,
   } = request.body;
   return client.query(
     `UPDATE recipes SET
@@ -254,7 +262,8 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
     sugar_free=$10,
     vegetarian=$11,
     vegan=$12,
-    keto=$13 WHERE
+    keto=$13,
+    high_protein=$17 WHERE
     recipe_uuid=$14 AND
     user_uuid=$15
     RETURNING *`,
@@ -275,6 +284,7 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
       recipeId,
       userId,
       rawTitle,
+      isHighProtein,
     ],
     (err, res) => {
       if (err) return next(err);

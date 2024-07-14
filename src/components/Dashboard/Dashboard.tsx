@@ -71,6 +71,7 @@ interface FilterInterface extends BaseStringAccessibleObjectBoolean {
   sugar_free: boolean;
   vegan: boolean;
   vegetarian: boolean;
+  high_protein: boolean;
 }
 
 interface CategoryInterface extends BaseStringAccessibleObjectBoolean {
@@ -94,6 +95,7 @@ const appliedFiltersSubject: BehaviorSubject<FilterInterface> =
     sugar_free: false,
     vegan: false,
     vegetarian: false,
+    high_protein: false,
   });
 const appliedFilters$ = appliedFiltersSubject.asObservable();
 
@@ -282,6 +284,7 @@ const Dashboard = (props: Props) => {
     { key: 'sugar_free', name: 'Sugar Free' },
     { key: 'vegan', name: 'Vegan' },
     { key: 'vegetarian', name: 'Vegetarian' },
+    { key: 'high_protein', name: 'High Protein' },
   ];
 
   const filterCategoryArray = [

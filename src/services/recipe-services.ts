@@ -37,6 +37,7 @@ export interface RecipeTags {
   isVegetarian: boolean;
   isVegan: boolean;
   isKeto: boolean;
+  isHighProtein: boolean;
 }
 
 export interface RecipeInput extends RecipeTags {
@@ -107,6 +108,7 @@ export const RecipeService = {
     files: NewFile[],
     defaultTile: string | null,
   ): Promise<RawRecipe> => {
+    console.log('recipeInput: ', recipeInput);
     try {
       const recipeCreated = await axios.post('/recipe', recipeInput);
       if (files?.length) {
