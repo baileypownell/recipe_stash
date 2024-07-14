@@ -1,3 +1,2 @@
-/// <reference types="react" />
-declare const ResetPassword: () => JSX.Element;
+declare const ResetPassword: () => import("react/jsx-runtime").JSX.Element;
 export default ResetPassword;

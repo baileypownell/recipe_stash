@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { NewFile } from '../models/images';
 import { RecipeInput } from '../services/recipe-services';
 export interface MealCategoriesType {
@@ -15,5 +14,5 @@ export interface AddRecipeMutationParam {
     files: NewFile[];
     defaultTile: string | null;
 }
-declare const RecipeCache: () => JSX.Element;
+declare const RecipeCache: () => import("react/jsx-runtime").JSX.Element;
 export default RecipeCache;

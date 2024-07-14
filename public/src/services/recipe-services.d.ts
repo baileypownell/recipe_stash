@@ -30,6 +30,7 @@ export interface RecipeTags {
     isVegetarian: boolean;
     isVegan: boolean;
     isKeto: boolean;
+    isHighProtein: boolean;
 }
 export interface RecipeInput extends RecipeTags {
     title: string;

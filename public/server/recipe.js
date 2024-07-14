@@ -38,6 +38,9 @@ const constructTags = (recipe) => {
     if (recipe.sugar_free) {
         tagArray.push('sugar_free');
     }
+    if (recipe.high_protein) {
+        tagArray.push('high_protein');
+    }
     return tagArray;
 };
 const formatRecipeResponse = (recipe) => {
@@ -119,7 +122,8 @@ router.get('/', authMiddleware_1.authMiddleware, (request, response, next) => {
 });
 router.post('/', (request, response, next) => {
     const userId = request.session.userID;
-    const { title, rawTitle, category, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, } = request.body;
+    const { title, rawTitle, category, ingredients, directions, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, isHighProtein, } = request.body;
+    console.log('isHighProtein: ', isHighProtein);
     if (!!rawTitle && !!title && !!category && !!ingredients && !!directions) {
         return client_1.default.query(`INSERT INTO recipes(
         title,
@@ -136,8 +140,9 @@ router.post('/', (request, response, next) => {
         sugar_free,
         vegetarian,
         vegan,
-        keto
-      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`, [
+        keto,
+        high_protein
+      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`, [
             title,
             rawTitle,
             category,
@@ -153,10 +158,12 @@ router.post('/', (request, response, next) => {
             isVegetarian,
             isVegan,
             isKeto,
+            isHighProtein,
         ], (err, res) => {
             if (err)
                 return next(err);
             if (res.rowCount) {
+                console.log(res.rows[0]);
                 return response.status(200).json(res.rows[0]);
             }
             else {
@@ -173,7 +180,7 @@ router.post('/', (request, response, next) => {
 });
 router.put('/', (request, response, next) => {
     const userId = request.session.userID;
-    const { recipeId, title, rawTitle, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, } = request.body;
+    const { recipeId, title, rawTitle, ingredients, directions, category, isNoBake, isEasy, isHealthy, isGlutenFree, isDairyFree, isSugarFree, isVegetarian, isVegan, isKeto, isHighProtein, } = request.body;
     return client_1.default.query(`UPDATE recipes SET
     title=$1,
     raw_title=$16,
@@ -188,7 +195,8 @@ router.put('/', (request, response, next) => {
     sugar_free=$10,
     vegetarian=$11,
     vegan=$12,
-    keto=$13 WHERE
+    keto=$13,
+    high_protein=$17 WHERE
     recipe_uuid=$14 AND
     user_uuid=$15
     RETURNING *`, [
@@ -208,6 +216,7 @@ router.put('/', (request, response, next) => {
         recipeId,
         userId,
         rawTitle,
+        isHighProtein,
     ], (err, res) => {
         if (err)
             return next(err);

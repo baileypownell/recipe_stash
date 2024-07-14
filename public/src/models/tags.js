@@ -47,5 +47,10 @@ exports.recipeTagChips = [
         recipeTagPropertyName: 'keto',
         label: 'Keto',
     },
+    {
+        selected: false,
+        recipeTagPropertyName: 'high_protein',
+        label: 'High Protein',
+    },
 ];
 //# sourceMappingURL=tags.js.map

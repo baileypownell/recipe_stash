@@ -213,6 +213,7 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
       (err, res) => {
         if (err) return next(err);
         if (res.rowCount) {
+          console.log(res.rows[0]);
           return response.status(200).json(res.rows[0]);
         } else {
           return response.status(500).json(null);

@@ -84,6 +84,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
             isVegetarian: tags[6].selected,
             isVegan: tags[7].selected,
             isKeto: tags[8].selected,
+            isHighProtein: tags[9].selected,
         };
     };
     const saveRecipe = async (e) => {
@@ -101,12 +102,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
         };
         try {
             if (mode === Mode.Add) {
-                const param = {
+                await recipeDialogInfo.addRecipe({
                     recipeInput,
                     files: newFiles,
                     defaultTile,
-                };
-                await recipeDialogInfo.addRecipe(param);
+                });
                 clearState();
                 setLoading(false);
             }

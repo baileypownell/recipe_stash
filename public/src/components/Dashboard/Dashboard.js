@@ -41,6 +41,7 @@ const appliedFiltersSubject = new rxjs_1.BehaviorSubject({
     sugar_free: false,
     vegan: false,
     vegetarian: false,
+    high_protein: false,
 });
 const appliedFilters$ = appliedFiltersSubject.asObservable();
 const appliedCategorySubject = new rxjs_1.BehaviorSubject({
@@ -176,6 +177,7 @@ const Dashboard = (props) => {
         { key: 'sugar_free', name: 'Sugar Free' },
         { key: 'vegan', name: 'Vegan' },
         { key: 'vegetarian', name: 'Vegetarian' },
+        { key: 'high_protein', name: 'High Protein' },
     ];
     const filterCategoryArray = [
         { key: 'breakfast', name: mealCategories.breakfast },

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { SortedRecipeInterface } from '../../services/recipe-services';
 export declare enum GridView {
     Grid = 0,
@@ -18,5 +17,5 @@ interface Props {
     fetchRecipes: Function;
     recipes: SortedRecipeInterface;
 }
-declare const Dashboard: (props: Props) => JSX.Element;
+declare const Dashboard: (props: Props) => import("react/jsx-runtime").JSX.Element;
 export default Dashboard;

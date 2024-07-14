@@ -1,2 +1,1 @@
-/// <reference types="react" />
-export declare const Spinner: () => JSX.Element;
+export declare const Spinner: () => import("react/jsx-runtime").JSX.Element;

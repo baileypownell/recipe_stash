@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import 'react-quill/dist/quill.snow.css';
 type EditProps = {
     recipe: any;
@@ -24,5 +23,5 @@ interface Props {
     open: boolean;
     toggleModal: () => void;
 }
-declare const RecipeDialog: ({ recipeDialogInfo, mode, toggleModal, open }: Props) => JSX.Element;
+declare const RecipeDialog: ({ recipeDialogInfo, mode, toggleModal, open }: Props) => import("react/jsx-runtime").JSX.Element;
 export default RecipeDialog;

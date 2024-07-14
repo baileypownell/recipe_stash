@@ -1,3 +1,2 @@
-/// <reference types="react" />
-declare const _default: (props: any) => JSX.Element;
+declare const _default: (props: any) => import("react/jsx-runtime").JSX.Element;
 export default _default;

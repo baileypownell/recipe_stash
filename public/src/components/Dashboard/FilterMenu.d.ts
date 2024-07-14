@@ -1,4 +1,3 @@
-/// <reference types="react" />
 export default function FilterMenu(props: {
     numberOfSelectedFilters: number;
     filters: any[];
@@ -7,4 +6,4 @@ export default function FilterMenu(props: {
     appliedCat: any;
     filter: Function;
     filterByCategory: Function;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;

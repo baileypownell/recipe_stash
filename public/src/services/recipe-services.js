@@ -30,6 +30,7 @@ exports.RecipeService = {
         return await axios_1.default.delete(`/recipe/${recipeId}`);
     },
     createRecipe: async (recipeInput, files, defaultTile) => {
+        console.log('recipeInput: ', recipeInput);
         try {
             const recipeCreated = await axios_1.default.post('/recipe', recipeInput);
             if (files?.length) {

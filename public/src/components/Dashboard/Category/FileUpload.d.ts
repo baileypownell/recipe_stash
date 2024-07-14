@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { NewFile } from '../../../models/images';
 interface FileUploadProps {
     passDefaultTileImage: (key: string | null) => void;
@@ -7,5 +6,5 @@ interface FileUploadProps {
     passFiles: (files: (File | NewFile)[]) => void;
     passFilesToDelete?: (files: string[]) => void;
 }
-declare const FileUpload: ({ passDefaultTileImage, preExistingImageUrls, defaultTileImageUUID, passFiles, passFilesToDelete, }: FileUploadProps) => JSX.Element;
+declare const FileUpload: ({ passDefaultTileImage, preExistingImageUrls, defaultTileImageUUID, passFiles, passFilesToDelete, }: FileUploadProps) => import("react/jsx-runtime").JSX.Element;
 export default FileUpload;
