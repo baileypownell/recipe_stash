@@ -29,7 +29,7 @@ const Category = ({ title, id, recipes, gridView, addRecipe }: Props) => (
       {recipes
         ? recipes.map((recipe) =>
             gridView === GridView.Grid ? (
-              <Square recipe={recipe} />
+              <Square key={recipe.id} recipe={recipe} />
             ) : (
               <ListItem
                 key={recipe.id}

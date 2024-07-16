@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   Chip,
@@ -46,6 +47,7 @@ const RecipeCard = ({
 
   return (
     <Card
+      component={Button}
       onClick={viewRecipe}
       sx={{ ...tileStyles, ...(defaultTileImageUrl && imageTileStyles) }}
       style={{

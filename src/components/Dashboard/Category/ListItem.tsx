@@ -1,4 +1,8 @@
-import { Box, Typography, useTheme } from '@mui/material';
+import {
+  ListItemButton,
+  ListItemText,
+  ListItem as MuiListItem,
+} from '@mui/material';
 import { useNavigate } from 'react-router';
 
 interface ListItemProps {
@@ -9,22 +13,20 @@ interface ListItemProps {
 
 const ListItem = ({ recipeId, key, rawTitle }: ListItemProps) => {
   const navigate = useNavigate();
-  const theme = useTheme();
   const viewRecipe = () => navigate(`/recipes/${recipeId}`);
 
   return (
-    <Box
-      width="100%"
-      borderBottom={`1px solid ${theme.palette.gray.main}`}
-      sx={{
-        cursor: 'pointer',
-      }}
-      padding={1}
+    <MuiListItem
+      dense
       key={key}
-      onClick={viewRecipe}
+      sx={{
+        paddingLeft: 0,
+      }}
     >
-      <Typography variant="body1">{rawTitle}</Typography>
-    </Box>
+      <ListItemButton onClick={viewRecipe}>
+        <ListItemText>{rawTitle}</ListItemText>
+      </ListItemButton>
+    </MuiListItem>
   );
 };
 

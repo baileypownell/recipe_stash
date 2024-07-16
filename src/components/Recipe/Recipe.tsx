@@ -16,7 +16,6 @@ import { recipeTagChips } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
 import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import { Spinner } from '../Spinner';
-import InnerNavigationBar from './InnerNavigationBar';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
 import { FullRecipe } from '../../../server/recipe';
@@ -142,7 +141,6 @@ const Recipe = (props: Props) => {
         },
       }}
     >
-      <InnerNavigationBar title={recipe.rawTitle}></InnerNavigationBar>
       <RecipeDialog
         mode={Mode.Edit}
         open={dialogOpen}
