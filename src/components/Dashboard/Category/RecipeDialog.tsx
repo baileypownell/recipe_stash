@@ -430,6 +430,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               flexDirection: 'row-reverse',
             },
             button: {
+              [theme.breakpoints.down('sm')]: {
+                width: '100%',
+              },
               [theme.breakpoints.up('sm')]: {
                 margin: 0,
               },
@@ -451,7 +454,14 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           <Box
             sx={{
               display: editing ? 'flex' : 'block',
-              marginTop: `0!important`,
+              [theme.breakpoints.down('md')]: {
+                width: '100%',
+                maxWidth: '400px',
+              },
+              [theme.breakpoints.up('md')]: {
+                marginTop: `0!important`,
+                width: 'auto',
+              },
             }}
           >
             {editing ? (

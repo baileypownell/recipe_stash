@@ -134,7 +134,16 @@ export const getForm = (theme: Theme): ThemeOptions => ({
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          color: theme.palette.info.main,
+          color: theme.palette.gray.main,
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          '.MuiFilledInput-input': {
+            color: theme.palette.gray.main,
+          },
         },
       },
     },
