@@ -297,9 +297,34 @@ const Dashboard = (props: Props) => {
     { key: 'other', name: mealCategories.other },
   ];
 
+  const clearFilters = () => {
+    appliedFiltersSubject.next({
+      dairy_free: false,
+      easy: false,
+      gluten_free: false,
+      healthy: false,
+      keto: false,
+      no_bake: false,
+      sugar_free: false,
+      vegan: false,
+      vegetarian: false,
+      high_protein: false,
+    });
+
+    appliedCategorySubject.next({
+      breakfast: false,
+      lunch: false,
+      dinner: false,
+      side_dish: false,
+      dessert: false,
+      drinks: false,
+      other: false,
+    });
+  };
+
   return (
     <Box>
-      <Box sx={{ backgroundColor: theme.palette.secondary.main }} padding={1}>
+      <Box sx={{ backgroundColor: theme.palette.secondary.main }} padding={0.5}>
         <Stack
           direction="row"
           alignItems="center"
@@ -337,6 +362,7 @@ const Dashboard = (props: Props) => {
             filter={filter}
             filterByCategory={filterByCategory}
             categories={filterCategoryArray}
+            clearFilters={clearFilters}
           />
         </Stack>
       </Box>

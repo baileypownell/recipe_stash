@@ -1,4 +1,5 @@
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import ClearIcon from '@mui/icons-material/Clear';
 import {
   Box,
   Button,
@@ -12,15 +13,16 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-export default function FilterMenu(props: {
-  numberOfSelectedFilters: number;
-  filters: any[];
-  categories: any[];
-  appliedFilt: any;
-  appliedCat: any;
-  filter: Function;
-  filterByCategory: Function;
-}) {
+export const FilterMenu = ({
+  numberOfSelectedFilters,
+  filters,
+  categories,
+  appliedFilt,
+  appliedCat,
+  filter,
+  filterByCategory,
+  clearFilters,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
 
@@ -47,13 +49,11 @@ export default function FilterMenu(props: {
         onClick={handleClick}
       >
         <Stack direction="row" alignItems="center">
-          <Typography variant="body2" sx={{ marginRight: '20px' }}>
+          <Typography variant="body2" sx={{ marginRight: '5px' }}>
             Filter
           </Typography>
-          {props.numberOfSelectedFilters > 0 ? (
-            <Typography variant="body2">
-              ({props.numberOfSelectedFilters})
-            </Typography>
+          {numberOfSelectedFilters > 0 ? (
+            <Typography variant="body2">({numberOfSelectedFilters})</Typography>
           ) : (
             <FilterListRoundedIcon />
           )}
@@ -66,94 +66,112 @@ export default function FilterMenu(props: {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <Stack direction="row" spacing={2} minWidth="200px">
-          <Box>
-            <Stack
-              padding="10px"
-              direction="row"
-              justifyContent="space-between"
-            >
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 'bold', padding: '0!important' }}
+        <Stack direction="column" alignItems="center" paddingBottom={1}>
+          <Stack direction="row" spacing={2} minWidth="200px">
+            <Box>
+              <Stack
+                padding="10px"
+                direction="row"
+                justifyContent="space-between"
               >
-                Features
-              </Typography>
-              <FilterListRoundedIcon />
-            </Stack>
-            <Divider />
-            {props.filters.map((item, index) => {
-              return (
-                <MenuItem
-                  key={index}
-                  sx={{
-                    paddingRight: 0,
-                  }}
-                  onClick={() => props.filter(item.key)}
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 'bold', padding: '0!important' }}
                 >
-                  <Stack
-                    justifyContent="space-between"
-                    alignItems="center"
-                    direction="row"
-                    width="100%"
+                  Features
+                </Typography>
+                <FilterListRoundedIcon />
+              </Stack>
+              <Divider />
+              {filters.map((item, index) => {
+                return (
+                  <MenuItem
+                    key={index}
+                    sx={{
+                      paddingRight: 0,
+                    }}
+                    onClick={() => filter(item.key)}
                   >
-                    {item.name}
-                    <Checkbox
-                      checked={props.appliedFilt[item.key]}
-                      id={item.key}
-                      color="orange"
-                      inputProps={{ 'aria-label': 'primary checkbox' }}
-                    />
-                  </Stack>
-                </MenuItem>
-              );
-            })}
-          </Box>
+                    <Stack
+                      justifyContent="space-between"
+                      alignItems="center"
+                      direction="row"
+                      width="100%"
+                    >
+                      {item.name}
+                      <Checkbox
+                        checked={appliedFilt[item.key]}
+                        id={item.key}
+                        color="orange"
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                      />
+                    </Stack>
+                  </MenuItem>
+                );
+              })}
+            </Box>
 
-          <Box>
-            <Stack
-              padding="10px"
-              direction="row"
-              justifyContent="space-between"
-            >
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 'bold', padding: '0!important' }}
+            <Box>
+              <Stack
+                padding="10px"
+                direction="row"
+                justifyContent="space-between"
               >
-                Categories
-              </Typography>
-              <FilterListRoundedIcon />
-            </Stack>
-            <Divider />
-            {props.categories.map((item, index) => {
-              return (
-                <MenuItem
-                  key={index}
-                  sx={{
-                    paddingRight: 0,
-                  }}
-                  onClick={() => props.filterByCategory(item.key)}
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 'bold', padding: '0!important' }}
                 >
-                  <Stack
-                    justifyContent="space-between"
-                    alignItems="center"
-                    direction="row"
-                    width="100%"
+                  Categories
+                </Typography>
+                <FilterListRoundedIcon />
+              </Stack>
+              <Divider />
+              {categories.map((item, index) => {
+                return (
+                  <MenuItem
+                    key={index}
+                    sx={{
+                      paddingRight: 0,
+                    }}
+                    onClick={() => filterByCategory(item.key)}
                   >
-                    {item.name}
-                    <Checkbox
-                      checked={props.appliedCat[item.key]}
-                      id={item.key}
-                      color="orange"
-                      inputProps={{ 'aria-label': 'primary checkbox' }}
-                    />
-                  </Stack>
-                </MenuItem>
-              );
-            })}
-          </Box>
+                    <Stack
+                      justifyContent="space-between"
+                      alignItems="center"
+                      direction="row"
+                      width="100%"
+                    >
+                      {item.name}
+                      <Checkbox
+                        checked={appliedCat[item.key]}
+                        id={item.key}
+                        color="orange"
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                      />
+                    </Stack>
+                  </MenuItem>
+                );
+              })}
+            </Box>
+          </Stack>
+
+          <Button
+            sx={{
+              svg: {
+                color: theme.palette.primary.main,
+              },
+            }}
+            onClick={clearFilters}
+            size="small"
+            variant="outlined"
+            startIcon={<ClearIcon />}
+          >
+            Clear All
+          </Button>
         </Stack>
       </Menu>
     </>
   );
-}
+};
+
+export default FilterMenu;
