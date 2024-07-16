@@ -10,7 +10,8 @@
     "lint-detect": "eslint . --ext .ts",
     "lint": "eslint --fix . --ext .ts --ext .tsx",
     "start": "NODE_ENV=production && node ./public/server/server.js",
-    "build": "webpack && tsc -p ."
+    "build": "webpack && tsc -p .",
+    "deploy": "git push heroku master"
   },
   "repository": {
     "type": "git",
