@@ -9,7 +9,7 @@
     "dev-server": "nodemon ./server/server.ts node --trace-warnings --skipLibCheck",
     "lint-detect": "eslint . --ext .ts",
     "lint": "eslint --fix . --ext .ts --ext .tsx",
-    "start": "NODE_ENV=production && node ./public/server.js",
+    "start": "NODE_ENV=production && node ./public/server/server.js",
     "build": "webpack && tsc -p ."
   },
   "repository": {
