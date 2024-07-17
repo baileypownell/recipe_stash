@@ -96,7 +96,7 @@ const getList = (theme: Theme): ThemeOptions => ({
 //   },
 // });
 
-export const getChip = (theme: Theme): ThemeOptions => ({
+export const getChip = (): ThemeOptions => ({
   components: {
     MuiChip: {
       defaultProps: {
@@ -107,10 +107,6 @@ export const getChip = (theme: Theme): ThemeOptions => ({
         root: {
           transition: 'all 0.4s',
         },
-        // colorPrimary: {
-        //   backgroundColor: theme.palette.orange.main,
-        //   color: theme.palette.info.main,
-        // },
       },
     },
   },
@@ -154,7 +150,7 @@ export const theme = createTheme(
   base,
   getAppBar(base),
   getList(base),
-  getChip(base),
+  getChip(),
   getInput(base),
   getForm(base),
 );
