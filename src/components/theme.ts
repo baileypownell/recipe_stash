@@ -107,10 +107,10 @@ export const getChip = (theme: Theme): ThemeOptions => ({
         root: {
           transition: 'all 0.4s',
         },
-        colorPrimary: {
-          backgroundColor: theme.palette.orange.main,
-          color: theme.palette.info.main,
-        },
+        // colorPrimary: {
+        //   backgroundColor: theme.palette.orange.main,
+        //   color: theme.palette.info.main,
+        // },
       },
     },
   },

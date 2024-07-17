@@ -1,17 +1,9 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Stack,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Button, Card, CardContent, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useNavigate } from 'react-router';
 import { FullRecipe } from '../../../../server/recipe';
-import { recipeTagChips } from '../../../models/tags';
+import Chips from './Chips';
 
 const RecipeCard = ({
   viewRecipe,
@@ -34,10 +26,13 @@ const RecipeCard = ({
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     transition: 'all 0.3s',
+    width: '250px',
+    height: '150px',
   };
 
   const tileStyles = {
-    minWidth: '150px',
+    width: '250px',
+    height: '150px',
     marginRight: '10px',
     marginBottom: '10px',
     borderRadius: '5px',
@@ -56,22 +51,26 @@ const RecipeCard = ({
           : 'none',
       }}
     >
-      <CardContent>
-        <Typography variant="h6" component="div" marginBottom={1}>
+      <CardContent
+        sx={{
+          width: '100%',
+          height: '100%',
+          padding: '8px',
+        }}
+      >
+        <Typography
+          variant="h6"
+          component="div"
+          marginBottom={1}
+          sx={{
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {rawTitle}
         </Typography>
-        <Stack marginTop={2} spacing={0.5} direction="row">
-          {recipe.tags.map((recipeTag) => (
-            <Chip
-              key={recipeTag}
-              label={
-                recipeTagChips.find(
-                  (tag) => tag.recipeTagPropertyName === recipeTag,
-                )!.label
-              }
-            ></Chip>
-          ))}
-        </Stack>
+        <Chips tags={recipe.tags} />
       </CardContent>
     </Card>
   );
