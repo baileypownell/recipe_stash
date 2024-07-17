@@ -46,6 +46,7 @@ export interface RecipeInput extends RecipeTags {
   category: string;
   ingredients: string;
   directions: string;
+  pairedRecipes: { name: string; id: string }[];
 }
 
 export interface RecipeInterface {
@@ -108,7 +109,6 @@ export const RecipeService = {
     files: NewFile[],
     defaultTile: string | null,
   ): Promise<RawRecipe> => {
-    console.log('recipeInput: ', recipeInput);
     try {
       const recipeCreated = await axios.post('/recipe', recipeInput);
       if (files?.length) {

@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import client from './client';
 import { authMiddleware } from './authMiddleware';
+import { RecipeInput } from '../src/services/recipe-services';
 const router = Router();
 const {
   getPresignedUrls,
@@ -170,8 +171,8 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
     isVegan,
     isKeto,
     isHighProtein,
-  } = request.body;
-  console.log('isHighProtein: ', isHighProtein);
+    pairedRecipes,
+  } = request.body as RecipeInput;
   if (!!rawTitle && !!title && !!category && !!ingredients && !!directions) {
     return client.query(
       `INSERT INTO recipes(
@@ -214,6 +215,15 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
         if (err) return next(err);
         if (res.rowCount) {
           console.log(res.rows[0]);
+          if (pairedRecipes.length) {
+            pairedRecipes.forEach((pairing) => {
+              console.log(JSON.stringify(pairing));
+              client.query(
+                `INSERT INTO paired_recipes(member_one, member_two) VALUES($1, $2) RETURNING *`,
+                [res.rows[0].recipe_uuid, JSON.stringify(pairing)],
+              );
+            });
+          }
           return response.status(200).json(res.rows[0]);
         } else {
           return response.status(500).json(null);
@@ -327,56 +337,66 @@ export interface FullRecipe {
   defaultTileImageKey: string | null;
   preSignedUrls: string[] | null;
   preSignedDefaultTileImageUrl: string | null;
+  pairedRecipes: string[];
 }
 
-router.get(
-  '/:recipeId',
-  (request: any, response, next): Promise<FullRecipe | null> => {
-    const { recipeId } = request.params;
-    const userId = request.session.userID;
-    return client.query(
+router.get('/:recipeId', async (request: any, response): Promise<any> => {
+  const { recipeId } = request.params;
+  const userId = request.session.userID;
+  try {
+    const recipeResponse = await client.query(
       'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
       [userId, recipeId],
-      async (err, res) => {
-        if (err) return next(err);
-        const recipe = res.rows[0];
-        if (recipe) {
-          const recipeResponse: FullRecipe = {
-            id: recipe.recipe_uuid,
-            title: recipe.title,
-            rawTitle: recipe.raw_title || recipe.title,
-            category: recipe.category,
-            user_id: recipe.user_uuid,
-            ingredients: recipe.ingredients,
-            directions: recipe.directions,
-            tags: constructTags(recipe),
-            defaultTileImageKey: recipe.default_tile_image_key,
-            preSignedUrls: null,
-            preSignedDefaultTileImageUrl: null,
-          };
-          if (recipe.has_images) {
-            const urls = await getImageAWSKeys(recipeId);
-            if (urls) {
-              recipeResponse.preSignedUrls = getPresignedUrls(urls);
-              if (recipe.default_tile_image_key) {
-                const preSignedDefaultTileImageUrl = getPresignedUrl(
-                  recipe.default_tile_image_key,
-                );
-                recipeResponse.preSignedDefaultTileImageUrl =
-                  preSignedDefaultTileImageUrl;
-              }
-            }
-            response.status(200).json(recipeResponse);
-          } else {
-            response.status(200).json(recipeResponse);
-          }
-        } else {
-          response.status(500).json(null);
-        }
-      },
     );
-  },
-);
+    const recipe = recipeResponse.rows[0];
+
+    const fullRecipe: FullRecipe = {
+      id: recipe.recipe_uuid,
+      title: recipe.title,
+      rawTitle: recipe.raw_title || recipe.title,
+      category: recipe.category,
+      user_id: recipe.user_uuid,
+      ingredients: recipe.ingredients,
+      directions: recipe.directions,
+      tags: constructTags(recipe),
+      defaultTileImageKey: recipe.default_tile_image_key,
+      preSignedUrls: null,
+      preSignedDefaultTileImageUrl: null,
+      pairedRecipes: [],
+    };
+    const pairedRecipes = await client.query(
+      `SELECT * FROM paired_recipes WHERE member_one_uuid=$1 OR member_two_uuid=$1`,
+      [recipeId],
+    );
+
+    if (pairedRecipes.rows.length) {
+      pairedRecipes.rows.forEach((pairing) => {
+        if (pairing.member_one_uuid === recipeId) {
+          fullRecipe.pairedRecipes.push(pairing.member_two_uuid);
+        } else {
+          fullRecipe.pairedRecipes.push(pairing.member_one_uuid);
+        }
+      });
+    }
+
+    if (recipe.has_images) {
+      const urls = await getImageAWSKeys(recipeId);
+      if (urls) {
+        fullRecipe.preSignedUrls = getPresignedUrls(urls);
+        if (recipe.default_tile_image_key) {
+          const preSignedDefaultTileImageUrl = getPresignedUrl(
+            recipe.default_tile_image_key,
+          );
+          fullRecipe.preSignedDefaultTileImageUrl =
+            preSignedDefaultTileImageUrl;
+        }
+      }
+    }
+    return response.status(200).json(fullRecipe);
+  } catch (e) {
+    return response.status(500).json(null);
+  }
+});
 
 router.delete(
   '/:recipeId',

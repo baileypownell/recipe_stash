@@ -96,6 +96,12 @@ const Signup = () => {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        input: {
+          color: theme.palette.primary.main,
+        },
+        label: {
+          color: theme.palette.primary.main,
+        },
       }}
     >
       <Stack

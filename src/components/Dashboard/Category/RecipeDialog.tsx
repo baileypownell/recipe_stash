@@ -7,6 +7,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Box,
   Button,
   Chip,
@@ -16,15 +17,18 @@ import {
   DialogTitle,
   FormControl,
   InputLabel,
+  List,
+  ListItemText,
   MenuItem,
   Select,
   Stack,
+  TextField,
   Typography,
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
@@ -39,14 +43,10 @@ import {
   SortedRecipeInterface,
   UpdateRecipeInput,
 } from '../../../services/recipe-services';
-import { queryClient } from '../../App';
+import { RecipeContext, queryClient } from '../../App';
 import { AddRecipeMutationParam } from '../../RecipeCache';
 import FileUpload from './FileUpload';
 import { NewFile } from '../../../models/images';
-
-// const Transition = forwardRef(function Transition(props, ref) {
-//   return <Slide direction="up" ref={ref} {...props}></Slide>;
-// });
 
 type EditProps = {
   recipe: any;
@@ -93,6 +93,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [recipeTitle, setRecipeTitle] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [directions, setDirections] = useState('');
+  const [pairedRecipes, setPairedRecipes] = useState<
+    { name: string; id: string }[]
+  >([]);
   const [category, setCategory] = useState(
     determineCategory(recipeDialogInfo, mode),
   );
@@ -106,6 +109,10 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
   const theme = useTheme();
+  const recipes = useContext(RecipeContext);
+  const recipeOptions = recipes
+    ? Object.values(recipes as SortedRecipeInterface).flat()
+    : [];
 
   useEffect(() => {
     if (mode === Mode.Edit) {
@@ -164,6 +171,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       ingredients: DOMPurify.sanitize(ingredients, {}),
       directions: DOMPurify.sanitize(directions, {}),
       ...determineTags(),
+      pairedRecipes,
     };
     try {
       if (mode === Mode.Add) {
@@ -378,7 +386,43 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             </Select>
           </FormControl>
         </Box>
-        <Accordion style={{ margin: '10px 0' }}>
+        <Box>
+          <Autocomplete
+            options={recipeOptions}
+            multiple
+            groupBy={(option) => option.category}
+            onChange={(e, val) =>
+              setPairedRecipes(
+                val.map((item) => ({ id: item.id, name: item.rawTitle })),
+              )
+            }
+            renderGroup={(params) => {
+              return (
+                <li key={params.key}>
+                  <Typography paddingLeft={1} fontWeight="bold">
+                    {options.find((el) => el.value === params.group)?.label}
+                  </Typography>
+                  <List>
+                    {params.children?.map((child) => (
+                      <ListItemText key={child}>{child}</ListItemText>
+                    ))}
+                  </List>
+                </li>
+              );
+            }}
+            getOptionLabel={(option) => option.rawTitle}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="filled"
+                label="Paired Recipes"
+                helperText="Choose recipes which pair well with this dish (like a
+              side or a dessert)."
+              />
+            )}
+          />
+        </Box>
+        <Accordion style={{ margin: '10px 0' }} defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>Recipe Tags</Typography>
           </AccordionSummary>

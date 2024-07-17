@@ -125,7 +125,6 @@ export const getInput = (theme: Theme): ThemeOptions => ({
         },
       },
     },
-    // MuiLabel
   },
 });
 
@@ -155,6 +154,6 @@ export const theme = createTheme(
   getAppBar(base),
   getList(base),
   getChip(base),
-  getInput(base),
+  // getInput(base),
   getForm(base),
 );

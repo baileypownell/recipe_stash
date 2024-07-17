@@ -7,6 +7,7 @@ import {
   Fab,
   Stack,
   Tooltip,
+  Typography,
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
@@ -19,6 +20,7 @@ import { Spinner } from '../Spinner';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
 import { FullRecipe } from '../../../server/recipe';
+import LinkIcon from '@mui/icons-material/Link';
 
 interface Props {
   openSnackBar: Function;
@@ -43,6 +45,7 @@ const Recipe = (props: Props) => {
   const fetchData = async () => {
     try {
       const recipe = await RecipeService.getRecipe(params.id as string);
+      console.log(recipe);
       setRecipe(recipe);
       setLoading(false);
 
@@ -186,10 +189,26 @@ const Recipe = (props: Props) => {
           <Box dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
           <Box dangerouslySetInnerHTML={{ __html: recipe.directions }} />
           <Stack spacing={1} direction="row">
-            {tags.map((tag) =>
-              tag.selected ? <Chip key={tag.label} label={tag.label} /> : null,
-            )}
+            {tags
+              .filter((tag) => tag.selected)
+              .map((tag) => (
+                <Chip key={tag.label} label={tag.label} />
+              ))}
           </Stack>
+          <Box paddingTop={2}>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <LinkIcon />
+              <Typography variant="h6">Paired Recipes</Typography>
+            </Stack>
+            {recipe.pairedRecipes.length ? (
+              <Typography variant="caption">
+                Recipes which pair well with this dish, often as a side or a
+                dessert. {JSON.stringify(recipe.pairedRecipes)}
+              </Typography>
+            ) : (
+              <Typography variant="caption">No paired recipes.</Typography>
+            )}
+          </Box>
           <Divider style={{ margin: '20px 0 10px 0' }} />
           <Box
             sx={getImageStyles(

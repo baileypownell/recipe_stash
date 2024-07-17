@@ -9,7 +9,7 @@ import {
   RecipeService,
   SortedRecipeInterface,
 } from '../services/recipe-services';
-import { queryClient } from './App';
+import { RecipeContext, queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import { Spinner } from './Spinner';
@@ -156,7 +156,7 @@ const RecipeCache = () => {
     );
   } else {
     return (
-      <>
+      <RecipeContext.Provider value={data as SortedRecipeInterface}>
         <Routes>
           <Route
             path=":id"
@@ -188,7 +188,7 @@ const RecipeCache = () => {
           message={snackBarMessage}
           key={'bottom' + 'center'}
         />
-      </>
+      </RecipeContext.Provider>
     );
   }
 };
