@@ -66,6 +66,7 @@ const RecipeCard = ({
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
+            textTransform: 'none',
           }}
         >
           {rawTitle}
