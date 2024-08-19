@@ -1,9 +1,15 @@
 export interface UploadedFileResult {
   awsKey: string;
-  id: string;
+  file: NewFileUpload;
 }
 
-export interface NewFile {
+export interface ExistingFileUpload {
+  isDefault: boolean;
+  url: string;
+}
+
+export interface NewFileUpload {
   file: File;
-  id: string;
+  isDefault: boolean;
+  backgroundImage: string;
 }

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { FullRecipe, RawRecipe } from '../../server/recipe';
-import { NewFile } from '../models/images';
 import {
   RecipeInput,
   RecipeService,
@@ -13,6 +12,7 @@ import { queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import { Spinner } from './Spinner';
+import { NewFileUpload } from '../models/images';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';
@@ -26,8 +26,7 @@ export interface MealCategoriesType {
 
 export interface AddRecipeMutationParam {
   recipeInput: RecipeInput;
-  files: NewFile[];
-  defaultTile: string | null;
+  files: NewFileUpload[];
 }
 
 enum RecipeCategories {
@@ -69,7 +68,6 @@ const RecipeCache = () => {
         const newRecipe: RawRecipe = await RecipeService.createRecipe(
           recipeInput.recipeInput,
           recipeInput.files,
-          recipeInput.defaultTile,
         );
         const recipe: FullRecipe = await RecipeService.getRecipe(
           newRecipe.recipe_uuid,

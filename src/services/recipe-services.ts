@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { TileImageSetResponse } from '../../server/file-upload';
 import { FullRecipe, RawRecipe } from '../../server/recipe';
-import { NewFile, UploadedFileResult } from '../models/images';
+import {
+  ExistingFileUpload,
+  NewFileUpload,
+  UploadedFileResult,
+} from '../models/images';
 import tag from '../models/tags';
 
 export interface BaseStringAccessibleObjectBoolean {
@@ -105,10 +109,8 @@ export const RecipeService = {
 
   createRecipe: async (
     recipeInput: RecipeInput,
-    files: NewFile[],
-    defaultTile: string | null,
+    files: NewFileUpload[],
   ): Promise<RawRecipe> => {
-    console.log('recipeInput: ', recipeInput);
     try {
       const recipeCreated = await axios.post('/recipe', recipeInput);
       if (files?.length) {
@@ -118,7 +120,7 @@ export const RecipeService = {
             files,
           );
           const defaultTileImage = uploadedImageKeys.find(
-            (key) => key.id === defaultTile,
+            (key) => key.file.isDefault,
           );
 
           if (defaultTileImage) {
@@ -151,140 +153,128 @@ export const RecipeService = {
 
   uploadFiles: async (
     recipeId: string,
-    files: NewFile[],
+    files: NewFileUpload[],
   ): Promise<UploadedFileResult[]> => {
-    try {
-      return await Promise.all(
-        files.map(async (file: NewFile) => {
+    return await Promise.all(
+      files.map(
+        async (file: {
+          file: File;
+          isDefault: boolean;
+          backgroundImage: string;
+        }) => {
           const formData = new FormData();
-          formData.append('image', file.file as any);
+          formData.append('image', file.file);
 
-          try {
-            const upload = await axios.post(
-              `/file-upload/${recipeId}`,
-              formData,
-              {
-                headers: {
-                  'content-type': 'multipart/form-data',
-                },
+          const upload = await axios.post(
+            `/file-upload/${recipeId}`,
+            formData,
+            {
+              headers: {
+                'content-type': 'multipart/form-data',
               },
-            );
-            return {
-              awsKey: upload.data.key,
-              id: file.id,
-            };
-          } catch (error) {
-            console.log('There was an error uploading a file: ', error);
-            throw error;
-          }
-        }),
-      );
-    } catch (error) {
-      throw error;
-    }
+            },
+          );
+          return {
+            awsKey: upload.data.key,
+            file: file,
+          };
+        },
+      ),
+    );
   },
 
   updateRecipe: async (
     recipeInput: UpdateRecipeInput,
-    files: (File | NewFile)[],
-    defaultTile: string | null,
-    fileUrlsToDelete: string[],
+    files: (NewFileUpload | ExistingFileUpload)[],
     recipeId: string,
-    recipe: RecipeInterface,
+    recipeHasDefaultTileImage: boolean,
+    recipeExistingImageUrls?: string[],
   ): Promise<RawRecipe> => {
-    try {
-      const res = await axios.put('/recipe', recipeInput);
+    const res = await axios.put('/recipe', recipeInput);
 
-      const recipeUpdated: RawRecipe = res.data;
-      const uploads = files;
-      const uploading = !!uploads.length;
-      const deleting = !!fileUrlsToDelete?.length;
+    const recipeUpdated: RawRecipe = res.data;
+    const uploads: {
+      file: File;
+      isDefault: boolean;
+      backgroundImage: string;
+    }[] = files.filter((file) => file.hasOwnProperty('file')) as {
+      file: File;
+      isDefault: boolean;
+      backgroundImage: string;
+    }[];
+    const uploading = !!uploads.length;
 
-      if (uploading && deleting) {
-        return RecipeService.uploadFiles(recipeId, uploads as NewFile[]).then(
-          () => {
-            return RecipeService.deleteFiles(fileUrlsToDelete)
-              .then(() => {
-                if (defaultTile) {
-                  return RecipeService.setTileImage(
-                    recipeUpdated.recipe_uuid,
-                    defaultTile,
-                  ).then(() => recipeUpdated);
-                } else if (recipe.defaultTileImageKey) {
-                  return RecipeService.removeTileImage(recipeId).then(
-                    () => recipeUpdated,
-                  );
-                } else {
-                  return recipeUpdated;
-                }
-              })
-              .catch((e) => e);
-          },
-        );
-      } else if (uploading) {
-        return RecipeService.uploadFiles(recipeId, uploads as NewFile[])
-          .then((uploadedImageKeys) => {
-            if (defaultTile) {
-              let awsKey: string;
-              if (uploadedImageKeys.find((obj) => obj.id === defaultTile)) {
-                awsKey = uploadedImageKeys.find(
-                  (obj) => obj.id === defaultTile,
-                )!.awsKey;
-              } else {
-                awsKey = defaultTile;
-              }
-              return RecipeService.setTileImage(
-                recipeUpdated.recipe_uuid,
-                awsKey,
-              ).then(() => recipeUpdated);
-            } else if (recipe.defaultTileImageKey) {
-              return RecipeService.removeTileImage(recipeId).then(
-                () => recipeUpdated,
-              );
-            } else {
-              return recipeUpdated;
-            }
-          })
-          .catch((e) => e);
-      } else if (deleting) {
-        try {
-          await RecipeService.deleteFiles(fileUrlsToDelete);
+    const fileUrlsToDelete = recipeExistingImageUrls?.filter(
+      (url) =>
+        !files
+          .filter((file) => file.hasOwnProperty('url'))
+          .find((file) => (file as ExistingFileUpload).url.includes(url)),
+    );
+    const deleting = !!fileUrlsToDelete?.length;
 
-          if (defaultTile) {
-            try {
-              await RecipeService.setTileImage(recipeId, defaultTile);
-              return recipeUpdated;
-            } catch (e) {
-              throw e;
-            }
-          } else if (recipe.defaultTileImageKey) {
-            try {
-              await RecipeService.removeTileImage(recipeId);
-              return recipeUpdated;
-            } catch (e) {
-              throw e;
-            }
-          } else {
-            return recipeUpdated;
-          }
-        } catch (error) {
-          throw error;
-        }
+    const uploadedImageKeys = await RecipeService.uploadFiles(
+      recipeId,
+      uploads,
+    );
+
+    const defaultTileImage = uploadedImageKeys.find(
+      (key) => key.file.isDefault,
+    );
+    const existingFileDefaultTile = files.find(
+      (file) => file.isDefault && file.hasOwnProperty('url'),
+    ) as ExistingFileUpload;
+
+    const existingFileDefaultTileKey = existingFileDefaultTile?.url
+      .split('amazonaws.com/')[1]
+      .split('?')[0];
+
+    const awsKey = existingFileDefaultTile
+      ? existingFileDefaultTileKey
+      : defaultTileImage?.awsKey;
+
+    if (uploading && deleting) {
+      await RecipeService.deleteFiles(fileUrlsToDelete);
+      if (awsKey) {
+        await RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey);
+        return recipeUpdated;
+      } else if (recipeHasDefaultTileImage) {
+        await RecipeService.removeTileImage(recipeId);
+
+        return recipeUpdated;
       } else {
-        if (defaultTile) {
-          return RecipeService.setTileImage(recipeId, defaultTile)
-            .then(() => recipeUpdated)
-            .catch((e) => e);
-        } else if (recipe.defaultTileImageKey) {
-          return RecipeService.removeTileImage(recipeId)
-            .then(() => recipeUpdated)
-            .catch((e) => e);
-        } else {
-          return recipeUpdated;
-        }
+        return recipeUpdated;
       }
-    } catch (e) {
-      throw e;
+    } else if (uploading) {
+      if (awsKey) {
+        await RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey);
+        return recipeUpdated;
+      } else if (recipeHasDefaultTileImage) {
+        await RecipeService.removeTileImage(recipeId);
+        return recipeUpdated;
+      } else {
+        return recipeUpdated;
+      }
+    } else if (deleting) {
+      await RecipeService.deleteFiles(fileUrlsToDelete);
+      if (awsKey) {
+        await RecipeService.setTileImage(recipeId, awsKey);
+        return recipeUpdated;
+      } else if (recipeHasDefaultTileImage) {
+        await RecipeService.removeTileImage(recipeId);
+        return recipeUpdated;
+      } else {
+        return recipeUpdated;
+      }
+    } else {
+      if (awsKey) {
+        await RecipeService.setTileImage(recipeId, awsKey);
+        return recipeUpdated;
+      } else if (recipeHasDefaultTileImage) {
+        await RecipeService.removeTileImage(recipeId);
+        return recipeUpdated;
+      } else {
+        return recipeUpdated;
+      }
     }
   },
 
