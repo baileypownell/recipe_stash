@@ -1,9 +1,11 @@
-export default function FilterMenu(props: {
-    numberOfSelectedFilters: number;
-    filters: any[];
-    categories: any[];
+export declare const FilterMenu: ({ numberOfSelectedFilters, filters, categories, appliedFilt, appliedCat, filter, filterByCategory, clearFilters, }: {
+    numberOfSelectedFilters: any;
+    filters: any;
+    categories: any;
     appliedFilt: any;
     appliedCat: any;
-    filter: Function;
-    filterByCategory: Function;
-}): import("react/jsx-runtime").JSX.Element;
+    filter: any;
+    filterByCategory: any;
+    clearFilters: any;
+}) => import("react/jsx-runtime").JSX.Element;
+export default FilterMenu;

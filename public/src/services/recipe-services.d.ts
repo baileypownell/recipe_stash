@@ -1,6 +1,6 @@
 import { TileImageSetResponse } from '../../server/file-upload';
 import { FullRecipe, RawRecipe } from '../../server/recipe';
-import { NewFile, UploadedFileResult } from '../models/images';
+import { ExistingFileUpload, NewFileUpload, UploadedFileResult } from '../models/images';
 import tag from '../models/tags';
 export interface BaseStringAccessibleObjectBoolean {
     [key: string]: boolean;
@@ -69,10 +69,10 @@ export declare const RecipeService: {
     deleteRecipe: (recipeId: string) => Promise<{
         recipeDeleted: boolean;
     }>;
-    createRecipe: (recipeInput: RecipeInput, files: NewFile[], defaultTile: string | null) => Promise<RawRecipe>;
+    createRecipe: (recipeInput: RecipeInput, files: NewFileUpload[]) => Promise<RawRecipe>;
     handleDefaultTileImage: (recipeId: string, awsKey: string) => Promise<TileImageSetResponse>;
-    uploadFiles: (recipeId: string, files: NewFile[]) => Promise<UploadedFileResult[]>;
-    updateRecipe: (recipeInput: UpdateRecipeInput, files: (File | NewFile)[], defaultTile: string | null, fileUrlsToDelete: string[], recipeId: string, recipe: RecipeInterface) => Promise<RawRecipe>;
+    uploadFiles: (recipeId: string, files: NewFileUpload[]) => Promise<UploadedFileResult[]>;
+    updateRecipe: (recipeInput: UpdateRecipeInput, files: (NewFileUpload | ExistingFileUpload)[], recipeId: string, recipeHasDefaultTileImage: boolean, recipeExistingImageUrls?: string[]) => Promise<RawRecipe>;
     deleteFiles: (filesToDeleteKeys: string[]) => Promise<import("axios").AxiosResponse<any, any>[]>;
     removeTileImage: (recipeId: string) => Promise<TileImageSetResponse>;
     setTileImage: (recipeId: string, awsKey: string) => Promise<TileImageSetResponse>;

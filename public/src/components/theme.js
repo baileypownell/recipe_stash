@@ -69,7 +69,7 @@ const getList = (theme) => ({
 //     },
 //   },
 // });
-const getChip = (theme) => ({
+const getChip = () => ({
     components: {
         MuiChip: {
             defaultProps: {
@@ -79,10 +79,6 @@ const getChip = (theme) => ({
             styleOverrides: {
                 root: {
                     transition: 'all 0.4s',
-                },
-                colorPrimary: {
-                    backgroundColor: theme.palette.orange.main,
-                    color: theme.palette.info.main,
                 },
             },
         },
@@ -107,12 +103,21 @@ const getForm = (theme) => ({
         MuiFormLabel: {
             styleOverrides: {
                 root: {
-                    color: theme.palette.info.main,
+                    color: theme.palette.gray.main,
+                },
+            },
+        },
+        MuiSelect: {
+            styleOverrides: {
+                root: {
+                    '.MuiFilledInput-input': {
+                        color: theme.palette.gray.main,
+                    },
                 },
             },
         },
     },
 });
 exports.getForm = getForm;
-exports.theme = (0, material_1.createTheme)(base, getAppBar(base), getList(base), (0, exports.getChip)(base), (0, exports.getInput)(base), (0, exports.getForm)(base));
+exports.theme = (0, material_1.createTheme)(base, getAppBar(base), getList(base), (0, exports.getChip)(), (0, exports.getInput)(base), (0, exports.getForm)(base));
 //# sourceMappingURL=theme.js.map

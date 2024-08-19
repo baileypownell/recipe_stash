@@ -7,46 +7,51 @@ const jsx_runtime_1 = require("react/jsx-runtime");
 const UploadFileRounded_1 = __importDefault(require("@mui/icons-material/UploadFileRounded"));
 const material_1 = require("@mui/material");
 const react_1 = require("react");
-const FileUploadPreview_1 = require("./FileUploadPreview");
-const { v4: uuidv4 } = require('uuid');
-const FileUpload = ({ passDefaultTileImage, preExistingImageUrls, defaultTileImageUUID, passFiles, passFilesToDelete, }) => {
-    const [files, setFiles] = (0, react_1.useState)([]);
-    const [filesToDelete, setFilesToDelete] = (0, react_1.useState)([]);
-    const [defaultTileImageKey, setDefaultTileImageKey] = (0, react_1.useState)(null);
-    const [snackBarOpen, setSnackBarOpen] = (0, react_1.useState)(false);
-    const [snackBarMessage, setSnackBarMessage] = (0, react_1.useState)('');
+const react_hook_form_1 = require("react-hook-form");
+const ImagePreview_1 = require("./ImagePreview");
+const getDefaultState = (i, index, checked, file) => {
+    // return i === index
+    //   ? checked
+    //     ? true
+    //     : false
+    //   : checked
+    //   ? false
+    //   : file.isDefault;
+    return i === index ? checked : checked ? false : file.isDefault;
+};
+const FileUpload = ({ passFiles, preExistingImageUrls, defaultTileImageUUID, }) => {
     const input = (0, react_1.useRef)(null);
     const theme = (0, material_1.useTheme)();
+    const { control, watch, setValue } = (0, react_hook_form_1.useForm)({
+        defaultValues: {
+            files: [],
+            preExistingFiles: preExistingImageUrls
+                ? preExistingImageUrls.map((url) => ({
+                    url,
+                    isDefault: defaultTileImageUUID
+                        ? url.includes(defaultTileImageUUID)
+                        : false,
+                }))
+                : [],
+        },
+    });
+    const { fields, append, remove } = (0, react_hook_form_1.useFieldArray)({
+        control,
+        name: 'files',
+    });
+    const { fields: existingFiles, remove: removeExistingFile } = (0, react_hook_form_1.useFieldArray)({
+        control,
+        name: 'preExistingFiles',
+    });
+    const files = watch('files');
+    const preExistingFiles = watch('preExistingFiles');
     (0, react_1.useEffect)(() => {
-        if (defaultTileImageUUID) {
-            setDefaultTileImageKey(defaultTileImageUUID);
-        }
-    }, []);
+        const combinedFiles = [...files, ...preExistingFiles].filter((file) => file !== undefined);
+        passFiles(combinedFiles);
+    }, [fields, existingFiles]);
     const openFileFinder = () => {
         if (input.current)
             input.current.click();
-    };
-    const openSnackBar = (message) => {
-        setSnackBarOpen(true);
-        setSnackBarMessage(message);
-    };
-    const closeSnackBar = () => {
-        setSnackBarOpen(false);
-        setSnackBarMessage('');
-    };
-    const processfiles = (newFiles) => {
-        const filesToProcess = Array.from(newFiles).slice(0, 5 - files.length);
-        const maxReached = !!(files.length + (preExistingImageUrls?.length || 0) >=
-            5);
-        if (maxReached) {
-            openSnackBar('Only 5 images allowed per recipe.');
-            return;
-        }
-        const processedFiles = filesToProcess.map((file) => ({
-            file: file,
-            id: uuidv4(),
-        }));
-        setFiles([...files, ...processedFiles]);
     };
     const handleDrop = (e) => {
         e.preventDefault();
@@ -55,31 +60,12 @@ const FileUpload = ({ passDefaultTileImage, preExistingImageUrls, defaultTileIma
         if (!fileList.length) {
             return;
         }
-        processfiles(fileList);
+        append(Array.from(e.dataTransfer.files).map((file) => ({
+            file,
+            backgroundImage: URL.createObjectURL(file),
+            isDefault: false,
+        })));
     };
-    const handleUpload = (e) => processfiles(e.target.files);
-    const removeNewFile = (fileId) => {
-        setFiles(files.filter((file) => file.id !== fileId));
-    };
-    const handleFileDeletion = (fileUrl) => {
-        const imageKey = fileUrl.split('amazonaws.com/')[1].split('?')[0];
-        const isDefaultTileImage = imageKey === defaultTileImageKey;
-        if (isDefaultTileImage) {
-            setDefaultTileImageKey(null);
-        }
-        setFilesToDelete([...filesToDelete, fileUrl]);
-    };
-    (0, react_1.useEffect)(() => {
-        passFiles(files);
-    }, [files]);
-    (0, react_1.useEffect)(() => {
-        passDefaultTileImage(defaultTileImageKey);
-    }, [defaultTileImageKey]);
-    (0, react_1.useEffect)(() => {
-        passFilesToDelete?.(filesToDelete);
-    }, [filesToDelete]);
-    const limitReached = !!(files.length + (preExistingImageUrls?.length || 0) >=
-        5);
     return ((0, jsx_runtime_1.jsxs)(material_1.Box, { padding: "20px 0", children: [(0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
                     border: `2px dashed  ${theme.palette.boxShadow.main}`,
                     cursor: 'pointer',
@@ -91,7 +77,13 @@ const FileUpload = ({ passDefaultTileImage, preExistingImageUrls, defaultTileIma
                         position: 'absolute',
                         minHeight: '275px',
                     },
-                }, onDrop: handleDrop, onDragOver: handleDrop, children: [(0, jsx_runtime_1.jsx)("input", { ref: input, type: "file", disabled: limitReached, onChange: handleUpload, multiple: true, title: "Upload a file" }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
+                }, onDrop: handleDrop, onDragOver: handleDrop, children: [(0, jsx_runtime_1.jsx)("input", { ref: input, type: "file", accept: "image/png, image/jpeg, image/jpg", disabled: false, onChange: (e) => {
+                            append(Array.from(e.target.files).map((file) => ({
+                                file,
+                                backgroundImage: URL.createObjectURL(file),
+                                isDefault: false,
+                            })));
+                        }, multiple: true, title: "Upload a file" }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
@@ -101,14 +93,35 @@ const FileUpload = ({ passDefaultTileImage, preExistingImageUrls, defaultTileIma
                                 fontSize: '100px',
                                 marginTop: '15px',
                             },
-                        }, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Drag & drop an image" }), (0, jsx_runtime_1.jsx)(material_1.Button, { variant: "outlined", color: "secondary", onClick: openFileFinder, disabled: limitReached, sx: {
+                        }, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Drag & drop an image" }), (0, jsx_runtime_1.jsx)(material_1.Button, { variant: "outlined", color: "secondary", onClick: openFileFinder, disabled: false, sx: {
                                     margin: 1,
-                                }, children: "Choose a file" }), (0, jsx_runtime_1.jsx)(material_1.Typography, { children: "(Limit 5)" }), (0, jsx_runtime_1.jsx)(UploadFileRounded_1.default, {})] })] }), (0, jsx_runtime_1.jsxs)(material_1.Stack, { padding: "15px 0", direction: "row", flexWrap: "wrap", children: [files?.map((file) => ((0, jsx_runtime_1.jsx)(FileUploadPreview_1.FileUploadPreview, { fileIdentifier: file, defaultTileImageKey: defaultTileImageKey, removeFile: removeNewFile, setDefaultTileImage: (fileId) => setDefaultTileImageKey(fileId) }, file.id))), preExistingImageUrls
-                        ?.filter((existingImage) => !filesToDelete.includes(existingImage))
-                        .map((url) => ((0, jsx_runtime_1.jsx)(FileUploadPreview_1.FileUploadPreview, { fileIdentifier: url, defaultTileImageKey: defaultTileImageKey, removeFile: handleFileDeletion, setDefaultTileImage: (fileId) => setDefaultTileImageKey(fileId) }, url)))] }), (0, jsx_runtime_1.jsx)(material_1.Snackbar, { open: snackBarOpen, anchorOrigin: {
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }, onClose: closeSnackBar, autoHideDuration: 4000, message: snackBarMessage }, 'bottom' + 'center')] }));
+                                }, children: "Choose a file" }), (0, jsx_runtime_1.jsx)(UploadFileRounded_1.default, {})] })] }), (0, jsx_runtime_1.jsxs)(material_1.Stack, { padding: "15px 0", direction: "row", flexWrap: "wrap", children: [fields.map((item, index) => ((0, jsx_runtime_1.jsx)(ImagePreview_1.ImagePreview, { item: item, index: index, remove: remove, control: control, backgroundImageUrl: item.backgroundImage, onChange: (e) => {
+                            setValue('files', files.map((file, i) => {
+                                return {
+                                    ...file,
+                                    isDefault: getDefaultState(i, index, e.target.checked, file),
+                                };
+                            }));
+                            if (existingFiles.length) {
+                                setValue('preExistingFiles', preExistingFiles.map((file) => ({
+                                    ...file,
+                                    isDefault: false,
+                                })));
+                            }
+                        } }, item.id))), existingFiles.map((item, index) => ((0, jsx_runtime_1.jsx)(ImagePreview_1.ImagePreview, { item: item, control: control, remove: removeExistingFile, index: index, backgroundImageUrl: item.url, onChange: (e) => {
+                            setValue('preExistingFiles', preExistingFiles.map((file, i) => {
+                                return {
+                                    ...file,
+                                    isDefault: getDefaultState(i, index, e.target.checked, file),
+                                };
+                            }));
+                            if (fields.length) {
+                                setValue('files', files.map((file) => ({
+                                    ...file,
+                                    isDefault: false,
+                                })));
+                            }
+                        } }, item.id)))] })] }));
 };
 exports.default = FileUpload;
 //# sourceMappingURL=FileUpload.js.map

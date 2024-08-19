@@ -8,7 +8,7 @@ const material_1 = require("@mui/material");
 const react_1 = require("react");
 const react_loading_skeleton_1 = __importDefault(require("react-loading-skeleton"));
 const react_router_1 = require("react-router");
-const tags_1 = require("../../../models/tags");
+const Chips_1 = __importDefault(require("./Chips"));
 const RecipeCard = ({ viewRecipe, recipe, rawTitle, defaultTileImageUrl, }) => {
     const theme = (0, material_1.useTheme)();
     const imageTileStyles = {
@@ -20,20 +20,32 @@ const RecipeCard = ({ viewRecipe, recipe, rawTitle, defaultTileImageUrl, }) => {
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         transition: 'all 0.3s',
+        width: '250px',
+        height: '150px',
     };
     const tileStyles = {
-        minWidth: '150px',
+        width: '250px',
+        height: '150px',
         marginRight: '10px',
         marginBottom: '10px',
         borderRadius: '5px',
         cursor: 'pointer',
         minHeight: '120px',
     };
-    return ((0, jsx_runtime_1.jsx)(material_1.Card, { onClick: viewRecipe, sx: { ...tileStyles, ...(defaultTileImageUrl && imageTileStyles) }, style: {
+    return ((0, jsx_runtime_1.jsx)(material_1.Card, { component: material_1.Button, onClick: viewRecipe, sx: { ...tileStyles, ...(defaultTileImageUrl && imageTileStyles) }, style: {
             backgroundImage: defaultTileImageUrl
                 ? `url(${defaultTileImageUrl})`
                 : 'none',
-        }, children: (0, jsx_runtime_1.jsxs)(material_1.CardContent, { children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", component: "div", marginBottom: 1, children: rawTitle }), (0, jsx_runtime_1.jsx)(material_1.Stack, { marginTop: 2, spacing: 0.5, direction: "row", children: recipe.tags.map((recipeTag) => ((0, jsx_runtime_1.jsx)(material_1.Chip, { label: tags_1.recipeTagChips.find((tag) => tag.recipeTagPropertyName === recipeTag).label }, recipeTag))) })] }) }));
+        }, children: (0, jsx_runtime_1.jsxs)(material_1.CardContent, { sx: {
+                width: '100%',
+                height: '100%',
+                padding: '8px',
+            }, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "h6", component: "div", marginBottom: 1, sx: {
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textTransform: 'none',
+                    }, children: rawTitle }), (0, jsx_runtime_1.jsx)(Chips_1.default, { tags: recipe.tags })] }) }));
 };
 const Square = ({ recipe }) => {
     const recipeId = recipe.id;

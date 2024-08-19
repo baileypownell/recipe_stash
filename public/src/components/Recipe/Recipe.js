@@ -37,7 +37,6 @@ const tags_1 = require("../../models/tags");
 const recipe_services_1 = require("../../services/recipe-services");
 const RecipeDialog_1 = __importStar(require("../Dashboard/Category/RecipeDialog"));
 const Spinner_1 = require("../Spinner");
-const InnerNavigationBar_1 = __importDefault(require("./InnerNavigationBar"));
 const LightboxComponent_1 = __importDefault(require("./LightboxComponent/LightboxComponent"));
 const MobileRecipeToolbar_1 = __importDefault(require("./MobileRecipeToolbar"));
 const Recipe = (props) => {
@@ -142,7 +141,7 @@ const Recipe = (props) => {
             [theme.breakpoints.up('md')]: {
                 height: 'auto',
             },
-        }, children: [(0, jsx_runtime_1.jsx)(InnerNavigationBar_1.default, { title: recipe.rawTitle }), (0, jsx_runtime_1.jsx)(RecipeDialog_1.default, { mode: RecipeDialog_1.Mode.Edit, open: dialogOpen, toggleModal: toggleModal, recipeDialogInfo: {
+        }, children: [(0, jsx_runtime_1.jsx)(RecipeDialog_1.default, { mode: RecipeDialog_1.Mode.Edit, open: dialogOpen, toggleModal: toggleModal, recipeDialogInfo: {
                     recipe,
                     cloning,
                     defaultTileImageKey: recipe.defaultTileImageKey,

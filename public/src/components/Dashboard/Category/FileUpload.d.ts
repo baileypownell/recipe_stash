@@ -1,10 +1,8 @@
-import { NewFile } from '../../../models/images';
+import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 interface FileUploadProps {
-    passDefaultTileImage: (key: string | null) => void;
-    preExistingImageUrls?: string[];
     defaultTileImageUUID?: string | null;
-    passFiles: (files: (File | NewFile)[]) => void;
-    passFilesToDelete?: (files: string[]) => void;
+    passFiles: (files: (NewFileUpload | ExistingFileUpload)[]) => void;
+    preExistingImageUrls?: string[];
 }
-declare const FileUpload: ({ passDefaultTileImage, preExistingImageUrls, defaultTileImageUUID, passFiles, passFilesToDelete, }: FileUploadProps) => import("react/jsx-runtime").JSX.Element;
+declare const FileUpload: ({ passFiles, preExistingImageUrls, defaultTileImageUUID, }: FileUploadProps) => import("react/jsx-runtime").JSX.Element;
 export default FileUpload;

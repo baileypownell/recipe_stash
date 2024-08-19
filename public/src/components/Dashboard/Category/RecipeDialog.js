@@ -43,12 +43,10 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
     const [recipeTitle, setRecipeTitle] = (0, react_1.useState)('');
     const [ingredients, setIngredients] = (0, react_1.useState)('');
     const [directions, setDirections] = (0, react_1.useState)('');
+    const [files, setFiles] = (0, react_1.useState)([]);
     const [category, setCategory] = (0, react_1.useState)(determineCategory(recipeDialogInfo, mode));
     const [recipeValid, setRecipeValid] = (0, react_1.useState)(false);
-    const [newFiles, setNewFiles] = (0, react_1.useState)([]);
     const [tags, setTags] = (0, react_1.useState)(tags_1.recipeTagChips.map((tag) => ({ ...tag, selected: false })));
-    const [defaultTile, setDefaultTile] = (0, react_1.useState)(null);
-    const [filesToDelete, setFilesToDelete] = (0, react_1.useState)([]);
     const [recipeTitleRaw, setRecipeTitleRaw] = (0, react_1.useState)('');
     const navigate = (0, react_router_1.useNavigate)();
     const theme = (0, material_1.useTheme)();
@@ -104,22 +102,18 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
             if (mode === Mode.Add) {
                 await recipeDialogInfo.addRecipe({
                     recipeInput,
-                    files: newFiles,
-                    defaultTile,
+                    files: files,
+                    defaultTile: files.find((file) => file.isDefault),
                 });
                 clearState();
                 setLoading(false);
             }
             else if (mode === Mode.Edit) {
                 if (recipeDialogInfo.cloning) {
-                    const param = {
+                    const recipe = await recipeDialogInfo.addRecipeMutation({
                         recipeInput,
-                        files: newFiles,
-                        defaultTile,
-                    };
-                    const recipe = await recipeDialogInfo.addRecipeMutation(param);
-                    setFilesToDelete([]);
-                    setNewFiles([]);
+                        files,
+                    });
                     setLoading(false);
                     navigate(`/recipes/${recipe.id}`);
                     window.location.reload();
@@ -137,8 +131,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
                         ...determineTags(),
                     };
                     try {
-                        const updatedRecipe = await recipe_services_1.RecipeService.updateRecipe(recipeUpdateInput, newFiles, defaultTile, filesToDelete, recipeDialogInfo.recipe.id, recipeDialogInfo
-                            .recipe);
+                        const updatedRecipe = await recipe_services_1.RecipeService.updateRecipe(recipeUpdateInput, files, recipeDialogInfo.recipe.id, recipeDialogInfo.recipe.defaultTileImageKey, recipeDialogInfo.presignedUrls);
                         const formattedRecipe = await recipe_services_1.RecipeService.getRecipe(updatedRecipe.recipe_uuid);
                         App_1.queryClient.setQueryData('recipes', () => {
                             const current = App_1.queryClient.getQueryData('recipes');
@@ -173,8 +166,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
     const refreshRecipeView = () => {
         recipeDialogInfo.triggerDialog();
         recipeDialogInfo.fetchData();
-        setFilesToDelete([]);
-        setNewFiles([]);
     };
     const updateCategory = (e) => setCategory(e.target.value);
     const toggleTagSelectionStatus = (index) => {
@@ -240,12 +231,15 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
                                         return ((0, jsx_runtime_1.jsx)(material_1.MenuItem, { value: val.value, children: val.label }, index));
                                     }) })] }) }), (0, jsx_runtime_1.jsxs)(material_1.Accordion, { style: { margin: '10px 0' }, children: [(0, jsx_runtime_1.jsx)(material_1.AccordionSummary, { expandIcon: (0, jsx_runtime_1.jsx)(ExpandMore_1.default, {}), children: (0, jsx_runtime_1.jsx)(material_1.Typography, { children: "Recipe Tags" }) }), (0, jsx_runtime_1.jsxs)(material_1.AccordionDetails, { children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { mb: 2, children: "Use tags to characterize your recipe so that you can easily find recipes with similar tags through the dashboard filter." }), (0, jsx_runtime_1.jsx)(material_1.Stack, { spacing: 1, direction: "row", children: tags.map((tag, index) => {
                                             return ((0, jsx_runtime_1.jsx)(material_1.Chip, { color: tags[index].selected ? 'primary' : 'default', id: index.toString(), onClick: () => toggleTagSelectionStatus(index), label: tag.label }, tag.label));
-                                        }) })] })] }), mode === Mode.Add ? ((0, jsx_runtime_1.jsx)(FileUpload_1.default, { passDefaultTileImage: (fileId) => setDefaultTile(fileId), passFiles: (newFiles) => setNewFiles(newFiles) })) : ((0, jsx_runtime_1.jsx)(FileUpload_1.default, { defaultTileImageUUID: recipeDialogInfo.defaultTileImageKey, passDefaultTileImage: (fileId) => setDefaultTile(fileId), preExistingImageUrls: recipeDialogInfo.presignedUrls, passFilesToDelete: setFilesToDelete, passFiles: (newFiles) => setNewFiles(newFiles) }))] }), (0, jsx_runtime_1.jsx)(material_1.DialogActions, { children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { justifyContent: "space-between", spacing: 1, alignItems: "center", sx: {
+                                        }) })] })] }), mode === Mode.Add ? ((0, jsx_runtime_1.jsx)(FileUpload_1.default, { passFiles: setFiles })) : ((0, jsx_runtime_1.jsx)(FileUpload_1.default, { passFiles: setFiles, defaultTileImageUUID: recipeDialogInfo.defaultTileImageKey, preExistingImageUrls: recipeDialogInfo.presignedUrls }))] }), (0, jsx_runtime_1.jsx)(material_1.DialogActions, { children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { justifyContent: "space-between", spacing: 1, alignItems: "center", sx: {
                         width: '100%',
                         [theme.breakpoints.up('sm')]: {
                             flexDirection: 'row-reverse',
                         },
                         button: {
+                            [theme.breakpoints.down('sm')]: {
+                                width: '100%',
+                            },
                             [theme.breakpoints.up('sm')]: {
                                 margin: 0,
                             },
@@ -254,7 +248,14 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
                                 ? 'Add Recipe'
                                 : 'Update Recipe' }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
                                 display: editing ? 'flex' : 'block',
-                                marginTop: `0!important`,
+                                [theme.breakpoints.down('md')]: {
+                                    width: '100%',
+                                    maxWidth: '400px',
+                                },
+                                [theme.breakpoints.up('md')]: {
+                                    marginTop: `0!important`,
+                                    width: 'auto',
+                                },
                             }, children: [editing ? ((0, jsx_runtime_1.jsx)(material_1.Button, { color: "primary", variant: "contained", style: {
                                         marginRight: '5px ',
                                         width: '100%',

@@ -54,7 +54,7 @@ const RecipeCache = () => {
     // @ts-expect-error
     async (recipeInput) => {
         try {
-            const newRecipe = await recipe_services_1.RecipeService.createRecipe(recipeInput.recipeInput, recipeInput.files, recipeInput.defaultTile);
+            const newRecipe = await recipe_services_1.RecipeService.createRecipe(recipeInput.recipeInput, recipeInput.files);
             const recipe = await recipe_services_1.RecipeService.getRecipe(newRecipe.recipe_uuid);
             return recipe;
         }

@@ -188,7 +188,30 @@ const Dashboard = (props) => {
         { key: 'drinks', name: mealCategories.drinks },
         { key: 'other', name: mealCategories.other },
     ];
-    return ((0, jsx_runtime_1.jsxs)(material_1.Box, { children: [(0, jsx_runtime_1.jsx)(material_1.Box, { sx: { backgroundColor: theme.palette.secondary.main }, padding: 1, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { direction: "row", alignItems: "center", justifyContent: "space-between", children: [(0, jsx_runtime_1.jsx)(material_1.TextField, { label: "Find a recipe", variant: "filled", size: "small", onChange: handleSearchChange, value: userInputSubject.getValue(), sx: {
+    const clearFilters = () => {
+        appliedFiltersSubject.next({
+            dairy_free: false,
+            easy: false,
+            gluten_free: false,
+            healthy: false,
+            keto: false,
+            no_bake: false,
+            sugar_free: false,
+            vegan: false,
+            vegetarian: false,
+            high_protein: false,
+        });
+        appliedCategorySubject.next({
+            breakfast: false,
+            lunch: false,
+            dinner: false,
+            side_dish: false,
+            dessert: false,
+            drinks: false,
+            other: false,
+        });
+    };
+    return ((0, jsx_runtime_1.jsxs)(material_1.Box, { children: [(0, jsx_runtime_1.jsx)(material_1.Box, { sx: { backgroundColor: theme.palette.secondary.main }, padding: 0.5, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { direction: "row", alignItems: "center", justifyContent: "space-between", children: [(0, jsx_runtime_1.jsx)(material_1.TextField, { label: "Find a recipe", variant: "filled", size: "small", onChange: handleSearchChange, value: userInputSubject.getValue(), sx: {
                                 m: 1,
                                 width: '25ch',
                                 input: {
@@ -199,7 +222,7 @@ const Dashboard = (props) => {
                                 },
                             }, InputProps: {
                                 endAdornment: ((0, jsx_runtime_1.jsx)(material_1.InputAdornment, { position: "end", children: (0, jsx_runtime_1.jsx)(SearchRounded_1.default, {}) })),
-                            } }), (0, jsx_runtime_1.jsx)(FilterMenu_1.default, { numberOfSelectedFilters: selectedFiltersNum, filters: filterArray, appliedFilt: appliedFilt, appliedCat: appliedCat, filter: filter, filterByCategory: filterByCategory, categories: filterCategoryArray })] }) }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
+                            } }), (0, jsx_runtime_1.jsx)(FilterMenu_1.default, { numberOfSelectedFilters: selectedFiltersNum, filters: filterArray, appliedFilt: appliedFilt, appliedCat: appliedCat, filter: filter, filterByCategory: filterByCategory, categories: filterCategoryArray, clearFilters: clearFilters })] }) }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
                     margin: '0 auto',
                     width: '90%',
                     padding: '25px 0',

@@ -1,5 +1,5 @@
-import { NewFile } from '../models/images';
 import { RecipeInput } from '../services/recipe-services';
+import { NewFileUpload } from '../models/images';
 export interface MealCategoriesType {
     breakfast: 'Breakfast';
     lunch: 'Lunch';
@@ -11,8 +11,7 @@ export interface MealCategoriesType {
 }
 export interface AddRecipeMutationParam {
     recipeInput: RecipeInput;
-    files: NewFile[];
-    defaultTile: string | null;
+    files: NewFileUpload[];
 }
 declare const RecipeCache: () => import("react/jsx-runtime").JSX.Element;
 export default RecipeCache;
