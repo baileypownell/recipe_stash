@@ -129,6 +129,9 @@ const Login = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          label: {
+            color: theme.palette.primary.main,
+          },
         }}
       >
         <Stack
@@ -194,7 +197,7 @@ const Login = () => {
                         name="password"
                       />
                     </Stack>
-                    <Box>
+                    <Stack direction="column" spacing={2}>
                       <LoadingButton
                         color="secondary"
                         disabled={!formik.isValid}
@@ -228,8 +231,8 @@ const Login = () => {
                           Reset Password
                         </Button>
                       ) : null}
-                    </Box>
-                    <Divider sx={{ backgroundColor: 'white' }} />
+                    </Stack>
+                    <Divider sx={{ backgroundColor: 'white', marginTop: 2 }} />
                     <Stack spacing={1} marginTop={1} alignItems="center">
                       <Typography>Don't have an account?</Typography>
                       <Button

@@ -96,6 +96,9 @@ const Signup = () => {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        label: {
+          color: theme.palette.primary.main,
+        },
       }}
     >
       <Stack

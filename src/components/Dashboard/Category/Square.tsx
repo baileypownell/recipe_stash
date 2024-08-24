@@ -25,7 +25,7 @@ const RecipeCard = ({
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    transition: 'all 0.3s',
+    transition: 'background-color 0.3s',
     width: '250px',
     height: '150px',
   };
@@ -115,41 +115,40 @@ const Square = ({ recipe }: SquareProps) => {
     return window.removeEventListener('resize', handleWindowSizeChange);
   }, []);
 
-  // a <Square/> should not render until the background image (if there is one) is fully loaded
-  // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
-  if (defaultTileImageUrl) {
-    return imageLoaded ? (
-      <RecipeCard
-        viewRecipe={viewRecipe}
-        recipe={recipe}
-        rawTitle={rawTitle}
-        defaultTileImageUrl={defaultTileImageUrl}
-      />
-    ) : (
-      <>
-        <img
-          src={defaultTileImageUrl}
-          style={{ display: 'none' }}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageLoadingError(true)}
-          alt={`${rawTitle}`}
-        />
-        {!imageLoadingError ? (
-          <Skeleton width={skeletonWidth} height={skeletonHeight} />
-        ) : (
-          <RecipeCard
-            viewRecipe={viewRecipe}
-            recipe={recipe}
-            rawTitle={rawTitle}
-          />
-        )}
-      </>
-    );
-  } else {
+  if (!defaultTileImageUrl)
     return (
       <RecipeCard viewRecipe={viewRecipe} recipe={recipe} rawTitle={rawTitle} />
     );
-  }
+
+  // a <Square/> should not render until the background image (if there is one) is fully loaded
+  // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
+  return imageLoaded ? (
+    <RecipeCard
+      viewRecipe={viewRecipe}
+      recipe={recipe}
+      rawTitle={rawTitle}
+      defaultTileImageUrl={defaultTileImageUrl}
+    />
+  ) : (
+    <>
+      <img
+        src={defaultTileImageUrl}
+        style={{ display: 'none' }}
+        onLoad={() => setImageLoaded(true)}
+        onError={() => setImageLoadingError(true)}
+        alt={`${rawTitle}`}
+      />
+      {!imageLoadingError ? (
+        <Skeleton width={skeletonWidth} height={skeletonHeight} />
+      ) : (
+        <RecipeCard
+          viewRecipe={viewRecipe}
+          recipe={recipe}
+          rawTitle={rawTitle}
+        />
+      )}
+    </>
+  );
 };
 
 export default Square;

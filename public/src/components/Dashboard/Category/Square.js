@@ -19,7 +19,7 @@ const RecipeCard = ({ viewRecipe, recipe, rawTitle, defaultTileImageUrl, }) => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
-        transition: 'all 0.3s',
+        transition: 'background-color 0.3s',
         width: '250px',
         height: '150px',
     };
@@ -77,14 +77,11 @@ const Square = ({ recipe }) => {
         handleWindowSizeChange();
         return window.removeEventListener('resize', handleWindowSizeChange);
     }, []);
+    if (!defaultTileImageUrl)
+        return ((0, jsx_runtime_1.jsx)(RecipeCard, { viewRecipe: viewRecipe, recipe: recipe, rawTitle: rawTitle }));
     // a <Square/> should not render until the background image (if there is one) is fully loaded
     // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
-    if (defaultTileImageUrl) {
-        return imageLoaded ? ((0, jsx_runtime_1.jsx)(RecipeCard, { viewRecipe: viewRecipe, recipe: recipe, rawTitle: rawTitle, defaultTileImageUrl: defaultTileImageUrl })) : ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)("img", { src: defaultTileImageUrl, style: { display: 'none' }, onLoad: () => setImageLoaded(true), onError: () => setImageLoadingError(true), alt: `${rawTitle}` }), !imageLoadingError ? ((0, jsx_runtime_1.jsx)(react_loading_skeleton_1.default, { width: skeletonWidth, height: skeletonHeight })) : ((0, jsx_runtime_1.jsx)(RecipeCard, { viewRecipe: viewRecipe, recipe: recipe, rawTitle: rawTitle }))] }));
-    }
-    else {
-        return ((0, jsx_runtime_1.jsx)(RecipeCard, { viewRecipe: viewRecipe, recipe: recipe, rawTitle: rawTitle }));
-    }
+    return imageLoaded ? ((0, jsx_runtime_1.jsx)(RecipeCard, { viewRecipe: viewRecipe, recipe: recipe, rawTitle: rawTitle, defaultTileImageUrl: defaultTileImageUrl })) : ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)("img", { src: defaultTileImageUrl, style: { display: 'none' }, onLoad: () => setImageLoaded(true), onError: () => setImageLoadingError(true), alt: `${rawTitle}` }), !imageLoadingError ? ((0, jsx_runtime_1.jsx)(react_loading_skeleton_1.default, { width: skeletonWidth, height: skeletonHeight })) : ((0, jsx_runtime_1.jsx)(RecipeCard, { viewRecipe: viewRecipe, recipe: recipe, rawTitle: rawTitle }))] }));
 };
 exports.default = Square;
 //# sourceMappingURL=Square.js.map

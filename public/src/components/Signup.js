@@ -98,6 +98,9 @@ const Signup = () => {
             backgroundImage: `url(${ingredients_jpg_1.default})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            label: {
+                color: theme.palette.primary.main,
+            },
         }, children: [(0, jsx_runtime_1.jsx)(material_1.Stack, { alignItems: "center", justifyContent: "center", textAlign: "center", sx: {
                     height: '100%',
                     background: 'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
