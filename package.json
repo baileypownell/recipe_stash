@@ -11,7 +11,8 @@
     "lint": "eslint --fix . --ext .ts --ext .tsx",
     "start": "NODE_ENV=production && node ./public/server/server.js",
     "build": "webpack && tsc -p .",
-    "deploy": "git push heroku master"
+    "deploy": "git push heroku master",
+    "commit-and-deploy": "npm run build && git add . && git commit -m 'changes' && npm run deploy"
   },
   "repository": {
     "type": "git",
