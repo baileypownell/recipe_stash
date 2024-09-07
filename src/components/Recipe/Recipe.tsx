@@ -5,8 +5,12 @@ import {
   Chip,
   Divider,
   Fab,
+  Link,
+  List,
+  ListItem,
   Stack,
   Tooltip,
+  Typography,
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
@@ -19,6 +23,7 @@ import { Spinner } from '../Spinner';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
 import { FullRecipe } from '../../../server/recipe';
+import LinkIcon from '@mui/icons-material/Link';
 
 interface Props {
   openSnackBar: Function;
@@ -186,10 +191,51 @@ const Recipe = (props: Props) => {
           <Box dangerouslySetInnerHTML={{ __html: recipe.ingredients }} />
           <Box dangerouslySetInnerHTML={{ __html: recipe.directions }} />
           <Stack spacing={1} direction="row">
-            {tags.map((tag) =>
-              tag.selected ? <Chip key={tag.label} label={tag.label} /> : null,
-            )}
+            {tags
+              .filter((tag) => tag.selected)
+              .map((tag) => (
+                <Chip key={tag.label} label={tag.label} />
+              ))}
           </Stack>
+          <Box paddingTop={2}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{
+                svg: {
+                  cursor: 'pointer',
+                },
+              }}
+            >
+              <Typography variant="h6">Paired Recipes</Typography>
+              <Tooltip
+                title="Connect this recipe to other recipes which pair well with it, i.e. as a side or a
+                  dessert"
+              >
+                <LinkIcon />
+              </Tooltip>
+            </Stack>
+            {recipe.pairedRecipes.length ? (
+              <>
+                <List>
+                  {recipe.pairedRecipes.map((pairedRecipe) => (
+                    <ListItem key={pairedRecipe.id}>
+                      <Link
+                        href={`recipes/${pairedRecipe.id}`}
+                        target="_blank"
+                        aria-label={`View paired recipe: ${pairedRecipe.title} in a new tab`}
+                      >
+                        {pairedRecipe.title}
+                      </Link>
+                    </ListItem>
+                  ))}
+                </List>
+              </>
+            ) : (
+              <Typography variant="caption">No paired recipes.</Typography>
+            )}
+          </Box>
           <Divider style={{ margin: '20px 0 10px 0' }} />
           <Box
             sx={getImageStyles(

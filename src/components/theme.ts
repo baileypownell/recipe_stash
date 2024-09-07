@@ -121,7 +121,18 @@ export const getInput = (theme: Theme): ThemeOptions => ({
         },
       },
     },
-    // MuiLabel
+  },
+});
+
+export const getLink = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          fontWeight: 700,
+        },
+      },
+    },
   },
 });
 
@@ -153,4 +164,5 @@ export const theme = createTheme(
   getChip(),
   getInput(base),
   getForm(base),
+  getLink(base),
 );

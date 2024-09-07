@@ -50,6 +50,7 @@ export interface RecipeInput extends RecipeTags {
   category: string;
   ingredients: string;
   directions: string;
+  pairedRecipes: string[];
 }
 
 export interface RecipeInterface {
@@ -72,6 +73,7 @@ export interface UpdateRecipeInput extends RecipeTags {
   directions: string;
   recipeId: string;
   category: string;
+  pairedRecipes: string[];
 }
 
 export const RecipeService = {

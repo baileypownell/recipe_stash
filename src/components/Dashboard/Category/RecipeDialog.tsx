@@ -7,6 +7,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Box,
   Button,
   Chip,
@@ -16,15 +17,18 @@ import {
   DialogTitle,
   FormControl,
   InputLabel,
+  List,
+  ListItemText,
   MenuItem,
   Select,
   Stack,
+  TextField,
   Typography,
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
@@ -38,9 +42,10 @@ import {
   SortedRecipeInterface,
   UpdateRecipeInput,
 } from '../../../services/recipe-services';
-import { queryClient } from '../../App';
+import { RecipeContext, queryClient } from '../../App';
 import FileUpload from './FileUpload';
 import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
+import { Controller, useForm } from 'react-hook-form';
 
 type EditProps = {
   recipe: any;
@@ -100,6 +105,17 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
   const theme = useTheme();
+  const recipes = useContext(RecipeContext);
+  const recipeOptions = recipes
+    ? Object.values(recipes as SortedRecipeInterface).flat()
+    : [];
+  const { control, setValue, watch } = useForm<{
+    pairedRecipes: string[];
+  }>({
+    defaultValues: {
+      pairedRecipes: [],
+    },
+  });
 
   useEffect(() => {
     if (mode === Mode.Edit) {
@@ -107,6 +123,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       setRecipeTitle(recipe.title);
       setIngredients(recipe.ingredients);
       setDirections(recipe.directions);
+      // adding a rawTitle property to match existing options
+      setValue(
+        'pairedRecipes',
+        recipe.pairedRecipes.map((r) => ({ ...r, rawTitle: r.title })),
+      );
 
       tags.map((tag) => {
         if (
@@ -144,6 +165,8 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     };
   };
 
+  const pairedRecipes = watch('pairedRecipes');
+
   const saveRecipe = async (e: any) => {
     e.preventDefault();
     const titleHTML = DOMPurify.sanitize(
@@ -157,6 +180,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       category,
       ingredients: DOMPurify.sanitize(ingredients, {}),
       directions: DOMPurify.sanitize(directions, {}),
+      pairedRecipes,
       ...determineTags(),
     };
     try {
@@ -189,6 +213,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             directions: directions,
             recipeId: (recipeDialogInfo as EditProps).recipe.id,
             category,
+            pairedRecipes,
             ...determineTags(),
           };
           try {
@@ -364,7 +389,62 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             </Select>
           </FormControl>
         </Box>
-        <Accordion style={{ margin: '10px 0' }}>
+        <Box>
+          <Controller
+            name="pairedRecipes"
+            control={control}
+            render={({ field: { onChange, value } }) => {
+              return (
+                <Autocomplete
+                  openOnFocus
+                  disableCloseOnSelect
+                  options={recipeOptions}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === (value as any).id
+                  }
+                  multiple
+                  groupBy={(option) => option.category}
+                  onChange={(_, val) => onChange(val)}
+                  // @ts-ignore
+                  value={value}
+                  renderGroup={(params) => {
+                    return (
+                      <li key={params.key}>
+                        <Typography paddingLeft={1} fontWeight="bold">
+                          {
+                            options.find((el) => el.value === params.group)
+                              ?.label
+                          }
+                        </Typography>
+                        <List>
+                          {(params.children as any[])?.map((child) => (
+                            <ListItemText key={child}>{child}</ListItemText>
+                          ))}
+                        </List>
+                      </li>
+                    );
+                  }}
+                  getOptionDisabled={(option) =>
+                    (recipeDialogInfo as EditProps).recipe
+                      ? option.id === (recipeDialogInfo as EditProps).recipe.id
+                      : false
+                  }
+                  getOptionLabel={(option) => option.rawTitle}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="filled"
+                      label="Paired Recipes"
+                      helperText="Choose recipes which pair well with this dish (like a
+              side or a dessert)."
+                    />
+                  )}
+                />
+              );
+            }}
+          ></Controller>
+        </Box>
+        <Accordion style={{ margin: '10px 0' }} defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>Recipe Tags</Typography>
           </AccordionSummary>

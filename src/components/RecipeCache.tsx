@@ -8,7 +8,7 @@ import {
   RecipeService,
   SortedRecipeInterface,
 } from '../services/recipe-services';
-import { queryClient } from './App';
+import { RecipeContext, queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import { Spinner } from './Spinner';
@@ -145,50 +145,52 @@ const RecipeCache = () => {
 
   if (params.id) {
     return (
-      <Recipe
-        openSnackBar={openSnackBar}
-        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
-          await mutateAsync(recipeInput)
-        }
-      />
-    );
-  } else {
-    return (
-      <>
-        <Routes>
-          <Route
-            path=":id"
-            element={
-              <Recipe
-                openSnackBar={openSnackBar}
-                addRecipeMutation={async (
-                  recipeInput: AddRecipeMutationParam,
-                ) => await mutateAsync(recipeInput)}
-              />
-            }
-          />
-        </Routes>
-        <Dashboard
-          recipes={data as SortedRecipeInterface}
-          fetchRecipes={() => fetchRecipes()}
+      <RecipeContext.Provider value={data as SortedRecipeInterface}>
+        <Recipe
+          openSnackBar={openSnackBar}
           addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
             await mutateAsync(recipeInput)
           }
         />
-        <Snackbar
-          open={snackBarOpen}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          onClose={closeSnackBar}
-          autoHideDuration={3000}
-          message={snackBarMessage}
-          key={'bottom' + 'center'}
-        />
-      </>
+      </RecipeContext.Provider>
     );
   }
+
+  return (
+    <RecipeContext.Provider value={data as SortedRecipeInterface}>
+      <Routes>
+        <Route
+          path=":id"
+          element={
+            <Recipe
+              openSnackBar={openSnackBar}
+              addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
+                await mutateAsync(recipeInput)
+              }
+            />
+          }
+        />
+      </Routes>
+      <Dashboard
+        recipes={data as SortedRecipeInterface}
+        fetchRecipes={() => fetchRecipes()}
+        addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
+          await mutateAsync(recipeInput)
+        }
+      />
+      <Snackbar
+        open={snackBarOpen}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        onClose={closeSnackBar}
+        autoHideDuration={3000}
+        message={snackBarMessage}
+        key={'bottom' + 'center'}
+      />
+    </RecipeContext.Provider>
+  );
 };
 
 export default RecipeCache;
