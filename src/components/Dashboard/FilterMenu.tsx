@@ -5,8 +5,9 @@ import {
   Button,
   Checkbox,
   Divider,
-  Menu,
-  MenuItem,
+  FormControlLabel,
+  FormGroup,
+  Popover,
   Stack,
   Typography,
   useTheme,
@@ -24,6 +25,7 @@ export const FilterMenu = ({
   clearFilters,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
   const theme = useTheme();
 
   const handleClick = (event) => {
@@ -44,8 +46,7 @@ export const FilterMenu = ({
             backgroundColor: 'white',
           },
         }}
-        aria-controls="menu"
-        aria-haspopup="true"
+        aria-describedby="filter-menu"
         onClick={handleClick}
       >
         <Stack direction="row" alignItems="center">
@@ -59,99 +60,71 @@ export const FilterMenu = ({
           )}
         </Stack>
       </Button>
-      <Menu
-        id="menu"
+      <Popover
+        id="filter-menu"
         anchorEl={anchorEl}
         keepMounted
-        open={Boolean(anchorEl)}
+        open={open}
         onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
       >
-        <Stack direction="column" alignItems="center" paddingBottom={1}>
-          <Stack direction="row" spacing={2} minWidth="200px">
-            <Box>
-              <Stack
-                padding="10px"
-                direction="row"
-                justifyContent="space-between"
-              >
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: 'bold', padding: '0!important' }}
-                >
-                  Features
-                </Typography>
-                <FilterListRoundedIcon />
-              </Stack>
+        <Stack
+          direction="column"
+          alignItems="center"
+          paddingBottom={1}
+          paddingRight={2}
+          paddingLeft={2}
+        >
+          <Stack direction="row" spacing={2}>
+            <Box minWidth="150px">
+              <Typography variant="body1" fontWeight="bold" p={1}>
+                Tags
+              </Typography>
               <Divider />
-              {filters.map((item, index) => {
-                return (
-                  <MenuItem
-                    key={index}
-                    sx={{
-                      paddingRight: 0,
-                    }}
-                    onClick={() => filter(item.key)}
-                  >
-                    <Stack
-                      justifyContent="space-between"
-                      alignItems="center"
-                      direction="row"
-                      width="100%"
-                    >
-                      {item.name}
-                      <Checkbox
-                        checked={appliedFilt[item.key]}
-                        id={item.key}
-                        color="orange"
-                        inputProps={{ 'aria-label': 'primary checkbox' }}
-                      />
-                    </Stack>
-                  </MenuItem>
-                );
-              })}
+              <FormGroup>
+                {filters.map((item) => {
+                  return (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          tabIndex={0}
+                          checked={appliedFilt[item.key]}
+                          onChange={() => filter(item.key)}
+                        />
+                      }
+                      label={item.name}
+                      key={item.name}
+                    />
+                  );
+                })}
+              </FormGroup>
             </Box>
 
-            <Box>
-              <Stack
-                padding="10px"
-                direction="row"
-                justifyContent="space-between"
-              >
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: 'bold', padding: '0!important' }}
-                >
-                  Categories
-                </Typography>
-                <FilterListRoundedIcon />
-              </Stack>
+            <Box minWidth="150px">
+              <Typography variant="body1" fontWeight="bold" p={1}>
+                Categories
+              </Typography>
               <Divider />
-              {categories.map((item, index) => {
-                return (
-                  <MenuItem
-                    key={index}
-                    sx={{
-                      paddingRight: 0,
-                    }}
-                    onClick={() => filterByCategory(item.key)}
-                  >
-                    <Stack
-                      justifyContent="space-between"
-                      alignItems="center"
-                      direction="row"
-                      width="100%"
-                    >
-                      {item.name}
-                      <Checkbox
-                        checked={appliedCat[item.key]}
-                        id={item.key}
-                        color="orange"
-                        inputProps={{ 'aria-label': 'primary checkbox' }}
-                      />
-                    </Stack>
-                  </MenuItem>
-                );
-              })}
+              <FormGroup>
+                {categories.map((item) => {
+                  return (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={appliedCat[item.key]}
+                          id={item.key}
+                          onChange={() => filterByCategory(item.key)}
+                        />
+                      }
+                      label={item.name}
+                      key={item.name}
+                    />
+                  );
+                })}
+              </FormGroup>
             </Box>
           </Stack>
 
@@ -169,7 +142,7 @@ export const FilterMenu = ({
             Clear All
           </Button>
         </Stack>
-      </Menu>
+      </Popover>
     </>
   );
 };
