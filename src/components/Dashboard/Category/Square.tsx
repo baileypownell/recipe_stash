@@ -1,17 +1,15 @@
-import { Button, Card, CardContent, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import { useNavigate } from 'react-router';
 import { FullRecipe } from '../../../../server/recipe';
 import Chips from './Chips';
+import { Link } from 'react-router-dom';
 
 const RecipeCard = ({
-  viewRecipe,
   recipe,
   rawTitle,
   defaultTileImageUrl,
 }: {
-  viewRecipe: () => void;
   recipe: FullRecipe;
   rawTitle: string;
   defaultTileImageUrl?: string;
@@ -20,7 +18,6 @@ const RecipeCard = ({
   const imageTileStyles = {
     backgroundBlendMode: 'overlay',
     backgroundColor: theme.palette.gray.main,
-    boxShadow: `0px 2px 10px ${theme.palette.gray.main}`,
     color: theme.palette.info.main,
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -38,42 +35,68 @@ const RecipeCard = ({
     borderRadius: '5px',
     cursor: 'pointer',
     minHeight: '120px',
+    transition: 'box-shadow 300ms',
+    transitionTimingFunction: 'ease-in-out',
   };
 
   return (
-    <Card
-      component={Button}
-      onClick={viewRecipe}
-      sx={{ ...tileStyles, ...(defaultTileImageUrl && imageTileStyles) }}
-      style={{
-        backgroundImage: defaultTileImageUrl
-          ? `url(${defaultTileImageUrl})`
-          : 'none',
+    <Box
+      sx={{
+        '&&': {
+          '> a': {
+            textDecoration: 'none',
+            '&:hover': {
+              '> div': {
+                boxShadow: `0px 3px 10px ${theme.palette.primary.dark}`,
+              },
+            },
+            '&:focus': {
+              outlineColor: 'blue',
+              outline: 'none',
+              '> div': {
+                boxShadow: `0px 3px 10px ${theme.palette.primary.main}`,
+              },
+            },
+          },
+        },
       }}
     >
-      <CardContent
-        sx={{
-          width: '100%',
-          height: '100%',
-          padding: '8px',
-        }}
-      >
-        <Typography
-          variant="h6"
-          component="div"
-          marginBottom={1}
-          sx={{
-            textOverflow: 'ellipsis',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textTransform: 'none',
+      <Link to={`/recipes/${recipe.id}`} target="_blank">
+        <Card
+          elevation={5}
+          sx={{ ...tileStyles, ...(defaultTileImageUrl && imageTileStyles) }}
+          style={{
+            textDecoration: 'none!important',
+            backgroundImage: defaultTileImageUrl
+              ? `url(${defaultTileImageUrl})`
+              : 'none',
           }}
         >
-          {rawTitle}
-        </Typography>
-        <Chips tags={recipe.tags} />
-      </CardContent>
-    </Card>
+          <CardContent
+            sx={{
+              width: '100%',
+              height: '100%',
+              padding: '8px',
+            }}
+          >
+            <Typography
+              variant="h6"
+              marginBottom={1}
+              textAlign="center"
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textTransform: 'none',
+              }}
+            >
+              {rawTitle}
+            </Typography>
+            <Chips tags={recipe.tags} />
+          </CardContent>
+        </Card>
+      </Link>
+    </Box>
   );
 };
 
@@ -82,18 +105,12 @@ interface SquareProps {
 }
 
 const Square = ({ recipe }: SquareProps) => {
-  const recipeId = recipe.id;
   const defaultTileImageUrl = recipe.preSignedDefaultTileImageUrl;
   const rawTitle = recipe.rawTitle;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageLoadingError, setImageLoadingError] = useState(false);
   const [skeletonWidth, setSkeletonWidth] = useState(150);
   const [skeletonHeight, setSkeletonHeight] = useState(150);
-  const navigate = useNavigate();
-
-  const viewRecipe = () => {
-    navigate(`/recipes/${recipeId}`);
-  };
 
   const handleWindowSizeChange = () => {
     let skeletonHeight, skeletonWidth;
@@ -116,15 +133,12 @@ const Square = ({ recipe }: SquareProps) => {
   }, []);
 
   if (!defaultTileImageUrl)
-    return (
-      <RecipeCard viewRecipe={viewRecipe} recipe={recipe} rawTitle={rawTitle} />
-    );
+    return <RecipeCard recipe={recipe} rawTitle={rawTitle} />;
 
   // a <Square/> should not render until the background image (if there is one) is fully loaded
   // this means we need to technically render an <img/> so that we can react with the onLoad listener & then render the div
   return imageLoaded ? (
     <RecipeCard
-      viewRecipe={viewRecipe}
       recipe={recipe}
       rawTitle={rawTitle}
       defaultTileImageUrl={defaultTileImageUrl}
@@ -141,11 +155,7 @@ const Square = ({ recipe }: SquareProps) => {
       {!imageLoadingError ? (
         <Skeleton width={skeletonWidth} height={skeletonHeight} />
       ) : (
-        <RecipeCard
-          viewRecipe={viewRecipe}
-          recipe={recipe}
-          rawTitle={rawTitle}
-        />
+        <RecipeCard recipe={recipe} rawTitle={rawTitle} />
       )}
     </>
   );

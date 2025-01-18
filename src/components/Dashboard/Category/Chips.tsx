@@ -1,4 +1,4 @@
-import { Badge, Chip, Stack } from '@mui/material';
+import { Badge, Box, Chip, Stack } from '@mui/material';
 import { recipeTagChips } from '../../../models/tags';
 import { useEffect, useRef, useState } from 'react';
 
@@ -28,40 +28,40 @@ const Chips = ({ tags }) => {
   }, []);
 
   return (
-    <Badge
-      badgeContent={hiddenChipCount}
-      color="primary"
-      sx={{
-        width: '100%',
-      }}
-    >
-      <Stack
-        ref={ref}
-        marginTop={2}
-        spacing={0.5}
-        direction="row"
-        flexWrap="wrap"
-        height="72px"
-        width="100%"
-        justifyContent="flex-end"
+    <Box marginRight={hiddenChipCount ? 1 : 0}>
+      <Badge
+        badgeContent={hiddenChipCount}
+        color="primary"
+        sx={{ width: '100%' }}
       >
-        {tags.map((recipeTag) => (
-          <Chip
-            key={recipeTag}
-            variant="outlined"
-            sx={{
-              margin: '2px!important',
-            }}
-            label={
-              recipeTagChips.find(
-                (tag) => tag.recipeTagPropertyName === recipeTag,
-              )!.label
-            }
-            data-tag={recipeTag}
-          ></Chip>
-        ))}
-      </Stack>
-    </Badge>
+        <Stack
+          ref={ref}
+          marginTop={2}
+          spacing={0.5}
+          direction="row"
+          flexWrap="wrap"
+          height="72px"
+          width="100%"
+          justifyContent="flex-end"
+        >
+          {tags.map((recipeTag) => (
+            <Chip
+              key={recipeTag}
+              variant="outlined"
+              sx={{
+                margin: '2px!important',
+              }}
+              label={
+                recipeTagChips.find(
+                  (tag) => tag.recipeTagPropertyName === recipeTag,
+                )!.label
+              }
+              data-tag={recipeTag}
+            ></Chip>
+          ))}
+        </Stack>
+      </Badge>
+    </Box>
   );
 };
 
