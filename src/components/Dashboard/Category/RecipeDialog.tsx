@@ -29,6 +29,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
 import { FullRecipe, RawRecipe } from '../../../../server/recipe';
+import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 import options from '../../../models/options';
 import { recipeTagChips } from '../../../models/tags';
 import {
@@ -40,7 +41,6 @@ import {
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
 import FileUpload from './FileUpload';
-import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 
 type EditProps = {
   recipe: any;
@@ -53,8 +53,7 @@ type EditProps = {
   triggerDialog: Function;
 };
 
-type AddProps = {
-  category: string;
+export type AddProps = {
   addRecipe: Function;
 };
 
@@ -71,15 +70,9 @@ interface Props {
 }
 
 const determineCategory = (recipeDialogInfo, mode): string => {
-  if (mode === Mode.Add) {
-    return options.find(
-      (option) => option.label === (recipeDialogInfo as AddProps).category,
-    )!.value;
-  } else if (mode === Mode.Edit) {
-    return (recipeDialogInfo as EditProps).recipe.category;
-  } else {
-    return '';
-  }
+  return mode === Mode.Edit
+    ? (recipeDialogInfo as EditProps).recipe.category
+    : '';
 };
 
 const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
@@ -108,7 +101,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       setIngredients(recipe.ingredients);
       setDirections(recipe.directions);
 
-      tags.map((tag) => {
+      tags.forEach((tag) => {
         if (
           (recipeDialogInfo as EditProps).recipe.tags.includes(
             tag.recipeTagPropertyName,
@@ -266,9 +259,12 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     const rawIngredients = htmlToText(ingredients);
     const rawTitle = htmlToText(recipeTitle);
     const recipeValid: boolean =
-      !!rawDirections.trim() && !!rawIngredients.trim() && !!rawTitle.trim();
+      !!rawDirections.trim() &&
+      !!rawIngredients.trim() &&
+      !!rawTitle.trim() &&
+      !!category;
     setRecipeValid(recipeValid);
-  }, [recipeTitle, ingredients, directions]);
+  }, [recipeTitle, ingredients, directions, category]);
 
   const getTitle = () => {
     if (mode === Mode.Add) {
@@ -307,7 +303,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   };
 
   const editing =
-    !(recipeDialogInfo as EditProps).cloning && mode === Mode.Edit;
+    !(recipeDialogInfo as EditProps)?.cloning && mode === Mode.Edit;
 
   return (
     <Dialog fullScreen open={open}>
@@ -353,7 +349,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             style={{ width: '100%', margin: '10px 0' }}
           >
             <InputLabel>Category</InputLabel>
-            <Select value={category} onChange={updateCategory}>
+            <Select value={category} required onChange={updateCategory}>
               {options.map((val, index: number) => {
                 return (
                   <MenuItem key={index} value={val.value}>

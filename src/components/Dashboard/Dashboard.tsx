@@ -1,6 +1,7 @@
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TableRowsRoundedIcon from '@mui/icons-material/TableRowsRounded';
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
+
 import {
   Box,
   Collapse,
@@ -22,6 +23,7 @@ import { queryClient } from '../App';
 import { AddRecipeMutationParam } from '../RecipeCache';
 import Category from './Category/Category';
 import FilterMenu from './FilterMenu';
+import { AddRecipeButton } from './AddRecipeButton';
 
 export enum GridView {
   Grid,
@@ -369,11 +371,10 @@ const Dashboard = (props: Props) => {
 
       <Box
         sx={{
-          margin: '0 auto',
-          width: '90%',
-          padding: '25px 0',
+          padding: 2,
           [theme.breakpoints.up('lg')]: {
-            padding: '2vw 0',
+            paddingRight: 3,
+            paddingLeft: 3,
           },
         }}
       >
@@ -391,18 +392,18 @@ const Dashboard = (props: Props) => {
               >
                 <Category
                   title={mealCategories[mealCat]}
-                  id={mealCat}
                   gridView={gridView}
                   recipes={
                     (filteredRecipes as unknown as SortedRecipeInterface)[
                       mealCat
                     ]
                   }
-                  addRecipe={addRecipe}
                 />
               </Collapse>
             ))
           : null}
+
+        <AddRecipeButton addRecipe={addRecipe} />
       </Box>
     </Box>
   );
