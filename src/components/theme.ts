@@ -33,7 +33,7 @@ const base = createTheme({
       light: '#fa7569',
     },
     secondary: {
-      main: '#87ad6a',
+      main: '#4a4a48',
       contrastText: '#fff',
     },
     error: {
@@ -112,19 +112,6 @@ export const getChip = (): ThemeOptions => ({
   },
 });
 
-export const getInput = (theme: Theme): ThemeOptions => ({
-  components: {
-    MuiInputBase: {
-      styleOverrides: {
-        input: {
-          color: theme.palette.info.main,
-        },
-      },
-    },
-    // MuiLabel
-  },
-});
-
 export const getForm = (theme: Theme): ThemeOptions => ({
   components: {
     MuiFormLabel: {
@@ -151,6 +138,5 @@ export const theme = createTheme(
   getAppBar(base),
   getList(base),
   getChip(),
-  getInput(base),
   getForm(base),
 );

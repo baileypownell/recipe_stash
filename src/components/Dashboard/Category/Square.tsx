@@ -1,9 +1,12 @@
 import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { FullRecipe } from '../../../../server/recipe';
 import Chips from './Chips';
 import { Link } from 'react-router-dom';
+
+const CARD_HEIGHT = 150;
+const CARD_WIDTH = 250;
 
 const RecipeCard = ({
   recipe,
@@ -23,15 +26,13 @@ const RecipeCard = ({
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     transition: 'background-color 0.3s',
-    width: '250px',
-    height: '150px',
+    width: `${CARD_WIDTH}px`,
+    height: `${CARD_HEIGHT}px`,
   };
 
   const tileStyles = {
-    width: '250px',
-    height: '150px',
-    marginRight: '10px',
-    marginBottom: '10px',
+    width: `${CARD_WIDTH}px`,
+    height: `${CARD_HEIGHT}px`,
     borderRadius: '5px',
     cursor: 'pointer',
     minHeight: '120px',
@@ -51,7 +52,6 @@ const RecipeCard = ({
               },
             },
             '&:focus': {
-              outlineColor: 'blue',
               outline: 'none',
               '> div': {
                 boxShadow: `0px 3px 10px ${theme.palette.primary.main}`,
@@ -109,28 +109,6 @@ const Square = ({ recipe }: SquareProps) => {
   const rawTitle = recipe.rawTitle;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageLoadingError, setImageLoadingError] = useState(false);
-  const [skeletonWidth, setSkeletonWidth] = useState(150);
-  const [skeletonHeight, setSkeletonHeight] = useState(150);
-
-  const handleWindowSizeChange = () => {
-    let skeletonHeight, skeletonWidth;
-    if (window.innerWidth >= 600) {
-      skeletonHeight = 100;
-      skeletonWidth = 175;
-    } else {
-      skeletonHeight = 120;
-      skeletonWidth = 120;
-    }
-    setSkeletonWidth(skeletonWidth);
-    setSkeletonHeight(skeletonHeight);
-  };
-
-  useEffect(() => {
-    window.addEventListener('resize', handleWindowSizeChange);
-    handleWindowSizeChange();
-
-    return window.removeEventListener('resize', handleWindowSizeChange);
-  }, []);
 
   if (!defaultTileImageUrl)
     return <RecipeCard recipe={recipe} rawTitle={rawTitle} />;
@@ -153,7 +131,7 @@ const Square = ({ recipe }: SquareProps) => {
         alt={`${rawTitle}`}
       />
       {!imageLoadingError ? (
-        <Skeleton width={skeletonWidth} height={skeletonHeight} />
+        <Skeleton width={CARD_WIDTH} height={CARD_HEIGHT} />
       ) : (
         <RecipeCard recipe={recipe} rawTitle={rawTitle} />
       )}

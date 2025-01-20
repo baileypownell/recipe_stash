@@ -5,10 +5,11 @@ import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 import {
   Box,
   Collapse,
-  IconButton,
   InputAdornment,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -326,48 +327,7 @@ const Dashboard = (props: Props) => {
 
   return (
     <Box>
-      <Box sx={{ backgroundColor: theme.palette.secondary.main }} padding={0.5}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <TextField
-            label="Find a recipe"
-            variant="filled"
-            size="small"
-            onChange={handleSearchChange}
-            value={userInputSubject.getValue()}
-            sx={{
-              m: 1,
-              width: '25ch',
-              input: {
-                color: 'white',
-              },
-              'label, svg': {
-                color: 'white!important',
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchRoundedIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <FilterMenu
-            numberOfSelectedFilters={selectedFiltersNum}
-            filters={filterArray}
-            appliedFilt={appliedFilt}
-            appliedCat={appliedCat}
-            filter={filter}
-            filterByCategory={filterByCategory}
-            categories={filterCategoryArray}
-            clearFilters={clearFilters}
-          />
-        </Stack>
-      </Box>
+      <Box p={0.5}></Box>
 
       <Box
         sx={{
@@ -378,12 +338,62 @@ const Dashboard = (props: Props) => {
           },
         }}
       >
-        <IconButton onClick={() => toggleView(GridView.List)}>
-          <TableRowsRoundedIcon />
-        </IconButton>
-        <IconButton onClick={() => toggleView(GridView.Grid)}>
-          <ViewModuleRoundedIcon />
-        </IconButton>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            aria-label="Recipe view options (list or grid)"
+            value={gridView}
+            onChange={(_, val) => toggleView(val)}
+          >
+            <ToggleButton disableRipple value={GridView.List}>
+              <TableRowsRoundedIcon />
+            </ToggleButton>
+            <ToggleButton disableRipple value={GridView.Grid}>
+              <ViewModuleRoundedIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <TextField
+              label="Filter by recipe name"
+              placeholder="Type to search..."
+              variant="filled"
+              size="small"
+              onChange={handleSearchChange}
+              value={userInputSubject.getValue()}
+              sx={{
+                m: 1,
+                minWidth: '200px',
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchRoundedIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <FilterMenu
+              numberOfSelectedFilters={selectedFiltersNum}
+              filters={filterArray}
+              appliedFilt={appliedFilt}
+              appliedCat={appliedCat}
+              filter={filter}
+              filterByCategory={filterByCategory}
+              categories={filterCategoryArray}
+              clearFilters={clearFilters}
+            />
+          </Stack>
+        </Stack>
         {filteredRecipes !== null
           ? Object.keys(mealCategories).map((mealCat) => (
               <Collapse

@@ -38,17 +38,7 @@ export const FilterMenu = ({
 
   return (
     <>
-      <Button
-        sx={{
-          backgroundColor: 'white',
-          color: theme.palette.gray.main,
-          '&:hover': {
-            backgroundColor: 'white',
-          },
-        }}
-        aria-describedby="filter-menu"
-        onClick={handleClick}
-      >
+      <Button aria-describedby="filter-menu" onClick={handleClick}>
         <Stack direction="row" alignItems="center">
           <Typography variant="body2" sx={{ marginRight: '5px' }}>
             Filter
