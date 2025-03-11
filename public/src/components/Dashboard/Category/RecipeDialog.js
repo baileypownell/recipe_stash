@@ -9,7 +9,6 @@ const AddCircleRounded_1 = __importDefault(require("@mui/icons-material/AddCircl
 const CancelRounded_1 = __importDefault(require("@mui/icons-material/CancelRounded"));
 const DeleteOutlineRounded_1 = __importDefault(require("@mui/icons-material/DeleteOutlineRounded"));
 const ExpandMore_1 = __importDefault(require("@mui/icons-material/ExpandMore"));
-const lab_1 = require("@mui/lab");
 const material_1 = require("@mui/material");
 const dompurify_1 = __importDefault(require("dompurify"));
 const html_to_text_1 = require("html-to-text");
@@ -28,15 +27,9 @@ var Mode;
     Mode["Edit"] = "Edit";
 })(Mode || (exports.Mode = Mode = {}));
 const determineCategory = (recipeDialogInfo, mode) => {
-    if (mode === Mode.Add) {
-        return options_1.default.find((option) => option.label === recipeDialogInfo.category).value;
-    }
-    else if (mode === Mode.Edit) {
-        return recipeDialogInfo.recipe.category;
-    }
-    else {
-        return '';
-    }
+    return mode === Mode.Edit
+        ? recipeDialogInfo.recipe.category
+        : '';
 };
 const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
     const [loading, setLoading] = (0, react_1.useState)(false);
@@ -56,7 +49,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
             setRecipeTitle(recipe.title);
             setIngredients(recipe.ingredients);
             setDirections(recipe.directions);
-            tags.map((tag) => {
+            tags.forEach((tag) => {
                 if (recipeDialogInfo.recipe.tags.includes(tag.recipeTagPropertyName)) {
                     tag.selected = true;
                 }
@@ -187,9 +180,12 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
         const rawDirections = (0, html_to_text_1.htmlToText)(directions);
         const rawIngredients = (0, html_to_text_1.htmlToText)(ingredients);
         const rawTitle = (0, html_to_text_1.htmlToText)(recipeTitle);
-        const recipeValid = !!rawDirections.trim() && !!rawIngredients.trim() && !!rawTitle.trim();
+        const recipeValid = !!rawDirections.trim() &&
+            !!rawIngredients.trim() &&
+            !!rawTitle.trim() &&
+            !!category;
         setRecipeValid(recipeValid);
-    }, [recipeTitle, ingredients, directions]);
+    }, [recipeTitle, ingredients, directions, category]);
     const getTitle = () => {
         if (mode === Mode.Add) {
             return 'Add Recipe';
@@ -220,14 +216,14 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
             recipeDialogInfo.openSnackBar('There was an error.');
         }
     };
-    const editing = !recipeDialogInfo.cloning && mode === Mode.Edit;
+    const editing = !recipeDialogInfo?.cloning && mode === Mode.Edit;
     return ((0, jsx_runtime_1.jsxs)(material_1.Dialog, { fullScreen: true, open: open, children: [(0, jsx_runtime_1.jsx)(material_1.DialogTitle, { children: getTitle() }), (0, jsx_runtime_1.jsxs)(material_1.DialogContent, { children: [(0, jsx_runtime_1.jsxs)(material_1.Box, { paddingBottom: 2, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Recipe Name" }), (0, jsx_runtime_1.jsx)(react_quill_1.default, { defaultValue: mode === Mode.Edit
                                     ? recipeDialogInfo.recipe.title
                                     : null, onChange: handleModelChange })] }), (0, jsx_runtime_1.jsxs)(material_1.Box, { paddingBottom: 2, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Ingredients" }), (0, jsx_runtime_1.jsx)(react_quill_1.default, { defaultValue: mode === Mode.Edit
                                     ? recipeDialogInfo.recipe.ingredients
                                     : null, onChange: handleModelChangeIngredients })] }), (0, jsx_runtime_1.jsxs)(material_1.Box, { paddingBottom: 2, children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { variant: "overline", children: "Directions" }), (0, jsx_runtime_1.jsx)(react_quill_1.default, { defaultValue: mode === Mode.Edit
                                     ? recipeDialogInfo.recipe.directions
-                                    : null, onChange: handleModelChangeDirections })] }), (0, jsx_runtime_1.jsx)(material_1.Box, { children: (0, jsx_runtime_1.jsxs)(material_1.FormControl, { variant: "filled", style: { width: '100%', margin: '10px 0' }, children: [(0, jsx_runtime_1.jsx)(material_1.InputLabel, { children: "Category" }), (0, jsx_runtime_1.jsx)(material_1.Select, { value: category, onChange: updateCategory, children: options_1.default.map((val, index) => {
+                                    : null, onChange: handleModelChangeDirections })] }), (0, jsx_runtime_1.jsx)(material_1.Box, { children: (0, jsx_runtime_1.jsxs)(material_1.FormControl, { variant: "filled", style: { width: '100%', margin: '10px 0' }, children: [(0, jsx_runtime_1.jsx)(material_1.InputLabel, { children: "Category" }), (0, jsx_runtime_1.jsx)(material_1.Select, { value: category, required: true, onChange: updateCategory, children: options_1.default.map((val, index) => {
                                         return ((0, jsx_runtime_1.jsx)(material_1.MenuItem, { value: val.value, children: val.label }, index));
                                     }) })] }) }), (0, jsx_runtime_1.jsxs)(material_1.Accordion, { style: { margin: '10px 0' }, children: [(0, jsx_runtime_1.jsx)(material_1.AccordionSummary, { expandIcon: (0, jsx_runtime_1.jsx)(ExpandMore_1.default, {}), children: (0, jsx_runtime_1.jsx)(material_1.Typography, { children: "Recipe Tags" }) }), (0, jsx_runtime_1.jsxs)(material_1.AccordionDetails, { children: [(0, jsx_runtime_1.jsx)(material_1.Typography, { mb: 2, children: "Use tags to characterize your recipe so that you can easily find recipes with similar tags through the dashboard filter." }), (0, jsx_runtime_1.jsx)(material_1.Stack, { spacing: 1, direction: "row", children: tags.map((tag, index) => {
                                             return ((0, jsx_runtime_1.jsx)(material_1.Chip, { color: tags[index].selected ? 'primary' : 'default', id: index.toString(), onClick: () => toggleTagSelectionStatus(index), label: tag.label }, tag.label));
@@ -244,7 +240,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }) => {
                                 margin: 0,
                             },
                         },
-                    }, children: [(0, jsx_runtime_1.jsx)(lab_1.LoadingButton, { variant: "contained", color: "secondary", disabled: !recipeValid, loading: loading, onClick: saveRecipe, startIcon: loading ? null : (0, jsx_runtime_1.jsx)(AddCircleRounded_1.default, {}), children: mode === Mode.Add || recipeDialogInfo.cloning
+                    }, children: [(0, jsx_runtime_1.jsx)(material_1.Button, { variant: "contained", color: "secondary", disabled: !recipeValid, loading: loading, onClick: saveRecipe, startIcon: loading ? null : (0, jsx_runtime_1.jsx)(AddCircleRounded_1.default, {}), children: mode === Mode.Add || recipeDialogInfo.cloning
                                 ? 'Add Recipe'
                                 : 'Update Recipe' }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
                                 display: editing ? 'flex' : 'block',

@@ -27,7 +27,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsx_runtime_1 = require("react/jsx-runtime");
-const lab_1 = require("@mui/lab");
 const material_1 = require("@mui/material");
 const formik_1 = require("formik");
 const react_1 = require("react");
@@ -120,7 +119,7 @@ const Signup = () => {
                                                     Boolean(formik.errors.lastName), helperText: formik.touched.lastName && formik.errors.lastName }), (0, jsx_runtime_1.jsx)(material_1.TextField, { name: "email", type: "email", variant: "filled", label: "Email", value: formik.values.email, onBlur: formik.handleBlur, onChange: formik.handleChange, error: formik.touched.email && Boolean(formik.errors.email), helperText: formik.touched.email && formik.errors.email }), (0, jsx_runtime_1.jsx)(material_1.TextField, { name: "password", type: "password", variant: "filled", label: "Password", value: formik.values.password, onChange: formik.handleChange, onBlur: formik.handleBlur, error: formik.touched.password &&
                                                     Boolean(formik.errors.password), helperText: formik.touched.password && formik.errors.password }), (0, jsx_runtime_1.jsx)(material_1.TextField, { name: "confirmPassword", type: "password", variant: "filled", label: "Confirm Password", value: formik.values.confirmPassword, onChange: formik.handleChange, onBlur: formik.handleBlur, error: formik.touched.confirmPassword &&
                                                     Boolean(formik.errors.confirmPassword), helperText: formik.touched.confirmPassword &&
-                                                    formik.errors.confirmPassword })] }), (0, jsx_runtime_1.jsx)(lab_1.LoadingButton, { color: "secondary", disabled: !formik.isValid, type: "submit", loading: loading, variant: "contained", children: "Create Account" }), (0, jsx_runtime_1.jsxs)(material_1.Typography, { variant: "body1", marginTop: 3, children: ["Already have an account?", ' ', (0, jsx_runtime_1.jsx)(material_1.Link, { style: { cursor: 'pointer' }, onClick: login, children: "Log in." })] })] }) })) }) }) }), (0, jsx_runtime_1.jsx)(material_1.Snackbar, { open: snackBarOpen, anchorOrigin: {
+                                                    formik.errors.confirmPassword })] }), (0, jsx_runtime_1.jsx)(material_1.Button, { disabled: !formik.isValid, type: "submit", loading: loading, variant: "contained", children: "Create Account" }), (0, jsx_runtime_1.jsxs)(material_1.Typography, { variant: "body1", marginTop: 3, children: ["Already have an account?", ' ', (0, jsx_runtime_1.jsx)(material_1.Link, { style: { cursor: 'pointer' }, onClick: login, children: "Log in." })] })] }) })) }) }) }), (0, jsx_runtime_1.jsx)(material_1.Snackbar, { open: snackBarOpen, anchorOrigin: {
                     vertical: 'bottom',
                     horizontal: 'center',
                 }, onClose: closeSnackBar, autoHideDuration: 4000, message: snackBarMessage }, 'bottom' + 'center')] }));

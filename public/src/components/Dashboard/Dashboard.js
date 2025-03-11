@@ -15,6 +15,7 @@ const operators_1 = require("rxjs/operators");
 const App_1 = require("../App");
 const Category_1 = __importDefault(require("./Category/Category"));
 const FilterMenu_1 = __importDefault(require("./FilterMenu"));
+const AddRecipeButton_1 = require("./AddRecipeButton");
 var GridView;
 (function (GridView) {
     GridView[GridView["Grid"] = 0] = "Grid";
@@ -211,27 +212,20 @@ const Dashboard = (props) => {
             other: false,
         });
     };
-    return ((0, jsx_runtime_1.jsxs)(material_1.Box, { children: [(0, jsx_runtime_1.jsx)(material_1.Box, { sx: { backgroundColor: theme.palette.secondary.main }, padding: 0.5, children: (0, jsx_runtime_1.jsxs)(material_1.Stack, { direction: "row", alignItems: "center", justifyContent: "space-between", children: [(0, jsx_runtime_1.jsx)(material_1.TextField, { label: "Find a recipe", variant: "filled", size: "small", onChange: handleSearchChange, value: userInputSubject.getValue(), sx: {
-                                m: 1,
-                                width: '25ch',
-                                input: {
-                                    color: 'white',
-                                },
-                                'label, svg': {
-                                    color: 'white!important',
-                                },
-                            }, InputProps: {
-                                endAdornment: ((0, jsx_runtime_1.jsx)(material_1.InputAdornment, { position: "end", children: (0, jsx_runtime_1.jsx)(SearchRounded_1.default, {}) })),
-                            } }), (0, jsx_runtime_1.jsx)(FilterMenu_1.default, { numberOfSelectedFilters: selectedFiltersNum, filters: filterArray, appliedFilt: appliedFilt, appliedCat: appliedCat, filter: filter, filterByCategory: filterByCategory, categories: filterCategoryArray, clearFilters: clearFilters })] }) }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
-                    margin: '0 auto',
-                    width: '90%',
-                    padding: '25px 0',
+    return ((0, jsx_runtime_1.jsxs)(material_1.Box, { children: [(0, jsx_runtime_1.jsx)(material_1.Box, { p: 0.5 }), (0, jsx_runtime_1.jsxs)(material_1.Box, { sx: {
+                    padding: 2,
                     [theme.breakpoints.up('lg')]: {
-                        padding: '2vw 0',
+                        paddingRight: 3,
+                        paddingLeft: 3,
                     },
-                }, children: [(0, jsx_runtime_1.jsx)(material_1.IconButton, { onClick: () => toggleView(GridView.List), children: (0, jsx_runtime_1.jsx)(TableRowsRounded_1.default, {}) }), (0, jsx_runtime_1.jsx)(material_1.IconButton, { onClick: () => toggleView(GridView.Grid), children: (0, jsx_runtime_1.jsx)(ViewModuleRounded_1.default, {}) }), filteredRecipes !== null
-                        ? Object.keys(mealCategories).map((mealCat) => ((0, jsx_runtime_1.jsx)(material_1.Collapse, { in: allFalse ? true : appliedCat[mealCat], children: (0, jsx_runtime_1.jsx)(Category_1.default, { title: mealCategories[mealCat], id: mealCat, gridView: gridView, recipes: filteredRecipes[mealCat], addRecipe: addRecipe }) }, mealCat)))
-                        : null] })] }));
+                }, children: [(0, jsx_runtime_1.jsxs)(material_1.Stack, { direction: "row", justifyContent: "space-between", alignItems: "center", children: [(0, jsx_runtime_1.jsxs)(material_1.ToggleButtonGroup, { exclusive: true, size: "small", "aria-label": "Recipe view options (list or grid)", value: gridView, onChange: (_, val) => toggleView(val), children: [(0, jsx_runtime_1.jsx)(material_1.ToggleButton, { disableRipple: true, value: GridView.List, children: (0, jsx_runtime_1.jsx)(TableRowsRounded_1.default, {}) }), (0, jsx_runtime_1.jsx)(material_1.ToggleButton, { disableRipple: true, value: GridView.Grid, children: (0, jsx_runtime_1.jsx)(ViewModuleRounded_1.default, {}) })] }), (0, jsx_runtime_1.jsxs)(material_1.Stack, { direction: "row", alignItems: "center", justifyContent: "space-between", children: [(0, jsx_runtime_1.jsx)(material_1.TextField, { label: "Filter by recipe name", placeholder: "Type to search...", variant: "filled", size: "small", onChange: handleSearchChange, value: userInputSubject.getValue(), sx: {
+                                            m: 1,
+                                            minWidth: '200px',
+                                        }, InputProps: {
+                                            endAdornment: ((0, jsx_runtime_1.jsx)(material_1.InputAdornment, { position: "end", children: (0, jsx_runtime_1.jsx)(SearchRounded_1.default, {}) })),
+                                        } }), (0, jsx_runtime_1.jsx)(FilterMenu_1.default, { numberOfSelectedFilters: selectedFiltersNum, filters: filterArray, appliedFilt: appliedFilt, appliedCat: appliedCat, filter: filter, filterByCategory: filterByCategory, categories: filterCategoryArray, clearFilters: clearFilters })] })] }), filteredRecipes !== null
+                        ? Object.keys(mealCategories).map((mealCat) => ((0, jsx_runtime_1.jsx)(material_1.Collapse, { in: allFalse ? true : appliedCat[mealCat], children: (0, jsx_runtime_1.jsx)(Category_1.default, { title: mealCategories[mealCat], gridView: gridView, recipes: filteredRecipes[mealCat] }) }, mealCat)))
+                        : null, (0, jsx_runtime_1.jsx)(AddRecipeButton_1.AddRecipeButton, { addRecipe: addRecipe })] })] }));
 };
 exports.default = Dashboard;
 //# sourceMappingURL=Dashboard.js.map

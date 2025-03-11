@@ -9,8 +9,7 @@ type EditProps = {
     addRecipeMutation: Function;
     triggerDialog: Function;
 };
-type AddProps = {
-    category: string;
+export type AddProps = {
     addRecipe: Function;
 };
 export declare enum Mode {

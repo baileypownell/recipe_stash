@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.theme = exports.getForm = exports.getInput = exports.getChip = void 0;
+exports.theme = exports.getForm = exports.getChip = void 0;
 const material_1 = require("@mui/material");
 const base = (0, material_1.createTheme)({
     palette: {
         primary: {
             main: '#e86054',
-            dark: '#d1564c',
-            light: '#ea7065',
+            dark: '#ab3f35',
+            light: '#fa7569',
         },
         secondary: {
-            main: '#87ad6a',
+            main: '#4a4a48',
             contrastText: '#fff',
         },
         error: {
@@ -58,17 +58,6 @@ const getList = (theme) => ({
         },
     },
 });
-// export const getListItem = (theme: Theme): ThemeOptions => ({
-//   components: {
-//     MuiListItem: {
-//       styleOverrides: {
-//         root: {
-//           cursor: 'pointer',
-//         },
-//       },
-//     },
-//   },
-// });
 const getChip = () => ({
     components: {
         MuiChip: {
@@ -85,19 +74,6 @@ const getChip = () => ({
     },
 });
 exports.getChip = getChip;
-const getInput = (theme) => ({
-    components: {
-        MuiInputBase: {
-            styleOverrides: {
-                input: {
-                    color: theme.palette.info.main,
-                },
-            },
-        },
-        // MuiLabel
-    },
-});
-exports.getInput = getInput;
 const getForm = (theme) => ({
     components: {
         MuiFormLabel: {
@@ -119,5 +95,5 @@ const getForm = (theme) => ({
     },
 });
 exports.getForm = getForm;
-exports.theme = (0, material_1.createTheme)(base, getAppBar(base), getList(base), (0, exports.getChip)(), (0, exports.getInput)(base), (0, exports.getForm)(base));
+exports.theme = (0, material_1.createTheme)(base, getAppBar(base), getList(base), (0, exports.getChip)(), (0, exports.getForm)(base));
 //# sourceMappingURL=theme.js.map

@@ -22,11 +22,9 @@ const Chips = ({ tags }) => {
             setHiddenChipCount(hiddenChildren.length);
         }
     }, []);
-    return ((0, jsx_runtime_1.jsx)(material_1.Badge, { badgeContent: hiddenChipCount, color: "primary", sx: {
-            width: '100%',
-        }, children: (0, jsx_runtime_1.jsx)(material_1.Stack, { ref: ref, marginTop: 2, spacing: 0.5, direction: "row", flexWrap: "wrap", height: "72px", width: "100%", justifyContent: "flex-end", children: tags.map((recipeTag) => ((0, jsx_runtime_1.jsx)(material_1.Chip, { variant: "outlined", sx: {
-                    margin: '2px!important',
-                }, label: tags_1.recipeTagChips.find((tag) => tag.recipeTagPropertyName === recipeTag).label, "data-tag": recipeTag }, recipeTag))) }) }));
+    return ((0, jsx_runtime_1.jsx)(material_1.Box, { marginRight: hiddenChipCount ? 1 : 0, children: (0, jsx_runtime_1.jsx)(material_1.Badge, { badgeContent: hiddenChipCount, color: "primary", sx: { width: '100%' }, children: (0, jsx_runtime_1.jsx)(material_1.Stack, { ref: ref, marginTop: 2, spacing: 0.5, direction: "row", flexWrap: "wrap", height: "72px", width: "100%", justifyContent: "flex-end", children: tags.map((recipeTag) => ((0, jsx_runtime_1.jsx)(material_1.Chip, { variant: "outlined", sx: {
+                        margin: '2px!important',
+                    }, label: tags_1.recipeTagChips.find((tag) => tag.recipeTagPropertyName === recipeTag).label, "data-tag": recipeTag }, recipeTag))) }) }) }));
 };
 exports.default = Chips;
 //# sourceMappingURL=Chips.js.map

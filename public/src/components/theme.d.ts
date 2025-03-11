@@ -22,6 +22,5 @@ declare module '@mui/material/Button' {
     }
 }
 export declare const getChip: () => ThemeOptions;
-export declare const getInput: (theme: Theme) => ThemeOptions;
 export declare const getForm: (theme: Theme) => ThemeOptions;
 export declare const theme: Theme;

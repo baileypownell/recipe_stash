@@ -11,6 +11,9 @@
     "build": "webpack && tsc -p .",
     "deploy": "git push heroku master"
   },
+  "engines": {
+    "pnpm": "^9.15.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/baileypownell/Virtual-Cookbook.git"
@@ -28,12 +31,15 @@
     "@babel/runtime": "^7.26.10",
     "@mui/icons-material": "^6.0.0",
     "@mui/material": "^6.0.0",
+    "@types/react": "^19.0.10",
     "aws-sdk": "^2.1676.0",
     "axios": "^1.7.4",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
     "connect-pg-simple": "^8.0.0",
     "dompurify": "^2.5.6",
     "dotenv": "^16.4.5",
+    "express": "^4.21.2",
     "express-session": "^1.18.0",
     "formik": "^2.4.6",
     "googleapis": "^110.0.0",
@@ -54,6 +60,7 @@
     "react-spring-lightbox": "1.6.0",
     "react-visibility-sensor": "^5.1.1",
     "rxjs": "^7.8.1",
+    "uuid": "^11.1.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
