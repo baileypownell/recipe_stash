@@ -1,6 +1,6 @@
-import { LoadingButton } from '@mui/lab';
 import {
   Box,
+  Button,
   Fade,
   Link,
   Snackbar,
@@ -216,14 +216,14 @@ const Signup = () => {
                       }
                     />
                   </Stack>
-                  <LoadingButton
+                  <Button
                     disabled={!formik.isValid}
                     type="submit"
                     loading={loading}
                     variant="contained"
                   >
                     Create Account
-                  </LoadingButton>
+                  </Button>
 
                   <Typography variant="body1" marginTop={3}>
                     Already have an account?{' '}

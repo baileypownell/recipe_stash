@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Button,
@@ -128,7 +127,7 @@ const ResetPassword = () => {
                   }
                   helperText={formik.touched.password && formik.errors.password}
                 ></TextField>
-                <LoadingButton
+                <Button
                   sx={{ margintop: '10px' }}
                   disabled={!formik.isValid}
                   variant="contained"
@@ -137,7 +136,7 @@ const ResetPassword = () => {
                   loading={loading}
                 >
                   Submit
-                </LoadingButton>
+                </Button>
               </Stack>
             </Form>
           )}

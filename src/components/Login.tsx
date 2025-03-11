@@ -1,4 +1,3 @@
-import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
   Button,
@@ -198,14 +197,14 @@ const Login = () => {
                       />
                     </Stack>
                     <Stack direction="column" spacing={2}>
-                      <LoadingButton
+                      <Button
                         disabled={!formik.isValid}
                         type="submit"
                         loading={loading}
                         variant="contained"
                       >
                         Login
-                      </LoadingButton>
+                      </Button>
 
                       <Stack
                         justifyContent="center"

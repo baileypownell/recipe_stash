@@ -2,7 +2,7 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { LoadingButton } from '@mui/lab';
+
 import {
   Accordion,
   AccordionDetails,
@@ -416,7 +416,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             },
           }}
         >
-          <LoadingButton
+          <Button
             variant="contained"
             color="secondary"
             disabled={!recipeValid}
@@ -427,7 +427,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
               ? 'Add Recipe'
               : 'Update Recipe'}
-          </LoadingButton>
+          </Button>
           <Box
             sx={{
               display: editing ? 'flex' : 'block',
