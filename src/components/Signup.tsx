@@ -217,7 +217,6 @@ const Signup = () => {
                     />
                   </Stack>
                   <LoadingButton
-                    color="secondary"
                     disabled={!formik.isValid}
                     type="submit"
                     loading={loading}

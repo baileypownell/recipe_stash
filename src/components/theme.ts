@@ -84,18 +84,6 @@ const getList = (theme: Theme): ThemeOptions => ({
   },
 });
 
-// export const getListItem = (theme: Theme): ThemeOptions => ({
-//   components: {
-//     MuiListItem: {
-//       styleOverrides: {
-//         root: {
-//           cursor: 'pointer',
-//         },
-//       },
-//     },
-//   },
-// });
-
 export const getChip = (): ThemeOptions => ({
   components: {
     MuiChip: {

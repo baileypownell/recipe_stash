@@ -199,11 +199,10 @@ const Login = () => {
                     </Stack>
                     <Stack direction="column" spacing={2}>
                       <LoadingButton
-                        color="secondary"
                         disabled={!formik.isValid}
                         type="submit"
                         loading={loading}
-                        variant="outlined"
+                        variant="contained"
                       >
                         Login
                       </LoadingButton>
