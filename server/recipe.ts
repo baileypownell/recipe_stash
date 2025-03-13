@@ -84,7 +84,7 @@ router.get('/', authMiddleware, (request: any, response, next) => {
   client.query(
     'SELECT * FROM recipes WHERE user_uuid=$1',
     [request.session.userID],
-    (err, res) => {
+    async (err, res) => {
       if (err) return next(err);
       const responseObject: any = {
         breakfast: [],
@@ -98,19 +98,21 @@ router.get('/', authMiddleware, (request: any, response, next) => {
 
       if (!res.rows.length) return response.json(responseObject);
 
-      const results = res.rows.map((recipe) => {
-        if (recipe.default_tile_image_key) {
-          const preSignedDefaultTileImageUrl = getPresignedUrl(
-            recipe.default_tile_image_key,
-          );
-          return {
-            ...recipe,
-            preSignedDefaultTileImageUrl,
-          };
-        } else {
-          return recipe;
-        }
-      });
+      const results = await Promise.all(
+        res.rows.map(async (recipe) => {
+          if (recipe.default_tile_image_key) {
+            const preSignedDefaultTileImageUrl = await getPresignedUrl(
+              recipe.default_tile_image_key,
+            );
+            return {
+              ...recipe,
+              preSignedDefaultTileImageUrl,
+            };
+          } else {
+            return recipe;
+          }
+        }),
+      );
       results.forEach((recipe) => {
         if (recipe.category === 'Dinner' || recipe.category === 'dinner') {
           responseObject.dinner.push(formatRecipeResponse(recipe));
@@ -348,9 +350,9 @@ router.get(
 
         const urls = await getImageAWSKeys(recipeId);
         if (urls) {
-          recipeResponse.preSignedUrls = getPresignedUrls(urls);
+          recipeResponse.preSignedUrls = await getPresignedUrls(urls);
           if (recipe.default_tile_image_key) {
-            const preSignedDefaultTileImageUrl = getPresignedUrl(
+            const preSignedDefaultTileImageUrl = await getPresignedUrl(
               recipe.default_tile_image_key,
             );
             recipeResponse.preSignedDefaultTileImageUrl =

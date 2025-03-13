@@ -56,7 +56,7 @@ router.post('/:recipeId', authMiddleware, async (req: any, res) => {
 
 router.post('/', authMiddleware, async (req, res) => {
   const image_uuids = req.body.image_urls;
-  const urls = getPresignedUrls(image_uuids);
+  const urls = await getPresignedUrls(image_uuids);
   res.status(200).json({ presignedUrls: urls });
 });
 

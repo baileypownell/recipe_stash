@@ -1,4 +1,9 @@
-import aws from 'aws-sdk';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,13 +14,13 @@ if (process.env.NODE_ENV !== 'production') {
 
 const validExtension = ['image/jpg', 'image/jpeg', 'image/png'];
 
-aws.config.update({
-  secretAccessKey: process.env.S3_ACCESS_SECRET,
-  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+const s3 = new S3Client({
   region: process.env.S3_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.S3_ACCESS_SECRET as string,
+  },
 });
-
-const s3 = new aws.S3();
 
 const upload = multer({
   storage: multerS3({
@@ -52,56 +57,49 @@ const uploadSingleAWSFile = (req, res) => {
 };
 
 const getPresignedUrls = (image_uuids) => {
-  return image_uuids.map((uuid) => {
-    return s3.getSignedUrl('getObject', {
-      Bucket: process.env.S3_BUCKET,
-      Key: uuid,
-    });
-  });
-};
-
-const getPresignedUrl = (uuid) => {
-  return s3.getSignedUrl('getObject', {
-    Bucket: process.env.S3_BUCKET,
-    Key: uuid,
-  });
-};
-
-const deleteAWSFiles = (awsKeys) => {
   return Promise.all(
-    awsKeys.map((key) => {
-      return new Promise((resolve, reject) => {
-        s3.deleteObject(
-          {
-            Bucket: process.env.S3_BUCKET as string,
-            Key: key,
-          },
-          (err, data) => {
-            if (err) reject(err);
-            if (data) resolve(data);
-          },
-        );
-      });
+    image_uuids.map(async (uuid) => {
+      return await getSignedUrl(
+        s3,
+        new GetObjectCommand({
+          Bucket: process.env.S3_BUCKET,
+          Key: uuid,
+        }),
+      );
     }),
   );
 };
 
-const deleteSingleAWSFile = (imageKey) => {
-  return new Promise((resolve, reject) => {
-    s3.deleteObject(
-      {
-        Bucket: process.env.S3_BUCKET as string,
-        Key: imageKey,
-      },
-      (err, data) => {
-        if (err) {
-          reject(err);
-        } else if (data) {
-          resolve(data);
-        }
-      },
-    );
-  });
+const getPresignedUrl = async (uuid) => {
+  return await getSignedUrl(
+    s3,
+    new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: uuid,
+    }),
+  );
+};
+
+const deleteAWSFiles = (awsKeys) => {
+  return Promise.all(
+    awsKeys.map(async (key) => {
+      return await s3.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.S3_BUCKET as string,
+          Key: key,
+        }),
+      );
+    }),
+  );
+};
+
+const deleteSingleAWSFile = async (imageKey) => {
+  return await s3.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.S3_BUCKET as string,
+      Key: imageKey,
+    }),
+  );
 };
 
 export {
