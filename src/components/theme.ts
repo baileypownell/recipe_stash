@@ -69,6 +69,24 @@ const getAppBar = (theme: Theme): ThemeOptions => ({
   },
 });
 
+const getButton = (): ThemeOptions => ({
+  components: {
+    MuiButton: {
+      variants: [
+        {
+          props: { variant: 'contained', color: 'primary' },
+          style: {
+            '&.Mui-disabled': {
+              backgroundColor: 'rgb(232, 96, 84, 0.5)',
+              color: 'rgba(255, 255, 255, 0.5)',
+            },
+          },
+        },
+      ],
+    },
+  },
+});
+
 const getList = (theme: Theme): ThemeOptions => ({
   components: {
     MuiList: {
@@ -124,6 +142,7 @@ export const getForm = (theme: Theme): ThemeOptions => ({
 export const theme = createTheme(
   base,
   getAppBar(base),
+  getButton(),
   getList(base),
   getChip(),
   getForm(base),
