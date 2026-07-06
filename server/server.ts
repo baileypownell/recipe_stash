@@ -1,36 +1,19 @@
 import bodyParser from 'body-parser';
 import express, { Response } from 'express';
 import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import client from './client';
 import routes from './index';
-const app = express();
-const pgSession = require('connect-pg-simple')(session);
 
-declare global {
-  namespace Express {
-    interface Request {
-      session: any;
-    }
-  }
-}
+const app = express();
+const pgSession = connectPgSimple(session);
 
 app.use(bodyParser.json());
-
 app.use(express.json());
 
 app.use((err, _, res, _2) => {
   res.json(err);
 });
-
-const environment = process.env.NODE_ENV || 'development';
-
-let secret;
-if (environment === 'development') {
-  require('dotenv').config({
-    path: './.env.development',
-  });
-  secret = 'skls2dk343lsdj43fl97865xkdk';
-}
 
 app.use(
   session({
@@ -38,7 +21,7 @@ app.use(
       pool: client,
       tableName: 'session',
     }),
-    secret: process.env.SESSION_SECRET || secret,
+    secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 3600000 }, // 1 hour
@@ -46,17 +29,13 @@ app.use(
 );
 
 app.use('/', routes);
-
 app.use(express.static('./dist'));
-
-const port = process.env.PORT || 3000;
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 app.get('*', (_, res: Response) => {
   res.sendFile('index.html', { root: './dist/' });
 });
 
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log('project up on port', port);
 });

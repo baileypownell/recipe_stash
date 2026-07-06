@@ -145,7 +145,7 @@ router.get('/', authMiddleware, (request: any, response, next) => {
   );
 });
 
-router.post('/', (request: any, response, next): Promise<RawRecipe> => {
+router.post('/', (request: any, response, next) => {
   const userId = request.session.userID;
   const {
     title,
@@ -218,7 +218,7 @@ router.post('/', (request: any, response, next): Promise<RawRecipe> => {
   }
 });
 
-router.put('/', (request: any, response, next): Promise<RawRecipe> => {
+router.put('/', (request: any, response, next) => {
   const userId = request.session.userID;
   const {
     recipeId,
@@ -238,7 +238,7 @@ router.put('/', (request: any, response, next): Promise<RawRecipe> => {
     isKeto,
     isHighProtein,
   } = request.body;
-  return client.query(
+  client.query(
     `UPDATE recipes SET
     title=$1,
     raw_title=$16,
@@ -319,10 +319,10 @@ export interface FullRecipe {
 
 router.get(
   '/:recipeId',
-  (request: any, response, next): Promise<FullRecipe | null> => {
+  (request: any, response, next) => {
     const { recipeId } = request.params;
     const userId = request.session.userID;
-    return client.query(
+    client.query(
       'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
       [userId, recipeId],
       async (err, res) => {
@@ -365,10 +365,10 @@ router.get(
 
 router.delete(
   '/:recipeId',
-  (request: any, response, next): Promise<{ recipeDeleted: boolean }> => {
+  (request: any, response, next) => {
     const userId = request.session.userID;
     const { recipeId } = request.params;
-    return client.query(
+    client.query(
       'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
       [recipeId, userId],
       (err, res) => {

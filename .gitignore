@@ -1,7 +1,11 @@
 node_modules
 .env
 .env.development
+.DS_Store
 
 api/node_modules
 api/secrets
 api/.env
+
+public/
+dist/

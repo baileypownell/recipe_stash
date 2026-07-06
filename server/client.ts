@@ -1,27 +1,11 @@
-const { Pool } = require('pg');
-const user = 'node_user';
-const host = 'localhost';
-const password = 'node_password';
-const database = 'visual_cookbook';
-const port = 5432;
+import { Pool } from 'pg';
 
-const { Client } = require('pg');
-
-let client;
-if (process.env.DATABASE_URL) {
-  client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true,
-  });
-} else {
-  client = new Pool({
-    user,
-    host,
-    database,
-    password,
-    port,
-  });
-}
+const client = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL?.includes('railway.internal')
+    ? false // internal Railway network, no SSL needed/available
+    : { rejectUnauthorized: false }, // Railway public proxy + Heroku both need this
+});
 
 client.connect();
 

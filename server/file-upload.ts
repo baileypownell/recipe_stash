@@ -24,7 +24,10 @@ router.post('/:recipeId', authMiddleware, async (req: any, res) => {
       [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
       (error, response) => {
         if (error) {
-          throw error;
+          return res.status(500).json({
+            success: false,
+            message: `There was an error: ${error}`,
+          });
         }
         if (response.rowCount) {
           client.query(
@@ -64,74 +67,56 @@ export interface TileImageSetResponse {
   success: boolean;
   message?: string;
 }
-router.post(
-  '/tile-image/:awsKey/:id',
-  authMiddleware,
-  async (req, res): Promise<TileImageSetResponse> => {
-    const { awsKey, id } = req.params;
-    try {
-      return client.query(
-        'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
-        [awsKey, id],
-        (error, response) => {
-          if (error) {
-            return res.status(500).json({
-              success: false,
-              message: `There was an error: ${error}`,
-            });
-          }
-          if (response.rowCount) {
-            return res.status(200).json({
-              success: true,
-            });
-          } else {
-            return res.status(500).json({
-              success: false,
-              message: `There was an error: ${error}`,
-            });
-          }
-        },
-      );
-    } catch (e) {
-      return res.status(500).json({
-        success: false,
-        message: `There was an error: ${e}`,
-      }) as any;
-    }
-  },
-);
+router.post('/tile-image/:awsKey/:id', authMiddleware, async (req, res) => {
+  const { awsKey, id } = req.params;
+  client.query(
+    'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
+    [awsKey, id],
+    (error, response) => {
+      if (error) {
+        return res.status(500).json({
+          success: false,
+          message: `There was an error: ${error}`,
+        });
+      }
+      if (response.rowCount) {
+        return res.status(200).json({
+          success: true,
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: `There was an error: ${error}`,
+        });
+      }
+    },
+  );
+});
 
 router.delete('/tile-image/:recipeId', authMiddleware, async (req, res) => {
   const { recipeId } = req.params;
-  try {
-    client.query(
-      'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
-      [null, recipeId],
-      (error, response) => {
-        if (error) {
-          return res.status(500).json({
-            success: false,
-            message: `There was an error: ${error}`,
-          });
-        }
-        if (response.rowCount) {
-          return res.status(200).json({
-            success: true,
-          });
-        } else {
-          return res.status(500).json({
-            success: false,
-            message: `There was an error: ${error}`,
-          });
-        }
-      },
-    );
-  } catch (e) {
-    return res.status(500).json({
-      success: false,
-      message: `There was an error: ${e}`,
-    });
-  }
+  client.query(
+    'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2',
+    [null, recipeId],
+    (error, response) => {
+      if (error) {
+        return res.status(500).json({
+          success: false,
+          message: `There was an error: ${error}`,
+        });
+      }
+      if (response.rowCount) {
+        return res.status(200).json({
+          success: true,
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: `There was an error: ${error}`,
+        });
+      }
+    },
+  );
 });
 
 router.delete('/:imageKey', authMiddleware, async (req, res) => {

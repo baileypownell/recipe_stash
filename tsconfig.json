@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "types": [],
+    "types": ["node"],
     "target": "esnext", // Specify ECMAScript target version
     "outDir": "./public",
-    "noImplicitAny": false,
     "lib": ["dom", "dom.iterable", "esnext"], // List of library files to be included in the compilation
     "allowJs": false, // Allow JavaScript files to be compiled
     "skipLibCheck": true, // Skip type checking of all declaration files
@@ -12,20 +11,21 @@
     "strict": true, // Enable all strict type checking options
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
     "module": "commonjs", // Specify module code generation
-    "moduleResolution": "node", // Resolve modules using Node.js style
+    "moduleResolution": "node10", // Resolve modules using Node.js style
     // "isolatedModules": true, // Unconditionally emit imports for unresolved files
     "resolveJsonModule": true, // Include modules imported with .json extension
+    "ignoreDeprecations": "5.0",
     // "noEmit": true, // Do not emit output (meaning do not compile code, only perform type checking)
     "jsx": "react-jsx", // Support JSX in .tsx files
     "sourceMap": true, // Generate corrresponding .map file
-    "declaration": true, // Generate corresponding .d.ts file
     "noUnusedLocals": true, // Report errors on unused locals
     "noUnusedParameters": true, // Report errors on unused parameters
-    "noFallthroughCasesInSwitch": true // Report errors for fallthrough cases in switch statement
+    "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statement
+    "noImplicitAny": false
   },
-  "include": ["**/*.tsx", "**/*.ts", ".d.ts"],
-  "exclude": ["node_modules", "build", "**/public/**"], // *** The files to not type check ***
-  "paths": {
-    "react": ["./node_modules/@types/react"]
-  }
+  "ts-node": {
+    "files": true
+  },
+  "include": ["**/*.tsx", "**/*.ts", "**/*.d.ts"], // *** The files to type check ***
+  "exclude": ["node_modules", "build", "**/public/**"] // *** The files to not type check ***
 }
