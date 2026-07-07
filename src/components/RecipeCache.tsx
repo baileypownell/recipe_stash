@@ -2,7 +2,6 @@ import { Snackbar } from '@mui/material';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
-import { FullRecipe, RawRecipe } from '../../server/recipe';
 import {
   RecipeInput,
   RecipeService,
@@ -13,6 +12,7 @@ import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import { Spinner } from './Spinner';
 import { NewFileUpload } from '../models/images';
+import { FullRecipe, RawRecipe } from '../../shared/types';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';

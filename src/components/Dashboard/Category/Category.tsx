@@ -1,8 +1,8 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { FullRecipe } from '../../../../server/recipe';
 import { GridView } from '../Dashboard';
 import ListItem from './ListItem';
 import Square from './Square';
+import { FullRecipe } from '../../../../shared/types';
 
 type Props = {
   title: string;

@@ -28,7 +28,6 @@ import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
-import { FullRecipe, RawRecipe } from '../../../../server/recipe';
 import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 import options from '../../../models/options';
 import { recipeTagChips } from '../../../models/tags';
@@ -41,6 +40,7 @@ import {
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
 import FileUpload from './FileUpload';
+import { FullRecipe, RawRecipe } from '../../../../shared/types';
 
 type EditProps = {
   recipe: any;

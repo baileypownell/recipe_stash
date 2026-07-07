@@ -63,10 +63,6 @@ router.post('/', authMiddleware, async (req, res) => {
   res.status(200).json({ presignedUrls: urls });
 });
 
-export interface TileImageSetResponse {
-  success: boolean;
-  message?: string;
-}
 router.post('/tile-image/:awsKey/:id', authMiddleware, async (req, res) => {
   const { awsKey, id } = req.params;
   client.query(
