@@ -159,6 +159,9 @@ importers:
       '@types/multer':
         specifier: ^1.4.13
         version: 1.4.13
+      '@types/node':
+        specifier: ^26.1.0
+        version: 26.1.0
       '@types/nodemailer':
         specifier: ^8.0.1
         version: 8.0.1
