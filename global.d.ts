@@ -1,4 +1,5 @@
 declare module '*.png';
 declare module '*.svg';
 declare module '*.jpg';
+declare module '*.css';
 declare module 'multer-s3';

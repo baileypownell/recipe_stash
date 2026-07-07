@@ -14,7 +14,7 @@
     "moduleResolution": "node10", // Resolve modules using Node.js style
     // "isolatedModules": true, // Unconditionally emit imports for unresolved files
     "resolveJsonModule": true, // Include modules imported with .json extension
-    "ignoreDeprecations": "5.0",
+    "ignoreDeprecations": "6.0",
     // "noEmit": true, // Do not emit output (meaning do not compile code, only perform type checking)
     "jsx": "react-jsx", // Support JSX in .tsx files
     "sourceMap": true, // Generate corrresponding .map file
