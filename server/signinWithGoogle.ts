@@ -12,7 +12,6 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
     });
   }
   const decodedToken = jwtDecode(token);
-  console.log('Decoded Token:', decodedToken);
   client.query(
     'SELECT * FROM users WHERE email=$1',
     [(decodedToken as any).email],
