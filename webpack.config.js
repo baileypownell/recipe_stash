@@ -1,3 +1,4 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const fs = require('fs'); // to check if the file exists
 const path = require('path'); // to get the current path
@@ -54,6 +55,9 @@ module.exports = (env) => {
       ],
     },
     plugins: [
+      new HtmlWebpackPlugin({
+        template: './src/index.html',
+      }),
       new webpack.DefinePlugin({
         PRODUCTION: JSON.stringify(true),
         'process.env': {
