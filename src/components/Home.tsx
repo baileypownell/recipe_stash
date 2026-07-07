@@ -24,16 +24,16 @@ const Home = () => {
       }}
     >
       <Stack
-        paddingTop="30px"
-        paddingBottom="30px"
-        alignItems="center"
-        justifyContent="center"
-        height="100%"
         sx={{
+          paddingTop: "30px",
+          paddingBottom: "30px",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+
           background:
-            'linear-gradient(120deg, rgba(230, 108, 108, 0.29), rgba(221, 114, 68, 0.42))',
-        }}
-      >
+            'linear-gradient(120deg, rgba(230, 108, 108, 0.29), rgba(221, 114, 68, 0.42))'
+        }}>
         <Box>
           <img
             style={{
@@ -47,13 +47,23 @@ const Home = () => {
           />
         </Box>
         <Fade in={visible}>
-          <Stack alignItems="center">
-            <Box textAlign="center" color={theme.palette.info.main}>
+          <Stack sx={{
+            alignItems: "center"
+          }}>
+            <Box
+              sx={{
+                textAlign: "center",
+                color: theme.palette.info.main
+              }}>
               <Typography variant="h6">All of your recipes.</Typography>
               <Typography variant="h6">All in one place.</Typography>
               <Typography variant="h6">And it's free.</Typography>
             </Box>
-            <Box margin={2} width="200px">
+            <Box
+              sx={{
+                margin: 2,
+                width: "200px"
+              }}>
               <img
                 style={{
                   width: '100%',

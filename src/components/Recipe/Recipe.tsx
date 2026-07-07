@@ -156,7 +156,13 @@ const Recipe = (props: Props) => {
           triggerDialog: triggerDialog,
         }}
       />
-      <Stack margin="0 auto" padding="20px" width="100%" flexGrow="1">
+      <Stack
+        sx={{
+          margin: "0 auto",
+          padding: "20px",
+          width: "100%",
+          flexGrow: "1"
+        }}>
         <MobileRecipeToolbar
           width={width}
           triggerDialog={triggerDialog}
@@ -204,15 +210,15 @@ const Recipe = (props: Props) => {
       </Stack>
       {width > 700 ? (
         <Box
-          position="fixed"
-          bottom="20px"
-          right="20px"
           sx={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+
             button: {
               marginRight: '10px',
-            },
-          }}
-        >
+            }
+          }}>
           <Tooltip title="Edit recipe" aria-label="edit recipe">
             <Fab color="secondary" onClick={triggerDialog}>
               <EditRoundedIcon />

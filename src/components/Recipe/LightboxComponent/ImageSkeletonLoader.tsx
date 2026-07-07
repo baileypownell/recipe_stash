@@ -15,7 +15,11 @@ function ImageSkeletonLoader({ url, openLightBox }) {
       alt={url}
     />
   ) : (
-    <Box height="300px" marginBottom="10px">
+    <Box
+      sx={{
+        height: "300px",
+        marginBottom: "10px"
+      }}>
       <img
         src={url}
         style={{ display: 'none' }}

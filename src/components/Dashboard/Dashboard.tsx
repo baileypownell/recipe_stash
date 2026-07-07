@@ -327,8 +327,9 @@ const Dashboard = (props: Props) => {
 
   return (
     <Box>
-      <Box p={0.5}></Box>
-
+      <Box sx={{
+        p: 0.5
+      }}></Box>
       <Box
         sx={{
           padding: 2,
@@ -340,9 +341,10 @@ const Dashboard = (props: Props) => {
       >
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}>
           <ToggleButtonGroup
             exclusive
             size="small"
@@ -360,9 +362,10 @@ const Dashboard = (props: Props) => {
 
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
             <TextField
               label="Filter by recipe name"
               placeholder="Type to search..."
@@ -374,12 +377,14 @@ const Dashboard = (props: Props) => {
                 m: 1,
                 minWidth: '200px',
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchRoundedIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchRoundedIcon />
+                    </InputAdornment>
+                  ),
+                }
               }}
             />
             <FilterMenu

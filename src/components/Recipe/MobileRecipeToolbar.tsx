@@ -36,19 +36,18 @@ export default function MobileRecipeToolbar({
 
   return width <= 700 ? (
     <Box
-      textAlign="right"
-      position="absolute"
-      bottom="0"
-      right="0"
-      left="0"
       sx={{
-        backgroundColor: theme.palette.gray.main,
-      }}
-      width="100%"
-      margin="0"
-      padding="15px"
-      zIndex="1"
-    >
+        textAlign: "right",
+        position: "absolute",
+        bottom: "0",
+        right: "0",
+        left: "0",
+        width: "100%",
+        margin: "0",
+        padding: "15px",
+        zIndex: "1",
+        backgroundColor: theme.palette.gray.main
+      }}>
       <IconButton
         aria-controls="simple-menu"
         aria-haspopup="true"

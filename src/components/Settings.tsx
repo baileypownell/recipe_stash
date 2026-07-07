@@ -177,19 +177,22 @@ const Settings = (props: Props) => {
       <>
         <Box>
           <Box
-            width="90%"
             sx={{
+              width: "90%",
+              margin: `0 auto`,
+              padding: "4vh 0",
+
               [theme.breakpoints.up('md')]: {
                 width: '50%',
               },
+
               [theme.breakpoints.up('lg')]: {
                 width: '35%',
-              },
-            }}
-            margin={`0 auto`}
-            padding="4vh 0"
-          >
-            <Stack direction="row" paddingBottom="10px">
+              }
+            }}>
+            <Stack direction="row" sx={{
+              paddingBottom: "10px"
+            }}>
               <AccountCircleRoundedIcon
                 sx={{
                   fontSize: '60px',
@@ -220,13 +223,19 @@ const Settings = (props: Props) => {
                 <>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Stack direction="row" alignItems="center">
+                      <Stack direction="row" sx={{
+                        alignItems: "center"
+                      }}>
                         <EmailRoundedIcon />
-                        <Typography marginLeft={1}>Update Email</Typography>
+                        <Typography sx={{
+                          marginLeft: 1
+                        }}>Update Email</Typography>
                       </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Stack marginBottom={2} spacing={2}>
+                      <Stack spacing={2} sx={{
+                        marginBottom: 2
+                      }}>
                         <Field
                           name="email.email"
                           render={({ form }) => (
@@ -283,13 +292,19 @@ const Settings = (props: Props) => {
                   </Accordion>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Stack direction="row" alignItems="center">
+                      <Stack direction="row" sx={{
+                        alignItems: "center"
+                      }}>
                         <PersonRoundedIcon />
-                        <Typography marginLeft={1}>Update Name</Typography>
+                        <Typography sx={{
+                          marginLeft: 1
+                        }}>Update Name</Typography>
                       </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Stack marginBottom={2} spacing={2}>
+                      <Stack spacing={2} sx={{
+                        marginBottom: 2
+                      }}>
                         <Field
                           name="names.firstName"
                           render={({ form }) => (
@@ -348,13 +363,19 @@ const Settings = (props: Props) => {
                   </Accordion>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Stack direction="row" alignItems="center">
+                      <Stack direction="row" sx={{
+                        alignItems: "center"
+                      }}>
                         <SecurityRoundedIcon />
-                        <Typography marginLeft={1}>Update Password</Typography>
+                        <Typography sx={{
+                          marginLeft: 1
+                        }}>Update Password</Typography>
                       </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Typography variant="body1" paddingBottom={1}>
+                      <Typography variant="body1" sx={{
+                        paddingBottom: 1
+                      }}>
                         Click the button below to receive an email with a link
                         to reset your password.
                       </Typography>
@@ -371,22 +392,29 @@ const Settings = (props: Props) => {
                   </Accordion>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Stack direction="row" alignItems="center">
+                      <Stack direction="row" sx={{
+                        alignItems: "center"
+                      }}>
                         <DeleteRoundedIcon />
-                        <Typography marginLeft={1}>Delete Account</Typography>
+                        <Typography sx={{
+                          marginLeft: 1
+                        }}>Delete Account</Typography>
                       </Stack>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Typography variant="body1" paddingBottom={2}>
+                      <Typography variant="body1" sx={{
+                        paddingBottom: 2
+                      }}>
                         If you are sure you want to delete your account, click
                         the button below.
                       </Typography>
-                      <Divider light />
+                      <Divider />
                       <Typography
                         variant="body1"
-                        paddingTop={2}
-                        paddingBottom={4}
-                      >
+                        sx={{
+                          paddingTop: 2,
+                          paddingBottom: 4
+                        }}>
                         This action
                         <span
                           style={{

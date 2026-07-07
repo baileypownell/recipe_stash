@@ -60,7 +60,7 @@ export const ImagePreview = ({
                   <Checkbox
                     onChange={onChange}
                     checked={item.isDefault}
-                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                    slotProps={{ input: { 'aria-label': 'primary checkbox' } }}
                   />
                 }
                 label="Use as tile background image"

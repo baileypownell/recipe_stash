@@ -11,11 +11,20 @@ type Props = {
 };
 
 const Category = ({ title, recipes, gridView }: Props) => (
-  <Box paddingTop={2}>
-    <Typography variant="h6" marginBottom={1}>
+  <Box sx={{
+    paddingTop: 2
+  }}>
+    <Typography variant="h6" sx={{
+      marginBottom: 1
+    }}>
       {title}
     </Typography>
-    <Stack direction="row" flexWrap="wrap" gap={1.5}>
+    <Stack
+      direction="row"
+      sx={{
+        flexWrap: "wrap",
+        gap: 1.5
+      }}>
       {recipes
         ? recipes.map((recipe) =>
             gridView === GridView.Grid ? (

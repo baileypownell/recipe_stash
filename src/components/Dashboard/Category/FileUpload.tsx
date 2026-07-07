@@ -91,7 +91,9 @@ const FileUpload = ({
   };
 
   return (
-    <Box padding="20px 0">
+    <Box sx={{
+      padding: "20px 0"
+    }}>
       <Box
         sx={{
           border: `2px dashed  ${theme.palette.boxShadow.main}`,
@@ -154,7 +156,12 @@ const FileUpload = ({
           <UploadFileRoundedIcon />
         </Box>
       </Box>
-      <Stack padding="15px 0" direction="row" flexWrap="wrap">
+      <Stack
+        direction="row"
+        sx={{
+          padding: "15px 0",
+          flexWrap: "wrap"
+        }}>
         {fields.map((item, index) => (
           <ImagePreview
             key={item.id}

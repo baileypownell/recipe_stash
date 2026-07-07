@@ -48,7 +48,6 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
           key={url}
         ></ImageSkeletonLoader>
       ))}
-
       <Lightbox
         isOpen={isOpen}
         onPrev={gotoPrevious}
@@ -57,7 +56,12 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
         currentIndex={currentImageIndex}
         onClose={onClose}
         renderHeader={() => (
-          <Box padding={1} textAlign="right" marginTop="64px">
+          <Box
+            sx={{
+              padding: 1,
+              textAlign: "right",
+              marginTop: "64px"
+            }}>
             <IconButton color="info" onClick={onClose}>
               <CloseRoundedIcon />
             </IconButton>

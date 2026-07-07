@@ -28,10 +28,10 @@ class ErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <Stack alignItems="center" justifyContent="center" textAlign="center">
+        <Stack  sx={{ alignItems: "center", justifyContent: "center", textAlign: "center" }}>
           <Box
-            marginBottom={3}
             sx={{
+              marginBottom: 3,
               svg: {
                 fontSize: '125px',
                 color: '#353531',
@@ -42,7 +42,7 @@ class ErrorBoundary extends Component<
           </Box>
           <Typography variant="h5">Something went wrong.</Typography>
           <Divider />
-          <Box padding={3}>
+          <Box sx={{ padding: 3 }}>
             <Button
               variant="outlined"
               color="secondary"

@@ -28,7 +28,9 @@ const Chips = ({ tags }) => {
   }, []);
 
   return (
-    <Box marginRight={hiddenChipCount ? 1 : 0}>
+    <Box sx={{
+      marginRight: hiddenChipCount ? 1 : 0
+    }}>
       <Badge
         badgeContent={hiddenChipCount}
         color="primary"
@@ -36,14 +38,15 @@ const Chips = ({ tags }) => {
       >
         <Stack
           ref={ref}
-          marginTop={2}
           spacing={0.5}
           direction="row"
-          flexWrap="wrap"
-          height="72px"
-          width="100%"
-          justifyContent="flex-end"
-        >
+          sx={{
+            marginTop: 2,
+            flexWrap: "wrap",
+            height: "72px",
+            width: "100%",
+            justifyContent: "flex-end"
+          }}>
           {tags.map((recipeTag) => (
             <Chip
               key={recipeTag}

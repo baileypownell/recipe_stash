@@ -87,8 +87,18 @@ const ResetPassword = () => {
   };
 
   return invalidLink ? (
-    <Box margin="0 auto" textAlign="center" paddingTop="10vh">
-      <Typography marginBottom="15px" textAlign="center" variant="body1">
+    <Box
+      sx={{
+        margin: "0 auto",
+        textAlign: "center",
+        paddingTop: "10vh"
+      }}>
+      <Typography
+        variant="body1"
+        sx={{
+          marginBottom: "15px",
+          textAlign: "center"
+        }}>
         The link is invalid or expired.
       </Typography>
       <Button
@@ -102,7 +112,13 @@ const ResetPassword = () => {
     </Box>
   ) : (
     <>
-      <Box width="80%" margin="0 auto" textAlign="center" paddingTop="10vh">
+      <Box
+        sx={{
+          width: "80%",
+          margin: "0 auto",
+          textAlign: "center",
+          paddingTop: "10vh"
+        }}>
         <Formik
           initialValues={{
             password: '',
@@ -112,7 +128,12 @@ const ResetPassword = () => {
           onSubmit={(values) => updatePassword(values)}
           render={(formik) => (
             <Form>
-              <Stack maxWidth="400px" margin="0 auto" spacing={2}>
+              <Stack
+                spacing={2}
+                sx={{
+                  maxWidth: "400px",
+                  margin: "0 auto"
+                }}>
                 <TextField
                   variant="standard"
                   type="password"

@@ -9,14 +9,13 @@ export const AddRecipeButton = ({ addRecipe }: AddProps) => {
 
   return (
     <Box
-      width="full"
-      textAlign="right"
       sx={{
+        width: "full",
+        textAlign: "right",
         position: 'sticky',
         bottom: 16,
-        right: 16,
-      }}
-    >
+        right: 16
+      }}>
       <Fab
         color="primary"
         aria-label="Create a new recipe"

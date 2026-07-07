@@ -81,15 +81,14 @@ const RecipeCard = ({
           >
             <Typography
               variant="h6"
-              marginBottom={1}
-              textAlign="center"
               sx={{
+                marginBottom: 1,
+                textAlign: "center",
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
-                textTransform: 'none',
-              }}
-            >
+                textTransform: 'none'
+              }}>
               {rawTitle}
             </Typography>
             <Chips tags={recipe.tags} />

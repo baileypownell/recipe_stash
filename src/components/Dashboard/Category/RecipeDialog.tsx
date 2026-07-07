@@ -309,7 +309,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     <Dialog fullScreen open={open}>
       <DialogTitle>{getTitle()}</DialogTitle>
       <DialogContent>
-        <Box paddingBottom={2}>
+        <Box sx={{
+          paddingBottom: 2
+        }}>
           <Typography variant="overline">Recipe Name</Typography>
           <ReactQuill
             defaultValue={
@@ -320,7 +322,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             onChange={handleModelChange}
           />
         </Box>
-        <Box paddingBottom={2}>
+        <Box sx={{
+          paddingBottom: 2
+        }}>
           <Typography variant="overline">Ingredients</Typography>
           <ReactQuill
             defaultValue={
@@ -332,7 +336,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           />
         </Box>
 
-        <Box paddingBottom={2}>
+        <Box sx={{
+          paddingBottom: 2
+        }}>
           <Typography variant="overline">Directions</Typography>
           <ReactQuill
             defaultValue={
@@ -365,7 +371,9 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             <Typography>Recipe Tags</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography mb={2}>
+            <Typography sx={{
+              mb: 2
+            }}>
               Use tags to characterize your recipe so that you can easily find
               recipes with similar tags through the dashboard filter.
             </Typography>
@@ -398,14 +406,16 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
       </DialogContent>
       <DialogActions>
         <Stack
-          justifyContent="space-between"
           spacing={1}
-          alignItems="center"
           sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
             width: '100%',
+
             [theme.breakpoints.up('sm')]: {
               flexDirection: 'row-reverse',
             },
+
             button: {
               [theme.breakpoints.down('sm')]: {
                 width: '100%',
@@ -413,9 +423,8 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               [theme.breakpoints.up('sm')]: {
                 margin: 0,
               },
-            },
-          }}
-        >
+            }
+          }}>
           <Button
             variant="contained"
             color="secondary"

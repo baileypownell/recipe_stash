@@ -122,29 +122,29 @@ const Login = () => {
   return (
     <>
       <Stack
-        justifyContent="center"
-        alignItems="center"
         sx={{
+          justifyContent: "center",
+          alignItems: "center",
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+
           label: {
             color: theme.palette.primary.main,
-          },
-        }}
-      >
+          }
+        }}>
         <Stack
-          alignItems="center"
-          justifyContent="center"
-          textAlign="center"
-          height="100%"
-          width="100%"
-          color="white"
           sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            height: "100%",
+            width: "100%",
+            color: "white",
+
             background:
-              'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
-          }}
-        >
+              'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))'
+          }}>
           <Fade>
             <Formik
               initialValues={{
@@ -165,7 +165,12 @@ const Login = () => {
                     }}
                   >
                     <Typography variant="h4">Login</Typography>
-                    <Stack paddingTop={2} spacing={2} paddingBottom={2}>
+                    <Stack
+                      spacing={2}
+                      sx={{
+                        paddingTop: 2,
+                        paddingBottom: 2
+                      }}>
                       <TextField
                         label="Email"
                         variant="filled"
@@ -207,10 +212,12 @@ const Login = () => {
                       </Button>
 
                       <Stack
-                        justifyContent="center"
-                        alignItems="center"
-                        marginTop={2}
-                        marginBottom={2}
+                        sx={{
+                          marginBottom: 2,
+                          marginTop: 2,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }} 
                       >
                         <div id="google-button-anchor"></div>
                       </Stack>
@@ -231,7 +238,12 @@ const Login = () => {
                       ) : null}
                     </Stack>
                     <Divider sx={{ backgroundColor: 'white', marginTop: 2 }} />
-                    <Stack spacing={1} marginTop={1} alignItems="center">
+                    <Stack
+                      spacing={1}
+                      sx={{
+                        marginTop: 1,
+                        alignItems: "center"
+                      }}>
                       <Typography>Don't have an account?</Typography>
                       <Button
                         startIcon={<PersonAddAltRoundedIcon />}
@@ -247,7 +259,6 @@ const Login = () => {
           </Fade>
         </Stack>
       </Stack>
-
       <Snackbar
         open={snackBarOpen}
         anchorOrigin={{

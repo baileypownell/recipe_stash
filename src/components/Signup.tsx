@@ -90,29 +90,30 @@ const Signup = () => {
 
   return (
     <Stack
-      justifyContent="center"
-      alignItems="center"
       sx={{
+        justifyContent: "center",
+        alignItems: "center",
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+
         label: {
           color: theme.palette.primary.main,
-        },
-      }}
-    >
+        }
+      }}>
       <Stack
-        alignItems="center"
-        justifyContent="center"
-        textAlign="center"
         sx={{
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
           height: '100%',
+
           background:
             'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
+
           width: '100%',
-          color: 'white',
-        }}
-      >
+          color: 'white'
+        }}>
         <Fade>
           <Formik
             initialValues={{
@@ -128,15 +129,19 @@ const Signup = () => {
             render={(formik) => (
               <Form>
                 <Box
-                  padding="40px"
-                  borderRadius={1}
                   sx={{
+                    padding: "40px",
+                    borderRadius: 1,
                     backgroundColor: theme.palette.gray.main,
-                    boxShadow: `0px 10px 30px ${theme.palette.gray.main}`,
-                  }}
-                >
+                    boxShadow: `0px 10px 30px ${theme.palette.gray.main}`
+                  }}>
                   <Typography variant="h4">Signup</Typography>
-                  <Stack paddingTop={2} spacing={2} paddingBottom={2}>
+                  <Stack
+                    spacing={2}
+                    sx={{
+                      paddingTop: 2,
+                      paddingBottom: 2
+                    }}>
                     <TextField
                       name="firstName"
                       type="text"
@@ -225,7 +230,9 @@ const Signup = () => {
                     Create Account
                   </Button>
 
-                  <Typography variant="body1" marginTop={3}>
+                  <Typography variant="body1" sx={{
+                    marginTop: 3
+                  }}>
                     Already have an account?{' '}
                     <Link style={{ cursor: 'pointer' }} onClick={login}>
                       Log in.
@@ -237,7 +244,6 @@ const Signup = () => {
           ></Formik>
         </Fade>
       </Stack>
-
       <Snackbar
         open={snackBarOpen}
         anchorOrigin={{

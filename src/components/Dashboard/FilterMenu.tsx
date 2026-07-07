@@ -39,7 +39,9 @@ export const FilterMenu = ({
   return (
     <>
       <Button aria-describedby="filter-menu" onClick={handleClick}>
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" sx={{
+          alignItems: "center"
+        }}>
           <Typography variant="body2" sx={{ marginRight: '5px' }}>
             Filter
           </Typography>
@@ -63,14 +65,22 @@ export const FilterMenu = ({
       >
         <Stack
           direction="column"
-          alignItems="center"
-          paddingBottom={1}
-          paddingRight={2}
-          paddingLeft={2}
-        >
+          sx={{
+            alignItems: "center",
+            paddingBottom: 1,
+            paddingRight: 2,
+            paddingLeft: 2
+          }}>
           <Stack direction="row" spacing={2}>
-            <Box minWidth="150px">
-              <Typography variant="body1" fontWeight="bold" p={1}>
+            <Box sx={{
+              minWidth: "150px"
+            }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: "bold",
+                  p: 1
+                }}>
                 Tags
               </Typography>
               <Divider />
@@ -93,8 +103,15 @@ export const FilterMenu = ({
               </FormGroup>
             </Box>
 
-            <Box minWidth="150px">
-              <Typography variant="body1" fontWeight="bold" p={1}>
+            <Box sx={{
+              minWidth: "150px"
+            }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: "bold",
+                  p: 1
+                }}>
                 Categories
               </Typography>
               <Divider />

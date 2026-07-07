@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { jwtDecode } from 'jwt-decode';
 import client from './client';
 const router = Router();
-const jwt_decode = require('jwt-decode');
 
 router.post('/', (request: Request, response: Response, next: NextFunction) => {
   const { token } = request.body;
@@ -11,10 +11,11 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
       message: 'Insufficient or invalid credentials provided.',
     });
   }
-  const decodedToken = jwt_decode(token);
+  const decodedToken = jwtDecode(token);
+  console.log('Decoded Token:', decodedToken);
   client.query(
     'SELECT * FROM users WHERE email=$1',
-    [decodedToken.email],
+    [(decodedToken as any).email],
     (err, res) => {
       if (err) return next(err);
       if (res.rows.length) {

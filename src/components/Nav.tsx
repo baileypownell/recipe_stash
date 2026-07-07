@@ -71,7 +71,12 @@ const Nav = () => {
           >
             <MenuRoundedIcon />
           </IconButton>
-          <Stack direction="row" justifyContent="space-between" width="100%">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              width: "100%"
+            }}>
             <img src={blackLogo} alt="logo" style={{ height: '35px' }} />
             {isAuthenticated ? (
               <Button color="inherit" onClick={() => navigate('/recipes')}>
@@ -91,7 +96,11 @@ const Nav = () => {
         onClose={toggleDrawer(false)}
         onOpen={toggleDrawer(true)}
       >
-        <Stack width="250px" paddingTop="20px">
+        <Stack
+          sx={{
+            width: "250px",
+            paddingTop: "20px"
+          }}>
           <img
             style={{ width: 'calc(100% - 20px)', margin: '0 auto 20px auto' }}
             src={whiteLogo}
