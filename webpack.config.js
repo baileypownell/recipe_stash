@@ -77,13 +77,14 @@ module.exports = (env) => {
     devServer: {
       static: './dist',
       historyApiFallback: true,
-      proxy: {
-        '/**': {
+      proxy: [
+        {
+          context: ['/**'],
           target: 'http://localhost:3000',
           secure: false,
           changeOrigin: true,
         },
-      },
+      ],
     },
   };
 };

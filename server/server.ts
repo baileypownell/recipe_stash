@@ -29,7 +29,7 @@ app.use(
 app.use('/', routes);
 app.use(express.static('./dist'));
 
-app.get('*', (_, res: Response) => {
+app.get('*splat', (_, res: Response) => {
   res.sendFile('index.html', { root: './dist/' });
 });
 
