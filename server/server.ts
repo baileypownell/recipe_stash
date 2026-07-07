@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import express, { Response } from 'express';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
@@ -8,7 +7,6 @@ import routes from './index';
 const app = express();
 const pgSession = connectPgSimple(session);
 
-app.use(bodyParser.json());
 app.use(express.json());
 
 app.use((err, _, res, _2) => {

@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AuthenticationService from '../services/auth-service';
 import ErrorBoundary from './ErrorBoundary';
 import GuardedRoute from './GuardedRoute';
-import './index.scss';
+import './index.css';
 import RecipeCache from './RecipeCache';
 import { theme } from './theme';
 import Nav from './Nav';

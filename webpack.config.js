@@ -35,7 +35,7 @@ module.exports = (env) => {
           },
         },
         {
-          test: /\.(sa|sc|c)ss$/,
+          test: /\.(c)ss$/,
           use: [
             // Creates `style` nodes from JS strings
             {
@@ -44,8 +44,6 @@ module.exports = (env) => {
             },
             // Translates CSS into CommonJS
             'css-loader',
-            // Compiles Sass to CSS
-            'sass-loader',
           ],
         },
         {
