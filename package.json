@@ -36,7 +36,7 @@
     "@mui/material": "^6.5.0",
     "aws-sdk": "^2.1693.0",
     "axios": "^1.18.1",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "connect-pg-simple": "^8.0.0",
     "dompurify": "^2.5.9",
     "dotenv": "^16.6.1",
