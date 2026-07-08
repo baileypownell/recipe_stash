@@ -96,7 +96,9 @@ const Signup = () => {
     setSnackBarOpen(false);
   };
 
-  const login = (): void => navigate('/login');
+  const login = (): void => {
+    void navigate('/login');
+  };
 
   return (
     <Stack
