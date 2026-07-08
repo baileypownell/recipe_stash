@@ -2,13 +2,12 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { Router } from 'express';
 import type { NextFunction, Request, Response } from 'express';
-import { google } from 'googleapis';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { authMiddleware } from './authMiddleware.js';
 import { deleteAWSFiles } from './aws-s3.js';
 import client from './client.js';
-const OAuth2 = google.auth.OAuth2;
 const router = Router();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const environment = process.env.NODE_ENV || 'development';
 
@@ -182,57 +181,29 @@ router.put(
                     client.query(
                       'UPDATE users SET email=$1 WHERE user_uuid=$2',
                       [newEmail, userId],
-                      (err, res) => {
+                      async (err, res) => {
                         if (err) return next(err);
                         if (res) {
-                          const oauth2Client = new OAuth2(
-                            process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
-                            process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
-                            process.env.GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
-                          );
-                          oauth2Client.setCredentials({
-                            refresh_token:
-                              process.env
-                                .GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
-                          });
-                          const accessToken = oauth2Client.getAccessToken();
-                          const mailer = nodemailer.createTransport({
-                            service: 'gmail',
-                            auth: {
-                              type: 'OAuth2',
-                              user: process.env.GOOGLE_EMAIL,
-                              clientId:
-                                process.env.GOOGLE_RECIPE_STASH_OAUTH_CLIENT_ID,
-                              clientSecret:
-                                process.env
-                                  .GOOGLE_RECIPE_STASH_OAUTH_CLIENT_SECRET,
-                              refreshToken:
-                                process.env
-                                  .GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
-                              accessToken,
-                            },
-                          } as Parameters<typeof nodemailer.createTransport>[0]);
-                          const email = {
-                            from: process.env.GOOGLE_EMAIL,
-                            to: `${oldEmail}`,
+                          const { error } = await resend.emails.send({
+                            from:
+                              process.env.RESEND_FROM_EMAIL ??
+                              'Recipe Stash <onboarding@resend.dev>',
+                            to: oldEmail,
                             subject: 'Your Email Address Has Been Changed',
                             html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
-                          };
-                          mailer.sendMail(email, (err, _) => {
-                            if (err) {
-                              response.status(500).json({
-                                success: false,
-                                message:
-                                  'There was an error sending the email.',
-                                error: err.message,
-                                name: err.name,
-                              });
-                            } else {
-                              return response.status(200).json({
-                                success: true,
-                                message: 'Email successfully updated.',
-                              });
-                            }
+                          });
+                          if (error) {
+                            return response.status(500).json({
+                              success: false,
+                              message: 'There was an error sending the email.',
+                              error: error.message,
+                              name: error.name,
+                            });
+                          }
+
+                          return response.status(200).json({
+                            success: true,
+                            message: 'Email successfully updated.',
                           });
                         }
                       },
