@@ -8,6 +8,9 @@ import client from './client.js';
 const router = Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
+const logServerError = (context: string, error: unknown) => {
+  console.error(context, error);
+};
 
 const environment = process.env.NODE_ENV || 'development';
 
@@ -33,7 +36,10 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
     RETURNING email`,
     [token, expiration, normalizedEmail],
     async (err, res) => {
-      if (err) return next(err);
+      if (err) {
+        logServerError('send-reset-email POST / update user token', err);
+        return next(err);
+      }
       if (!res.rowCount) {
         return response.status(200).json({ success: true });
       }
@@ -47,17 +53,15 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
         html: `<h1>recipe stash</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button>Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`,
       });
       if (error) {
-        console.log('Error: ', error);
+        logServerError('send-reset-email POST / resend', error);
         return response.status(500).json({
           success: false,
           message: 'There was an error sending the email.',
-          error: error.message,
-          name: error.name,
         });
       }
 
       request.session.destroy((err) => {
-        if (err) console.error(err);
+        if (err) logServerError('send-reset-email POST / destroy session', err);
       });
       return response.status(200).json({ success: true });
     },
@@ -72,7 +76,10 @@ router.get(
       'SELECT email, reset_password_token, reset_password_expires FROM users WHERE reset_password_token=$1',
       [token],
       (err, res) => {
-        if (err) return next(err);
+        if (err) {
+          logServerError('send-reset-email GET /:token', err);
+          return next(err);
+        }
         if (
           res.rows.length &&
           res.rows[0].reset_password_token &&

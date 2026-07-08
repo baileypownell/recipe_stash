@@ -9,6 +9,9 @@ import client from './client.js';
 const router = Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
+const logServerError = (context: string, error: unknown) => {
+  console.error(context, error);
+};
 
 const environment = process.env.NODE_ENV || 'development';
 
@@ -25,7 +28,10 @@ router.get(
       'SELECT email, first_name, last_name FROM users WHERE user_uuid=$1',
       [userId],
       (err, res) => {
-        if (err) return next(err);
+        if (err) {
+          logServerError('user GET /', err);
+          return next(err);
+        }
         if (res.rows.length) {
           const userData = {
             email: res.rows[0].email,
@@ -60,7 +66,10 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
     'SELECT * FROM users WHERE lower(email)=$1',
     [normalizedEmail],
     (err, res) => {
-    if (err) return next(err);
+    if (err) {
+      logServerError('user POST / lookup', err);
+      return next(err);
+    }
     if (res.rows.length >= 1) {
       return response
         .status(403)
@@ -76,13 +85,19 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
               .status(409)
               .json({ error: 'An account already exists for this email.' });
           }
-          if (err) return next(err);
+          if (err) {
+            logServerError('user POST / insert', err);
+            return next(err);
+          }
           if (res) {
             client.query(
               'SELECT * FROM users WHERE email=$1',
               [normalizedEmail],
               (err, res) => {
-                if (err) return next(err);
+                if (err) {
+                  logServerError('user POST / select inserted user', err);
+                  return next(err);
+                }
                 if (res.rows.length) {
                   const user_uuid = res.rows[0].user_uuid;
                   const email = res.rows[0].email;
@@ -131,7 +146,10 @@ router.put(
       RETURNING user_uuid`,
       [hashedPassword, null, null, reset_password_token, Date.now()],
       (err, res) => {
-        if (err) return next(err);
+        if (err) {
+          logServerError('user PUT /reset-password', err);
+          return next(err);
+        }
         if (res.rowCount) {
           return response
             .status(200)
@@ -166,7 +184,10 @@ router.put(
         'UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
         [firstName, lastName, userId],
         (err, res) => {
-          if (err) return next(err);
+          if (err) {
+            logServerError('user PUT / update name', err);
+            return next(err);
+          }
           if (res.rowCount) {
             return response.status(200).json({ success: true });
           } else {
@@ -189,9 +210,12 @@ router.put(
     const normalizedNewEmail = normalizeEmail(newEmail);
     client.query(
       'SELECT * FROM users WHERE user_uuid=$1',
-      [userId],
+    [userId],
       (err, res) => {
-        if (err) return next(err);
+        if (err) {
+          logServerError('user PUT / select current user', err);
+          return next(err);
+        }
         if (!res.rows.length) {
           return response.status(404).json({
             success: false,
@@ -202,7 +226,10 @@ router.put(
         const hashedPassword = res.rows[0].password;
         const oldEmail = res.rows[0].email;
         bcrypt.compare(password, hashedPassword, (err, res) => {
-          if (err) return next(err);
+          if (err) {
+            logServerError('user PUT / compare password', err);
+            return next(err);
+          }
           if (!res) {
             return response.status(403).json({
               success: false,
@@ -214,7 +241,10 @@ router.put(
             'SELECT * FROM users WHERE lower(email)=$1',
             [normalizedNewEmail],
             (err, res) => {
-              if (err) return next(err);
+              if (err) {
+                logServerError('user PUT / check email uniqueness', err);
+                return next(err);
+              }
               if (res.rows.length) {
                 return response.status(200).json({
                   success: false,
@@ -232,7 +262,10 @@ router.put(
                       message: 'Email is not unique.',
                     });
                   }
-                  if (err) return next(err);
+                  if (err) {
+                    logServerError('user PUT / update email', err);
+                    return next(err);
+                  }
                   if (!res.rowCount) {
                     return response.status(500).json({
                       success: false,
@@ -249,11 +282,10 @@ router.put(
                     html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
                   });
                   if (error) {
+                    logServerError('user PUT / send email change notice', error);
                     return response.status(500).json({
                       success: false,
                       message: 'There was an error sending the email.',
-                      error: error.message,
-                      name: error.name,
                     });
                   }
 
@@ -280,7 +312,10 @@ router.delete(
       'SELECT key FROM files WHERE user_uuid=$1',
       [id],
       async (err, res) => {
-        if (err) return next(err);
+        if (err) {
+          logServerError('user DELETE / select files', err);
+          return next(err);
+        }
         if (res.rows.length) {
           const awsKeys = res.rows.map((val) => val.key);
           try {
@@ -290,7 +325,10 @@ router.delete(
                 'DELETE FROM users WHERE user_uuid=$1',
                 [id],
                 (err, res) => {
-                  if (err) return next(err);
+                  if (err) {
+                    logServerError('user DELETE / delete user after files', err);
+                    return next(err);
+                  }
                   if (res) {
                     return response.status(200).json({ success: true });
                   } else {
@@ -305,14 +343,21 @@ router.delete(
               });
             }
           } catch (err) {
-            return response.status(500).json({ success: false, message: err });
+            logServerError('user DELETE / delete files', err);
+            return response.status(500).json({
+              success: false,
+              message: 'Could not delete user.',
+            });
           }
         } else {
           client.query(
             'DELETE FROM users WHERE user_uuid=$1',
             [id],
             (err, res) => {
-              if (err) return next(err);
+              if (err) {
+                logServerError('user DELETE / delete user without files', err);
+                return next(err);
+              }
               if (res) {
                 return response.status(200).json({ success: true });
               } else {

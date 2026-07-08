@@ -20,6 +20,13 @@ const isUuid = (value: string) =>
     value,
   );
 
+const logServerError = (context: string, error: unknown) => {
+  console.error(context, error);
+};
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : 'File could not be uploaded.';
+
 router.post('/', async (req: any, res) => {
   const imageKeys = req.body.image_urls;
   const userId = req.session.userID;
@@ -51,6 +58,7 @@ router.post('/', async (req: any, res) => {
     const urls = await getPresignedUrls(fileLookup.rows.map((row) => row.key));
     return res.status(200).json({ presignedUrls: urls });
   } catch (error) {
+    logServerError('file-upload POST /', error);
     return res.status(500).json({
       success: false,
       message: 'Could not generate presigned URLs.',
@@ -79,7 +87,6 @@ router.post('/tile-image/:awsKey/:id', async (req: any, res) => {
         SELECT 1 FROM files
         WHERE key=$1::uuid
         AND recipe_uuid=$2
-        AND user_uuid=$3
       )`,
       [awsKey, id, userId],
     );
@@ -92,9 +99,11 @@ router.post('/tile-image/:awsKey/:id', async (req: any, res) => {
       });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: `There was an error: ${error}` });
+    logServerError('file-upload POST /tile-image/:awsKey/:id', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Could not update tile image.',
+    });
   }
 });
 
@@ -123,9 +132,11 @@ router.delete('/tile-image/:recipeId', async (req: any, res) => {
       });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: `There was an error: ${error}` });
+    logServerError('file-upload DELETE /tile-image/:recipeId', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Could not remove tile image.',
+    });
   }
 });
 
@@ -160,9 +171,11 @@ router.post('/:recipeId', async (req: any, res) => {
   try {
     awsUploadRes = await uploadSingleAWSFile(req, res);
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'File could not be uploaded.' });
+    logServerError('file-upload POST /:recipeId upload', error);
+    return res.status(500).json({
+      success: false,
+      message: getErrorMessage(error),
+    });
   }
 
   try {
@@ -199,14 +212,16 @@ router.post('/:recipeId', async (req: any, res) => {
       key: awsUploadRes.key,
     });
   } catch (error) {
+    logServerError('file-upload POST /:recipeId', error);
     try {
       await deleteSingleAWSFile(awsUploadRes.key);
     } catch (cleanupErr) {
-      console.error('Failed to roll back orphaned S3 object:', cleanupErr);
+      logServerError('file-upload POST /:recipeId cleanup', cleanupErr);
     }
-    return res
-      .status(500)
-      .json({ success: false, message: `There was an error: ${error}` });
+    return res.status(500).json({
+      success: false,
+      message: 'File could not be uploaded.',
+    });
   }
 });
 
@@ -263,9 +278,11 @@ router.delete('/:imageKey', async (req: any, res) => {
 
     return res.status(200).json({ success: true, message: 'File deleted.' });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'File could not be deleted.' });
+    logServerError('file-upload DELETE /:imageKey', err);
+    return res.status(500).json({
+      success: false,
+      message: 'File could not be deleted.',
+    });
   }
 });
 
