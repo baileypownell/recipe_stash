@@ -309,9 +309,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     <Dialog fullScreen open={open}>
       <DialogTitle>{getTitle()}</DialogTitle>
       <DialogContent>
-        <Box sx={{
-          paddingBottom: 2
-        }}>
+        <Box
+          sx={{
+            paddingBottom: 2,
+          }}
+        >
           <Typography variant="overline">Recipe Name</Typography>
           <ReactQuill
             defaultValue={
@@ -322,9 +324,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             onChange={handleModelChange}
           />
         </Box>
-        <Box sx={{
-          paddingBottom: 2
-        }}>
+        <Box
+          sx={{
+            paddingBottom: 2,
+          }}
+        >
           <Typography variant="overline">Ingredients</Typography>
           <ReactQuill
             defaultValue={
@@ -336,9 +340,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           />
         </Box>
 
-        <Box sx={{
-          paddingBottom: 2
-        }}>
+        <Box
+          sx={{
+            paddingBottom: 2,
+          }}
+        >
           <Typography variant="overline">Directions</Typography>
           <ReactQuill
             defaultValue={
@@ -371,13 +377,22 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             <Typography>Recipe Tags</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography sx={{
-              mb: 2
-            }}>
+            <Typography
+              sx={{
+                mb: 2,
+              }}
+            >
               Use tags to characterize your recipe so that you can easily find
               recipes with similar tags through the dashboard filter.
             </Typography>
-            <Stack spacing={1} direction="row">
+            <Stack
+              spacing={1}
+              direction="row"
+              sx={{
+                flexWrap: 'wrap',
+                width: '100%',
+              }}
+            >
               {tags.map((tag, index) => {
                 return (
                   <Chip
@@ -386,6 +401,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
                     key={tag.label}
                     onClick={() => toggleTagSelectionStatus(index)}
                     label={tag.label}
+                    sx={{ '&&': { marginBottom: '4px' } }}
                   />
                 );
               })}
@@ -408,23 +424,17 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         <Stack
           spacing={1}
           sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
+            justifyContent: 'space-between',
+            alignItems: 'center',
             width: '100%',
-
-            [theme.breakpoints.up('sm')]: {
-              flexDirection: 'row-reverse',
-            },
-
+            flexDirection: 'row-reverse',
             button: {
-              [theme.breakpoints.down('sm')]: {
-                width: '100%',
-              },
               [theme.breakpoints.up('sm')]: {
                 margin: 0,
               },
-            }
-          }}>
+            },
+          }}
+        >
           <Button
             variant="contained"
             color="secondary"
@@ -440,12 +450,11 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           <Box
             sx={{
               display: editing ? 'flex' : 'block',
+              marginTop: `0!important`,
               [theme.breakpoints.down('md')]: {
-                width: '100%',
                 maxWidth: '400px',
               },
               [theme.breakpoints.up('md')]: {
-                marginTop: `0!important`,
                 width: 'auto',
               },
             }}

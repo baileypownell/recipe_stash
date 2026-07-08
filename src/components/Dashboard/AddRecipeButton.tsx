@@ -10,9 +10,7 @@ export const AddRecipeButton = ({ addRecipe }: AddProps) => {
   return (
     <Box
       sx={{
-        width: "full",
-        textAlign: "right",
-        position: 'sticky',
+        position: 'absolute',
         bottom: 16,
         right: 16
       }}>
