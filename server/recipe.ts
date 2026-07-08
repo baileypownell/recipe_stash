@@ -370,56 +370,51 @@ router.get('/:recipeId', (request: any, response, next) => {
   );
 });
 
-router.delete('/:recipeId', (request: any, response, next) => {
+router.delete('/:recipeId', async (request: any, response, next) => {
   const userId = request.session.userID;
   const { recipeId } = request.params;
-  client.query(
-    'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
-    [recipeId, userId],
-    (err, res) => {
-      if (err) return next(err);
 
-      if (!res.rows.length) {
-        return response.status(404).json({
-          recipeDeleted: false,
-          message:
-            'Recipe not found or you do not have permission to delete it.',
-        });
-      }
+  try {
+    const recipeRes = await client.query(
+      'SELECT has_images FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
+      [recipeId, userId],
+    );
 
-      const hasImages: boolean = res.rows[0].has_images;
-      const deletedRecipeId: string = res.rows[0].recipe_uuid;
-      if (!hasImages) return response.status(200).json({ recipeDeleted: true });
+    if (!recipeRes.rows.length) {
+      return response.status(404).json({
+        recipeDeleted: false,
+        message: 'Recipe not found or you do not have permission to delete it.',
+      });
+    }
 
-      // delete images associated with the recipe from database
-      client.query(
-        'DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
-        [deletedRecipeId],
-        async (error, filesRes) => {
-          if (error) return response.status(500).json({ recipeDeleted: false });
-
-          const awsKeys = filesRes.rows.map((row) => row.key);
-          if (!awsKeys.length) {
-            return response.status(200).json({ recipeDeleted: true });
-          }
-
-          try {
-            await deleteAWSFiles(awsKeys);
-            return response.status(200).json({ recipeDeleted: true });
-          } catch (awsError) {
-            // The recipe and file records are already gone at this point;
-            // surface the partial failure rather than silently succeeding
-            // or leaving the request hanging.
-            return response.status(500).json({
-              recipeDeleted: true,
-              message:
-                'Recipe deleted, but some images could not be removed from storage.',
-            });
-          }
-        },
+    if (recipeRes.rows[0].has_images) {
+      const filesRes = await client.query(
+        'SELECT key FROM files WHERE recipe_uuid=$1',
+        [recipeId],
       );
-    },
-  );
+      const awsKeys = filesRes.rows.map((row) => row.key);
+
+      if (awsKeys.length) {
+        await deleteAWSFiles(awsKeys);
+      }
+    }
+
+    const deleteRes = await client.query(
+      'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
+      [recipeId, userId],
+    );
+
+    if (!deleteRes.rowCount) {
+      return response.status(404).json({
+        recipeDeleted: false,
+        message: 'Recipe not found or you do not have permission to delete it.',
+      });
+    }
+
+    return response.status(200).json({ recipeDeleted: true });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 export default router;

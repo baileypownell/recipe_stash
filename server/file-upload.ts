@@ -15,16 +15,131 @@ if (process.env.NODE_ENV !== 'production') {
 
 router.use(authMiddleware);
 
-// NOTE: authMiddleware is already applied via router.use() above, so it's
-// dropped from individual route signatures below to avoid running it twice.
+const isUuid = (value: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+
+router.post('/', async (req: any, res) => {
+  const imageKeys = req.body.image_urls;
+  const userId = req.session.userID;
+
+  if (
+    !Array.isArray(imageKeys) ||
+    !imageKeys.length ||
+    !imageKeys.every((key) => typeof key === 'string' && isUuid(key))
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid image keys.',
+    });
+  }
+
+  try {
+    const fileLookup = await client.query(
+      'SELECT key FROM files WHERE key = ANY($1::uuid[]) AND user_uuid=$2',
+      [imageKeys, userId],
+    );
+
+    if (fileLookup.rowCount !== imageKeys.length) {
+      return res.status(404).json({
+        success: false,
+        message: 'One or more files were not found.',
+      });
+    }
+
+    const urls = await getPresignedUrls(fileLookup.rows.map((row) => row.key));
+    return res.status(200).json({ presignedUrls: urls });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Could not generate presigned URLs.',
+    });
+  }
+});
+
+router.post('/tile-image/:awsKey/:id', async (req: any, res) => {
+  const { awsKey, id } = req.params;
+  const userId = req.session.userID;
+
+  if (!isUuid(awsKey) || !isUuid(id)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid request sent.',
+    });
+  }
+
+  try {
+    const response = await client.query(
+      `UPDATE recipes
+      SET default_tile_image_key=$1
+      WHERE recipe_uuid=$2
+      AND user_uuid=$3
+      AND EXISTS (
+        SELECT 1 FROM files
+        WHERE key=$1::uuid
+        AND recipe_uuid=$2
+        AND user_uuid=$3
+      )`,
+      [awsKey, id, userId],
+    );
+    if (response.rowCount) {
+      return res.status(200).json({ success: true });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'Recipe or file not found.',
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: `There was an error: ${error}` });
+  }
+});
+
+router.delete('/tile-image/:recipeId', async (req: any, res) => {
+  const { recipeId } = req.params;
+  const userId = req.session.userID;
+
+  if (!isUuid(recipeId)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid request sent.',
+    });
+  }
+
+  try {
+    const response = await client.query(
+      'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2 AND user_uuid=$3',
+      [null, recipeId, userId],
+    );
+    if (response.rowCount) {
+      return res.status(200).json({ success: true });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'Recipe not found or you do not have permission to edit it.',
+      });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: `There was an error: ${error}` });
+  }
+});
 
 router.post('/:recipeId', async (req: any, res) => {
   const { recipeId } = req.params;
   const userId = req.session.userID;
 
-  // Confirm the recipe exists AND belongs to this user before accepting an
-  // upload for it. Adjust the column name if your recipes table uses a
-  // different owner column.
+  if (!isUuid(recipeId)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid recipe id.',
+    });
+  }
+
   try {
     const ownerCheck = await client.query(
       'SELECT 1 FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
@@ -84,8 +199,6 @@ router.post('/:recipeId', async (req: any, res) => {
       key: awsUploadRes.key,
     });
   } catch (error) {
-    // The DB step failed after a successful S3 upload — clean up the
-    // orphaned object so it doesn't linger with no matching record.
     try {
       await deleteSingleAWSFile(awsUploadRes.key);
     } catch (cleanupErr) {
@@ -97,71 +210,16 @@ router.post('/:recipeId', async (req: any, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
-  const image_uuids = req.body.image_urls;
-  try {
-    // getPresignedUrls is async in the v3 SDK version (Promise.all under
-    // the hood) — this was previously called without await, which sent an
-    // unresolved Promise back to the client instead of real URLs.
-    const urls = await getPresignedUrls(image_uuids);
-    return res.status(200).json({ presignedUrls: urls });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Could not generate presigned URLs.',
-    });
-  }
-});
-
-router.post('/tile-image/:awsKey/:id', async (req: any, res) => {
-  const { awsKey, id } = req.params;
-  const userId = req.session.userID;
-  try {
-    const response = await client.query(
-      'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2 AND user_uuid=$3',
-      [awsKey, id, userId],
-    );
-    if (response.rowCount) {
-      return res.status(200).json({ success: true });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: 'Recipe not found or you do not have permission to edit it.',
-      });
-    }
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: `There was an error: ${error}` });
-  }
-});
-
-router.delete('/tile-image/:recipeId', async (req: any, res) => {
-  const { recipeId } = req.params;
-  const userId = req.session.userID;
-  try {
-    const response = await client.query(
-      'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2 AND user_uuid=$3',
-      [null, recipeId, userId],
-    );
-    if (response.rowCount) {
-      return res.status(200).json({ success: true });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: 'Recipe not found or you do not have permission to edit it.',
-      });
-    }
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: `There was an error: ${error}` });
-  }
-});
-
 router.delete('/:imageKey', async (req: any, res) => {
   const { imageKey } = req.params;
   const userId = req.session.userID;
+
+  if (!isUuid(imageKey)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid image key.',
+    });
+  }
 
   try {
     // Confirm ownership and fetch the recipe_uuid BEFORE touching S3, so a

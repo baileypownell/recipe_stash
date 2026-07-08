@@ -7,6 +7,4 @@ const client = new Pool({
     : { rejectUnauthorized: false }, // Railway public proxy + Heroku both need this
 });
 
-client.connect();
-
 export default client;

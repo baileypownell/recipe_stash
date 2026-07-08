@@ -7,6 +7,7 @@ import client from './client.js';
 
 const router = Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
 const environment = process.env.NODE_ENV || 'development';
 
@@ -21,49 +22,46 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
       .status(400)
       .json({ success: false, message: 'Invalid request sent.' });
   }
-  client.query('SELECT * FROM users WHERE email=$1', [email], (err, res) => {
-    if (err) return next(err);
-    if (res.rows) {
-      // generate unique hash token
-      const token = crypto.randomBytes(20).toString('hex');
-      const expiration = Date.now() + 3600000;
-      // store the token in the reset_password_token column of the users table
-      // also store when it expires in the reset_password_expires column
-      client.query(
-        'UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
-        [token, expiration, email],
-        async (err, res) => {
-          if (err) return next(err);
-          if (res.rowCount) {
-            const { error } = await resend.emails.send({
-              from:
-                process.env.RESEND_FROM_EMAIL ??
-                'Recipe Stash <onboarding@resend.dev>',
-              to: email,
-              subject: 'Reset your Recipe Stash Password',
-              html: `<h1>recipe stash</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button>Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`,
-            });
-            if (error) {
-              console.log('Error: ', error);
-              return response.status(500).json({
-                success: false,
-                message: 'There was an error sending the email.',
-                error: error.message,
-                name: error.name,
-              });
-            }
+  const normalizedEmail = normalizeEmail(email);
+  const token = crypto.randomBytes(20).toString('hex');
+  const expiration = Date.now() + 3600000;
 
-            request.session.destroy((err) => {
-              if (err) console.error(err);
-            });
-            return response.status(200).json({ success: true });
-          } else {
-            return response.status(200).json({ success: true });
-          }
-        },
-      );
-    }
-  });
+  client.query(
+    `UPDATE users
+    SET reset_password_token=$1, reset_password_expires=$2
+    WHERE lower(email)=$3
+    RETURNING email`,
+    [token, expiration, normalizedEmail],
+    async (err, res) => {
+      if (err) return next(err);
+      if (!res.rowCount) {
+        return response.status(200).json({ success: true });
+      }
+
+      const { error } = await resend.emails.send({
+        from:
+          process.env.RESEND_FROM_EMAIL ??
+          'Recipe Stash <onboarding@resend.dev>',
+        to: res.rows[0].email,
+        subject: 'Reset your Recipe Stash Password',
+        html: `<h1>recipe stash</h1><p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p> \n\n <a href="${process.env.PROJECT_URL}reset/${token}" ><button>Reset Password</button></a>\n\n <p>If you did not request this, please ignore this email and your password will remain unchanged.\n</p>`,
+      });
+      if (error) {
+        console.log('Error: ', error);
+        return response.status(500).json({
+          success: false,
+          message: 'There was an error sending the email.',
+          error: error.message,
+          name: error.name,
+        });
+      }
+
+      request.session.destroy((err) => {
+        if (err) console.error(err);
+      });
+      return response.status(200).json({ success: true });
+    },
+  );
 });
 
 router.get(

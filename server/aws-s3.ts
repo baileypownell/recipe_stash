@@ -11,6 +11,7 @@ import multerS3 from 'multer-s3';
 import { v4 as uuidv4 } from 'uuid';
 
 interface UploadRequest extends Request {
+  file?: Express.Multer.File;
   s3Key: string;
 }
 
@@ -52,9 +53,12 @@ const upload = multer({
   }),
   fileFilter: function (_: Request, file: Express.Multer.File, cb) {
     if (!validExtension.includes(file.mimetype)) {
-      return cb(null, false);
+      return cb(new Error('Only JPG and PNG images are supported.'));
     }
     cb(null, true);
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024,
   },
 });
 const singleFileUpload = upload.single('image');
@@ -66,6 +70,9 @@ const uploadSingleAWSFile = (req: UploadRequest, res: Response) => {
     return singleFileUpload(req, res, (err) => {
       if (err) {
         return reject(err);
+      }
+      if (!req.file) {
+        return reject(new Error('No image file was uploaded.'));
       }
       return resolve({ downloadUrl, key: req.s3Key });
     });

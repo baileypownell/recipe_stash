@@ -722,6 +722,13 @@ CREATE INDEX "IDX_session_expire" ON public.session USING btree (expire);
 
 
 --
+-- Name: users_email_lower_unique; Type: INDEX; Schema: public; Owner: uepr701d9mvmuv
+--
+
+CREATE UNIQUE INDEX users_email_lower_unique ON public.users USING btree (lower((email)::text));
+
+
+--
 -- Name: files files_user_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: uepr701d9mvmuv
 --
 
@@ -886,4 +893,3 @@ ALTER EVENT TRIGGER "01_extension_before_drop" OWNER TO heroku_admin;
 --
 
 \unrestrict VXiz7YCfW4yBAhlpnCD5OiBkLGXmdADH2z6FOoMQkoYAQcd704ftExpGdwY7GrR
-
