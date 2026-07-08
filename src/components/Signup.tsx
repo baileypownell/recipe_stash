@@ -17,9 +17,19 @@ import backgroundImage from '../images/ingredients.jpg';
 import { isPasswordValid } from '../models/functions';
 import AuthenticationService from '../services/auth-service';
 import UserService, {
+} from '../services/user-service';
+import type {
   UserCreatedResponse,
   UserInputInterface,
 } from '../services/user-service';
+
+interface SignupFormValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const validationSchema = yup.object({
   firstName: yup.string().required('First name is required.'),
@@ -56,7 +66,7 @@ const Signup = () => {
     setSnackBarOpen(true);
   };
 
-  const signup = async (values) => {
+  const signup = async (values: SignupFormValues) => {
     setLoading(true);
     try {
       const userInput: UserInputInterface = {

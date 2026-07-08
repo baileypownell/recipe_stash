@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import Chips from './Chips';
 import { Link } from 'react-router-dom';
-import { FullRecipe } from '../../../../shared/types';
+import type { FullRecipe } from '../../../../shared/types';
 
 const CARD_HEIGHT = 150;
 const CARD_WIDTH = 250;

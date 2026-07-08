@@ -1,7 +1,8 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Box, Fab } from '@mui/material';
 import { useState } from 'react';
-import RecipeDialog, { AddProps, Mode } from './Category/RecipeDialog';
+import RecipeDialog, { Mode } from './Category/RecipeDialog';
+import type { AddProps } from './Category/RecipeDialog';
 
 export const AddRecipeButton = ({ addRecipe }: AddProps) => {
   const [open, setOpen] = useState(false);

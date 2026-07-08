@@ -3,7 +3,8 @@ import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRound
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { Box, Button, IconButton } from '@mui/material';
 import { useState } from 'react';
-import Lightbox, { ImagesListType } from 'react-spring-lightbox';
+import Lightbox from 'react-spring-lightbox';
+import type { ImagesListType } from 'react-spring-lightbox';
 import ImageSkeletonLoader from './ImageSkeletonLoader';
 
 interface Props {

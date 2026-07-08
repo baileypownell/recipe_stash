@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 
 import { useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import blackLogo from '../images/black-logo.png';
 import whiteLogo from '../images/white-logo.png';
@@ -46,10 +47,12 @@ const Nav = () => {
     setOpen(false);
   };
 
-  const toggleDrawer = (openState) => (event) => {
+  const toggleDrawer =
+    (openState: boolean) =>
+    (event: KeyboardEvent | MouseEvent) => {
     if (
-      event &&
       event.type === 'keydown' &&
+      'key' in event &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return;

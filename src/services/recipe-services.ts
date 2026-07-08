@@ -1,11 +1,11 @@
 import axios from 'axios';
-import {
+import type {
   ExistingFileUpload,
   NewFileUpload,
   UploadedFileResult,
 } from '../models/images';
-import tag from '../models/tags';
-import { FullRecipe, RawRecipe, TileImageSetResponse } from '../../shared/types';
+import type tag from '../models/tags';
+import type { FullRecipe, RawRecipe, TileImageSetResponse } from '../../shared/types';
 
 export interface BaseStringAccessibleObjectBoolean {
   [key: string]: boolean;

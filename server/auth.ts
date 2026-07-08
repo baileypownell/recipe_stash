@@ -1,4 +1,5 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 const router = Router();
 
 export interface AuthenticationState {

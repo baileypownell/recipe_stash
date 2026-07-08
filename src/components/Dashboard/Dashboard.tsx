@@ -15,13 +15,13 @@ import {
 import { useEffect, useState } from 'react';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import {
+import type {
   BaseStringAccessibleObjectBoolean,
   BaseStringAccessibleObjectString,
   SortedRecipeInterface,
 } from '../../services/recipe-services';
 import { queryClient } from '../App';
-import { AddRecipeMutationParam } from '../RecipeCache';
+import type { AddRecipeMutationParam } from '../RecipeCache';
 import Category from './Category/Category';
 import FilterMenu from './FilterMenu';
 import { AddRecipeButton } from './AddRecipeButton';

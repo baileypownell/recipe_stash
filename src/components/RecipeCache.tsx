@@ -3,16 +3,18 @@ import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
 import {
-  RecipeInput,
   RecipeService,
+} from '../services/recipe-services';
+import type {
+  RecipeInput,
   SortedRecipeInterface,
 } from '../services/recipe-services';
 import { queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import { Spinner } from './Spinner';
-import { NewFileUpload } from '../models/images';
-import { FullRecipe, RawRecipe } from '../../shared/types';
+import type { NewFileUpload } from '../models/images';
+import type { FullRecipe, RawRecipe } from '../../shared/types';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';

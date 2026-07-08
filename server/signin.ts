@@ -1,6 +1,7 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import client from './client';
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
+import { Router } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import client from './client.js';
 const router = Router();
 
 router.post('/', (request: Request, response: Response, next: NextFunction) => {
@@ -19,7 +20,10 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
       last_name = res.rows[0].last_name;
       user_uuid = res.rows[0].user_uuid;
       const hashedPassword = res.rows[0].password;
-      bcrypt.compare(password, hashedPassword, (err, res) => {
+      bcrypt.compare(
+        password,
+        hashedPassword,
+        (err: Error | null, res?: boolean) => {
         if (err) return next(err);
         if (res) {
           request.session.isAuthenticated = true;
@@ -38,7 +42,8 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
             .status(403)
             .json({ error: 'User could not be authenticated.' });
         }
-      });
+        },
+      );
     } else {
       return response
         .status(403)

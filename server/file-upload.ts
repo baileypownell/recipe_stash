@@ -1,15 +1,16 @@
 import { Router } from 'express';
-import client from './client';
-import { authMiddleware } from './authMiddleware';
+import dotenv from 'dotenv';
+import client from './client.js';
+import { authMiddleware } from './authMiddleware.js';
 import {
   getPresignedUrls,
   uploadSingleAWSFile,
   deleteSingleAWSFile,
-} from './aws-s3';
+} from './aws-s3.js';
 const router = Router();
 
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+  dotenv.config();
 }
 
 router.use(authMiddleware);

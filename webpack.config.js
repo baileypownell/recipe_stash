@@ -1,11 +1,17 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require('webpack');
-const fs = require('fs'); // to check if the file exists
-const path = require('path'); // to get the current path
-const ImageminPlugin = require('imagemin-webpack-plugin').default;
-const dotenv = require('dotenv').config({ path: __dirname + '/.env' });
+import dotenv from 'dotenv';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import ImageminPluginImport from 'imagemin-webpack-plugin';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import webpack from 'webpack';
 
-module.exports = (env) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ImageminPlugin = ImageminPluginImport.default;
+
+dotenv.config({ path: path.join(__dirname, '.env') });
+
+export default () => {
   return {
     entry: './src/index.js',
     output: {
@@ -26,7 +32,7 @@ module.exports = (env) => {
                 [
                   '@babel/preset-react',
                   {
-                    runtime: 'automatic', // eliminates the need to explicitly import React in a component file
+                    runtime: 'automatic',
                   },
                 ],
                 '@babel/preset-typescript',
@@ -37,12 +43,10 @@ module.exports = (env) => {
         {
           test: /\.(c)ss$/,
           use: [
-            // Creates `style` nodes from JS strings
             {
               loader: 'style-loader',
               options: { injectType: 'singletonStyleTag' },
             },
-            // Translates CSS into CommonJS
             'css-loader',
           ],
         },
@@ -65,7 +69,7 @@ module.exports = (env) => {
         },
       }),
       new ImageminPlugin({
-        disable: process.env.NODE_ENV !== 'production', // Disable during development
+        disable: process.env.NODE_ENV !== 'production',
         pngquant: {
           quality: '95-100',
         },

@@ -25,6 +25,10 @@ const validationSchema = yup.object({
     .required('Password is required.'),
 });
 
+interface ResetPasswordFormValues {
+  password: string;
+}
+
 const ResetPassword = () => {
   const [invalidLink, setInvalidLink] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -69,7 +73,7 @@ const ResetPassword = () => {
     setSnackBarMessage('');
   };
 
-  const updatePassword = async (values) => {
+  const updatePassword = async (values: ResetPasswordFormValues) => {
     setLoading(true);
     try {
       await AuthenticationService.updatePassword(

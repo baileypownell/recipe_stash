@@ -1,15 +1,16 @@
-import express, { Response } from 'express';
+import express from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
-import client from './client';
-import routes from './index';
+import client from './client.js';
+import routes from './index.js';
 
 const app = express();
 const pgSession = connectPgSimple(session);
 
 app.use(express.json());
 
-app.use((err, _, res, _2) => {
+app.use((err: unknown, _: Request, res: Response, _2: NextFunction) => {
   res.json(err);
 });
 

@@ -1,16 +1,21 @@
 /* eslint-disable camelcase */
 import { Router } from 'express';
-import client from './client';
-import { authMiddleware } from './authMiddleware';
-import { FullRecipe } from '../shared/types';
+import type { NextFunction, Request, Response } from 'express';
+import client from './client.js';
+import { authMiddleware } from './authMiddleware.js';
+import type { FullRecipe, RawRecipe } from '../shared/types.js';
 const router = Router();
-const {
+import {
   getPresignedUrls,
   getPresignedUrl,
   deleteAWSFiles,
-} = require('./aws-s3');
+} from './aws-s3.js';
 
-const constructTags = (recipe): string[] => {
+type RecipeTagsSource = RawRecipe & {
+  high_protein: string;
+};
+
+const constructTags = (recipe: RecipeTagsSource): string[] => {
   const tagArray: string[] = [];
   if (recipe.no_bake) {
     tagArray.push('no_bake');
@@ -67,7 +72,7 @@ router.use(authMiddleware);
 // authMiddleware is already applied via router.use() above, so it's
 // dropped from individual route signatures below.
 
-router.get('/', (request: any, response, next) => {
+router.get('/', (request: Request, response: Response, next: NextFunction) => {
   client.query(
     'SELECT * FROM recipes WHERE user_uuid=$1',
     [request.session.userID],

@@ -3,13 +3,19 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
+import dotenv from 'dotenv';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import type { Request, Response } from 'express';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import { v4 as uuidv4 } from 'uuid';
 
+interface UploadRequest extends Request {
+  s3Key: string;
+}
+
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+  dotenv.config();
 }
 
 const validExtension = ['image/jpg', 'image/jpeg', 'image/png'];
@@ -29,14 +35,22 @@ const upload = multer({
     s3,
     bucket: process.env.S3_BUCKET as string,
     contentType: multerS3.AUTO_CONTENT_TYPE,
-    metadata: function (_, file, cb) {
+    metadata: function (
+      _: Request,
+      file: Express.Multer.File,
+      cb: (error: Error | null, metadata?: Record<string, string>) => void,
+    ) {
       cb(null, { fieldName: file.fieldname });
     },
-    key: function (req, _, cb) {
-      cb(null, req.s3Key);
+    key: function (
+      req: Request,
+      _: Express.Multer.File,
+      cb: (error: Error | null, key?: string) => void,
+    ) {
+      cb(null, (req as UploadRequest).s3Key);
     },
   }),
-  fileFilter: function (_, file, cb) {
+  fileFilter: function (_: Request, file: Express.Multer.File, cb) {
     if (!validExtension.includes(file.mimetype)) {
       return cb(null, false);
     }
@@ -45,7 +59,7 @@ const upload = multer({
 });
 const singleFileUpload = upload.single('image');
 
-const uploadSingleAWSFile = (req, res) => {
+const uploadSingleAWSFile = (req: UploadRequest, res: Response) => {
   req.s3Key = uuidv4();
   const downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`;
   return new Promise((resolve, reject) => {

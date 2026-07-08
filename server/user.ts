@@ -1,17 +1,19 @@
 import bcrypt from 'bcryptjs';
-import { NextFunction, Request, Response, Router } from 'express';
+import dotenv from 'dotenv';
+import { Router } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { google } from 'googleapis';
 import nodemailer from 'nodemailer';
-import { authMiddleware } from './authMiddleware';
-import { deleteAWSFiles } from './aws-s3';
-import client from './client';
-const { google } = require('googleapis');
+import { authMiddleware } from './authMiddleware.js';
+import { deleteAWSFiles } from './aws-s3.js';
+import client from './client.js';
 const OAuth2 = google.auth.OAuth2;
 const router = Router();
 
 const environment = process.env.NODE_ENV || 'development';
 
 if (environment === 'development') {
-  require('dotenv').config();
+  dotenv.config();
 }
 
 router.get(
@@ -209,7 +211,7 @@ router.put(
                                   .GOOGLE_RECIPE_STASH_OAUTH_REFRESH_TOKEN,
                               accessToken,
                             },
-                          });
+                          } as Parameters<typeof nodemailer.createTransport>[0]);
                           const email = {
                             from: process.env.GOOGLE_EMAIL,
                             to: `${oldEmail}`,

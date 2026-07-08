@@ -1,6 +1,7 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { jwtDecode } from 'jwt-decode';
-import client from './client';
+import client from './client.js';
 const router = Router();
 
 router.post('/', (request: Request, response: Response, next: NextFunction) => {

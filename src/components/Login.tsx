@@ -28,6 +28,10 @@ interface FormInputs {
   password: string;
 }
 
+interface GoogleCredentialResponse {
+  credential: string;
+}
+
 const validationSchema = yup.object({
   email: yup
     .string()
@@ -68,7 +72,7 @@ const Login = () => {
     }
   };
 
-  const authenticateWithGoogle = async (response) => {
+  const authenticateWithGoogle = async (response: GoogleCredentialResponse) => {
     try {
       const res = await AuthenticationService.signInWithGoogle(
         response.credential,

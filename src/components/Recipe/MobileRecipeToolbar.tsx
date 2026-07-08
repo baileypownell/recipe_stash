@@ -1,6 +1,7 @@
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import { Box, IconButton, Menu, MenuItem, useTheme } from '@mui/material';
 import { useState } from 'react';
+import type { MouseEvent } from 'react';
 
 type MobileRecipeToolbarProps = {
   width: number;
@@ -14,9 +15,9 @@ export default function MobileRecipeToolbar({
   cloneRecipe,
 }: MobileRecipeToolbarProps) {
   const theme = useTheme();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleClick = (event) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

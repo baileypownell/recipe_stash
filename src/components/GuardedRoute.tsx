@@ -1,7 +1,12 @@
+import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import AuthenticationService from '../services/auth-service';
 
-const GuardedRoute = (props) =>
+interface GuardedRouteProps {
+  children: ReactNode;
+}
+
+const GuardedRoute = (props: GuardedRouteProps) =>
   AuthenticationService.authenticated() ? (
     props.children
   ) : (

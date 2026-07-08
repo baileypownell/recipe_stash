@@ -2,7 +2,11 @@ import { Badge, Box, Chip, Stack } from '@mui/material';
 import { recipeTagChips } from '../../../models/tags';
 import { useEffect, useRef, useState } from 'react';
 
-const Chips = ({ tags }) => {
+interface ChipsProps {
+  tags: string[];
+}
+
+const Chips = ({ tags }: ChipsProps) => {
   const [hiddenChipCount, setHiddenChipCount] = useState<number>(0);
   const ref = useRef(null);
   useEffect(() => {
@@ -50,7 +54,7 @@ const Chips = ({ tags }) => {
             justifyContent: 'flex-end',
           }}
         >
-          {tags.map((recipeTag) => (
+          {tags.map((recipeTag: string) => (
             <Chip
               key={recipeTag}
               variant="outlined"

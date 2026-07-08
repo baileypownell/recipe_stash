@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["node"],
     "target": "esnext", // Specify ECMAScript target version
     "outDir": "./public",
     "lib": ["dom", "dom.iterable", "esnext"], // List of library files to be included in the compilation
@@ -10,8 +9,9 @@
     "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
     "strict": true, // Enable all strict type checking options
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
-    "module": "commonjs", // Specify module code generation
-    "moduleResolution": "node10", // Resolve modules using Node.js style
+    "module": "preserve", // Preserve ESM imports for the bundler
+    "moduleResolution": "bundler", // Resolve browser code using bundler semantics
+    "verbatimModuleSyntax": true,
     // "isolatedModules": true, // Unconditionally emit imports for unresolved files
     "resolveJsonModule": true, // Include modules imported with .json extension
     "ignoreDeprecations": "6.0",
@@ -21,11 +21,13 @@
     "noUnusedLocals": true, // Report errors on unused locals
     "noUnusedParameters": true, // Report errors on unused parameters
     "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statement
-    "noImplicitAny": false
+    "noImplicitAny": true
   },
   "ts-node": {
+    "esm": true,
+    "experimentalResolver": true,
     "files": true
   },
-  "include": ["**/*.tsx", "**/*.ts", "**/*.d.ts"], // *** The files to type check ***
-  "exclude": ["node_modules", "build", "**/public/**"] // *** The files to not type check ***
+  "include": ["src/**/*.tsx", "src/**/*.ts", "src/**/*.d.ts", "shared/**/*.ts"], // *** The files to type check ***
+  "exclude": ["node_modules", "build", "**/public/**", "server"] // *** The files to not type check ***
 }

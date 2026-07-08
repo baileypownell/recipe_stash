@@ -2,13 +2,15 @@
   "name": "recipe-stash",
   "version": "1.0.0",
   "description": "It's a common problem for many internet chefs; you find a recipe you want to try, pin it on Pinterest.com, come back 6 months later and find that the domain for the recipe no longer exists. Or you try something you really love, write it down on a recipe card to put in your recipe box, and then think to yourself \"What if my house burned down? I wouldn't even have this anymore.\" Or maybe you got halfway through and thought \"This is too much work\".",
+  "type": "module",
   "main": "server.js",
   "proxy": "http://localhost:3000",
   "scripts": {
     "dev": "webpack-dev-server --config ./webpack.config.js --mode development --stats-error-details",
-    "dev-server": "dotenv -e ./.env.development -- nodemon --exec ts-node ./server/server.ts --trace-warnings",
+    "dev-server": "dotenv -e ./.env.development -- nodemon --exec \"node --import tsx\" ./server/server.ts",
     "start": "NODE_ENV=production node ./public/server/server.js",
-    "build": "webpack && tsc -p .",
+    "typecheck": "tsc -p . --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "build": "webpack && tsc -p tsconfig.server.json",
     "deploy": "git push heroku master"
   },
   "engines": {
@@ -94,6 +96,7 @@
     "nodemon": "^3.1.14",
     "style-loader": "^4.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.0",
     "typescript": "^6.0.3",
     "webpack": "^5.108.4",
     "webpack-cli": "^7.2.1",

@@ -19,12 +19,14 @@ import {
   useTheme,
 } from '@mui/material';
 import { Field, Formik } from 'formik';
+import type { FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { isPasswordValid } from '../models/functions';
 import AuthenticationService from '../services/auth-service';
-import UserService, {
+import UserService from '../services/user-service';
+import type {
   UpdateUserEmailPayload,
   UpdateUserNamePayload,
   UserData,
@@ -33,6 +35,17 @@ import DeleteModal from './DeleteModal';
 
 interface Props {
   id?: string;
+}
+
+interface SettingsFormValues {
+  email: {
+    email: string;
+    password: string;
+  };
+  names: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 const validationSchema = yup.object({
@@ -93,7 +106,7 @@ const Settings = (props: Props) => {
     getUserData();
   }, []);
 
-  const updateNames = async (values) => {
+  const updateNames = async (values: SettingsFormValues) => {
     if (!values.names.firstName && !values.names.lastName) {
       openSnackBar('Must enter either first name or last name.');
       return;
@@ -114,7 +127,7 @@ const Settings = (props: Props) => {
     }
   };
 
-  const updateEmail = async (values) => {
+  const updateEmail = async (values: SettingsFormValues) => {
     try {
       const payload: UpdateUserEmailPayload = {
         newEmail: values.email.email,
@@ -219,7 +232,7 @@ const Settings = (props: Props) => {
               }}
               validationSchema={validationSchema}
               onSubmit={() => void 0}
-              render={(formik) => (
+              render={(formik: FormikProps<SettingsFormValues>) => (
                 <>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -238,7 +251,7 @@ const Settings = (props: Props) => {
                       }}>
                         <Field
                           name="email.email"
-                          render={({ form }) => (
+                          render={() => (
                             <TextField
                               id="email"
                               variant="standard"
@@ -248,19 +261,19 @@ const Settings = (props: Props) => {
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               error={
-                                form.touched.email?.email &&
-                                Boolean(form.errors.email?.email)
+                                formik.touched.email?.email &&
+                                Boolean(formik.errors.email?.email)
                               }
                               helperText={
-                                form.touched.email?.email &&
-                                form.errors.email?.email
+                                formik.touched.email?.email &&
+                                formik.errors.email?.email
                               }
                             ></TextField>
                           )}
                         />
                         <Field
                           name="email.password"
-                          render={({ form }) => (
+                          render={() => (
                             <TextField
                               id="password"
                               variant="standard"
@@ -270,12 +283,12 @@ const Settings = (props: Props) => {
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               error={
-                                form.touched.email?.password &&
-                                Boolean(form.errors.email?.password)
+                                formik.touched.email?.password &&
+                                Boolean(formik.errors.email?.password)
                               }
                               helperText={
-                                form.touched.email?.password &&
-                                form.errors.email?.password
+                                formik.touched.email?.password &&
+                                formik.errors.email?.password
                               }
                             ></TextField>
                           )}
@@ -307,7 +320,7 @@ const Settings = (props: Props) => {
                       }}>
                         <Field
                           name="names.firstName"
-                          render={({ form }) => (
+                          render={() => (
                             <TextField
                               variant="standard"
                               name="names.firstName"
@@ -318,19 +331,19 @@ const Settings = (props: Props) => {
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               error={
-                                form.touched.names?.firstName &&
-                                Boolean(form.errors.names?.firstName)
+                                formik.touched.names?.firstName &&
+                                Boolean(formik.errors.names?.firstName)
                               }
                               helperText={
-                                form.touched.names?.firstName &&
-                                form.errors.names?.firstName
+                                formik.touched.names?.firstName &&
+                                formik.errors.names?.firstName
                               }
                             ></TextField>
                           )}
                         />
                         <Field
                           name="names.lastName"
-                          render={({ form }) => (
+                          render={() => (
                             <TextField
                               variant="standard"
                               name="names.lastName"
@@ -341,12 +354,12 @@ const Settings = (props: Props) => {
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               error={
-                                form.touched.names?.lastName &&
-                                Boolean(form.errors.names?.lastName)
+                                formik.touched.names?.lastName &&
+                                Boolean(formik.errors.names?.lastName)
                               }
                               helperText={
-                                form.touched.names?.lastName &&
-                                form.errors.names?.lastName
+                                formik.touched.names?.lastName &&
+                                formik.errors.names?.lastName
                               }
                             ></TextField>
                           )}

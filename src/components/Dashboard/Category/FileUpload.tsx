@@ -1,15 +1,16 @@
 import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 import { Box, Button, Stack, Typography, useTheme } from '@mui/material';
 import { useEffect, useRef } from 'react';
+import type { ChangeEvent, DragEvent } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { ImagePreview } from './ImagePreview';
-import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
+import type { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 
 const getDefaultState = (
   i: number,
   index: number,
   checked: boolean,
-  file: any,
+  file: NewFileUpload | ExistingFileUpload,
 ): boolean => {
   // return i === index
   //   ? checked
@@ -74,7 +75,7 @@ const FileUpload = ({
     if (input.current) (input.current as any).click();
   };
 
-  const handleDrop = (e): void => {
+  const handleDrop = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
     const fileList: FileList = e.dataTransfer.files;
@@ -115,7 +116,7 @@ const FileUpload = ({
           type="file"
           accept="image/png, image/jpeg, image/jpg"
           disabled={false}
-          onChange={(e) => {
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
             append(
               Array.from(e.target.files as FileList).map((file) => ({
                 file,
@@ -170,7 +171,7 @@ const FileUpload = ({
             remove={remove}
             control={control}
             backgroundImageUrl={item.backgroundImage}
-            onChange={(e) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setValue(
                 'files',
                 files.map((file, i) => {
@@ -207,7 +208,7 @@ const FileUpload = ({
             remove={removeExistingFile}
             index={index}
             backgroundImageUrl={item.url}
-            onChange={(e) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setValue(
                 'preExistingFiles',
                 preExistingFiles.map((file, i) => {

@@ -22,25 +22,27 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
+import type { UnprivilegedEditor } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
-import { ExistingFileUpload, NewFileUpload } from '../../../models/images';
+import type { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 import options from '../../../models/options';
 import { recipeTagChips } from '../../../models/tags';
-import {
+import { RecipeService } from '../../../services/recipe-services';
+import type {
   RecipeInput,
-  RecipeService,
   RecipeTags,
   SortedRecipeInterface,
   UpdateRecipeInput,
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
 import FileUpload from './FileUpload';
-import { FullRecipe, RawRecipe } from '../../../../shared/types';
+import type { FullRecipe, RawRecipe } from '../../../../shared/types';
 
 type EditProps = {
   recipe: any;
@@ -69,7 +71,10 @@ interface Props {
   toggleModal: () => void;
 }
 
-const determineCategory = (recipeDialogInfo, mode): string => {
+const determineCategory = (
+  recipeDialogInfo: AddProps | EditProps,
+  mode: Mode,
+): string => {
   return mode === Mode.Edit
     ? (recipeDialogInfo as EditProps).recipe.category
     : '';
@@ -233,7 +238,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     (recipeDialogInfo as EditProps).fetchData();
   };
 
-  const updateCategory = (e) => setCategory(e.target.value);
+  const updateCategory = (e: SelectChangeEvent) => setCategory(e.target.value);
 
   const toggleTagSelectionStatus = (index: number) => {
     const copyTags = [...tags];
@@ -244,7 +249,12 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setTags(copyTags);
   };
 
-  const handleModelChange = (html: string, _, __, editor) => {
+  const handleModelChange = (
+    html: string,
+    _: unknown,
+    __: unknown,
+    editor: UnprivilegedEditor,
+  ) => {
     setRecipeTitle(html);
     const recipe_title_raw = editor.getText();
     setRecipeTitleRaw(recipe_title_raw);

@@ -18,7 +18,7 @@ import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import { Spinner } from '../Spinner';
 import LightboxComponent from './LightboxComponent/LightboxComponent';
 import MobileRecipeToolbar from './MobileRecipeToolbar';
-import { FullRecipe } from '../../../shared/types';
+import type { FullRecipe } from '../../../shared/types';
 
 interface Props {
   openSnackBar: Function;

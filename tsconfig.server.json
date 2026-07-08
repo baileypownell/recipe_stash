@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "outDir": "./public",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "verbatimModuleSyntax": true,
+    "rootDir": ".",
+    "lib": ["esnext"],
+    "jsx": "react-jsx"
+  },
+  "include": ["server/**/*.ts", "server/**/*.d.ts", "shared/**/*.ts"],
+  "exclude": ["node_modules", "build", "**/public/**"]
+}

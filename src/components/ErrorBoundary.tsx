@@ -1,22 +1,29 @@
 import BlenderRoundedIcon from '@mui/icons-material/BlenderRounded';
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import { Component, ReactNode } from 'react';
+import { Component } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const withNavigate = (Component) => (props) => {
+interface NavigateProps {
+  navigate: () => void;
+}
+
+const withNavigate =
+  <P extends NavigateProps>(WrappedComponent: ComponentType<P>) =>
+  (props: Omit<P, keyof NavigateProps>) => {
   const navigate = useNavigate();
   const goHome = () => {
     navigate('/');
     navigate(0);
   };
-  return <Component {...props} navigate={goHome} />;
-};
+    return <WrappedComponent {...(props as P)} navigate={goHome} />;
+  };
 
 class ErrorBoundary extends Component<
   { navigate: () => void; children: ReactNode },
   { hasError: boolean }
 > {
-  constructor(props) {
+  constructor(props: { navigate: () => void; children: ReactNode }) {
     super(props);
     this.state = { hasError: false };
   }

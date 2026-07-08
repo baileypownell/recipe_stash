@@ -1,4 +1,5 @@
-import { Theme, ThemeOptions, createTheme } from '@mui/material';
+import { createTheme } from '@mui/material';
+import type { Theme, ThemeOptions } from '@mui/material';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -15,13 +16,13 @@ declare module '@mui/material/styles' {
 
 declare module '@mui/material/Checkbox' {
   interface CheckboxPropsColorOverrides {
-    orange;
+    orange: true;
   }
 }
 
 declare module '@mui/material/Button' {
   interface ButtonPropsColorOverrides {
-    orange;
+    orange: true;
   }
 }
 

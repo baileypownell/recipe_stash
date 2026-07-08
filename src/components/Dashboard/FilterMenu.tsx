@@ -13,6 +13,26 @@ import {
   useTheme,
 } from '@mui/material';
 import { useState } from 'react';
+import type { MouseEvent } from 'react';
+import type {
+  BaseStringAccessibleObjectBoolean,
+} from '../../services/recipe-services';
+
+interface FilterMenuItem {
+  key: string;
+  name: string;
+}
+
+interface FilterMenuProps {
+  numberOfSelectedFilters: number;
+  filters: FilterMenuItem[];
+  categories: FilterMenuItem[];
+  appliedFilt: BaseStringAccessibleObjectBoolean;
+  appliedCat: BaseStringAccessibleObjectBoolean;
+  filter: (key: string) => void;
+  filterByCategory: (key: string) => void;
+  clearFilters: () => void;
+}
 
 export const FilterMenu = ({
   numberOfSelectedFilters,
@@ -23,12 +43,12 @@ export const FilterMenu = ({
   filter,
   filterByCategory,
   clearFilters,
-}) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+}: FilterMenuProps) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
 
-  const handleClick = (event) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -85,7 +105,7 @@ export const FilterMenu = ({
               </Typography>
               <Divider />
               <FormGroup>
-                {filters.map((item) => {
+                {filters.map((item: FilterMenuItem) => {
                   return (
                     <FormControlLabel
                       control={
@@ -116,7 +136,7 @@ export const FilterMenu = ({
               </Typography>
               <Divider />
               <FormGroup>
-                {categories.map((item) => {
+                {categories.map((item: FilterMenuItem) => {
                   return (
                     <FormControlLabel
                       control={

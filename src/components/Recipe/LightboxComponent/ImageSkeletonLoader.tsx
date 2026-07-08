@@ -3,7 +3,15 @@ import { useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-function ImageSkeletonLoader({ url, openLightBox }) {
+interface ImageSkeletonLoaderProps {
+  url: string;
+  openLightBox: () => void;
+}
+
+function ImageSkeletonLoader({
+  url,
+  openLightBox,
+}: ImageSkeletonLoaderProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return imageLoaded ? (

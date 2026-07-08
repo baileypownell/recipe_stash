@@ -5,8 +5,24 @@ import {
   IconButton,
   useTheme,
 } from '@mui/material';
+import type { ChangeEvent } from 'react';
 import { Controller } from 'react-hook-form';
+import type { Control, UseFieldArrayRemove } from 'react-hook-form';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import type { ExistingFileUpload, NewFileUpload } from '../../../models/images';
+
+interface ImagePreviewProps {
+  item: (NewFileUpload | ExistingFileUpload) & { id: string };
+  control: Control<{
+    defaultTileImageUUID: string | null | undefined;
+    files: NewFileUpload[];
+    preExistingFiles: ExistingFileUpload[];
+  }>;
+  index: number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  remove: UseFieldArrayRemove;
+  backgroundImageUrl: string;
+}
 
 export const ImagePreview = ({
   item,
@@ -15,7 +31,7 @@ export const ImagePreview = ({
   onChange,
   remove,
   backgroundImageUrl,
-}) => {
+}: ImagePreviewProps) => {
   const theme = useTheme();
   const filePreviewStyles = {
     boxShadow: `5px 1px 30px ${theme.palette.boxShadow.main}`,
