@@ -25,10 +25,9 @@ import {
 import type { SelectChangeEvent } from '@mui/material';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
-import { useEffect, useState } from 'react';
-import ReactQuill from 'react-quill';
-import type { UnprivilegedEditor } from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { useEffect, useRef, useState } from 'react';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router';
 import type { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 import options from '../../../models/options';
@@ -70,6 +69,55 @@ interface Props {
   open: boolean;
   toggleModal: () => void;
 }
+
+interface QuillEditorProps {
+  value: string;
+  onChange: (html: string, text: string) => void;
+}
+
+const QuillEditor = ({ value, onChange }: QuillEditorProps) => {
+  const editorRef = useRef<HTMLDivElement | null>(null);
+  const quillRef = useRef<Quill | null>(null);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    if (!editorRef.current || quillRef.current) {
+      return;
+    }
+
+    const quill = new Quill(editorRef.current, {
+      theme: 'snow',
+    });
+
+    quill.on('text-change', () => {
+      const root = quill.root;
+      onChangeRef.current(root.innerHTML, quill.getText());
+    });
+
+    quillRef.current = quill;
+  }, []);
+
+  useEffect(() => {
+    const quill = quillRef.current;
+
+    if (!quill || quill.root.innerHTML === value) {
+      return;
+    }
+
+    const selection = quill.getSelection();
+    quill.clipboard.dangerouslyPasteHTML(value || '');
+
+    if (selection) {
+      quill.setSelection(selection.index, selection.length);
+    }
+  }, [value]);
+
+  return <div ref={editorRef} />;
+};
 
 const determineCategory = (
   recipeDialogInfo: AddProps | EditProps,
@@ -251,13 +299,10 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
 
   const handleModelChange = (
     html: string,
-    _: unknown,
-    __: unknown,
-    editor: UnprivilegedEditor,
+    text: string,
   ) => {
     setRecipeTitle(html);
-    const recipe_title_raw = editor.getText();
-    setRecipeTitleRaw(recipe_title_raw);
+    setRecipeTitleRaw(text);
   };
 
   const handleModelChangeIngredients = (html: string) => setIngredients(html);
@@ -325,14 +370,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           }}
         >
           <Typography variant="overline">Recipe Name</Typography>
-          <ReactQuill
-            defaultValue={
-              mode === Mode.Edit
-                ? (recipeDialogInfo as EditProps).recipe.title
-                : null
-            }
-            onChange={handleModelChange}
-          />
+          <QuillEditor value={recipeTitle} onChange={handleModelChange} />
         </Box>
         <Box
           sx={{
@@ -340,12 +378,8 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           }}
         >
           <Typography variant="overline">Ingredients</Typography>
-          <ReactQuill
-            defaultValue={
-              mode === Mode.Edit
-                ? (recipeDialogInfo as EditProps).recipe.ingredients
-                : null
-            }
+          <QuillEditor
+            value={ingredients}
             onChange={handleModelChangeIngredients}
           />
         </Box>
@@ -356,12 +390,8 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
           }}
         >
           <Typography variant="overline">Directions</Typography>
-          <ReactQuill
-            defaultValue={
-              mode === Mode.Edit
-                ? (recipeDialogInfo as EditProps).recipe.directions
-                : null
-            }
+          <QuillEditor
+            value={directions}
             onChange={handleModelChangeDirections}
           />
         </Box>
