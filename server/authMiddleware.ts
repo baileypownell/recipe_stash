@@ -6,6 +6,7 @@ export const authMiddleware = (
   next: NextFunction,
 ) => {
   if (request.session.isAuthenticated) {
+    request.session.userID = request.session.userID;
     next();
   } else {
     request.session.error = 'Unauthenticated';

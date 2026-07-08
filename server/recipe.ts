@@ -51,7 +51,9 @@ const formatRecipeResponse = (recipe: any): any => {
     title: recipe.title,
     rawTitle: recipe.raw_title || recipe.title,
     category: recipe.category,
-    user_id: recipe.user_id,
+    // Every query in this file selects user_uuid, not user_id — the old
+    // field name here was always undefined.
+    user_id: recipe.user_uuid,
     ingredients: recipe.ingredients,
     directions: recipe.directions,
     tags: constructTags(recipe),
@@ -62,11 +64,14 @@ const formatRecipeResponse = (recipe: any): any => {
 
 router.use(authMiddleware);
 
-router.get('/', authMiddleware, (request: any, response, next) => {
+// authMiddleware is already applied via router.use() above, so it's
+// dropped from individual route signatures below.
+
+router.get('/', (request: any, response, next) => {
   client.query(
     'SELECT * FROM recipes WHERE user_uuid=$1',
     [request.session.userID],
-    (err, res) => {
+    async (err, res) => {
       if (err) return next(err);
       const responseObject: any = {
         breakfast: [],
@@ -80,19 +85,34 @@ router.get('/', authMiddleware, (request: any, response, next) => {
 
       if (!res.rows.length) return response.json(responseObject);
 
-      const results = res.rows.map((recipe) => {
-        if (recipe.default_tile_image_key) {
-          const preSignedDefaultTileImageUrl = getPresignedUrl(
-            recipe.default_tile_image_key,
-          );
-          return {
-            ...recipe,
-            preSignedDefaultTileImageUrl,
-          };
-        } else {
-          return recipe;
-        }
-      });
+      let results;
+      try {
+        // getPresignedUrl is async — this was previously called inside a
+        // synchronous .map(), which meant every preSignedDefaultTileImageUrl
+        // was a pending Promise instead of a real URL string. Promise.all
+        // over an async map fixes that.
+        results = await Promise.all(
+          res.rows.map(async (recipe) => {
+            if (recipe.default_tile_image_key) {
+              const preSignedDefaultTileImageUrl = await getPresignedUrl(
+                recipe.default_tile_image_key,
+              );
+              return {
+                ...recipe,
+                preSignedDefaultTileImageUrl,
+              };
+            } else {
+              return recipe;
+            }
+          }),
+        );
+      } catch (error) {
+        return response.status(500).json({
+          success: false,
+          message: 'Could not generate image URLs.',
+        });
+      }
+
       results.forEach((recipe) => {
         if (recipe.category === 'Dinner' || recipe.category === 'dinner') {
           responseObject.dinner.push(formatRecipeResponse(recipe));
@@ -220,6 +240,14 @@ router.put('/', (request: any, response, next) => {
     isKeto,
     isHighProtein,
   } = request.body;
+
+  if (!recipeId || !title || !category || !ingredients || !directions) {
+    return response.status(400).json({
+      success: false,
+      message: 'Invalid request sent.',
+    });
+  }
+
   client.query(
     `UPDATE recipes SET
     title=$1,
@@ -263,18 +291,20 @@ router.put('/', (request: any, response, next) => {
       if (err) return next(err);
       return res.rowCount
         ? response.status(200).json(res.rows[0])
-        : response.status(500).json(null);
+        : response
+            .status(404)
+            .json({ success: false, message: 'Recipe not found.' });
     },
   );
 });
 
 const getImageAWSKeys = (recipeId: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<string[]>((resolve, reject) => {
     client.query(
       'SELECT key FROM files WHERE recipe_uuid=$1',
       [recipeId],
       (err, res) => {
-        if (err) reject(err);
+        if (err) return reject(err);
         const imageUrlArray = res.rows.reduce((arr, el) => {
           arr.push(el.key);
           return arr;
@@ -285,90 +315,106 @@ const getImageAWSKeys = (recipeId: string) => {
   });
 };
 
-router.get(
-  '/:recipeId',
-  (request: any, response, next) => {
-    const { recipeId } = request.params;
-    const userId = request.session.userID;
-    client.query(
-      'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
-      [userId, recipeId],
-      async (err, res) => {
-        if (err) return next(err);
-        const recipe = res.rows[0];
-        if (!recipe) return response.status(500).json(null);
+router.get('/:recipeId', (request: any, response, next) => {
+  const { recipeId } = request.params;
+  const userId = request.session.userID;
+  client.query(
+    'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
+    [userId, recipeId],
+    async (err, res) => {
+      if (err) return next(err);
+      const recipe = res.rows[0];
+      if (!recipe)
+        return response
+          .status(404)
+          .json({ success: false, message: 'Recipe not found.' });
 
-        const recipeResponse: FullRecipe = {
-          id: recipe.recipe_uuid,
-          title: recipe.title,
-          rawTitle: recipe.raw_title || recipe.title,
-          category: recipe.category,
-          user_id: recipe.user_uuid,
-          ingredients: recipe.ingredients,
-          directions: recipe.directions,
-          tags: constructTags(recipe),
-          defaultTileImageKey: recipe.default_tile_image_key,
-          preSignedUrls: null,
-          preSignedDefaultTileImageUrl: null,
-        };
-        if (!recipe.has_images)
-          return response.status(200).json(recipeResponse);
+      const recipeResponse: FullRecipe = {
+        id: recipe.recipe_uuid,
+        title: recipe.title,
+        rawTitle: recipe.raw_title || recipe.title,
+        category: recipe.category,
+        user_id: recipe.user_uuid,
+        ingredients: recipe.ingredients,
+        directions: recipe.directions,
+        tags: constructTags(recipe),
+        defaultTileImageKey: recipe.default_tile_image_key,
+        preSignedUrls: null,
+        preSignedDefaultTileImageUrl: null,
+      };
+      if (!recipe.has_images) return response.status(200).json(recipeResponse);
 
+      try {
         const urls = await getImageAWSKeys(recipeId);
-        if (urls) {
-          recipeResponse.preSignedUrls = getPresignedUrls(urls);
+        if (urls.length) {
+          recipeResponse.preSignedUrls = await getPresignedUrls(urls);
           if (recipe.default_tile_image_key) {
-            const preSignedDefaultTileImageUrl = getPresignedUrl(
+            recipeResponse.preSignedDefaultTileImageUrl = await getPresignedUrl(
               recipe.default_tile_image_key,
             );
-            recipeResponse.preSignedDefaultTileImageUrl =
-              preSignedDefaultTileImageUrl;
           }
         }
         response.status(200).json(recipeResponse);
-      },
-    );
-  },
-);
+      } catch (error) {
+        return response.status(500).json({
+          success: false,
+          message: 'Could not generate image URLs.',
+        });
+      }
+    },
+  );
+});
 
-router.delete(
-  '/:recipeId',
-  (request: any, response, next) => {
-    const userId = request.session.userID;
-    const { recipeId } = request.params;
-    client.query(
-      'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
-      [recipeId, userId],
-      (err, res) => {
-        if (err) return next(err);
-        if (res) {
-          const hasImages: boolean = res.rows[0].has_images;
-          const recipeId: string = res.rows[0].recipe_uuid;
-          if (!hasImages)
+router.delete('/:recipeId', (request: any, response, next) => {
+  const userId = request.session.userID;
+  const { recipeId } = request.params;
+  client.query(
+    'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2 RETURNING has_images, recipe_uuid',
+    [recipeId, userId],
+    (err, res) => {
+      if (err) return next(err);
+
+      if (!res.rows.length) {
+        return response.status(404).json({
+          recipeDeleted: false,
+          message:
+            'Recipe not found or you do not have permission to delete it.',
+        });
+      }
+
+      const hasImages: boolean = res.rows[0].has_images;
+      const deletedRecipeId: string = res.rows[0].recipe_uuid;
+      if (!hasImages) return response.status(200).json({ recipeDeleted: true });
+
+      // delete images associated with the recipe from database
+      client.query(
+        'DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
+        [deletedRecipeId],
+        async (error, filesRes) => {
+          if (error) return response.status(500).json({ recipeDeleted: false });
+
+          const awsKeys = filesRes.rows.map((row) => row.key);
+          if (!awsKeys.length) {
             return response.status(200).json({ recipeDeleted: true });
+          }
 
-          // delete images associated with the recipe from database
-          client.query(
-            'DELETE FROM files WHERE recipe_uuid=$1 RETURNING key',
-            [recipeId],
-            async (error, res) => {
-              if (error)
-                return response.status(500).json({ recipeDeleted: false });
-              // set recipe's "has_images" property to false if necessary
-              if (res) {
-                const awsKeys = res.rows.map((row) => row.key);
-                // then delete from AWS S3
-                const awsDeletions = await deleteAWSFiles(awsKeys);
-                if (awsDeletions) {
-                  return response.status(200).json({ recipeDeleted: true });
-                }
-              }
-            },
-          );
-        }
-      },
-    );
-  },
-);
+          try {
+            await deleteAWSFiles(awsKeys);
+            return response.status(200).json({ recipeDeleted: true });
+          } catch (awsError) {
+            // The recipe and file records are already gone at this point;
+            // surface the partial failure rather than silently succeeding
+            // or leaving the request hanging.
+            return response.status(500).json({
+              recipeDeleted: true,
+              message:
+                'Recipe deleted, but some images could not be removed from storage.',
+            });
+          }
+        },
+      );
+    },
+  );
+});
 
 export default router;
