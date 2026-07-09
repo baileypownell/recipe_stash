@@ -8,6 +8,7 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Popover,
   Stack,
   Typography,
@@ -16,9 +17,7 @@ import {
 import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
-import type {
-  BaseStringAccessibleObjectBoolean,
-} from '../../services/recipe-services';
+import type { BaseStringAccessibleObjectBoolean } from '../../services/recipe-services';
 
 interface FilterMenuItem {
   key: string;
@@ -137,31 +136,28 @@ export const FilterMenu = ({
 
   return (
     <>
-      <Button
+      <IconButton
         aria-describedby="filter-menu"
         onClick={handleClick}
-        endIcon={
-          <Badge
-            badgeContent={numberOfSelectedFilters || null}
-            color="primary"
-            sx={{
-              '.MuiBadge-badge': {
-                fontSize: '0.65rem',
-                minWidth: 16,
-                height: 16,
-              },
-            }}
-          >
-            <FilterListRoundedIcon />
-          </Badge>
-        }
         sx={{
           px: 1.25,
           color: theme.palette.primary.dark,
         }}
       >
-        Filter
-      </Button>
+        <Badge
+          badgeContent={numberOfSelectedFilters || null}
+          color="primary"
+          sx={{
+            '.MuiBadge-badge': {
+              fontSize: '0.65rem',
+              minWidth: 16,
+              height: 16,
+            },
+          }}
+        >
+          <FilterListRoundedIcon />
+        </Badge>
+      </IconButton>
       <Popover
         id="filter-menu"
         anchorEl={anchorEl}

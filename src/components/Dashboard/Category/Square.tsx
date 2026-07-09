@@ -22,7 +22,7 @@ const RecipeCard = ({
   const hasImage = !!defaultTileImageUrl;
 
   const tileStyles = {
-    width: `${CARD_WIDTH}px`,
+    minWidth: `${CARD_WIDTH}px`,
     height: `${CARD_HEIGHT}px`,
     borderRadius: 1,
     cursor: 'pointer',
@@ -57,6 +57,7 @@ const RecipeCard = ({
   return (
     <Box
       sx={{
+        flexGrow: 1,
         '&&': {
           '> a': {
             textDecoration: 'none',

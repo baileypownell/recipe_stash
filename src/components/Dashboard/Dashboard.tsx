@@ -326,25 +326,30 @@ const Dashboard = (props: Props) => {
   };
 
   return (
-    <Box>
-      <Box sx={{
-        p: 0.5
-      }}></Box>
-      <Box
+    <Box
+      sx={{
+        padding: 1,
+        [theme.breakpoints.up('lg')]: {
+          paddingRight: 3,
+          paddingLeft: 3,
+        },
+      }}
+    >
+      <Stack
+        direction="row"
         sx={{
-          padding: 2,
-          [theme.breakpoints.up('lg')]: {
-            paddingRight: 3,
-            paddingLeft: 3,
-          },
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
         <Stack
-          direction="row"
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={{ xs: 0, sm: 2 }}
           sx={{
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
+            alignItems: { xs: 'start', sm: 'center' },
+            justifyContent: 'space-between',
+          }}
+        >
           <ToggleButtonGroup
             exclusive
             size="small"
@@ -360,66 +365,50 @@ const Dashboard = (props: Props) => {
             </ToggleButton>
           </ToggleButtonGroup>
 
-          <Stack
-            direction="row"
+          <TextField
+            label="Filter by recipe name"
+            placeholder="Type to search..."
+            variant="standard"
+            size="small"
+            onChange={handleSearchChange}
+            value={userInputSubject.getValue()}
             sx={{
-              alignItems: "center",
-              justifyContent: "space-between"
-            }}>
-            <TextField
-              label="Filter by recipe name"
-              placeholder="Type to search..."
-              variant="filled"
-              size="small"
-              onChange={handleSearchChange}
-              value={userInputSubject.getValue()}
-              sx={{
-                m: 1,
-                minWidth: '200px',
-              }}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <SearchRoundedIcon />
-                    </InputAdornment>
-                  ),
-                }
-              }}
-            />
-            <FilterMenu
-              numberOfSelectedFilters={selectedFiltersNum}
-              filters={filterArray}
-              appliedFilt={appliedFilt}
-              appliedCat={appliedCat}
-              filter={filter}
-              filterByCategory={filterByCategory}
-              categories={filterCategoryArray}
-              clearFilters={clearFilters}
-            />
-          </Stack>
+              m: 1,
+            }}
+            slotProps={{
+              input: {
+                size: 'small',
+              },
+            }}
+          />
         </Stack>
-        {filteredRecipes !== null
-          ? Object.keys(mealCategories).map((mealCat) => (
-              <Collapse
-                key={mealCat}
-                in={allFalse ? true : appliedCat[mealCat]}
-              >
-                <Category
-                  title={mealCategories[mealCat]}
-                  gridView={gridView}
-                  recipes={
-                    (filteredRecipes as unknown as SortedRecipeInterface)[
-                      mealCat
-                    ]
-                  }
-                />
-              </Collapse>
-            ))
-          : null}
 
-        <AddRecipeButton addRecipe={addRecipe} />
-      </Box>
+        <FilterMenu
+          numberOfSelectedFilters={selectedFiltersNum}
+          filters={filterArray}
+          appliedFilt={appliedFilt}
+          appliedCat={appliedCat}
+          filter={filter}
+          filterByCategory={filterByCategory}
+          categories={filterCategoryArray}
+          clearFilters={clearFilters}
+        />
+      </Stack>
+      {filteredRecipes !== null
+        ? Object.keys(mealCategories).map((mealCat) => (
+            <Collapse key={mealCat} in={allFalse ? true : appliedCat[mealCat]}>
+              <Category
+                title={mealCategories[mealCat]}
+                gridView={gridView}
+                recipes={
+                  (filteredRecipes as unknown as SortedRecipeInterface)[mealCat]
+                }
+              />
+            </Collapse>
+          ))
+        : null}
+
+      <AddRecipeButton addRecipe={addRecipe} />
     </Box>
   );
 };
