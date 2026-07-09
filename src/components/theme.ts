@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material';
+import { alpha, createTheme } from '@mui/material';
 import type { Theme, ThemeOptions } from '@mui/material';
 
 declare module '@mui/material/styles' {
@@ -11,6 +11,26 @@ declare module '@mui/material/styles' {
     gray: PaletteOptions['primary'];
     orange: PaletteOptions['primary'];
     boxShadow: PaletteOptions['primary'];
+  }
+  interface Theme {
+    surfaces: {
+      quiet: {
+        backgroundColor: string;
+        border: string;
+        borderRadius: string;
+        boxShadow: string;
+      };
+    };
+  }
+  interface ThemeOptions {
+    surfaces?: {
+      quiet?: {
+        backgroundColor?: string;
+        border?: string;
+        borderRadius?: string;
+        boxShadow?: string;
+      };
+    };
   }
 }
 
@@ -55,6 +75,14 @@ const base = createTheme({
       main: '#868686',
     },
   },
+  surfaces: {
+    quiet: {
+      backgroundColor: '#fff',
+      border: '1px solid rgba(53, 53, 49, 0.12)',
+      borderRadius: '4px',
+      boxShadow: '0 1px 4px rgba(53, 53, 49, 0.05)',
+    },
+  },
 });
 
 const getAppBar = (theme: Theme): ThemeOptions => ({
@@ -73,6 +101,16 @@ const getAppBar = (theme: Theme): ThemeOptions => ({
 const getButton = (): ThemeOptions => ({
   components: {
     MuiButton: {
+      defaultProps: {
+        disableElevation: true,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+          fontWeight: 700,
+          textTransform: 'none',
+        },
+      },
       variants: [
         {
           props: { variant: 'contained', color: 'primary' },
@@ -103,7 +141,7 @@ const getList = (theme: Theme): ThemeOptions => ({
   },
 });
 
-export const getChip = (): ThemeOptions => ({
+export const getChip = (theme: Theme): ThemeOptions => ({
   components: {
     MuiChip: {
       defaultProps: {
@@ -112,7 +150,18 @@ export const getChip = (): ThemeOptions => ({
       },
       styleOverrides: {
         root: {
-          transition: 'all 0.4s',
+          borderRadius: 999,
+          fontWeight: 700,
+          transition: 'background-color 160ms ease, border-color 160ms ease',
+        },
+        sizeSmall: {
+          height: 22,
+          fontSize: '0.72rem',
+        },
+        outlined: {
+          backgroundColor: '#fff',
+          borderColor: alpha(theme.palette.gray.main, 0.18),
+          color: theme.palette.gray.main,
         },
       },
     },
@@ -137,6 +186,44 @@ export const getForm = (theme: Theme): ThemeOptions => ({
         },
       },
     },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+          backgroundColor: '#fff',
+        },
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        variant: 'outlined',
+        size: 'small',
+      },
+    },
+  },
+});
+
+const getSurfaceComponents = (theme: Theme): ThemeOptions => ({
+  components: {
+    MuiCard: {
+      defaultProps: {
+        elevation: 0,
+      },
+      styleOverrides: {
+        root: {
+          ...theme.surfaces.quiet,
+          transition: 'border-color 160ms ease, box-shadow 160ms ease',
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: theme.surfaces.quiet.borderRadius,
+          transition: 'border-color 160ms ease, background-color 160ms ease',
+        },
+      },
+    },
   },
 });
 
@@ -145,6 +232,7 @@ export const theme = createTheme(
   getAppBar(base),
   getButton(),
   getList(base),
-  getChip(),
+  getChip(base),
   getForm(base),
+  getSurfaceComponents(base),
 );

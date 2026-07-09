@@ -1,12 +1,13 @@
 import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import Chips from './Chips';
 import { Link } from 'react-router-dom';
 import type { FullRecipe } from '../../../../shared/types';
 
-const CARD_HEIGHT = 150;
-const CARD_WIDTH = 250;
+const CARD_HEIGHT = 190;
+const CARD_WIDTH = 276;
 
 const RecipeCard = ({
   recipe,
@@ -18,26 +19,39 @@ const RecipeCard = ({
   defaultTileImageUrl?: string;
 }) => {
   const theme = useTheme();
-  const imageTileStyles = {
-    backgroundBlendMode: 'overlay',
-    backgroundColor: theme.palette.gray.main,
-    color: theme.palette.info.main,
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    transition: 'background-color 0.3s',
-    width: `${CARD_WIDTH}px`,
-    height: `${CARD_HEIGHT}px`,
-  };
+  const hasImage = !!defaultTileImageUrl;
 
   const tileStyles = {
     width: `${CARD_WIDTH}px`,
     height: `${CARD_HEIGHT}px`,
-    borderRadius: '5px',
+    borderRadius: 1,
     cursor: 'pointer',
-    minHeight: '120px',
-    transition: 'box-shadow 300ms',
-    transitionTimingFunction: 'ease-in-out',
+    color: hasImage ? theme.palette.info.main : theme.palette.gray.main,
+    overflow: 'hidden',
+    position: 'relative',
+    background: hasImage
+      ? `${theme.palette.gray.main} center / cover no-repeat`
+      : '#fff',
+    ...(hasImage
+      ? {
+          '&:before': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background: alpha(theme.palette.gray.main, 0.5),
+          },
+        }
+      : {
+          '&:after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 4,
+            backgroundColor: theme.palette.primary.main,
+          },
+        }),
   };
 
   return (
@@ -48,13 +62,13 @@ const RecipeCard = ({
             textDecoration: 'none',
             '&:hover': {
               '> div': {
-                boxShadow: `0px 3px 10px ${theme.palette.primary.dark}`,
+                borderColor: alpha(theme.palette.primary.main, 0.42),
               },
             },
             '&:focus': {
               outline: 'none',
               '> div': {
-                boxShadow: `0px 3px 10px ${theme.palette.primary.main}`,
+                boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.2)}`,
               },
             },
           },
@@ -63,8 +77,7 @@ const RecipeCard = ({
     >
       <Link to={`/recipes/${recipe.id}`} target="_blank">
         <Card
-          elevation={5}
-          sx={{ ...tileStyles, ...(defaultTileImageUrl && imageTileStyles) }}
+          sx={tileStyles}
           style={{
             textDecoration: 'none!important',
             backgroundImage: defaultTileImageUrl
@@ -74,20 +87,42 @@ const RecipeCard = ({
         >
           <CardContent
             sx={{
+              position: 'relative',
+              zIndex: 1,
               width: '100%',
               height: '100%',
-              padding: '8px',
+              padding: 1.5,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              '.MuiChip-root': {
+                borderColor: hasImage
+                  ? alpha(theme.palette.info.main, 0.6)
+                  : alpha(theme.palette.primary.main, 0.44),
+                backgroundColor: hasImage
+                  ? alpha(theme.palette.gray.main, 0.3)
+                  : '#fff',
+                color: hasImage ? theme.palette.info.main : theme.palette.primary.dark,
+              },
             }}
           >
             <Typography
               variant="h6"
               sx={{
+                marginTop: 'auto',
                 marginBottom: 1,
-                textAlign: "center",
-                textOverflow: 'ellipsis',
+                maxWidth: '100%',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
                 overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textTransform: 'none'
+                textTransform: 'none',
+                lineHeight: 1.08,
+                fontSize: '1.25rem',
+                fontWeight: 800,
+                textShadow: hasImage
+                  ? `0 1px 6px ${alpha(theme.palette.gray.main, 0.55)}`
+                  : 'none',
               }}>
               {rawTitle}
             </Typography>

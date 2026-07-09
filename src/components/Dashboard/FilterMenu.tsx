@@ -1,6 +1,7 @@
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import ClearIcon from '@mui/icons-material/Clear';
 import {
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -12,6 +13,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
 import type {
@@ -56,21 +58,109 @@ export const FilterMenu = ({
     setAnchorEl(null);
   };
 
+  const renderFilterGroup = ({
+    title,
+    items,
+    applied,
+    onChange,
+  }: {
+    title: string;
+    items: FilterMenuItem[];
+    applied: BaseStringAccessibleObjectBoolean;
+    onChange: (key: string) => void;
+  }) => (
+    <Box
+      sx={{
+        minWidth: {
+          xs: '100%',
+          sm: 0,
+        },
+      }}
+    >
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+          marginBottom: 1,
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: theme.palette.gray.main,
+            fontWeight: 800,
+            fontSize: '0.9rem',
+            letterSpacing: 0,
+          }}
+        >
+          {title}
+        </Typography>
+      </Stack>
+      <Divider sx={{ marginBottom: 0.75 }} />
+      <FormGroup
+        sx={{
+          gap: 0.25,
+        }}
+      >
+        {items.map((item: FilterMenuItem) => (
+          <FormControlLabel
+            key={item.name}
+            control={
+              <Checkbox
+                checked={applied[item.key]}
+                id={item.key}
+                onChange={() => onChange(item.key)}
+                size="small"
+                sx={{
+                  padding: 0.5,
+                }}
+              />
+            }
+            label={item.name}
+            sx={{
+              marginLeft: -0.75,
+              marginRight: 0,
+              minHeight: 30,
+              '.MuiFormControlLabel-label': {
+                fontSize: '0.86rem',
+                fontWeight: applied[item.key] ? 700 : 500,
+                color: theme.palette.gray.main,
+              },
+            }}
+          />
+        ))}
+      </FormGroup>
+    </Box>
+  );
+
   return (
     <>
-      <Button aria-describedby="filter-menu" onClick={handleClick}>
-        <Stack direction="row" sx={{
-          alignItems: "center"
-        }}>
-          <Typography variant="body2" sx={{ marginRight: '5px' }}>
-            Filter
-          </Typography>
-          {numberOfSelectedFilters > 0 ? (
-            <Typography variant="body2">({numberOfSelectedFilters})</Typography>
-          ) : (
+      <Button
+        aria-describedby="filter-menu"
+        onClick={handleClick}
+        endIcon={
+          <Badge
+            badgeContent={numberOfSelectedFilters || null}
+            color="primary"
+            sx={{
+              '.MuiBadge-badge': {
+                fontSize: '0.65rem',
+                minWidth: 16,
+                height: 16,
+              },
+            }}
+          >
             <FilterListRoundedIcon />
-          )}
-        </Stack>
+          </Badge>
+        }
+        sx={{
+          px: 1.25,
+          color: theme.palette.primary.dark,
+        }}
+      >
+        Filter
       </Button>
       <Popover
         id="filter-menu"
@@ -82,92 +172,88 @@ export const FilterMenu = ({
           vertical: 'bottom',
           horizontal: 'right',
         }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              ...theme.surfaces.quiet,
+              width: {
+                xs: 'calc(100vw - 32px)',
+                sm: 360,
+              },
+              maxWidth: 'calc(100vw - 32px)',
+              marginTop: 1,
+              overflow: 'hidden',
+            },
+          },
+        }}
       >
         <Stack
           direction="column"
           sx={{
-            alignItems: "center",
-            paddingBottom: 1,
-            paddingRight: 2,
-            paddingLeft: 2
-          }}>
-          <Stack direction="row" spacing={2}>
-            <Box sx={{
-              minWidth: "150px"
-            }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontWeight: "bold",
-                  p: 1
-                }}>
-                Tags
-              </Typography>
-              <Divider />
-              <FormGroup>
-                {filters.map((item: FilterMenuItem) => {
-                  return (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          tabIndex={0}
-                          checked={appliedFilt[item.key]}
-                          onChange={() => filter(item.key)}
-                        />
-                      }
-                      label={item.name}
-                      key={item.name}
-                    />
-                  );
-                })}
-              </FormGroup>
-            </Box>
-
-            <Box sx={{
-              minWidth: "150px"
-            }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontWeight: "bold",
-                  p: 1
-                }}>
-                Categories
-              </Typography>
-              <Divider />
-              <FormGroup>
-                {categories.map((item: FilterMenuItem) => {
-                  return (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={appliedCat[item.key]}
-                          id={item.key}
-                          onChange={() => filterByCategory(item.key)}
-                        />
-                      }
-                      label={item.name}
-                      key={item.name}
-                    />
-                  );
-                })}
-              </FormGroup>
-            </Box>
+            padding: 2,
+          }}
+        >
+          <Stack
+            direction="row"
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: '1fr 1fr',
+              },
+              gap: 1.5,
+              alignItems: 'flex-start',
+            }}
+          >
+            {renderFilterGroup({
+              title: 'Tags',
+              items: filters,
+              applied: appliedFilt,
+              onChange: filter,
+            })}
+            {renderFilterGroup({
+              title: 'Categories',
+              items: categories,
+              applied: appliedCat,
+              onChange: filterByCategory,
+            })}
           </Stack>
 
-          <Button
+          <Divider sx={{ width: '100%', marginTop: 1.5, marginBottom: 1.25 }} />
+          <Stack
+            direction="row"
             sx={{
-              svg: {
-                color: theme.palette.primary.main,
-              },
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              gap: 2,
             }}
-            onClick={clearFilters}
-            size="small"
-            variant="outlined"
-            startIcon={<ClearIcon />}
           >
-            Clear All
-          </Button>
+            <Typography
+              variant="body2"
+              sx={{
+                color: alpha(theme.palette.gray.main, 0.66),
+                fontWeight: 600,
+              }}
+            >
+              {numberOfSelectedFilters
+                ? `${numberOfSelectedFilters} selected`
+                : 'No filters selected'}
+            </Typography>
+            <Button
+              onClick={clearFilters}
+              size="small"
+              variant="outlined"
+              startIcon={<ClearIcon />}
+              disabled={!numberOfSelectedFilters}
+            >
+              Clear All
+            </Button>
+          </Stack>
         </Stack>
       </Popover>
     </>
