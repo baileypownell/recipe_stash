@@ -11,7 +11,7 @@ export const AddRecipeButton = ({ addRecipe }: AddProps) => {
   return (
     <Box
       sx={{
-        position: 'absolute',
+        position: 'fixed',
         bottom: 16,
         right: 16
       }}>
