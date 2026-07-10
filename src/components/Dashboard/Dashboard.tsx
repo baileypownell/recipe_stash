@@ -1,11 +1,9 @@
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TableRowsRoundedIcon from '@mui/icons-material/TableRowsRounded';
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
 
 import {
   Box,
   Collapse,
-  InputAdornment,
   Stack,
   TextField,
   ToggleButton,
@@ -13,6 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import type {
@@ -121,13 +120,72 @@ const unfilteredRecipes$ = unfilteredRecipesSubject.asObservable();
 interface Props {
   addRecipeMutation: any;
   fetchRecipes: Function;
-  recipes: SortedRecipeInterface;
+  isLoading?: boolean;
+  recipes?: SortedRecipeInterface;
 }
+
+const DashboardSkeleton = ({ gridView }: { gridView: GridView }) => {
+  const theme = useTheme();
+
+  return (
+    <Box sx={{ paddingTop: 3.5 }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          gap: 1.25,
+          marginBottom: 1.75,
+        }}
+      >
+        <Skeleton width={4} height={24} borderRadius={4} />
+        <Skeleton width={110} height={24} />
+        <Skeleton width={28} height={22} borderRadius={4} />
+      </Stack>
+      <Stack
+        direction={gridView === GridView.Grid ? 'row' : 'column'}
+        sx={{
+          flexWrap: gridView === GridView.Grid ? 'wrap' : 'nowrap',
+          gap: gridView === GridView.Grid ? 2 : 0.75,
+        }}
+      >
+        {Array.from({ length: gridView === GridView.Grid ? 8 : 10 }).map(
+          (_, index) =>
+            gridView === GridView.Grid ? (
+              <Skeleton key={index} width={276} height={190} borderRadius={4} />
+            ) : (
+              <Stack
+                key={index}
+                direction="row"
+                sx={{
+                  alignItems: 'center',
+                  gap: 1,
+                  minHeight: 52,
+                  py: 0.75,
+                  px: 1,
+                  border: theme.surfaces.quiet.border,
+                  backgroundColor: '#fff',
+                }}
+              >
+                <Skeleton width={32} height={32} borderRadius={4} />
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Skeleton width="42%" height={18} />
+                </Box>
+                <Skeleton width={24} height={24} borderRadius={12} />
+              </Stack>
+            ),
+        )}
+      </Stack>
+    </Box>
+  );
+};
 
 const Dashboard = (props: Props) => {
   const [filteredRecipes, setFilteredRecipes] =
     useState<SortedRecipeInterface | null>(null);
-  const [gridView, setGridView] = useState(GridView.Grid);
+  const [gridView, setGridView] = useState(() => {
+    const savedGridView = Number(window.localStorage.getItem('gridView'));
+    return savedGridView === GridView.List ? GridView.List : GridView.Grid;
+  });
   const [selectedFiltersNum, setSelectedFiltersNum] = useState(0);
   const theme = useTheme();
 
@@ -140,6 +198,10 @@ const Dashboard = (props: Props) => {
   };
 
   useEffect(() => {
+    if (props.isLoading || !props.recipes) {
+      return;
+    }
+
     unfilteredRecipesSubject.next(props.recipes);
 
     const userInputSaved = window.sessionStorage.getItem('userInput');
@@ -147,7 +209,6 @@ const Dashboard = (props: Props) => {
       userInputSubject.next(userInputSaved);
     }
 
-    // using saved features filter
     const userFiltersSaved = JSON.parse(
       window.sessionStorage.getItem('feature_filters') as string,
     );
@@ -155,7 +216,6 @@ const Dashboard = (props: Props) => {
       appliedFiltersSubject.next(userFiltersSaved);
     }
 
-    // using saved categories filter
     const userCategoryFiltersSaved: CategoryInterface = JSON.parse(
       window.sessionStorage.getItem('category_filters') as string,
     );
@@ -163,13 +223,7 @@ const Dashboard = (props: Props) => {
       appliedCategorySubject.next(userCategoryFiltersSaved);
     }
 
-    // set gridView
-    const gridView = JSON.parse(
-      window.localStorage.getItem('gridView') as string,
-    );
-    setGridView(gridView);
-
-    combineLatest([
+    const subscription = combineLatest([
       appliedFilters$,
       appliedCategory$,
       userInput$,
@@ -218,7 +272,9 @@ const Dashboard = (props: Props) => {
 
         setFilteredRecipes(newFilteredRecipesState);
       });
-  }, []);
+
+    return () => subscription.unsubscribe();
+  }, [props.isLoading, props.recipes]);
 
   useEffect(() => {
     let selectedFilters = 0;
@@ -339,7 +395,7 @@ const Dashboard = (props: Props) => {
         direction="row"
         sx={{
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: { xs: 'start', sm: 'center' },
         }}
       >
         <Stack
@@ -357,16 +413,17 @@ const Dashboard = (props: Props) => {
             value={gridView}
             onChange={(_, val) => toggleView(val)}
           >
-            <ToggleButton disableRipple value={GridView.List}>
+            <ToggleButton disableRipple value={GridView.List} aria-label="List view">
               <TableRowsRoundedIcon />
             </ToggleButton>
-            <ToggleButton disableRipple value={GridView.Grid}>
+            <ToggleButton disableRipple value={GridView.Grid} aria-label="Grid view">
               <ViewModuleRoundedIcon />
             </ToggleButton>
           </ToggleButtonGroup>
 
           <TextField
             label="Filter by recipe name"
+            aria-label="Filter by recipe name"
             placeholder="Type to search..."
             variant="standard"
             size="small"
@@ -374,6 +431,7 @@ const Dashboard = (props: Props) => {
             value={userInputSubject.getValue()}
             sx={{
               m: 1,
+              width: { xs: '100%', md: 300 },
             }}
             slotProps={{
               input: {
@@ -394,7 +452,8 @@ const Dashboard = (props: Props) => {
           clearFilters={clearFilters}
         />
       </Stack>
-      {filteredRecipes !== null
+      {props.isLoading ? <DashboardSkeleton gridView={gridView} /> : null}
+      {!props.isLoading && filteredRecipes !== null
         ? Object.keys(mealCategories).map((mealCat) => (
             <Collapse key={mealCat} in={allFalse ? true : appliedCat[mealCat]}>
               <Category

@@ -12,7 +12,6 @@ import type {
 import { queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
-import { Spinner } from './Spinner';
 import type { NewFileUpload } from '../models/images';
 import type { FullRecipe, RawRecipe } from '../../shared/types';
 
@@ -141,10 +140,6 @@ const RecipeCache = () => {
     setSnackBarOpen(false);
   };
 
-  if (isLoading) {
-    return <Spinner />;
-  }
-
   if (params.id) {
     return (
       <Recipe
@@ -171,6 +166,7 @@ const RecipeCache = () => {
           />
         </Routes>
         <Dashboard
+          isLoading={isLoading}
           recipes={data as SortedRecipeInterface}
           fetchRecipes={() => fetchRecipes()}
           addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>

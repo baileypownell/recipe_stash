@@ -2,6 +2,8 @@ import { ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import AuthenticationService from '../services/auth-service';
 import ErrorBoundary from './ErrorBoundary';
 import GuardedRoute from './GuardedRoute';
@@ -37,42 +39,47 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Nav />
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/reset/:token" element={<ResetPassword />} />
-              <Route
-                path="/recipes"
-                element={
-                  <GuardedRoute>
-                    <RecipeCache />
-                  </GuardedRoute>
-                }
-              >
+        <SkeletonTheme
+          baseColor={theme.skeleton.baseColor}
+          highlightColor={theme.skeleton.highlightColor}
+        >
+          <BrowserRouter>
+            <Nav />
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/reset/:token" element={<ResetPassword />} />
                 <Route
-                  path=":id"
+                  path="/recipes"
                   element={
                     <GuardedRoute>
                       <RecipeCache />
                     </GuardedRoute>
                   }
+                >
+                  <Route
+                    path=":id"
+                    element={
+                      <GuardedRoute>
+                        <RecipeCache />
+                      </GuardedRoute>
+                    }
+                  ></Route>
+                </Route>
+                <Route
+                  path="/settings"
+                  element={
+                    <GuardedRoute>
+                      <Settings />
+                    </GuardedRoute>
+                  }
                 ></Route>
-              </Route>
-              <Route
-                path="/settings"
-                element={
-                  <GuardedRoute>
-                    <Settings />
-                  </GuardedRoute>
-                }
-              ></Route>
-            </Routes>
-          </ErrorBoundary>
-        </BrowserRouter>
+              </Routes>
+            </ErrorBoundary>
+          </BrowserRouter>
+        </SkeletonTheme>
       </ThemeProvider>
     </QueryClientProvider>
   );

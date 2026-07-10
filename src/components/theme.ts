@@ -13,6 +13,10 @@ declare module '@mui/material/styles' {
     boxShadow: PaletteOptions['primary'];
   }
   interface Theme {
+    skeleton: {
+      baseColor: string;
+      highlightColor: string;
+    };
     surfaces: {
       quiet: {
         backgroundColor: string;
@@ -23,6 +27,10 @@ declare module '@mui/material/styles' {
     };
   }
   interface ThemeOptions {
+    skeleton?: {
+      baseColor?: string;
+      highlightColor?: string;
+    };
     surfaces?: {
       quiet?: {
         backgroundColor?: string;
@@ -74,6 +82,10 @@ const base = createTheme({
     boxShadow: {
       main: '#868686',
     },
+  },
+  skeleton: {
+    baseColor: alpha('#353531', 0.08),
+    highlightColor: alpha('#353531', 0.035),
   },
   surfaces: {
     quiet: {
