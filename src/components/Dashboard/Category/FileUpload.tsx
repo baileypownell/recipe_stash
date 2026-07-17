@@ -1,5 +1,5 @@
-import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
-import { Box, Button, Stack, Typography, useTheme } from '@mui/material';
+import { UploadFileRoundedIcon } from '@icons';
+import { Box, Button, Text, Group, useMantineTheme } from '@mantine/core';
 import { useEffect, useRef } from 'react';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -33,8 +33,8 @@ const FileUpload = ({
   preExistingImageUrls,
   defaultTileImageUUID,
 }: FileUploadProps) => {
-  const input = useRef(null);
-  const theme = useTheme();
+  const theme = useMantineTheme();
+  const input = useRef<HTMLInputElement | null>(null);
   const { control, watch, setValue } = useForm<{
     defaultTileImageUUID: string | null | undefined;
     files: NewFileUpload[];
@@ -69,21 +69,19 @@ const FileUpload = ({
       (file) => file !== undefined,
     );
     passFiles(combinedFiles);
-  }, [fields, existingFiles]);
+  }, [files, preExistingFiles, passFiles]);
 
   const openFileFinder = () => {
-    if (input.current) (input.current as any).click();
+    input.current?.click();
   };
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    e.stopPropagation();
-    const fileList: FileList = e.dataTransfer.files;
-    if (!fileList.length) {
+  const addFiles = (fileList: FileList | null) => {
+    if (!fileList?.length) {
       return;
     }
+
     append(
-      Array.from(e.dataTransfer.files as FileList).map((file) => ({
+      Array.from(fileList).map((file) => ({
         file,
         backgroundImage: URL.createObjectURL(file),
         isDefault: false,
@@ -91,25 +89,23 @@ const FileUpload = ({
     );
   };
 
+  const handleDrop = (e: DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    addFiles(e.dataTransfer.files);
+  };
+
   return (
-    <Box sx={{
-      padding: "20px 0"
-    }}>
+    <Box>
       <Box
-        sx={{
-          border: `2px dashed  ${theme.palette.boxShadow.main}`,
-          cursor: 'pointer',
-          position: 'relative',
-          input: {
-            display: 'block',
-            width: '100%',
-            opacity: 0,
-            position: 'absolute',
-            minHeight: '275px',
-          },
-        }}
         onDrop={handleDrop}
-        onDragOver={handleDrop}
+        onDragOver={(event) => event.preventDefault()}
+        style={{
+          border: `1px dashed ${theme.colors.gray[4]}`,
+          borderRadius: theme.radius.sm,
+          padding: theme.spacing.lg,
+          backgroundColor: theme.colors.gray[0],
+        }}
       >
         <input
           ref={input}
@@ -117,52 +113,33 @@ const FileUpload = ({
           accept="image/png, image/jpeg, image/jpg"
           disabled={false}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            append(
-              Array.from(e.target.files as FileList).map((file) => ({
-                file,
-                backgroundImage: URL.createObjectURL(file),
-                isDefault: false,
-              })),
-            );
+            addFiles(e.target.files);
           }}
           multiple
           title="Upload a file"
-        ></input>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '25px',
-            svg: {
-              fontSize: '100px',
-              marginTop: '15px',
-            },
-          }}
+          style={{ display: 'none' }}
+        />
+        <Group
+          justify="space-between"
+          align="center"
+          gap="md"
         >
-          <Typography variant="overline">Drag & drop an image</Typography>
+          <Box>
+            <Text size="sm" fw={500}>Images</Text>
+            <Text size="xs" c="dimmed">Drop images here or choose files</Text>
+          </Box>
           <Button
-            variant="outlined"
-            color="secondary"
+            variant="outline"
+            color="dark"
             onClick={openFileFinder}
             disabled={false}
-            sx={{
-              margin: 1,
-            }}
+            leftSection={<UploadFileRoundedIcon />}
           >
-            Choose a file
+            Choose files
           </Button>
-          {/* <Typography>(Limit 5)</Typography> */}
-          <UploadFileRoundedIcon />
-        </Box>
+        </Group>
       </Box>
-      <Stack
-        direction="row"
-        sx={{
-          padding: "15px 0",
-          flexWrap: "wrap"
-        }}>
+      <Group mt="md">
         {fields.map((item, index) => (
           <ImagePreview
             key={item.id}
@@ -236,7 +213,7 @@ const FileUpload = ({
             }}
           />
         ))}
-      </Stack>
+      </Group>
     </Box>
   );
 };

@@ -11,8 +11,9 @@ const ImageminPlugin = ImageminPluginImport.default;
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-export default () => {
+export default (_env, argv) => {
   return {
+    mode: argv.mode || 'production',
     entry: './src/index.js',
     output: {
       path: path.join(__dirname, '/dist'),
@@ -77,6 +78,10 @@ export default () => {
     ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      alias: {
+        '@theme': path.resolve(__dirname, 'src/components/theme.ts'),
+        '@icons': path.resolve(__dirname, 'src/components/icons.tsx'),
+      },
     },
     devServer: {
       static: './dist',

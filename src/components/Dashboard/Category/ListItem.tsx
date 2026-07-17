@@ -1,152 +1,139 @@
 import {
+  Badge,
   Box,
-  Chip,
-  ListItemButton,
-  ListItem as MuiListItem,
-  Stack,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+  Text,
+  Group,
+  UnstyledButton,
+  useMantineTheme,
+} from '@mantine/core';
+import { ChevronRightRoundedIcon } from '@icons';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { recipeTagChips } from '../../../models/tags';
 import type { FullRecipe } from '../../../../shared/types';
 
-interface ListItemProps {
+interface RecipeListItemProps {
   recipe: FullRecipe;
 }
 
 const MAX_VISIBLE_TAGS = 4;
 
-const ListItem = ({ recipe }: ListItemProps) => {
+const RecipeListItem = ({ recipe }: RecipeListItemProps) => {
   const navigate = useNavigate();
-  const theme = useTheme();
+  const [hovered, setHovered] = useState(false);
+  const mantineTheme = useMantineTheme();
+  const theme = useMantineTheme();
   const viewRecipe = () => navigate(`/recipes/${recipe.id}`);
   const visibleTags = recipe.tags.slice(0, MAX_VISIBLE_TAGS);
   const hiddenTags = recipe.tags.length - visibleTags.length;
 
   return (
-    <MuiListItem
-      disablePadding
-      sx={{
-        width: '100%',
-      }}
-    >
-      <ListItemButton
+    <Box style={{ width: '100%' }}>
+      <UnstyledButton
         onClick={viewRecipe}
-        sx={{
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          width: '100%',
+          minHeight: 58,
+          display: 'grid',
+          gridTemplateColumns: '40px minmax(0, 1fr) 24px',
           alignItems: 'center',
-          gap: 1,
-          minHeight: 52,
-          py: 0.75,
-          px: 1,
-          border: theme.surfaces.quiet.border,
-          backgroundColor: '#fff',
-          '&:hover': {
-            borderColor: alpha(theme.palette.primary.main, 0.34),
-            backgroundColor: alpha(theme.palette.primary.main, 0.025),
-          },
+          gap: mantineTheme.spacing.sm,
+          padding: '9px 10px',
+          border: hovered
+            ? `1px solid ${theme.other.app.borders.primary}`
+            : '1px solid transparent',
+          borderRadius: 6,
+          backgroundColor: hovered
+            ? theme.other.app.surfaces.primaryTint.backgroundColor
+            : mantineTheme.white,
+          transform: hovered ? 'translateX(2px)' : undefined,
+          transition:
+            'background-color 140ms ease, border-color 140ms ease, transform 140ms ease',
         }}
       >
         <Box
-          sx={{
-            width: 32,
-            height: 32,
-            flex: '0 0 auto',
-            borderRadius: 1,
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 6,
             display: 'grid',
             placeItems: 'center',
-            color: theme.palette.primary.dark,
-            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+            backgroundColor:
+              theme.other.app.surfaces.primaryTint.backgroundColor,
+            color: theme.other.app.palette.primary.dark,
             fontWeight: 900,
-            fontSize: '0.86rem',
           }}
         >
-          <Typography
-            component="span"
-            sx={{
-              fontWeight: 900,
-              fontSize: '0.86rem',
-              lineHeight: 1,
-            }}
-          >
+          <Text component="span">
             {recipe.rawTitle.charAt(0).toUpperCase()}
-          </Typography>
+          </Text>
         </Box>
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: 'center',
+        <Box
+          style={{
             minWidth: 0,
-            flex: 1,
-            gap: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: mantineTheme.spacing.sm,
+            flexWrap: 'wrap',
           }}
         >
-          <Typography
-            sx={{
-              color: theme.palette.gray.main,
+          <Text
+            style={{
+              color: theme.other.app.palette.gray.main,
               fontWeight: 800,
-              fontSize: '0.95rem',
               lineHeight: 1.2,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              flex: '0 1 auto',
             }}
           >
             {recipe.rawTitle}
-          </Typography>
+          </Text>
           {recipe.tags.length ? (
-            <Stack
-              direction="row"
-              sx={{
-                minWidth: 0,
-                flexWrap: 'wrap',
-                gap: 0.5,
-                maxHeight: 22,
-                overflow: 'hidden',
-              }}
-            >
+            <Group gap={6} style={{ minWidth: 0 }}>
               {visibleTags.map((recipeTag) => (
-                <Chip
+                <Badge
                   key={recipeTag}
-                  size="small"
-                  variant="outlined"
-                  label={
+                  size="sm"
+                  variant="light"
+                  style={{
+                    borderColor: theme.other.app.borders.primary,
+                    background:
+                      theme.other.app.surfaces.primaryTint.backgroundColor,
+                    color: theme.other.app.palette.primary.dark,
+                    fontWeight: 800,
+                    letterSpacing: 0,
+                  }}
+                >
+                  {
                     recipeTagChips.find(
                       (tag) => tag.recipeTagPropertyName === recipeTag,
                     )!.label
                   }
-                  sx={{
-                    fontWeight: 700,
-                    backgroundColor: '#fff',
-                  }}
-                />
+                </Badge>
               ))}
               {hiddenTags > 0 ? (
-                <Chip
-                  size="small"
-                  variant="outlined"
-                  label={`+${hiddenTags}`}
-                  sx={{
+                <Badge
+                  size="sm"
+                  variant="light"
+                  style={{
+                    borderColor: theme.other.app.borders.primary,
+                    background:
+                      theme.other.app.surfaces.primaryTint.backgroundColor,
+                    color: theme.other.app.palette.primary.dark,
                     fontWeight: 800,
-                    backgroundColor: alpha(theme.palette.gray.main, 0.04),
+                    letterSpacing: 0,
                   }}
-                />
+                >
+                  {`+${hiddenTags}`}
+                </Badge>
               ) : null}
-            </Stack>
+            </Group>
           ) : null}
-        </Stack>
-        <ChevronRightRoundedIcon
-          sx={{
-            color: alpha(theme.palette.gray.main, 0.42),
-            flex: '0 0 auto',
-          }}
-        />
-      </ListItemButton>
-    </MuiListItem>
+        </Box>
+        <ChevronRightRoundedIcon />
+      </UnstyledButton>
+    </Box>
   );
 };
 
-export default ListItem;
+export default RecipeListItem;

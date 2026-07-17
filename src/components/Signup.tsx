@@ -1,19 +1,23 @@
 import {
   Box,
   Button,
-  Fade,
-  Link,
-  Snackbar,
+  Anchor,
+  Divider,
   Stack,
-  TextField,
-  Typography,
-  useTheme,
-} from '@mui/material';
+  PasswordInput,
+  TextInput,
+  Transition,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 import backgroundImage from '../images/ingredients.jpg';
+import transparentLogo from '../images/white-text-transparent.svg';
 import { isPasswordValid } from '../models/functions';
 import AuthenticationService from '../services/auth-service';
 import UserService, {
@@ -56,14 +60,11 @@ const validationSchema = yup.object({
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState('');
   const navigate = useNavigate();
-  const theme = useTheme();
+  const theme = useMantineTheme();
 
-  const openSnackBar = (message: string) => {
-    setSnackBarMessage(message);
-    setSnackBarOpen(true);
+  const showNotification = (message: string) => {
+    notifications.show({ message });
   };
 
   const signup = async (values: SignupFormValues) => {
@@ -83,17 +84,12 @@ const Signup = () => {
         navigate('/recipes');
       } else {
         setLoading(false);
-        openSnackBar(response.message as string);
+        showNotification(response.message as string);
       }
     } catch (err: any) {
       setLoading(false);
-      openSnackBar(err.response.data.error);
+      showNotification(err.response.data.error);
     }
-  };
-
-  const closeSnackBar = (): void => {
-    setSnackBarMessage('');
-    setSnackBarOpen(false);
   };
 
   const login = (): void => {
@@ -102,31 +98,27 @@ const Signup = () => {
 
   return (
     <Stack
-      sx={{
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundImage: `url(${backgroundImage})`,
+      style={{
+        minHeight: 'calc(100vh - 56px)',
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-
-        label: {
-          color: theme.palette.primary.main,
-        }
-      }}>
+        backgroundImage: `url(${backgroundImage})`,
+      }}
+    >
       <Stack
-        sx={{
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          height: '100%',
-
-          background:
-            'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))',
-
+        style={{
+          minHeight: 'calc(100vh - 56px)',
           width: '100%',
-          color: 'white'
-        }}>
-        <Fade>
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          background: theme.other.app.gradients.pageOverlay,
+        }}
+      >
+        <Transition mounted={true} transition="fade" duration={400}>
+          {(styles) => (
           <Formik
             initialValues={{
               firstName: '',
@@ -141,20 +133,47 @@ const Signup = () => {
             render={(formik) => (
               <Form>
                 <Box
-                  sx={{
-                    padding: "40px",
-                    borderRadius: 1,
-                    backgroundColor: theme.palette.gray.main,
-                    boxShadow: `0px 10px 30px ${theme.palette.gray.main}`
-                  }}>
-                  <Typography variant="h4">Signup</Typography>
+                  style={{
+                    ...styles,
+                    backgroundColor: theme.other.app.palette.gray.main,
+                    boxShadow: theme.other.app.shadows.overlay,
+                    borderRadius: theme.radius.sm,
+                    padding: '38px 40px 34px',
+                    width: 'min(329px, calc(100vw - 44px))',
+                  }}
+                >
+                  <Stack gap={10} style={{ marginBottom: 18 }}>
+                    <Box
+                      component="img"
+                      src={transparentLogo}
+                      alt="recipe stash"
+                      style={{
+                        width: 168,
+                        maxWidth: '82%',
+                        display: 'block',
+                        marginBottom: theme.spacing.sm,
+                      }}
+                    />
+                    <Title
+                      order={4}
+                      style={{
+                        color: theme.white,
+                      }}
+                    >
+                      Create Account
+                    </Title>
+                    <Text
+                      size="sm"
+                      style={{ color: theme.other.app.text.inverseMuted }}
+                    >
+                      Start your recipe box.
+                    </Text>
+                  </Stack>
                   <Stack
-                    spacing={2}
-                    sx={{
-                      paddingTop: 2,
-                      paddingBottom: 2
-                    }}>
-                    <TextField
+                    gap="sm"
+                    pb="md"
+                  >
+                    <TextInput
                       name="firstName"
                       type="text"
                       variant="filled"
@@ -163,14 +182,10 @@ const Signup = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       error={
-                        formik.touched.firstName &&
-                        Boolean(formik.errors.firstName)
-                      }
-                      helperText={
                         formik.touched.firstName && formik.errors.firstName
                       }
                     />
-                    <TextField
+                    <TextInput
                       name="lastName"
                       type="text"
                       variant="filled"
@@ -179,14 +194,10 @@ const Signup = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       error={
-                        formik.touched.lastName &&
-                        Boolean(formik.errors.lastName)
-                      }
-                      helperText={
                         formik.touched.lastName && formik.errors.lastName
                       }
                     />
-                    <TextField
+                    <TextInput
                       name="email"
                       type="email"
                       variant="filled"
@@ -194,40 +205,27 @@ const Signup = () => {
                       value={formik.values.email}
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
-                      error={
-                        formik.touched.email && Boolean(formik.errors.email)
-                      }
-                      helperText={formik.touched.email && formik.errors.email}
+                      error={formik.touched.email && formik.errors.email}
                     />
-                    <TextField
+                    <PasswordInput
                       name="password"
-                      type="password"
                       variant="filled"
                       label="Password"
                       value={formik.values.password}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       error={
-                        formik.touched.password &&
-                        Boolean(formik.errors.password)
-                      }
-                      helperText={
                         formik.touched.password && formik.errors.password
                       }
                     />
-                    <TextField
+                    <PasswordInput
                       name="confirmPassword"
-                      type="password"
                       variant="filled"
                       label="Confirm Password"
                       value={formik.values.confirmPassword}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       error={
-                        formik.touched.confirmPassword &&
-                        Boolean(formik.errors.confirmPassword)
-                      }
-                      helperText={
                         formik.touched.confirmPassword &&
                         formik.errors.confirmPassword
                       }
@@ -237,36 +235,40 @@ const Signup = () => {
                     disabled={!formik.isValid}
                     type="submit"
                     loading={loading}
-                    variant="contained"
+                    variant="filled"
+                    fullWidth
+                    style={{
+                      marginTop: 2,
+                      fontWeight: 800,
+                    }}
                   >
                     Create Account
                   </Button>
 
-                  <Typography variant="body1" sx={{
-                    marginTop: 3
-                  }}>
+                  <Divider
+                    style={{
+                      marginTop: 28,
+                      marginBottom: 22,
+                    }}
+                  />
+                  <Text
+                    size="sm"
+                    style={{
+                      textAlign: 'center',
+                    }}
+                  >
                     Already have an account?{' '}
-                    <Link style={{ cursor: 'pointer' }} onClick={login}>
+                    <Anchor onClick={login}>
                       Log in.
-                    </Link>
-                  </Typography>
+                    </Anchor>
+                  </Text>
                 </Box>
               </Form>
             )}
           ></Formik>
-        </Fade>
+          )}
+        </Transition>
       </Stack>
-      <Snackbar
-        open={snackBarOpen}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        onClose={closeSnackBar}
-        autoHideDuration={4000}
-        message={snackBarMessage}
-        key={'bottom' + 'center'}
-      />
     </Stack>
   );
 };

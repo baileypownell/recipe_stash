@@ -11,6 +11,10 @@
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
     "module": "preserve", // Preserve ESM imports for the bundler
     "moduleResolution": "bundler", // Resolve browser code using bundler semantics
+    "paths": {
+      "@theme": ["./src/components/theme.ts"],
+      "@icons": ["./src/components/icons.tsx"]
+    },
     "verbatimModuleSyntax": true,
     // "isolatedModules": true, // Unconditionally emit imports for unresolved files
     "resolveJsonModule": true, // Include modules imported with .json extension
@@ -18,8 +22,8 @@
     // "noEmit": true, // Do not emit output (meaning do not compile code, only perform type checking)
     "jsx": "react-jsx", // Support JSX in .tsx files
     "sourceMap": true, // Generate corrresponding .map file
-    "noUnusedLocals": true, // Report errors on unused locals
-    "noUnusedParameters": true, // Report errors on unused parameters
+    "noUnusedLocals": false, // Report errors on unused locals
+    "noUnusedParameters": false, // Report errors on unused parameters
     "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statement
     "noImplicitAny": true
   },

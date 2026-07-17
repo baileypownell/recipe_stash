@@ -1,5 +1,6 @@
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
-import { IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { ArrowBackIosRoundedIcon } from '@icons';
+import { ActionIcon, Title, Group
+} from '@mantine/core';
 import { useNavigate } from 'react-router';
 
 interface Props {
@@ -7,22 +8,14 @@ interface Props {
 }
 
 const InnerNavigationBar = ({ title }: Props) => {
-  const theme = useTheme();
   const navigate = useNavigate();
   return (
-    <Stack
-      direction="row"
-      sx={{
-        alignItems: "center",
-        padding: 1,
-        color: theme.palette.info.main,
-        backgroundColor: theme.palette.secondary.main
-      }}>
-      <IconButton color="info" onClick={() => navigate('/recipes')}>
+    <Group>
+      <ActionIcon color="gray" onClick={() => navigate('/recipes')}>
         <ArrowBackIosRoundedIcon />
-      </IconButton>
-      <Typography variant="h6">{title}</Typography>
-    </Stack>
+      </ActionIcon>
+      <Title order={6}>{title}</Title>
+    </Group>
   );
 };
 

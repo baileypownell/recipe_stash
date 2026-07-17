@@ -1,7 +1,5 @@
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { Box, IconButton, Menu, MenuItem, useTheme } from '@mui/material';
-import { useState } from 'react';
-import type { MouseEvent } from 'react';
+import { MoreVertRoundedIcon } from '@icons';
+import { Box, ActionIcon, Menu } from '@mantine/core';
 
 type MobileRecipeToolbarProps = {
   width: number;
@@ -14,57 +12,30 @@ export default function MobileRecipeToolbar({
   triggerDialog,
   cloneRecipe,
 }: MobileRecipeToolbarProps) {
-  const theme = useTheme();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleDialog = () => {
-    handleClose();
     triggerDialog();
   };
 
   const duplicateRecipe = () => {
-    handleClose();
     cloneRecipe();
   };
 
   return width <= 700 ? (
-    <Box
-      sx={{
-        textAlign: "right",
-        position: "absolute",
-        bottom: "0",
-        right: "0",
-        left: "0",
-        width: "100%",
-        margin: "0",
-        padding: "15px",
-        zIndex: "1",
-        backgroundColor: theme.palette.gray.main
-      }}>
-      <IconButton
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-        color="info"
-      >
-        <MoreVertRoundedIcon />
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleDialog}>Edit</MenuItem>
-        <MenuItem onClick={duplicateRecipe}>Duplicate</MenuItem>
+    <Box>
+      <Menu shadow="md">
+        <Menu.Target>
+          <ActionIcon
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            color="gray"
+          >
+            <MoreVertRoundedIcon />
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item onClick={handleDialog}>Edit</Menu.Item>
+          <Menu.Item onClick={duplicateRecipe}>Duplicate</Menu.Item>
+        </Menu.Dropdown>
       </Menu>
     </Box>
   ) : null;

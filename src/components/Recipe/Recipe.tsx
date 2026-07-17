@@ -1,16 +1,17 @@
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import {
+  ContentCopyRoundedIcon } from '@icons';
+import { EditRoundedIcon } from '@icons';
 import {
   Box,
-  Fab,
+  ActionIcon,
   Stack,
   Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { alpha } from '@mui/material/styles';
+  Title,
+  Group,
+  Skeleton,
+  useMantineTheme,
+} from '@mantine/core';
 import { useEffect, useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import { useNavigate, useParams } from 'react-router';
 import { recipeTagChips } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
@@ -25,34 +26,29 @@ interface Props {
 }
 
 const RecipeContentShell = ({ children }: { children: React.ReactNode }) => {
-  const theme = useTheme();
+  const [isNarrow, setIsNarrow] = useState(window.innerWidth <= 767.95);
+  const theme = useMantineTheme();
+
+  useEffect(() => {
+    const handleResize = () => setIsNarrow(window.innerWidth <= 767.95);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <Stack
-      sx={{
-        margin: '0 auto',
-        padding: {
-          xs: '16px',
-          md: '28px',
-        },
-        width: '100%',
-        flexGrow: '1',
+      style={{
+        minHeight: 'calc(100vh - 56px)',
+        ...theme.other.app.surfaces.page,
+        padding: isNarrow ? '16px 12px 88px' : '32px 16px 96px',
       }}
     >
       <Box
-        sx={{
+        style={{
           width: '100%',
-          [theme.breakpoints.up('md')]: {
-            width: '86%',
-            margin: '20px auto',
-          },
-          [theme.breakpoints.up('lg')]: {
-            width: '72%',
-          },
-          maxWidth: '1100px',
-          p: {
-            fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
-          },
+          maxWidth: 1080,
+          margin: '0 auto',
         }}
       >
         {children}
@@ -64,38 +60,61 @@ const RecipeContentShell = ({ children }: { children: React.ReactNode }) => {
 const SkeletonPanel = ({
   title,
   lines,
+  variant,
 }: {
   title: string;
   lines: number;
+  variant?: 'ingredients' | 'directions';
 }) => {
-  const theme = useTheme();
+  const mantineTheme = useMantineTheme();
+  const theme = useMantineTheme();
 
   return (
     <Box
-      sx={{
-        ...theme.surfaces.quiet,
-        padding: {
-          xs: 2,
-          md: 2.5,
-        },
+      style={{
+        minWidth: 0,
+        border: `1px solid ${theme.other.app.borders.subtle}`,
+        borderRadius: 8,
+        background: mantineTheme.white,
+        boxShadow: theme.other.app.shadows.panel,
+        overflow: 'hidden',
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{
-          fontWeight: 900,
-          letterSpacing: 0,
-          marginBottom: 1.5,
+      <Group
+        justify="space-between"
+        align="center"
+        style={{
+          padding: '16px 18px 12px',
+          borderBottom: `1px solid ${theme.other.app.borders.faint}`,
         }}
       >
-        {title}
-      </Typography>
-      <Stack spacing={1}>
+        <Title
+          order={6}
+          style={{
+            color: theme.other.app.palette.gray.main,
+            fontSize: '0.92rem',
+            fontWeight: 900,
+            lineHeight: 1,
+            textTransform: 'uppercase',
+          }}
+        >
+          {title}
+        </Title>
+      </Group>
+      <Stack gap={8} style={{ padding: 18 }}>
         {Array.from({ length: lines }).map((_, index) => (
           <Skeleton
             key={index}
             height={16}
-            width={index === lines - 1 ? '62%' : '100%'}
+            width={
+              index === lines - 1
+                ? variant === 'ingredients'
+                  ? '48%'
+                  : '62%'
+                : index % 4 === 2
+                  ? '88%'
+                  : '100%'
+            }
           />
         ))}
       </Stack>
@@ -104,85 +123,129 @@ const SkeletonPanel = ({
 };
 
 const RecipePageSkeleton = () => {
-  const theme = useTheme();
+  const [isNarrow, setIsNarrow] = useState(window.innerWidth <= 767.95);
+  const [isWide, setIsWide] = useState(window.innerWidth >= 992);
+  const mantineTheme = useMantineTheme();
+  const theme = useMantineTheme();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsNarrow(window.innerWidth <= 767.95);
+      setIsWide(window.innerWidth >= 992);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <RecipeContentShell>
       <Box
-        sx={{
-          minHeight: {
-            xs: 220,
-            md: 300,
-          },
-          borderRadius: 1,
-          overflow: 'hidden',
-          padding: {
-            xs: 2,
-            md: 4,
-          },
+        style={{
+          minHeight: isNarrow ? 220 : 260,
           display: 'flex',
           alignItems: 'flex-end',
-          backgroundColor: theme.palette.gray.main,
-          boxShadow: `0 2px 12px ${alpha(theme.palette.gray.main, 0.14)}`,
+          overflow: 'hidden',
+          border: `1px solid ${theme.other.app.borders.subtle}`,
+          borderRadius: 8,
+          background:
+            `${theme.other.app.gradients.heroFallback}, ${theme.other.app.palette.gray.main}`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          boxShadow: theme.other.app.shadows.raised,
         }}
       >
-        <Stack sx={{ width: 'min(100%, 680px)', gap: 1.5 }}>
-          <Skeleton height={24} width={120} />
-          <Skeleton height={54} width="82%" />
-          <Stack direction="row" sx={{ gap: 1, flexWrap: 'wrap' }}>
-            <Skeleton height={24} width={92} />
-            <Skeleton height={24} width={76} />
-            <Skeleton height={24} width={110} />
-          </Stack>
+        <Stack
+          style={{
+            width: '100%',
+            gap: mantineTheme.spacing.sm,
+            padding: isNarrow ? 22 : 'clamp(24px, 4vw, 44px)',
+            background: theme.other.app.gradients.heroContentScrim,
+          }}
+        >
+          <Skeleton
+            height={24}
+            width={120}
+            radius={999}
+          />
+          <Skeleton
+            height={isNarrow ? 42 : 58}
+            width={isNarrow ? '92%' : '72%'}
+          />
+          <Group gap="xs">
+            <Skeleton
+              height={24}
+              width={92}
+              radius={999}
+            />
+            <Skeleton
+              height={24}
+              width={76}
+              radius={999}
+            />
+            <Skeleton
+              height={24}
+              width={110}
+              radius={999}
+            />
+          </Group>
         </Stack>
       </Box>
       <Box
-        sx={{
+        style={{
           display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: 2,
-          marginTop: 3,
-          [theme.breakpoints.up('md')]: {
-            gridTemplateColumns: 'minmax(280px, 0.85fr) minmax(0, 1.4fr)',
-            alignItems: 'start',
-          },
+          gridTemplateColumns: isWide
+            ? 'minmax(0, 0.82fr) minmax(0, 1.18fr)'
+            : '1fr',
+          gap: mantineTheme.spacing.md,
+          marginTop: mantineTheme.spacing.md,
         }}
       >
-        <SkeletonPanel title="Ingredients" lines={8} />
-        <SkeletonPanel title="Directions" lines={10} />
+        <SkeletonPanel title="Ingredients" lines={8} variant="ingredients" />
+        <SkeletonPanel title="Directions" lines={10} variant="directions" />
       </Box>
       <Box
-        sx={{
-          ...theme.surfaces.quiet,
-          marginTop: 3,
-          padding: {
-            xs: 2,
-            md: 2.5,
-          },
+        style={{
+          minWidth: 0,
+          border: `1px solid ${theme.other.app.borders.subtle}`,
+          borderRadius: 8,
+          background: mantineTheme.white,
+          boxShadow: theme.other.app.shadows.panel,
+          overflow: 'hidden',
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 900,
-            letterSpacing: 0,
-            marginBottom: 2,
+        <Group
+          justify="space-between"
+          align="center"
+          style={{
+            padding: '16px 18px 12px',
+            borderBottom: `1px solid ${theme.other.app.borders.faint}`,
           }}
         >
-          Photos
-        </Typography>
+          <Title
+            order={6}
+            style={{
+              color: theme.other.app.palette.gray.main,
+              fontSize: '0.92rem',
+              fontWeight: 900,
+              lineHeight: 1,
+              textTransform: 'uppercase',
+            }}
+          >
+            Photos
+          </Title>
+          <Skeleton height={24} width={28} radius={999} />
+        </Group>
         <Box
-          sx={{
+          style={{
             display: 'grid',
-            gridTemplateColumns: '1fr',
-            gap: 2,
-            [theme.breakpoints.up('md')]: {
-              gridTemplateColumns: '1fr 1fr',
-            },
+            gridTemplateColumns: isWide ? 'repeat(2, minmax(0, 1fr))' : '1fr',
+            gap: mantineTheme.spacing.md,
+            padding: mantineTheme.spacing.md,
           }}
         >
-          <Skeleton height={220} />
-          <Skeleton height={220} />
+          <Skeleton height={isNarrow ? 190 : 220} radius={6} />
+          <Skeleton height={isNarrow ? 190 : 220} radius={6} />
         </Box>
       </Box>
     </RecipeContentShell>
@@ -198,11 +261,11 @@ const Recipe = (props: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [preSignedUrls, setPresignedUrls] = useState<string[]>([]);
   const navigate = useNavigate();
+  const theme = useMantineTheme();
   const triggerDialog = (): void => {
     setDialogOpen(!dialogOpen);
   };
   const params = useParams();
-  const theme = useTheme();
 
   const fetchData = async () => {
     try {
@@ -261,17 +324,6 @@ const Recipe = (props: Props) => {
 
   return (
     <Stack
-      sx={{
-        height: `calc(100% - 50px)`,
-        overflow: 'auto',
-        background: `linear-gradient(180deg, ${alpha(
-          theme.palette.primary.main,
-          0.05,
-        )}, ${theme.palette.info.main} 260px)`,
-        [theme.breakpoints.up('md')]: {
-          height: 'auto',
-        },
-      }}
     >
       {!loading && recipe ? (
         <>
@@ -304,26 +356,41 @@ const Recipe = (props: Props) => {
       )}
       {!loading && recipe && width > 700 ? (
         <Box
-          sx={{
+          style={{
             position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-
-            button: {
-              marginRight: '10px',
-            },
+            right: 24,
+            bottom: 24,
+            zIndex: 30,
+            display: 'flex',
+            gap: 8,
           }}
         >
-          <Tooltip title="Edit recipe" aria-label="edit recipe">
-            <Fab color="secondary" onClick={triggerDialog}>
+          <Tooltip label="Edit recipe" aria-label="edit recipe">
+            <ActionIcon
+              color="dark"
+              onClick={triggerDialog}
+              style={{
+                width: 44,
+                height: 44,
+                boxShadow: theme.other.app.shadows.floating,
+              }}
+            >
               <EditRoundedIcon />
-            </Fab>
+            </ActionIcon>
           </Tooltip>
 
-          <Tooltip title="Duplicate recipe" aria-label="duplicate">
-            <Fab color="primary" onClick={cloneRecipe}>
+          <Tooltip label="Duplicate recipe" aria-label="duplicate">
+            <ActionIcon
+              color="red"
+              onClick={cloneRecipe}
+              style={{
+                width: 44,
+                height: 44,
+                boxShadow: theme.other.app.shadows.floating,
+              }}
+            >
               <ContentCopyRoundedIcon />
-            </Fab>
+            </ActionIcon>
           </Tooltip>
         </Box>
       ) : null}

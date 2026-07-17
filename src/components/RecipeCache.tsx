@@ -1,5 +1,4 @@
-import { Snackbar } from '@mui/material';
-import { useState } from 'react';
+import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
 import {
@@ -126,24 +125,16 @@ const RecipeCache = () => {
     return result.data;
   };
 
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState('');
   const params = useParams();
 
-  const openSnackBar = (message: string) => {
-    setSnackBarOpen(true);
-    setSnackBarMessage(message);
-  };
-
-  const closeSnackBar = () => {
-    setSnackBarMessage('');
-    setSnackBarOpen(false);
+  const showNotification = (message: string) => {
+    notifications.show({ message });
   };
 
   if (params.id) {
     return (
       <Recipe
-        openSnackBar={openSnackBar}
+        openSnackBar={showNotification}
         addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
           await mutateAsync(recipeInput)
         }
@@ -157,7 +148,7 @@ const RecipeCache = () => {
             path=":id"
             element={
               <Recipe
-                openSnackBar={openSnackBar}
+                openSnackBar={showNotification}
                 addRecipeMutation={async (
                   recipeInput: AddRecipeMutationParam,
                 ) => await mutateAsync(recipeInput)}
@@ -172,17 +163,6 @@ const RecipeCache = () => {
           addRecipeMutation={async (recipeInput: AddRecipeMutationParam) =>
             await mutateAsync(recipeInput)
           }
-        />
-        <Snackbar
-          open={snackBarOpen}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          onClose={closeSnackBar}
-          autoHideDuration={3000}
-          message={snackBarMessage}
-          key={'bottom' + 'center'}
         />
       </>
     );

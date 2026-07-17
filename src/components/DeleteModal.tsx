@@ -1,11 +1,9 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
+  Modal,
+  Text,
+  Group,
   Button,
-} from '@mui/material';
+} from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 type DeleteModalProps = {
@@ -28,29 +26,31 @@ const DeleteModal = ({
   });
 
   return open ? (
-    <Dialog
-      open={true}
+    <Modal
+      opened={true}
+      onClose={handleClose}
+      title="Are you sure you want to delete your account?"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>This action cannot be undone.</DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary" variant="contained">
+      <Text fw={700}>This action cannot be undone.</Text>
+      <Group
+        justify="flex-end"
+        pt="xl"
+      >
+        <Button onClick={handleClose} variant="default">
           Cancel
         </Button>
         <Button
           onClick={deleteFunction}
-          color="primary"
-          variant="outlined"
+          color="red"
+          variant="filled"
           autoFocus
         >
-          Continue
+          Delete Account
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Group>
+    </Modal>
   ) : null;
 };
 

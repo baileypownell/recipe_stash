@@ -1,28 +1,18 @@
-import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
-import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { AddCircleRoundedIcon } from '@icons';
+import { CancelRoundedIcon } from '@icons';
+import { DeleteOutlineRoundedIcon } from '@icons';
 
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
+  Modal,
+  Group,
   Select,
   Stack,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material';
+  Text,
+  TextInput,
+} from '@mantine/core';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
 import { useEffect, useRef, useState } from 'react';
@@ -42,6 +32,8 @@ import type {
 import { queryClient } from '../../App';
 import FileUpload from './FileUpload';
 import type { FullRecipe, RawRecipe } from '../../../../shared/types';
+
+type SelectChangeEvent = { target: { value: string } };
 
 type EditProps = {
   recipe: any;
@@ -90,8 +82,26 @@ const QuillEditor = ({ value, onChange }: QuillEditorProps) => {
     }
 
     const quill = new Quill(editorRef.current, {
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link'],
+        ],
+      },
       theme: 'snow',
     });
+
+    editorRef.current
+      .querySelectorAll<HTMLButtonElement>('button')
+      .forEach((button) => {
+        button.style.backgroundColor = 'transparent';
+      });
+    editorRef.current
+      .querySelectorAll<HTMLElement>('.select-wrapper')
+      .forEach((wrapper) => {
+        wrapper.style.display = 'none';
+      });
 
     quill.on('text-change', () => {
       const root = quill.root;
@@ -143,14 +153,12 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [tags, setTags] = useState(
     recipeTagChips.map((tag) => ({ ...tag, selected: false })),
   );
-  const [recipeTitleRaw, setRecipeTitleRaw] = useState('');
   const navigate = useNavigate();
-  const theme = useTheme();
 
   useEffect(() => {
     if (mode === Mode.Edit) {
       const recipe = (recipeDialogInfo as EditProps).recipe;
-      setRecipeTitle(recipe.title);
+      setRecipeTitle(recipe.rawTitle || htmlToText(recipe.title));
       setIngredients(recipe.ingredients);
       setDirections(recipe.directions);
 
@@ -192,13 +200,10 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
 
   const saveRecipe = async (e: any) => {
     e.preventDefault();
-    const titleHTML = DOMPurify.sanitize(
-      recipeTitleRaw || (recipeDialogInfo as EditProps).recipe.rawTitle,
-    );
-    const rawTitle = htmlToText(titleHTML, { wordwrap: 130 });
+    const rawTitle = recipeTitle.trim();
     setLoading(true);
     const recipeInput: RecipeInput = {
-      title: DOMPurify.sanitize(recipeTitle, {}),
+      title: DOMPurify.sanitize(rawTitle, {}),
       rawTitle,
       category,
       ingredients: DOMPurify.sanitize(ingredients, {}),
@@ -297,14 +302,6 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     setTags(copyTags);
   };
 
-  const handleModelChange = (
-    html: string,
-    text: string,
-  ) => {
-    setRecipeTitle(html);
-    setRecipeTitleRaw(text);
-  };
-
   const handleModelChangeIngredients = (html: string) => setIngredients(html);
 
   const handleModelChangeDirections = (html: string) => setDirections(html);
@@ -361,93 +358,62 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     !(recipeDialogInfo as EditProps)?.cloning && mode === Mode.Edit;
 
   return (
-    <Dialog fullScreen open={open}>
-      <DialogTitle>{getTitle()}</DialogTitle>
-      <DialogContent>
-        <Box
-          sx={{
-            paddingBottom: 2,
-          }}
-        >
-          <Typography variant="overline">Recipe Name</Typography>
-          <QuillEditor value={recipeTitle} onChange={handleModelChange} />
-        </Box>
-        <Box
-          sx={{
-            paddingBottom: 2,
-          }}
-        >
-          <Typography variant="overline">Ingredients</Typography>
+    <Modal opened={open} onClose={toggleModal} title={getTitle()} size="1100px">
+      <Stack gap="xl">
+        <Stack gap="md">
+          <TextInput
+            label="Recipe name"
+            value={recipeTitle}
+            required
+            onChange={(event) => setRecipeTitle(event.currentTarget.value)}
+          />
+          <Select
+            label="Category"
+            value={category}
+            required
+            onChange={(value) =>
+              updateCategory({ target: { value: value ?? '' } })
+            }
+            data={options.map((val) => ({
+              value: val.value,
+              label: val.label,
+            }))}
+          />
+          <Box>
+            <Text size="sm" fw={500} mb="xs">Tags</Text>
+            <Group gap="xs">
+              {tags.map((tag, index) => {
+                return (
+                  <Chip
+                    checked={tag.selected}
+                    id={index.toString()}
+                    key={tag.label}
+                    onChange={() => toggleTagSelectionStatus(index)}
+                  >
+                    {tag.label}
+                  </Chip>
+                );
+              })}
+            </Group>
+          </Box>
+        </Stack>
+
+        <Box>
+          <Text size="sm" fw={500} mb="xs">Ingredients</Text>
           <QuillEditor
             value={ingredients}
             onChange={handleModelChangeIngredients}
           />
         </Box>
 
-        <Box
-          sx={{
-            paddingBottom: 2,
-          }}
-        >
-          <Typography variant="overline">Directions</Typography>
+        <Box>
+          <Text size="sm" fw={500} mb="xs">Directions</Text>
           <QuillEditor
             value={directions}
             onChange={handleModelChangeDirections}
           />
         </Box>
-        <Box>
-          <FormControl
-            variant="filled"
-            style={{ width: '100%', margin: '10px 0' }}
-          >
-            <InputLabel>Category</InputLabel>
-            <Select value={category} required onChange={updateCategory}>
-              {options.map((val, index: number) => {
-                return (
-                  <MenuItem key={index} value={val.value}>
-                    {val.label}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Box>
-        <Accordion style={{ margin: '10px 0' }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Recipe Tags</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography
-              sx={{
-                mb: 2,
-              }}
-            >
-              Use tags to characterize your recipe so that you can easily find
-              recipes with similar tags through the dashboard filter.
-            </Typography>
-            <Stack
-              spacing={1}
-              direction="row"
-              sx={{
-                flexWrap: 'wrap',
-                width: '100%',
-              }}
-            >
-              {tags.map((tag, index) => {
-                return (
-                  <Chip
-                    color={tags[index].selected ? 'primary' : 'default'}
-                    id={index.toString()}
-                    key={tag.label}
-                    onClick={() => toggleTagSelectionStatus(index)}
-                    label={tag.label}
-                    sx={{ '&&': { marginBottom: '4px' } }}
-                  />
-                );
-              })}
-            </Stack>
-          </AccordionDetails>
-        </Accordion>
+
         {mode === Mode.Add ? (
           <FileUpload passFiles={setFiles} />
         ) : (
@@ -459,77 +425,43 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             preExistingImageUrls={(recipeDialogInfo as EditProps).presignedUrls}
           />
         )}
-      </DialogContent>
-      <DialogActions>
-        <Stack
-          spacing={1}
-          sx={{
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            flexDirection: 'row-reverse',
-            button: {
-              [theme.breakpoints.up('sm')]: {
-                margin: 0,
-              },
-            },
-          }}
-        >
+      </Stack>
+      <Group justify="space-between" mt="xl">
+        <Box>
+          {editing ? (
+            <Button
+              color="red"
+              variant="filled"
+              onClick={deleteRecipe}
+              leftSection={<DeleteOutlineRoundedIcon />}
+            >
+              Delete Recipe
+            </Button>
+          ) : null}
+        </Box>
+        <Group>
           <Button
-            variant="contained"
-            color="secondary"
+            onClick={toggleModal}
+            variant="outline"
+            leftSection={<CancelRoundedIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="filled"
+            color="dark"
             disabled={!recipeValid}
             loading={loading}
             onClick={saveRecipe}
-            startIcon={loading ? null : <AddCircleRoundedIcon />}
+            leftSection={loading ? null : <AddCircleRoundedIcon />}
           >
             {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
               ? 'Add Recipe'
               : 'Update Recipe'}
           </Button>
-          <Box
-            sx={{
-              display: editing ? 'flex' : 'block',
-              marginTop: `0!important`,
-              [theme.breakpoints.down('md')]: {
-                maxWidth: '400px',
-              },
-              [theme.breakpoints.up('md')]: {
-                width: 'auto',
-              },
-            }}
-          >
-            {editing ? (
-              <Button
-                color="primary"
-                variant="contained"
-                style={{
-                  marginRight: '5px ',
-                  width: '100%',
-                  whiteSpace: 'nowrap',
-                  minWidth: 'auto',
-                }}
-                onClick={deleteRecipe}
-                startIcon={<DeleteOutlineRoundedIcon />}
-              >
-                Delete Recipe
-              </Button>
-            ) : null}
-            <Button
-              sx={{
-                flexGrow: editing ? 1 : 0,
-                width: '100%',
-              }}
-              onClick={toggleModal}
-              variant="outlined"
-              startIcon={<CancelRoundedIcon />}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Stack>
-      </DialogActions>
-    </Dialog>
+        </Group>
+      </Group>
+    </Modal>
   );
 };
 

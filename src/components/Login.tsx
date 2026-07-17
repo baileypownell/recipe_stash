@@ -1,20 +1,23 @@
 import {
   Box,
   Button,
+  Anchor,
   Divider,
-  Fade,
-  Snackbar,
   Stack,
-  TextField,
-  Typography,
-  useTheme,
-} from '@mui/material';
+  PasswordInput,
+  TextInput,
+  Transition,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { Form, Formik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as yup from 'yup';
-import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import backgroundImage from '../images/ingredients.jpg';
+import transparentLogo from '../images/white-text-transparent.svg';
 import AuthenticationService from '../services/auth-service';
 
 declare global {
@@ -43,32 +46,24 @@ const validationSchema = yup.object({
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [signInError, setSignInError] = useState(false);
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState('');
   const navigate = useNavigate();
-  const theme = useTheme();
+  const theme = useMantineTheme();
 
-  const openSnackBar = (message: string): void => {
-    setSnackBarOpen(true);
-    setSnackBarMessage(message);
-  };
-
-  const closeSnackBar = (): void => {
-    setSnackBarOpen(false);
-    setSnackBarMessage('');
+  const showNotification = (message: string): void => {
+    notifications.show({ message });
   };
 
   const sendPasswordResetLink = async (email: string): Promise<void> => {
     try {
       const res = await AuthenticationService.getPasswordResetLink(email);
       res.data.success
-        ? openSnackBar(
+        ? showNotification(
             'Check the provided email for a link to reset your password.',
           )
-        : openSnackBar('There was an error.');
+        : showNotification('There was an error.');
     } catch (err) {
       console.log(err);
-      openSnackBar('There was an error.');
+      showNotification('There was an error.');
     }
   };
 
@@ -81,12 +76,12 @@ const Login = () => {
         AuthenticationService.setUserLoggedIn();
         navigate('/recipes');
       } else {
-        openSnackBar(res.data.message);
+        showNotification(res.data.message);
         setSignInError(true);
       }
     } catch (err: any) {
       console.log(err);
-      openSnackBar(err.data ? err.data.message : 'Could not authenticate.');
+      showNotification(err.data ? err.data.message : 'Could not authenticate.');
       setSignInError(true);
     }
   };
@@ -101,11 +96,11 @@ const Login = () => {
       } else {
         setLoading(false);
         setSignInError(true);
-        openSnackBar(res.data.message);
+        showNotification(res.data.message);
       }
     } catch (err: any) {
       console.log(err);
-      openSnackBar(err.response.data?.error || 'There was an error.');
+      showNotification(err.response.data?.error || 'There was an error.');
       setSignInError(true);
       setLoading(false);
     }
@@ -126,154 +121,162 @@ const Login = () => {
   return (
     <>
       <Stack
-        sx={{
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundImage: `url(${backgroundImage})`,
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-
-          label: {
-            color: theme.palette.primary.main,
-          }
-        }}>
+          backgroundImage: `${theme.other.app.gradients.pageOverlay}, url(${backgroundImage})`,
+        }}
+      >
         <Stack
-          sx={{
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            height: "100%",
-            width: "100%",
-            color: "white",
-
-            background:
-              'linear-gradient(120deg, rgba(255, 68, 68, 0.826), rgba(221, 114, 68, 0.22))'
-          }}>
-          <Fade>
-            <Formik
-              initialValues={{
-                email: '',
-                password: '',
-              }}
-              validationSchema={validationSchema}
-              validateOnMount
-              onSubmit={(values) => signin(values)}
-              render={(formik) => (
-                <Form>
-                  <Box
-                    sx={{
-                      backgroundColor: theme.palette.gray.main,
-                      boxShadow: `0px 10px 30px ${theme.palette.gray.main}`,
-                      borderRadius: 1,
-                      padding: '40px',
-                    }}
-                  >
-                    <Typography variant="h4">Login</Typography>
-                    <Stack
-                      spacing={2}
-                      sx={{
-                        paddingTop: 2,
-                        paddingBottom: 2
-                      }}>
-                      <TextField
-                        label="Email"
-                        variant="filled"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.email && Boolean(formik.errors.email)
-                        }
-                        helperText={formik.touched.email && formik.errors.email}
-                        onBlur={formik.handleBlur}
-                        type="email"
-                        name="email"
-                      />
-                      <TextField
-                        value={formik.values.password}
-                        variant="filled"
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.password &&
-                          Boolean(formik.errors.password)
-                        }
-                        helperText={
-                          formik.touched.password && formik.errors.password
-                        }
-                        onBlur={formik.handleBlur}
-                        type="password"
-                        label="Password"
-                        name="password"
-                      />
-                    </Stack>
-                    <Stack direction="column" spacing={2}>
-                      <Button
-                        disabled={!formik.isValid}
-                        type="submit"
-                        loading={loading}
-                        variant="contained"
-                      >
-                        Login
-                      </Button>
-
-                      <Stack
-                        sx={{
-                          marginBottom: 2,
-                          marginTop: 2,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }} 
-                      >
-                        <div id="google-button-anchor"></div>
-                      </Stack>
-
-                      {signInError ? (
-                        <Button
-                          variant="contained"
-                          onClick={() =>
-                            sendPasswordResetLink(formik.values.email)
-                          }
-                          color="primary"
-                          disabled={
-                            formik.touched.email && Boolean(formik.errors.email)
-                          }
+          style={{
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: theme.white,
+            padding: theme.spacing.md,
+          }}
+        >
+          <Transition mounted={true} transition="fade" duration={400}>
+            {(styles) => (
+              <Formik
+                initialValues={{
+                  email: '',
+                  password: '',
+                }}
+                validationSchema={validationSchema}
+                validateOnMount
+                onSubmit={(values) => signin(values)}
+                render={(formik) => (
+                  <Form>
+                    <Box
+                      style={{
+                        ...styles,
+                        backgroundColor: theme.other.app.palette.gray.main,
+                        boxShadow: theme.other.app.shadows.overlay,
+                        borderRadius: theme.radius.sm,
+                        padding: theme.spacing.md,
+                        width: 'min(315px, calc(100vw - 44px))',
+                      }}
+                    >
+                      <Stack gap={10} style={{ marginBottom: 18 }}>
+                        <Box
+                          component="img"
+                          src={transparentLogo}
+                          alt="recipe stash"
+                          style={{
+                            width: 168,
+                            maxWidth: '82%',
+                            display: 'block',
+                            marginBottom: theme.spacing.sm,
+                          }}
+                        />
+                        <Title
+                          order={4}
+                          style={{
+                            color: theme.white,
+                            lineHeight: 1.1,
+                          }}
                         >
-                          Reset Password
+                          Welcome Back
+                        </Title>
+                        <Text
+                          size="sm"
+                          style={{ color: theme.other.app.text.inverseMuted }}
+                        >
+                          Sign in to your recipe box.
+                        </Text>
+                      </Stack>
+                      <Stack gap="sm" pb="md">
+                        <TextInput
+                          label="Email"
+                          variant="filled"
+                          value={formik.values.email}
+                          onChange={formik.handleChange}
+                          error={formik.touched.email && formik.errors.email}
+                          onBlur={formik.handleBlur}
+                          type="email"
+                          name="email"
+                        />
+                        <PasswordInput
+                          value={formik.values.password}
+                          variant="filled"
+                          onChange={formik.handleChange}
+                          error={
+                            formik.touched.password && formik.errors.password
+                          }
+                          onBlur={formik.handleBlur}
+                          label="Password"
+                          name="password"
+                        />
+                      </Stack>
+                      <Stack gap="md">
+                        <Button
+                          disabled={!formik.isValid}
+                          type="submit"
+                          loading={loading}
+                          variant="filled"
+                          fullWidth
+                          style={{
+                            fontWeight: 800,
+                          }}
+                        >
+                          Login
                         </Button>
-                      ) : null}
-                    </Stack>
-                    <Divider sx={{ backgroundColor: 'white', marginTop: 2 }} />
-                    <Stack
-                      spacing={1}
-                      sx={{
-                        marginTop: 1,
-                        alignItems: "center"
-                      }}>
-                      <Typography>Don't have an account?</Typography>
-                      <Button
-                        startIcon={<PersonAddAltRoundedIcon />}
-                        onClick={() => navigate('/signup')}
+
+                        <Stack
+                          style={{
+                            marginTop: 8,
+                            marginBottom: 2,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <div id="google-button-anchor"></div>
+                        </Stack>
+
+                        {signInError ? (
+                          <Button
+                            variant="filled"
+                            onClick={() =>
+                              sendPasswordResetLink(formik.values.email)
+                            }
+                            color="red"
+                            disabled={
+                              formik.touched.email &&
+                              Boolean(formik.errors.email)
+                            }
+                          >
+                            Reset Password
+                          </Button>
+                        ) : null}
+                      </Stack>
+                      <Divider
+                        style={{
+                          marginTop: 28,
+                          marginBottom: 22,
+                        }}
+                      />
+                      <Text
+                        size="sm"
+                        style={{
+                          textAlign: 'center',
+                        }}
                       >
-                        Sign up
-                      </Button>
-                    </Stack>
-                  </Box>
-                </Form>
-              )}
-            ></Formik>
-          </Fade>
+                        Don't have an account?{' '}
+                        <Anchor onClick={() => navigate('/signup')}>
+                          Sign up.
+                        </Anchor>
+                      </Text>
+                    </Box>
+                  </Form>
+                )}
+              ></Formik>
+            )}
+          </Transition>
         </Stack>
       </Stack>
-      <Snackbar
-        open={snackBarOpen}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        onClose={closeSnackBar}
-        autoHideDuration={3000}
-        message={snackBarMessage}
-        key={'bottom' + 'center'}
-      />
     </>
   );
 };

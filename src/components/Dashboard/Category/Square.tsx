@@ -1,7 +1,5 @@
-import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { Box, Card, Skeleton, Title, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import Chips from './Chips';
 import { Link } from 'react-router-dom';
 import type { FullRecipe } from '../../../../shared/types';
@@ -18,117 +16,97 @@ const RecipeCard = ({
   rawTitle: string;
   defaultTileImageUrl?: string;
 }) => {
-  const theme = useTheme();
   const hasImage = !!defaultTileImageUrl;
-
-  const tileStyles = {
-    minWidth: `${CARD_WIDTH}px`,
-    height: `${CARD_HEIGHT}px`,
-    borderRadius: 1,
-    cursor: 'pointer',
-    color: hasImage ? theme.palette.info.main : theme.palette.gray.main,
-    overflow: 'hidden',
-    position: 'relative',
-    background: hasImage
-      ? `${theme.palette.gray.main} center / cover no-repeat`
-      : '#fff',
-    ...(hasImage
-      ? {
-          '&:before': {
-            content: '""',
-            position: 'absolute',
-            inset: 0,
-            background: alpha(theme.palette.gray.main, 0.5),
-          },
-        }
-      : {
-          '&:after': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 4,
-            backgroundColor: theme.palette.primary.main,
-          },
-        }),
-  };
+  const [hovered, setHovered] = useState(false);
+  const mantineTheme = useMantineTheme();
+  const theme = useMantineTheme();
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        '&&': {
-          '> a': {
-            textDecoration: 'none',
-            '&:hover': {
-              '> div': {
-                borderColor: alpha(theme.palette.primary.main, 0.42),
-              },
-            },
-            '&:focus': {
-              outline: 'none',
-              '> div': {
-                boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.2)}`,
-              },
-            },
-          },
-        },
-      }}
-    >
-      <Link to={`/recipes/${recipe.id}`} target="_blank">
+    <Box>
+      <Link
+        to={`/recipes/${recipe.id}`}
+        style={{
+          display: 'block',
+          height: '100%',
+          color: 'inherit',
+          textDecoration: 'none',
+        }}
+      >
         <Card
-          sx={tileStyles}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
           style={{
-            textDecoration: 'none!important',
+            minHeight: CARD_HEIGHT,
+            height: '100%',
+            borderRadius: 8,
+            border: hovered
+              ? `1px solid ${theme.other.app.borders.primary}`
+              : `1px solid ${theme.other.app.borders.subtle}`,
+            overflow: 'hidden',
+            position: 'relative',
+            backgroundColor: mantineTheme.white,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
             backgroundImage: defaultTileImageUrl
               ? `url(${defaultTileImageUrl})`
               : 'none',
+            transform: hovered ? 'translateY(-2px)' : undefined,
+            boxShadow: hovered
+              ? theme.other.app.shadows.raised
+              : undefined,
+            transition:
+              'transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease',
           }}
         >
-          <CardContent
-            sx={{
+          {hasImage ? (
+            <Box
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: theme.other.app.gradients.tileImageScrim,
+              }}
+            />
+          ) : (
+            <Box
+              style={{
+                position: 'absolute',
+                inset: '0 0 auto',
+                height: 4,
+                background: theme.other.app.palette.primary.main,
+              }}
+            />
+          )}
+          <Box
+            style={{
               position: 'relative',
               zIndex: 1,
-              width: '100%',
+              minHeight: CARD_HEIGHT,
               height: '100%',
-              padding: 1.5,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              '.MuiChip-root': {
-                borderColor: hasImage
-                  ? alpha(theme.palette.info.main, 0.6)
-                  : alpha(theme.palette.primary.main, 0.44),
-                backgroundColor: hasImage
-                  ? alpha(theme.palette.gray.main, 0.3)
-                  : '#fff',
-                color: hasImage ? theme.palette.info.main : theme.palette.primary.dark,
-              },
+              justifyContent: 'flex-end',
+              gap: 10,
+              padding: mantineTheme.spacing.md,
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                marginTop: 'auto',
-                marginBottom: 1,
-                maxWidth: '100%',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 2,
-                overflow: 'hidden',
-                textTransform: 'none',
-                lineHeight: 1.08,
-                fontSize: '1.25rem',
-                fontWeight: 800,
+            <Title
+              order={5}
+              style={{
+                color: hasImage
+                  ? mantineTheme.white
+                  : theme.other.app.palette.gray.main,
+                fontSize: '1.05rem',
+                fontWeight: 900,
+                lineHeight: 1.15,
                 textShadow: hasImage
-                  ? `0 1px 6px ${alpha(theme.palette.gray.main, 0.55)}`
-                  : 'none',
-              }}>
+                  ? '0 2px 12px rgba(0, 0, 0, 0.34)'
+                  : undefined,
+              }}
+            >
               {rawTitle}
-            </Typography>
-            <Chips tags={recipe.tags} />
-          </CardContent>
+            </Title>
+            <Chips tags={recipe.tags} inverted={hasImage} />
+          </Box>
         </Card>
       </Link>
     </Box>

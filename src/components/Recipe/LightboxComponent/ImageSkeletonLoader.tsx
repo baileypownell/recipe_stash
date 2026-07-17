@@ -1,7 +1,5 @@
-import { Box } from '@mui/material';
+import { Box, Skeleton } from '@mantine/core';
 import { useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
 
 interface ImageSkeletonLoaderProps {
   url: string;
@@ -17,24 +15,27 @@ function ImageSkeletonLoader({
   return imageLoaded ? (
     <img
       onClick={() => openLightBox()}
-      style={{ cursor: 'pointer' }}
+      style={{
+        width: '100%',
+        aspectRatio: '4 / 3',
+        objectFit: 'cover',
+        borderRadius: 6,
+        display: 'block',
+        cursor: 'pointer',
+      }}
       key={url}
       src={url}
       alt={url}
     />
   ) : (
-    <Box
-      sx={{
-        height: "300px",
-        marginBottom: "10px"
-      }}>
+    <Box style={{ width: '100%' }}>
       <img
         src={url}
         style={{ display: 'none' }}
         onLoad={() => setImageLoaded(true)}
         alt={url}
       />
-      <Skeleton height="100%" />
+      <Skeleton height="100%" style={{ aspectRatio: '4 / 3', display: 'block' }} />
     </Box>
   );
 }

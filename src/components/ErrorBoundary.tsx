@@ -1,5 +1,11 @@
-import BlenderRoundedIcon from '@mui/icons-material/BlenderRounded';
-import { Box, Button, Divider, Stack, Typography } from '@mui/material';
+import {
+  BlenderRoundedIcon } from '@icons';
+import { Box,
+  Button,
+  Divider,
+  Stack,
+  Title,
+} from '@mantine/core';
 import { Component } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -35,24 +41,17 @@ class ErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <Stack  sx={{ alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+        <Stack>
           <Box
-            sx={{
-              marginBottom: 3,
-              svg: {
-                fontSize: '125px',
-                color: '#353531',
-              },
-            }}
           >
             <BlenderRoundedIcon />
           </Box>
-          <Typography variant="h5">Something went wrong.</Typography>
+          <Title order={5}>Something went wrong.</Title>
           <Divider />
-          <Box sx={{ padding: 3 }}>
+          <Box>
             <Button
-              variant="outlined"
-              color="secondary"
+              variant="outline"
+              color="dark"
               onClick={this.props.navigate}
             >
               Home

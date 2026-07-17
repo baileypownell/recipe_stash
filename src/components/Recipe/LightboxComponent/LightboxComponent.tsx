@@ -1,7 +1,7 @@
-import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { Box, Button, IconButton } from '@mui/material';
+import { ArrowBackIosNewRoundedIcon } from '@icons';
+import { ArrowForwardIosRoundedIcon } from '@icons';
+import { CloseRoundedIcon } from '@icons';
+import { Box, Button, ActionIcon, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 import Lightbox from 'react-spring-lightbox';
 import type { ImagesListType } from 'react-spring-lightbox';
@@ -14,6 +14,7 @@ interface Props {
 const LightboxComponent = ({ preSignedUrls }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const theme = useMantineTheme();
 
   const gotoPrevious = () =>
     currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1);
@@ -57,29 +58,31 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
         currentIndex={currentImageIndex}
         onClose={onClose}
         renderHeader={() => (
-          <Box
-            sx={{
-              padding: 1,
-              textAlign: "right",
-              marginTop: "64px"
-            }}>
-            <IconButton color="info" onClick={onClose}>
+          <Box>
+            <ActionIcon color="gray" onClick={onClose}>
               <CloseRoundedIcon />
-            </IconButton>
+            </ActionIcon>
           </Box>
         )}
         renderPrevButton={() => (
-          <Button color="info" onClick={gotoPrevious}>
+          <Button color="gray" onClick={gotoPrevious}>
             <ArrowBackIosNewRoundedIcon />
           </Button>
         )}
         renderNextButton={() => (
-          <Button color="info" onClick={gotoNext}>
+          <Button color="gray" onClick={gotoNext}>
             <ArrowForwardIosRoundedIcon />
           </Button>
         )}
-        style={{ background: `rgba(29,29,29, 0.95` }}
+        style={theme.other.app.overlays.lightbox}
       />
+      <style>{`
+        .lightbox-image-stage {
+          width: 100% !important;
+          display: flex !important;
+          justify-content: space-between !important;
+        }
+      `}</style>
     </>
   );
 };

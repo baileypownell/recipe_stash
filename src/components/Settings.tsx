@@ -1,20 +1,23 @@
-import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
+import { AccountCircleRoundedIcon } from '@icons';
+import { DeleteRoundedIcon } from '@icons';
+import { EmailRoundedIcon } from '@icons';
+import { PersonRoundedIcon } from '@icons';
+import { SecurityRoundedIcon } from '@icons';
 import {
   Box,
   Button,
   Divider,
-  Fade,
-  Snackbar,
   Stack,
-  TextField,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { alpha } from '@mui/material/styles';
+  PasswordInput,
+  TextInput,
+  Transition,
+  Text,
+  Title,
+  Group,
+  Skeleton,
+  useMantineTheme,
+} from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { Field, Formik } from 'formik';
 import type { FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
@@ -81,72 +84,65 @@ const SettingsSection = ({
   danger?: boolean;
   children: ReactNode;
 }) => {
-  const theme = useTheme();
+  const theme = useMantineTheme();
+  const mantineTheme = useMantineTheme();
 
   return (
     <Box
-      sx={{
-        ...theme.surfaces.quiet,
+      style={{
+        ...theme.other.app.surfaces.quiet,
         overflow: 'hidden',
       }}
     >
       <Box
-        sx={{
-          padding: 2,
-          borderBottom: `1px solid ${alpha(theme.palette.gray.main, 0.08)}`,
+        style={{
+          padding: mantineTheme.spacing.md,
+          borderBottom: `1px solid ${theme.other.app.borders.faint}`,
         }}
       >
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: 'flex-start',
-            gap: 1.5,
-          }}
-        >
+        <Group align="flex-start" gap="md">
           <Box
-            sx={{
+            style={{
               width: 32,
               height: 32,
-              borderRadius: 1,
+              borderRadius: 4,
               display: 'grid',
               placeItems: 'center',
-              color: danger ? theme.palette.error.dark : theme.palette.primary.dark,
-              backgroundColor: alpha(
-                danger ? theme.palette.error.main : theme.palette.primary.main,
-                0.08,
-              ),
+              color: danger
+                ? theme.other.app.palette.error.dark
+                : theme.other.app.palette.info.contrastText,
+              backgroundColor: danger
+                ? 'rgba(221, 114, 68, 0.08)'
+                : theme.other.app.surfaces.primaryTint.backgroundColor,
+              flex: '0 0 auto',
             }}
           >
             {icon}
           </Box>
-          <Stack sx={{ minWidth: 0 }}>
-            <Typography
-              sx={{
-                color: theme.palette.gray.main,
-                fontWeight: 800,
-                lineHeight: 1.2,
-              }}
+          <Stack gap={4} style={{ minWidth: 0 }}>
+            <Text
+              fw={800}
+              style={{ color: theme.other.app.palette.info.contrastText }}
             >
               {title}
-            </Typography>
+            </Text>
             {description ? (
-              <Typography
-                variant="body2"
-                sx={{
-                  color: alpha(theme.palette.gray.main, 0.72),
-                  marginTop: 0.5,
+              <Text
+                size="sm"
+                style={{
+                  marginTop: 4,
                 }}
               >
                 {description}
-              </Typography>
+              </Text>
             ) : null}
           </Stack>
-        </Stack>
+        </Group>
       </Box>
       <Box
-        sx={{
-          padding: 2,
-          backgroundColor: alpha(theme.palette.gray.main, 0.015),
+        style={{
+          padding: mantineTheme.spacing.md,
+          ...theme.other.app.surfaces.inset,
         }}
       >
         {children}
@@ -155,17 +151,134 @@ const SettingsSection = ({
   );
 };
 
+const SettingsSkeletonSection = ({ lines = 2 }: { lines?: number }) => {
+  const theme = useMantineTheme();
+  const mantineTheme = useMantineTheme();
+
+  return (
+    <Box
+      style={{
+        ...theme.other.app.surfaces.quiet,
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        style={{
+          padding: mantineTheme.spacing.md,
+          borderBottom: `1px solid ${theme.other.app.borders.faint}`,
+        }}
+      >
+        <Group align="flex-start" gap="md">
+          <Skeleton width={32} height={32} radius={4} />
+          <Stack gap={8} style={{ minWidth: 0, flex: 1 }}>
+            <Skeleton width={140} height={18} />
+            <Skeleton width="62%" height={14} />
+          </Stack>
+        </Group>
+      </Box>
+      <Box
+        style={{
+          padding: mantineTheme.spacing.md,
+          ...theme.other.app.surfaces.inset,
+        }}
+      >
+        <Stack gap="md" style={{ maxWidth: 520 }}>
+          {Array.from({ length: lines }).map((_, index) => (
+            <Skeleton key={index} height={36} radius={4} />
+          ))}
+          <Skeleton width={88} height={36} radius={4} />
+        </Stack>
+      </Box>
+    </Box>
+  );
+};
+
+const SettingsSkeleton = ({ isWide }: { isWide: boolean }) => {
+  const theme = useMantineTheme();
+  const mantineTheme = useMantineTheme();
+
+  return (
+    <Transition mounted transition="fade" duration={400}>
+      {(styles) => (
+        <Box
+          style={{
+            ...styles,
+            minHeight: 'calc(100vh - 56px)',
+            ...theme.other.app.surfaces.page,
+            padding: isWide ? '48px 24px' : '24px 16px',
+          }}
+        >
+          <Box style={{ width: '100%', maxWidth: 1080, margin: '0 auto' }}>
+            <Box
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isWide
+                  ? 'minmax(220px, 280px) minmax(0, 720px)'
+                  : '1fr',
+                justifyContent: isWide ? 'center' : undefined,
+                gap: isWide
+                  ? `calc(${mantineTheme.spacing.xl} * 1.6)`
+                  : `calc(${mantineTheme.spacing.xl} * 1.2)`,
+                alignItems: 'start',
+              }}
+            >
+              <Box
+                style={{
+                  minWidth: 0,
+                  position: isWide ? 'sticky' : undefined,
+                  top: isWide
+                    ? `calc(56px + ${mantineTheme.spacing.xl})`
+                    : undefined,
+                }}
+              >
+                <Stack
+                  gap="md"
+                  style={{
+                    ...theme.other.app.surfaces.quiet,
+                    padding: isWide
+                      ? `calc(${mantineTheme.spacing.xl} * 0.9)`
+                      : mantineTheme.spacing.md,
+                    alignItems: isWide ? 'flex-start' : undefined,
+                  }}
+                >
+                  <Skeleton width={72} height={72} radius={4} />
+                  <Stack gap={8} style={{ minWidth: 0, width: '100%' }}>
+                    <Skeleton width={96} height={14} />
+                    <Skeleton width="72%" height={20} />
+                    <Skeleton width="92%" height={16} />
+                  </Stack>
+                </Stack>
+              </Box>
+              <Box style={{ minWidth: 0 }}>
+                <Stack gap={8} mb="md">
+                  <Skeleton width={150} height={36} />
+                  <Skeleton width="58%" height={16} />
+                </Stack>
+                <Stack gap="md" style={{ width: '100%' }}>
+                  <SettingsSkeletonSection />
+                  <SettingsSkeletonSection />
+                  <SettingsSkeletonSection lines={0} />
+                  <SettingsSkeletonSection lines={1} />
+                </Stack>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      )}
+    </Transition>
+  );
+};
+
 const Settings = (props: Props) => {
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState('');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [user, setUser] = useState<UserData>();
   const navigate = useNavigate();
-  const theme = useTheme();
+  const theme = useMantineTheme();
+  const mantineTheme = useMantineTheme();
+  const [isWide, setIsWide] = useState(window.innerWidth >= 992);
 
-  const openSnackBar = (message: string): void => {
-    setSnackBarOpen(true);
-    setSnackBarMessage(message);
+  const showNotification = (message: string): void => {
+    notifications.show({ message });
   };
 
   const getUserData = async () => {
@@ -191,9 +304,16 @@ const Settings = (props: Props) => {
     getUserData();
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => setIsWide(window.innerWidth >= 992);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const updateNames = async (values: SettingsFormValues) => {
     if (!values.names.firstName && !values.names.lastName) {
-      openSnackBar('Must enter either first name or last name.');
+      showNotification('Must enter either first name or last name.');
       return;
     }
     const { id } = props;
@@ -205,7 +325,7 @@ const Settings = (props: Props) => {
         id: id as string,
       };
       await UserService.updateUser(payload);
-      openSnackBar('Profile updated successfully.');
+      showNotification('Profile updated successfully.');
       getUserData();
     } catch (err) {
       console.log(err);
@@ -220,25 +340,25 @@ const Settings = (props: Props) => {
       };
       const res = await UserService.updateUser(payload);
       if (res.data.success) {
-        openSnackBar(res.data.message);
+        showNotification(res.data.message);
         getUserData();
       } else {
-        openSnackBar('Invalid email.');
+        showNotification('Invalid email.');
       }
     } catch (err) {
       console.log(err);
-      openSnackBar('There was an error.');
+      showNotification('There was an error.');
     }
   };
 
   const deleteAccount = async () => {
     try {
       await UserService.deleteUser();
-      openSnackBar('Account deleted.');
+      showNotification('Account deleted.');
       logout();
     } catch (err) {
       console.log(err);
-      openSnackBar('There was an error.');
+      showNotification('There was an error.');
     }
   };
 
@@ -247,13 +367,13 @@ const Settings = (props: Props) => {
       const res = await AuthenticationService.getPasswordResetLink(
         (user as UserData).email,
       );
-      setSnackBarOpen(res.data.message);
+      showNotification(res.data.message);
       if (res.data.success) {
         logout();
       }
     } catch (err) {
       console.log(err);
-      openSnackBar('There was an error.');
+      showNotification('There was an error.');
     }
   };
 
@@ -261,284 +381,291 @@ const Settings = (props: Props) => {
     setDeleteModalOpen(true);
   };
 
-  const closeSnackBar = (): void => {
-    setSnackBarOpen(false);
-    setSnackBarMessage('');
-  };
+  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`;
 
   if (!user) {
-    return null;
+    return <SettingsSkeleton isWide={isWide} />;
   }
 
   return (
-    <Fade>
-      <>
-        <Box
-          sx={{
-            minHeight: 'calc(100vh - 64px)',
-            backgroundColor: alpha(theme.palette.gray.main, 0.015),
-            padding: {
-              xs: '24px 16px',
-              md: '48px 24px',
-            },
-          }}
-        >
+    <Transition mounted transition="fade" duration={400}>
+      {(styles) => (
+        <>
           <Box
-            sx={{
-              width: '100%',
-              maxWidth: 720,
-              margin: '0 auto',
+            style={{
+              ...styles,
+              ...theme.other.app.surfaces.page,
+              padding: isWide ? '48px 24px' : '24px 16px',
             }}
           >
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: 'center',
-                gap: 2,
-                padding: 2,
-                marginBottom: 2,
-                ...theme.surfaces.quiet,
-              }}
-            >
+            <Box style={{ width: '100%', maxWidth: 1080, margin: '0 auto' }}>
               <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 1,
+                style={{
                   display: 'grid',
-                  placeItems: 'center',
-                  color: theme.palette.primary.dark,
-                  backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                  gridTemplateColumns: isWide
+                    ? 'minmax(220px, 280px) minmax(0, 720px)'
+                    : '1fr',
+                  justifyContent: isWide ? 'center' : undefined,
+                  gap: isWide
+                    ? `calc(${mantineTheme.spacing.xl} * 1.6)`
+                    : `calc(${mantineTheme.spacing.xl} * 1.2)`,
+                  alignItems: 'start',
+                  paddingBottom: mantineTheme.spacing.xl,
                 }}
               >
-                <AccountCircleRoundedIcon sx={{ fontSize: 36 }} />
-              </Box>
-              <Stack sx={{ minWidth: 0 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 800,
-                    letterSpacing: 0,
-                    lineHeight: 1.2,
+                <Box
+                  style={{
+                    minWidth: 0,
+                    position: isWide ? 'sticky' : undefined,
+                    top: isWide
+                      ? `calc(56px + ${mantineTheme.spacing.xl})`
+                      : undefined,
                   }}
                 >
-                  {user?.firstName} {user?.lastName}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: alpha(theme.palette.gray.main, 0.72),
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {user?.email}
-                </Typography>
-              </Stack>
-            </Stack>
-            <Formik
-              initialValues={{
-                email: {
-                  email: '',
-                  password: '',
-                },
-                names: {
-                  firstName: user?.firstName,
-                  lastName: user?.lastName,
-                },
-              }}
-              validationSchema={validationSchema}
-              onSubmit={() => void 0}
-              render={(formik: FormikProps<SettingsFormValues>) => (
-                <Stack spacing={2}>
-                  <SettingsSection
-                    icon={<EmailRoundedIcon fontSize="small" />}
-                    title="Update Email"
-                    description="Change the email address used to sign in."
+                  <Stack
+                    gap="md"
+                    style={{
+                      ...theme.other.app.surfaces.quiet,
+                      padding: isWide
+                        ? `calc(${mantineTheme.spacing.xl} * 0.9)`
+                        : mantineTheme.spacing.md,
+                      alignItems: isWide ? 'flex-start' : undefined,
+                    }}
                   >
-                    <Stack spacing={2}>
-                      <Field
-                        name="email.email"
-                        render={() => (
-                          <TextField
-                            id="email"
-                            name="email.email"
-                            type="email"
-                            label="New Email"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              formik.touched.email?.email &&
-                              Boolean(formik.errors.email?.email)
-                            }
-                            helperText={
-                              formik.touched.email?.email &&
-                              formik.errors.email?.email
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <Field
-                        name="email.password"
-                        render={() => (
-                          <TextField
-                            id="password"
-                            type="password"
-                            name="email.password"
-                            label="Password"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              formik.touched.email?.password &&
-                              Boolean(formik.errors.email?.password)
-                            }
-                            helperText={
-                              formik.touched.email?.password &&
-                              formik.errors.email?.password
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <Box>
-                        <Button
-                          color="secondary"
-                          onClick={() => updateEmail(formik.values)}
-                          variant="contained"
-                        >
-                          Save
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </SettingsSection>
-                  <SettingsSection
-                    icon={<PersonRoundedIcon fontSize="small" />}
-                    title="Update Name"
-                    description="Update the name displayed on your account."
-                  >
-                    <Stack spacing={2}>
-                      <Field
-                        name="names.firstName"
-                        render={() => (
-                          <TextField
-                            name="names.firstName"
-                            label="New First Name"
-                            type="text"
-                            id="firstName"
-                            value={formik.values.names.firstName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              formik.touched.names?.firstName &&
-                              Boolean(formik.errors.names?.firstName)
-                            }
-                            helperText={
-                              formik.touched.names?.firstName &&
-                              formik.errors.names?.firstName
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <Field
-                        name="names.lastName"
-                        render={() => (
-                          <TextField
-                            name="names.lastName"
-                            label="New Last Name"
-                            id="lastName"
-                            type="text"
-                            value={formik.values.names.lastName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={
-                              formik.touched.names?.lastName &&
-                              Boolean(formik.errors.names?.lastName)
-                            }
-                            helperText={
-                              formik.touched.names?.lastName &&
-                              formik.errors.names?.lastName
-                            }
-                          ></TextField>
-                        )}
-                      />
-                      <Box>
-                        <Button
-                          color="secondary"
-                          onClick={() => updateNames(formik.values)}
-                          variant="contained"
-                        >
-                          Save
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </SettingsSection>
-                  <SettingsSection
-                    icon={<SecurityRoundedIcon fontSize="small" />}
-                    title="Update Password"
-                    description="Send a password reset link to your current email."
-                  >
-                    <Box>
-                      <Button
-                        color="secondary"
-                        onClick={updatePassword}
-                        variant="contained"
-                      >
-                        Send Email
-                      </Button>
-                    </Box>
-                  </SettingsSection>
-                  <SettingsSection
-                    icon={<DeleteRoundedIcon fontSize="small" />}
-                    title="Danger Zone"
-                    description="Permanently delete your account and recipes."
-                    danger
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        paddingBottom: 2,
-                        color: alpha(theme.palette.gray.main, 0.76),
+                    <Box
+                      style={{
+                        width: 72,
+                        height: 72,
+                        borderRadius: 4,
+                        display: 'grid',
+                        placeItems: 'center',
+                        color: theme.other.app.palette.primary.dark,
+                        backgroundColor:
+                          theme.other.app.surfaces.primaryTint.backgroundColor,
+                        flex: '0 0 auto',
+                        fontSize: '1.5rem',
+                        fontWeight: 900,
+                        lineHeight: 1,
                       }}
                     >
-                      This action cannot be undone.
-                    </Typography>
-                    <Divider sx={{ marginBottom: 2 }} />
-                    <Box>
-                      <Button
-                        color="primary"
-                        onClick={openDeleteModal}
-                        variant="contained"
-                        startIcon={<DeleteRoundedIcon />}
-                      >
-                        Delete Account
-                      </Button>
+                      {initials || <AccountCircleRoundedIcon fontSize={36} />}
                     </Box>
-                  </SettingsSection>
-                </Stack>
-              )}
-            ></Formik>
+                    <Stack gap={4} style={{ minWidth: 0 }}>
+                      <Text
+                        size="xs"
+                        fw={800}
+                        style={{
+                          letterSpacing: 0,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        Signed in as
+                      </Text>
+                      <Title
+                        order={6}
+                        style={{ fontWeight: 800, lineHeight: 1.2 }}
+                      >
+                        {user?.firstName} {user?.lastName}
+                      </Title>
+                      <Text
+                        size="sm"
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {user?.email}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                </Box>
+                <Box style={{ minWidth: 0 }}>
+                  <Stack gap={4} mb="md">
+                    <Title
+                      order={2}
+                      style={{
+                        color: theme.other.app.palette.info.contrastText,
+                        fontWeight: 850,
+                      }}
+                    >
+                      Settings
+                    </Title>
+                    <Text size="sm">
+                      Manage your account details, sign-in email, and account
+                      safety.
+                    </Text>
+                  </Stack>
+                  <Formik
+                    initialValues={{
+                      email: {
+                        email: '',
+                        password: '',
+                      },
+                      names: {
+                        firstName: user?.firstName,
+                        lastName: user?.lastName,
+                      },
+                    }}
+                    validationSchema={validationSchema}
+                    onSubmit={() => void 0}
+                    render={(formik: FormikProps<SettingsFormValues>) => (
+                      <Stack gap="md" style={{ width: '100%' }}>
+                        <SettingsSection
+                          icon={<EmailRoundedIcon fontSize="small" />}
+                          title="Update Email"
+                          description="Change the email address used to sign in."
+                        >
+                          <Stack gap="md" style={{ maxWidth: 520 }}>
+                            <Field
+                              name="email.email"
+                              render={() => (
+                                <TextInput
+                                  id="email"
+                                  name="email.email"
+                                  type="email"
+                                  label="New Email"
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={
+                                    formik.touched.email?.email &&
+                                    formik.errors.email?.email
+                                  }
+                                />
+                              )}
+                            />
+                            <Field
+                              name="email.password"
+                              render={() => (
+                                <PasswordInput
+                                  id="password"
+                                  name="email.password"
+                                  label="Password"
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={
+                                    formik.touched.email?.password &&
+                                    formik.errors.email?.password
+                                  }
+                                />
+                              )}
+                            />
+                            <Group justify="flex-start">
+                              <Button
+                                color="dark"
+                                onClick={() => updateEmail(formik.values)}
+                                variant="filled"
+                              >
+                                Save
+                              </Button>
+                            </Group>
+                          </Stack>
+                        </SettingsSection>
+                        <SettingsSection
+                          icon={<PersonRoundedIcon fontSize="small" />}
+                          title="Update Name"
+                          description="Update the name displayed on your account."
+                        >
+                          <Stack gap="md" style={{ maxWidth: 520 }}>
+                            <Field
+                              name="names.firstName"
+                              render={() => (
+                                <TextInput
+                                  name="names.firstName"
+                                  label="New First Name"
+                                  type="text"
+                                  id="firstName"
+                                  value={formik.values.names.firstName}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={
+                                    formik.touched.names?.firstName &&
+                                    formik.errors.names?.firstName
+                                  }
+                                />
+                              )}
+                            />
+                            <Field
+                              name="names.lastName"
+                              render={() => (
+                                <TextInput
+                                  name="names.lastName"
+                                  label="New Last Name"
+                                  id="lastName"
+                                  type="text"
+                                  value={formik.values.names.lastName}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={
+                                    formik.touched.names?.lastName &&
+                                    formik.errors.names?.lastName
+                                  }
+                                />
+                              )}
+                            />
+                            <Group justify="flex-start">
+                              <Button
+                                color="dark"
+                                onClick={() => updateNames(formik.values)}
+                                variant="filled"
+                              >
+                                Save
+                              </Button>
+                            </Group>
+                          </Stack>
+                        </SettingsSection>
+                        <SettingsSection
+                          icon={<SecurityRoundedIcon fontSize="small" />}
+                          title="Update Password"
+                          description="Send a password reset link to your current email."
+                        >
+                          <Group justify="flex-start">
+                            <Button
+                              color="dark"
+                              onClick={updatePassword}
+                              variant="filled"
+                            >
+                              Send Email
+                            </Button>
+                          </Group>
+                        </SettingsSection>
+                        <SettingsSection
+                          icon={<DeleteRoundedIcon fontSize="small" />}
+                          title="Danger Zone"
+                          description="Permanently delete your account and recipes."
+                          danger
+                        >
+                          <Stack gap="md" style={{ maxWidth: 520 }}>
+                            <Text size="sm">This action cannot be undone.</Text>
+                            <Divider />
+                            <Group justify="flex-start">
+                              <Button
+                                color="red"
+                                onClick={openDeleteModal}
+                                variant="filled"
+                                leftSection={<DeleteRoundedIcon />}
+                              >
+                                Delete Account
+                              </Button>
+                            </Group>
+                          </Stack>
+                        </SettingsSection>
+                      </Stack>
+                    )}
+                  ></Formik>
+                </Box>
+              </Box>
+            </Box>
           </Box>
-        </Box>
 
-        <Snackbar
-          open={snackBarOpen}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          onClose={closeSnackBar}
-          autoHideDuration={3000}
-          message={snackBarMessage}
-          key={'bottom' + 'center'}
-        />
-
-        <DeleteModal
-          isOpen={deleteModalOpen}
-          deleteFunction={deleteAccount}
-          closeModal={() => setDeleteModalOpen(false)}
-        />
-      </>
-    </Fade>
+          <DeleteModal
+            isOpen={deleteModalOpen}
+            deleteFunction={deleteAccount}
+            closeModal={() => setDeleteModalOpen(false)}
+          />
+        </>
+      )}
+    </Transition>
   );
 };
 

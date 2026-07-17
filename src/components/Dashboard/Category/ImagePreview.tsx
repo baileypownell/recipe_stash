@@ -1,14 +1,11 @@
 import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  useTheme,
-} from '@mui/material';
+  Box, Checkbox, ActionIcon, rgba, useMantineTheme, 
+  Group} from '@mantine/core';
 import type { ChangeEvent } from 'react';
+import type { CSSProperties } from 'react';
 import { Controller } from 'react-hook-form';
 import type { Control, UseFieldArrayRemove } from 'react-hook-form';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import { DeleteRoundedIcon } from '@icons';
 import type { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 
 interface ImagePreviewProps {
@@ -32,29 +29,31 @@ export const ImagePreview = ({
   remove,
   backgroundImageUrl,
 }: ImagePreviewProps) => {
-  const theme = useTheme();
-  const filePreviewStyles = {
-    boxShadow: `5px 1px 30px ${theme.palette.boxShadow.main}`,
+  const theme = useMantineTheme();
+  const filePreviewStyles: CSSProperties = {
+    boxShadow: theme.other.app.shadows.preview,
     flexGrow: 1,
     position: 'relative',
     height: '200px',
     minWidth: '200px',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
-    borderRadius: '5px',
-    margin: '5px',
+    borderRadius: theme.radius.sm,
+    margin: theme.spacing.sm,
   };
-  const fileCoverStyles = {
+  const fileCoverStyles: CSSProperties = {
     position: 'absolute',
-    backgroundColor: 'rgba(331, 68, 68, 0.2)',
-    color: 'white',
+    backgroundColor: rgba(theme.other.app.palette.gray.main, 0.33),
+    justifyContent: 'space-between',
+    alignItems: 'start',
+    color: theme.white,
     top: 0,
     right: 0,
     left: 0,
     bottom: 0,
-    padding: '5px',
+    padding: theme.spacing.sm,
     transition: 'backgroundColor 0.4s',
-    borderRadius: '5px',
+    borderRadius: theme.radius.sm,
   };
   return (
     <Controller
@@ -64,36 +63,25 @@ export const ImagePreview = ({
       render={() => {
         return (
           <Box
-            sx={filePreviewStyles}
             style={{
+              ...filePreviewStyles,
               backgroundImage: `url(${backgroundImageUrl})`,
             }}
           >
-            <Box sx={fileCoverStyles}>
-              <FormControlLabel
-                value="end"
-                control={
-                  <Checkbox
-                    onChange={onChange}
-                    checked={item.isDefault}
-                    slotProps={{ input: { 'aria-label': 'primary checkbox' } }}
-                  />
-                }
+            <Group style={fileCoverStyles}>
+              <Checkbox
+                onChange={onChange}
+                checked={item.isDefault}
+                aria-label="primary checkbox"
                 label="Use as tile background image"
-                labelPlacement="end"
               />
-              <IconButton
-                color="info"
+              <ActionIcon
+                color="gray"
                 onClick={() => remove(index)}
-                sx={{
-                  position: 'absolute',
-                  bottom: '10px',
-                  right: '10px',
-                }}
               >
                 <DeleteRoundedIcon />
-              </IconButton>
-            </Box>
+              </ActionIcon>
+            </Group>
           </Box>
         );
       }}

@@ -1,250 +1,200 @@
-import { alpha, createTheme } from '@mui/material';
-import type { Theme, ThemeOptions } from '@mui/material';
+import { Anchor, createTheme, rgba } from '@mantine/core';
+import type { CSSProperties } from 'react';
 
-declare module '@mui/material/styles' {
-  interface Palette {
-    gray: Palette['primary'];
-    orange: Palette['primary'];
-    boxShadow: Palette['primary'];
-  }
-  interface PaletteOptions {
-    gray: PaletteOptions['primary'];
-    orange: PaletteOptions['primary'];
-    boxShadow: PaletteOptions['primary'];
-  }
-  interface Theme {
-    skeleton: {
-      baseColor: string;
-      highlightColor: string;
-    };
-    surfaces: {
-      quiet: {
-        backgroundColor: string;
-        border: string;
-        borderRadius: string;
-        boxShadow: string;
-      };
-    };
-  }
-  interface ThemeOptions {
-    skeleton?: {
-      baseColor?: string;
-      highlightColor?: string;
-    };
-    surfaces?: {
-      quiet?: {
-        backgroundColor?: string;
-        border?: string;
-        borderRadius?: string;
-        boxShadow?: string;
-      };
-    };
-  }
-}
+const recipeRed = [
+  '#fff0ee',
+  '#ffd9d4',
+  '#f9aea6',
+  '#f47f73',
+  '#ee594b',
+  '#e86054',
+  '#d54a40',
+  '#ab3f35',
+  '#8d3129',
+  '#72251f',
+] as const;
 
-declare module '@mui/material/Checkbox' {
-  interface CheckboxPropsColorOverrides {
-    orange: true;
-  }
-}
+const appColors = {
+  primary: {
+    main: recipeRed[5],
+    dark: recipeRed[7],
+    light: '#fa7569',
+  },
+  secondary: {
+    main: '#4a4a48',
+    contrastText: '#fff',
+  },
+  error: {
+    main: '#dd7244',
+    dark: '#c23c3c',
+  },
+  info: {
+    main: '#f7f7f7',
+    contrastText: '#353531',
+  },
+  gray: {
+    main: '#353531',
+  },
+  orange: {
+    main: '#dd7244',
+  },
+};
 
-declare module '@mui/material/Button' {
-  interface ButtonPropsColorOverrides {
-    orange: true;
-  }
-}
-
-const base = createTheme({
+type AppTheme = {
   palette: {
     primary: {
-      main: '#e86054',
-      dark: '#ab3f35',
-      light: '#fa7569',
-    },
-    secondary: {
-      main: '#4a4a48',
-      contrastText: '#fff',
-    },
+      main: string;
+      dark: string;
+      light: string;
+    };
     error: {
-      main: '#dd7244',
-      dark: '#c23c3c',
-    },
+      dark: string;
+    };
     info: {
-      main: '#f7f7f7',
-      contrastText: '#353531',
-    },
+      contrastText: string;
+    };
     gray: {
-      main: '#353531',
-    },
-    orange: {
-      main: '#dd7244',
-    },
-    boxShadow: {
-      main: '#868686',
-    },
-  },
-  skeleton: {
-    baseColor: alpha('#353531', 0.08),
-    highlightColor: alpha('#353531', 0.035),
-  },
+      main: string;
+    };
+  };
+  shadows: {
+    floating: string;
+    overlay: string;
+    panel: string;
+    preview: string;
+    raised: string;
+    toolbar: string;
+  };
+  gradients: {
+    heroContentScrim: string;
+    heroFallback: string;
+    heroImageOverlay: string;
+    pageOverlay: string;
+    tileImageScrim: string;
+  };
+  text: {
+    link: string;
+    inverseMuted: string;
+  };
+  borders: {
+    faint: string;
+    inverseSubtle: string;
+    primary: string;
+    subtle: string;
+  };
+  overlays: {
+    lightbox: CSSProperties;
+  };
   surfaces: {
-    quiet: {
-      backgroundColor: '#fff',
-      border: '1px solid rgba(53, 53, 49, 0.12)',
-      borderRadius: '4px',
-      boxShadow: '0 1px 4px rgba(53, 53, 49, 0.05)',
-    },
-  },
-});
+    inset: CSSProperties;
+    quiet: CSSProperties;
+    page: CSSProperties;
+    inverseTint: CSSProperties;
+    primaryTint: CSSProperties;
+  };
+};
 
-const getAppBar = (theme: Theme): ThemeOptions => ({
-  components: {
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: theme.palette.gray.main,
-          position: 'sticky',
-        },
-      },
-    },
-  },
-});
+declare module '@mantine/core' {
+  export interface MantineThemeOther {
+    app: AppTheme;
+  }
+}
 
-const getButton = (): ThemeOptions => ({
+export const mantineTheme = createTheme({
+  primaryColor: 'recipeRed',
+  colors: {
+    recipeRed,
+  },
+  primaryShade: 5,
+  fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  headings: {
+    fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontWeight: '800',
+  },
   components: {
-    MuiButton: {
+    Modal: {
       defaultProps: {
-        disableElevation: true,
-      },
-      styleOverrides: {
-        root: {
-          borderRadius: 4,
-          fontWeight: 700,
-          textTransform: 'none',
-        },
-      },
-      variants: [
-        {
-          props: { variant: 'contained', color: 'primary' },
-          style: {
-            '&.Mui-disabled': {
-              backgroundColor: 'rgb(232, 96, 84, 0.5)',
-              color: 'rgba(255, 255, 255, 0.5)',
-            },
-          },
-        },
-      ],
-    },
-  },
-});
-
-const getList = (theme: Theme): ThemeOptions => ({
-  components: {
-    MuiList: {
-      styleOverrides: {
-        root: {
-          color: theme.palette.gray.main,
-          svg: {
-            color: theme.palette.gray.main,
-          },
-        },
+        centered: true,
       },
     },
-  },
-});
-
-export const getChip = (theme: Theme): ThemeOptions => ({
-  components: {
-    MuiChip: {
+    Anchor: Anchor.extend({
       defaultProps: {
-        variant: 'filled',
-        color: 'primary',
+        underline: 'hover',
       },
-      styleOverrides: {
+      styles: (theme) => ({
         root: {
-          borderRadius: 999,
-          fontWeight: 700,
-          transition: 'background-color 160ms ease, border-color 160ms ease',
+          color: theme.other.app.text.link,
+          cursor: 'pointer',
+          fontWeight: 800,
         },
-        sizeSmall: {
-          height: 22,
-          fontSize: '0.72rem',
+      }),
+    }),
+  },
+  other: {
+    app: {
+      palette: {
+        primary: appColors.primary,
+        error: {
+          dark: appColors.error.dark,
         },
-        outlined: {
+        info: {
+          contrastText: appColors.info.contrastText,
+        },
+        gray: appColors.gray,
+      },
+      shadows: {
+        floating: '0 14px 28px rgba(232, 96, 84, 0.32)',
+        overlay: '0 18px 44px rgba(20, 20, 18, 0.42)',
+        panel: '0 1px 8px rgba(53, 53, 49, 0.045)',
+        preview: '5px 1px 30px rgba(53, 53, 49, 0.18)',
+        raised: '0 16px 34px rgba(53, 53, 49, 0.11)',
+        toolbar: '0 8px 24px rgba(53, 53, 49, 0.07)',
+      },
+      gradients: {
+        heroContentScrim: `linear-gradient(180deg, ${rgba(appColors.gray.main, 0.02)}, ${rgba(appColors.gray.main, 0.72)})`,
+        heroFallback: `linear-gradient(135deg, ${rgba(appColors.gray.main, 0.92)}, ${rgba(appColors.primary.main, 0.86)})`,
+        heroImageOverlay: `linear-gradient(135deg, ${rgba(appColors.gray.main, 0.42)}, ${rgba(appColors.gray.main, 0.68)})`,
+        pageOverlay:
+          `linear-gradient(120deg, ${rgba(appColors.primary.main, 0.48)}, ${rgba(appColors.gray.main, 0.28)})`,
+        tileImageScrim:
+          `linear-gradient(180deg, transparent 0%, ${rgba(appColors.gray.main, 0.1)} 38%, ${rgba(appColors.gray.main, 0.74)} 100%)`,
+      },
+      text: {
+        link: appColors.primary.light,
+        inverseMuted: 'rgba(255, 255, 255, 0.68)',
+      },
+      borders: {
+        faint: 'rgba(53, 53, 49, 0.08)',
+        inverseSubtle: 'rgba(255, 255, 255, 0.34)',
+        primary: 'rgba(232, 96, 84, 0.36)',
+        subtle: 'rgba(53, 53, 49, 0.1)',
+      },
+      overlays: {
+        lightbox: {
+          backgroundColor: rgba(appColors.gray.main, 0.95),
+        },
+      },
+      surfaces: {
+        inset: {
+          backgroundColor: 'rgba(53, 53, 49, 0.015)',
+        },
+        page: {
+          background:
+            `linear-gradient(180deg, ${rgba(appColors.primary.main, 0.045)}, transparent 320px), ${rgba(appColors.gray.main, 0.018)}`,
+        },
+        inverseTint: {
+          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        },
+        primaryTint: {
+          backgroundColor: 'rgba(232, 96, 84, 0.08)',
+        },
+        quiet: {
           backgroundColor: '#fff',
-          borderColor: alpha(theme.palette.gray.main, 0.18),
-          color: theme.palette.gray.main,
+          border: '1px solid rgba(53, 53, 49, 0.12)',
+          borderRadius: '4px',
+          boxShadow: '0 1px 8px rgba(53, 53, 49, 0.045)',
         },
       },
     },
   },
 });
-
-export const getForm = (theme: Theme): ThemeOptions => ({
-  components: {
-    MuiFormLabel: {
-      styleOverrides: {
-        root: {
-          color: theme.palette.gray.main,
-        },
-      },
-    },
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          '.MuiFilledInput-input': {
-            color: theme.palette.gray.main,
-          },
-        },
-      },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          borderRadius: 4,
-          backgroundColor: '#fff',
-        },
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        variant: 'outlined',
-        size: 'small',
-      },
-    },
-  },
-});
-
-const getSurfaceComponents = (theme: Theme): ThemeOptions => ({
-  components: {
-    MuiCard: {
-      defaultProps: {
-        elevation: 0,
-      },
-      styleOverrides: {
-        root: {
-          ...theme.surfaces.quiet,
-          transition: 'border-color 160ms ease, box-shadow 160ms ease',
-        },
-      },
-    },
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: theme.surfaces.quiet.borderRadius,
-          transition: 'border-color 160ms ease, background-color 160ms ease',
-        },
-      },
-    },
-  },
-});
-
-export const theme = createTheme(
-  base,
-  getAppBar(base),
-  getButton(),
-  getList(base),
-  getChip(base),
-  getForm(base),
-  getSurfaceComponents(base),
-);
