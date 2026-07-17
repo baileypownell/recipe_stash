@@ -133,7 +133,7 @@ const Nav = () => {
                       <AccountCircleRoundedIcon />
                     </ActionIcon>
                   </Menu.Target>
-                  <Menu.Dropdown >
+                  <Menu.Dropdown>
                     <Menu.Item
                       leftSection={<LogoutRoundedIcon />}
                       onClick={logout}
@@ -165,12 +165,9 @@ const Nav = () => {
       </Box>
       <Drawer position="left" opened={open} onClose={() => setOpen(false)}>
         <Stack>
-          <Box
-            component="img"
-            src={whiteLogo}
-            alt="recipe stash"
-            style={{ height: '40px', width: 'fit-content' }}
-          />
+          <Box style={{ height: '35px' }}>
+            <Box component="img" src={whiteLogo} alt="recipe stash" style={{ height: '100%' }} />
+          </Box>
 
           <Stack gap={0}>
             {isAuthenticated ? (

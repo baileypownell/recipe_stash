@@ -17,7 +17,6 @@ import { recipeTagChips } from '../../models/tags';
 import { RecipeService } from '../../services/recipe-services';
 import RecipeDialog, { Mode } from '../Dashboard/Category/RecipeDialog';
 import RecipeDetailContent from './RecipeDetailContent';
-import MobileRecipeToolbar from './MobileRecipeToolbar';
 import type { FullRecipe } from '../../../shared/types';
 
 interface Props {
@@ -343,23 +342,18 @@ const Recipe = (props: Props) => {
             }}
           />
           <RecipeContentShell>
-            <MobileRecipeToolbar
-              width={width}
-              triggerDialog={triggerDialog}
-              cloneRecipe={cloneRecipe}
-            />
             <RecipeDetailContent recipe={recipe} selectedTags={selectedTags} />
           </RecipeContentShell>
         </>
       ) : (
         <RecipePageSkeleton />
       )}
-      {!loading && recipe && width > 700 ? (
+      {!loading && recipe ? (
         <Box
           style={{
             position: 'fixed',
-            right: 24,
-            bottom: 24,
+            right: width <= 700 ? 16 : 24,
+            bottom: width <= 700 ? 16 : 24,
             zIndex: 30,
             display: 'flex',
             gap: 8,

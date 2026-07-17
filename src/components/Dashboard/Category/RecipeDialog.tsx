@@ -140,6 +140,9 @@ const determineCategory = (
 
 const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [loading, setLoading] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    window.innerWidth <= 767.95,
+  );
   const [recipeTitle, setRecipeTitle] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [directions, setDirections] = useState('');
@@ -154,6 +157,13 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     recipeTagChips.map((tag) => ({ ...tag, selected: false })),
   );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerWidth <= 767.95);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (mode === Mode.Edit) {
@@ -358,7 +368,13 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
     !(recipeDialogInfo as EditProps)?.cloning && mode === Mode.Edit;
 
   return (
-    <Modal opened={open} onClose={toggleModal} title={getTitle()} size="1100px">
+    <Modal
+      opened={open}
+      onClose={toggleModal}
+      title={getTitle()}
+      size="1100px"
+      fullScreen={isSmallScreen}
+    >
       <Stack gap="xl">
         <Stack gap="md">
           <TextInput
