@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import dotenv from 'dotenv';
+import type { PoolClient } from 'pg';
 import client from './client.js';
 import { authMiddleware } from './authMiddleware.js';
 import {
@@ -178,33 +179,33 @@ router.post('/:recipeId', async (req: any, res) => {
     });
   }
 
+  let transactionClient: PoolClient | undefined;
   try {
-    const insertResult = await client.query(
+    transactionClient = await client.connect();
+    await transactionClient.query('BEGIN');
+
+    const insertResult = await transactionClient.query(
       'INSERT INTO files(aws_download_url, recipe_uuid, user_uuid, key) VALUES($1, $2, $3, $4)',
       [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
     );
 
     if (!insertResult.rowCount) {
-      // Roll back the orphaned S3 object since the DB record was never
-      // created for it.
-      await deleteSingleAWSFile(awsUploadRes.key);
-      return res.status(500).json({
-        success: false,
-        message: 'File record could not be saved.',
-      });
+      throw new Error('File record could not be saved.');
     }
 
-    const updateResult = await client.query(
-      'UPDATE recipes SET has_images = TRUE WHERE recipe_uuid = $1',
-      [recipeId],
+    const updateResult = await transactionClient.query(
+      `UPDATE recipes
+      SET has_images = TRUE
+      WHERE recipe_uuid = $1
+      AND user_uuid = $2`,
+      [recipeId, userId],
     );
 
     if (!updateResult.rowCount) {
-      return res.status(500).json({
-        success: false,
-        message: 'Recipe could not be updated.',
-      });
+      throw new Error('Recipe could not be updated.');
     }
+
+    await transactionClient.query('COMMIT');
 
     return res.status(200).json({
       success: true,
@@ -213,6 +214,13 @@ router.post('/:recipeId', async (req: any, res) => {
     });
   } catch (error) {
     logServerError('file-upload POST /:recipeId', error);
+    if (transactionClient) {
+      try {
+        await transactionClient.query('ROLLBACK');
+      } catch (rollbackError) {
+        logServerError('file-upload POST /:recipeId rollback', rollbackError);
+      }
+    }
     try {
       await deleteSingleAWSFile(awsUploadRes.key);
     } catch (cleanupErr) {
@@ -222,6 +230,8 @@ router.post('/:recipeId', async (req: any, res) => {
       success: false,
       message: 'File could not be uploaded.',
     });
+  } finally {
+    transactionClient?.release();
   }
 });
 
@@ -257,6 +267,14 @@ router.delete('/:imageKey', async (req: any, res) => {
     await deleteSingleAWSFile(imageKey);
 
     await client.query('DELETE FROM files WHERE key=$1', [imageKey]);
+
+    await client.query(
+      `UPDATE recipes
+      SET default_tile_image_key = NULL
+      WHERE recipe_uuid = $1
+      AND default_tile_image_key = $2`,
+      [recipeId, imageKey],
+    );
 
     const remaining = await client.query(
       'SELECT * FROM files WHERE recipe_uuid=$1',

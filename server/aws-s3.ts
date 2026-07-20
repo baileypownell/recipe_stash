@@ -11,7 +11,7 @@ import multerS3 from 'multer-s3';
 import { v4 as uuidv4 } from 'uuid';
 
 interface UploadRequest extends Request {
-  file?: Express.Multer.File;
+  file?: Express.Multer.File & { location: string };
   s3Key: string;
 }
 
@@ -65,7 +65,6 @@ const singleFileUpload = upload.single('image');
 
 const uploadSingleAWSFile = (req: UploadRequest, res: Response) => {
   req.s3Key = uuidv4();
-  const downloadUrl = `https://${process.env.AWS_REGION}.amazonaws.com/${process.env.S3_BUCKET}/${req.s3Key}`;
   return new Promise((resolve, reject) => {
     return singleFileUpload(req, res, (err) => {
       if (err) {
@@ -74,7 +73,7 @@ const uploadSingleAWSFile = (req: UploadRequest, res: Response) => {
       if (!req.file) {
         return reject(new Error('No image file was uploaded.'));
       }
-      return resolve({ downloadUrl, key: req.s3Key });
+      return resolve({ downloadUrl: req.file.location, key: req.s3Key });
     });
   });
 };

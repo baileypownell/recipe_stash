@@ -1,7 +1,7 @@
 import { ArrowBackIosNewRoundedIcon } from '@icons';
 import { ArrowForwardIosRoundedIcon } from '@icons';
 import { CloseRoundedIcon } from '@icons';
-import { Box, Button, ActionIcon, useMantineTheme } from '@mantine/core';
+import { Button, ActionIcon, useMantineTheme, Stack } from '@mantine/core';
 import { useState } from 'react';
 import Lightbox from 'react-spring-lightbox';
 import type { ImagesListType } from 'react-spring-lightbox';
@@ -58,19 +58,29 @@ const LightboxComponent = ({ preSignedUrls }: Props) => {
         currentIndex={currentImageIndex}
         onClose={onClose}
         renderHeader={() => (
-          <Box>
-            <ActionIcon color="gray" onClick={onClose}>
+          <Stack style={{ alignItems: 'flex-end', padding: theme.spacing.sm }}>
+            <ActionIcon variant="light" onClick={onClose} aria-label="Close image viewer">
               <CloseRoundedIcon />
             </ActionIcon>
-          </Box>
+          </Stack>
         )}
         renderPrevButton={() => (
-          <Button color="gray" onClick={gotoPrevious}>
+          <Button
+            variant="light"
+            onClick={gotoPrevious}
+            style={{ marginLeft: theme.spacing.sm }}
+            aria-label="Previous image"
+          >
             <ArrowBackIosNewRoundedIcon />
           </Button>
         )}
         renderNextButton={() => (
-          <Button color="gray" onClick={gotoNext}>
+          <Button
+            variant="light"
+            onClick={gotoNext}
+            style={{ marginRight: theme.spacing.sm }}
+            aria-label="Next image"
+          >
             <ArrowForwardIosRoundedIcon />
           </Button>
         )}

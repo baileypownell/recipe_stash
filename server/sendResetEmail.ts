@@ -5,18 +5,18 @@ import type { NextFunction, Request, Response } from 'express';
 import { Resend } from 'resend';
 import client from './client.js';
 
+const environment = process.env.NODE_ENV || 'development';
+
+if (environment === 'development') {
+  dotenv.config();
+}
+
 const router = Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
 const logServerError = (context: string, error: unknown) => {
   console.error(context, error);
 };
-
-const environment = process.env.NODE_ENV || 'development';
-
-if (environment === 'development') {
-  dotenv.config();
-}
 
 router.post('/', (request: Request, response: Response, next: NextFunction) => {
   const { email } = request.body;

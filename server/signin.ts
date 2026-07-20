@@ -31,16 +31,19 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
           (err: Error | null, authenticated?: boolean) => {
             if (err) return next(err);
             if (authenticated) {
-              request.session.isAuthenticated = true;
-              request.session.userID = user_uuid;
-              return response.status(200).json({
-                success: true,
-                userData: {
-                  id: user_uuid,
-                  first_name: first_name,
-                  last_name: last_name,
-                  email: storedEmail,
-                },
+              return request.session.regenerate((err) => {
+                if (err) return next(err);
+
+                request.session.userID = user_uuid;
+                return response.status(200).json({
+                  success: true,
+                  userData: {
+                    id: user_uuid,
+                    first_name: first_name,
+                    last_name: last_name,
+                    email: storedEmail,
+                  },
+                });
               });
             } else {
               return response

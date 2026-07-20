@@ -33,7 +33,7 @@ const AuthenticationService = {
 
   logout: async (): Promise<any> => {
     queryClient.clear();
-    return await axios.get('/logout');
+    return await axios.post('/logout');
   },
 
   getPasswordResetLink: async (email: string): Promise<any> => {

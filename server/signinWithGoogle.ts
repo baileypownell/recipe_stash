@@ -65,10 +65,13 @@ router.post('/', async (request: Request, response: Response, next: NextFunction
       if (err) return next(err);
       if (res.rows.length) {
         const user_uuid = res.rows[0].user_uuid;
-        request.session.isAuthenticated = true;
-        request.session.userID = user_uuid;
-        return response.status(200).json({
-          success: true,
+        return request.session.regenerate((err) => {
+          if (err) return next(err);
+
+          request.session.userID = user_uuid;
+          return response.status(200).json({
+            success: true,
+          });
         });
       } else {
         return response.status(404).json({ success: false });

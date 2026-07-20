@@ -5,14 +5,10 @@ export const authMiddleware = (
   response: Response,
   next: NextFunction,
 ) => {
-  if (request.session.isAuthenticated) {
-    request.session.userID = request.session.userID;
-    next();
-  } else {
-    request.session.error = 'Unauthenticated';
-    return response.status(401).json({
-      success: false,
-      message: 'User unauthenticated',
-    });
-  }
+  if (request.session.userID) return next();
+
+  return response.status(401).json({
+    success: false,
+    message: 'User unauthenticated',
+  });
 };

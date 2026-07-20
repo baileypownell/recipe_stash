@@ -6,18 +6,19 @@ import { Resend } from 'resend';
 import { authMiddleware } from './authMiddleware.js';
 import { deleteAWSFiles } from './aws-s3.js';
 import client from './client.js';
-const router = Router();
-const resend = new Resend(process.env.RESEND_API_KEY);
-const normalizeEmail = (email: string) => email.trim().toLowerCase();
-const logServerError = (context: string, error: unknown) => {
-  console.error(context, error);
-};
 
 const environment = process.env.NODE_ENV || 'development';
 
 if (environment === 'development') {
   dotenv.config();
 }
+
+const router = Router();
+const resend = new Resend(process.env.RESEND_API_KEY);
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
+const logServerError = (context: string, error: unknown) => {
+  console.error(context, error);
+};
 
 router.get(
   '/',
@@ -273,20 +274,26 @@ router.put(
                     });
                   }
 
-                  const { error } = await resend.emails.send({
-                    from:
-                      process.env.RESEND_FROM_EMAIL ??
-                      'Recipe Stash <onboarding@resend.dev>',
-                    to: oldEmail,
-                    subject: 'Your Email Address Has Been Changed',
-                    html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
-                  });
-                  if (error) {
-                    logServerError('user PUT / send email change notice', error);
-                    return response.status(500).json({
-                      success: false,
-                      message: 'There was an error sending the email.',
+                  try {
+                    const { error } = await resend.emails.send({
+                      from:
+                        process.env.RESEND_FROM_EMAIL ??
+                        'Recipe Stash <onboarding@resend.dev>',
+                      to: oldEmail,
+                      subject: 'Your Email Address Has Been Changed',
+                      html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
                     });
+                    if (error) {
+                      logServerError(
+                        'user PUT / send email change notice',
+                        error,
+                      );
+                    }
+                  } catch (error) {
+                    logServerError(
+                      'user PUT / send email change notice',
+                      error,
+                    );
                   }
 
                   return response.status(200).json({
