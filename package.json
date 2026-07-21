@@ -46,6 +46,7 @@
     "dompurify": "^3.4.11",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
     "express-session": "^1.19.0",
     "formik": "^2.4.9",
     "html-to-text": "^10.0.0",

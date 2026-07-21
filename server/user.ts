@@ -1,8 +1,10 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { Router } from 'express';
 import type { NextFunction, Request, Response } from 'express';
 import { Resend } from 'resend';
+import { passwordResetRateLimit } from './authRateLimit.js';
 import { authMiddleware } from './authMiddleware.js';
 import { deleteAWSFiles } from './aws-s3.js';
 import client from './client.js';
@@ -128,41 +130,50 @@ router.post('/', (request: Request, response: Response, next: NextFunction) => {
 
 router.put(
   '/reset-password',
-  (request: Request, response: Response, next: NextFunction) => {
+  passwordResetRateLimit,
+  async (request: Request, response: Response, next: NextFunction) => {
     const { reset_password_token, password } = request.body;
 
-    if (!password || !reset_password_token) {
+    if (
+      typeof password !== 'string' ||
+      typeof reset_password_token !== 'string' ||
+      password.length < 8 ||
+      Buffer.byteLength(password, 'utf8') > 72
+    ) {
       return response.status(400).json({
         success: false,
         message: 'Invalid request sent.',
       });
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    client.query(
-      `UPDATE users
-      SET password=$1, reset_password_expires=$2, reset_password_token=$3
-      WHERE reset_password_token=$4
-      AND reset_password_expires > $5
-      RETURNING user_uuid`,
-      [hashedPassword, null, null, reset_password_token, Date.now()],
-      (err, res) => {
-        if (err) {
-          logServerError('user PUT /reset-password', err);
-          return next(err);
-        }
-        if (res.rowCount) {
-          return response
-            .status(200)
-            .json({ success: true, message: 'Password updated.' });
-        }
+    try {
+      const tokenHash = crypto
+        .createHash('sha256')
+        .update(reset_password_token)
+        .digest('hex');
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const result = await client.query(
+        `UPDATE users
+        SET password=$1, reset_password_expires=$2, reset_password_token=$3
+        WHERE reset_password_token=$4
+        AND reset_password_expires > $5
+        RETURNING user_uuid`,
+        [hashedPassword, null, null, tokenHash, Date.now()],
+      );
+      if (result.rowCount) {
+        return response
+          .status(200)
+          .json({ success: true, message: 'Password updated.' });
+      }
 
-        return response.status(400).json({
-          success: false,
-          message: 'Reset password token not found or expired.',
-        });
-      },
-    );
+      return response.status(400).json({
+        success: false,
+        message: 'Reset password token not found or expired.',
+      });
+    } catch (error) {
+      logServerError('user PUT /reset-password', error);
+      return next(error);
+    }
   },
 );
 

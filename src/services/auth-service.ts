@@ -43,18 +43,11 @@ const AuthenticationService = {
   updatePassword: async (
     password: string,
     token: string,
-    email: string,
   ): Promise<any> => {
-    const updatePasswordResult = await axios.put('/user/reset-password', {
+    return await axios.put('/user/reset-password', {
       password,
       reset_password_token: token,
     });
-    const res = await AuthenticationService.signIn(password, email);
-    if (res.data.success) {
-      AuthenticationService.setUserLoggedIn();
-    }
-
-    return updatePasswordResult;
   },
 
   verifyEmailResetToken: async (token: string): Promise<any> => {

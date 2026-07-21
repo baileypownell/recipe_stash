@@ -44,7 +44,6 @@ const ResetPassword = () => {
   const [verifyingToken, setVerifyingToken] = useState(true);
   const [invalidLink, setInvalidLink] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [email, setUserEmail] = useState('');
   const navigate = useNavigate();
   const { token } = useParams();
   const theme = useMantineTheme();
@@ -64,7 +63,6 @@ const ResetPassword = () => {
         setInvalidLink(true);
       } else {
         setInvalidLink(false);
-        setUserEmail(res.data.user_email);
       }
     } catch (err) {
       setInvalidLink(true);
@@ -96,11 +94,10 @@ const ResetPassword = () => {
       await AuthenticationService.updatePassword(
         values.password,
         token as string,
-        email,
       );
       showNotification('Password updated.', 'green');
       setLoading(false);
-      navigate('/recipes');
+      navigate('/login');
     } catch (err) {
       showNotification('There was an error.', 'red');
       setLoading(false);

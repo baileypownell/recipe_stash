@@ -1,64 +1,63 @@
 import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import type { NextFunction, Request, Response } from 'express';
+import { authenticationRateLimit } from './authRateLimit.js';
 import client from './client.js';
 const router = Router();
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
+const dummyPasswordHash =
+  '$2b$10$3.aTZe3YIdXyUKNScGuKHenoOKwGz9UeT3LIk7i3K0GhcZcFT9Hza';
 
-router.post('/', (request: Request, response: Response, next: NextFunction) => {
-  const { password, email } = request.body;
-  if (!password || !email) {
-    return response.status(400).json({
-      success: false,
-      message: 'Insufficient or invalid credentials provided.',
-    });
-  }
-  const normalizedEmail = normalizeEmail(email);
-  client.query(
-    'SELECT * FROM users WHERE lower(email)=$1',
-    [normalizedEmail],
-    (err, res) => {
-      if (err) return next(err);
-      if (res.rows.length) {
-        const first_name = res.rows[0].first_name;
-        const last_name = res.rows[0].last_name;
-        const user_uuid = res.rows[0].user_uuid;
-        const storedEmail = res.rows[0].email;
-        const hashedPassword = res.rows[0].password;
-        bcrypt.compare(
-          password,
-          hashedPassword,
-          (err: Error | null, authenticated?: boolean) => {
-            if (err) return next(err);
-            if (authenticated) {
-              return request.session.regenerate((err) => {
-                if (err) return next(err);
+router.post(
+  '/',
+  authenticationRateLimit,
+  async (request: Request, response: Response, next: NextFunction) => {
+    const { password, email } = request.body;
+    if (typeof password !== 'string' || typeof email !== 'string') {
+      return response.status(400).json({
+        success: false,
+        message: 'Insufficient or invalid credentials provided.',
+      });
+    }
+    const normalizedEmail = normalizeEmail(email);
+    try {
+      const result = await client.query(
+        `SELECT user_uuid, first_name, last_name, email, password
+      FROM users
+      WHERE lower(email)=$1`,
+        [normalizedEmail],
+      );
+      const user = result.rows[0];
+      const authenticated = await bcrypt.compare(
+        password,
+        user?.password ?? dummyPasswordHash,
+      );
 
-                request.session.userID = user_uuid;
-                return response.status(200).json({
-                  success: true,
-                  userData: {
-                    id: user_uuid,
-                    first_name: first_name,
-                    last_name: last_name,
-                    email: storedEmail,
-                  },
-                });
-              });
-            } else {
-              return response
-                .status(403)
-                .json({ error: 'User could not be authenticated.' });
-            }
-          },
-        );
-      } else {
-        return response
-          .status(403)
-          .json({ error: 'Password or email is incorrect.' });
+      if (!user || !authenticated) {
+        return response.status(401).json({
+          success: false,
+          message: 'Password or email is incorrect.',
+        });
       }
-    },
-  );
-});
+
+      return request.session.regenerate((err) => {
+        if (err) return next(err);
+
+        request.session.userID = user.user_uuid;
+        return response.status(200).json({
+          success: true,
+          userData: {
+            id: user.user_uuid,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+          },
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+);
 
 export default router;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import type { NextFunction, Request, Response } from 'express';
+import { authenticationRateLimit } from './authRateLimit.js';
 import client from './client.js';
 const router = Router();
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
@@ -18,6 +19,7 @@ const verifyGoogleToken = async (token: string): Promise<string | null> => {
 
   const tokenInfoResponse = await fetch(
     `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(token)}`,
+    { signal: AbortSignal.timeout(5000) },
   );
 
   if (!tokenInfoResponse.ok) return null;
@@ -35,9 +37,13 @@ const verifyGoogleToken = async (token: string): Promise<string | null> => {
   return normalizeEmail(tokenInfo.email);
 };
 
-router.post('/', async (request: Request, response: Response, next: NextFunction) => {
+router.post('/', authenticationRateLimit, async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
   const { token } = request.body;
-  if (!token) {
+  if (typeof token !== 'string') {
     return response.status(400).json({
       success: false,
       message: 'Insufficient or invalid credentials provided.',
@@ -54,7 +60,7 @@ router.post('/', async (request: Request, response: Response, next: NextFunction
   if (!email) {
     return response.status(401).json({
       success: false,
-      message: 'Google token could not be verified.',
+      message: 'Google account could not be authenticated.',
     });
   }
 
@@ -74,7 +80,10 @@ router.post('/', async (request: Request, response: Response, next: NextFunction
           });
         });
       } else {
-        return response.status(404).json({ success: false });
+        return response.status(401).json({
+          success: false,
+          message: 'Google account could not be authenticated.',
+        });
       }
     },
   );
