@@ -88,7 +88,7 @@ const Signup = () => {
       }
     } catch (err: any) {
       setLoading(false);
-      showNotification(err.response.data.error);
+      showNotification(err.response.data.message);
     }
   };
 

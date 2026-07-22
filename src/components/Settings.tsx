@@ -355,7 +355,7 @@ const Settings = (props: Props) => {
     try {
       await UserService.deleteUser();
       showNotification('Account deleted.');
-      logout();
+      navigate('/');
     } catch (err) {
       console.log(err);
       showNotification('There was an error.');

@@ -4,7 +4,10 @@ import dotenv from 'dotenv';
 import { Router } from 'express';
 import type { NextFunction, Request, Response } from 'express';
 import { Resend } from 'resend';
-import { passwordResetRateLimit } from './authRateLimit.js';
+import {
+  authenticationRateLimit,
+  passwordResetRateLimit,
+} from './authRateLimit.js';
 import { authMiddleware } from './authMiddleware.js';
 import { deleteAWSFiles } from './aws-s3.js';
 import client from './client.js';
@@ -18,6 +21,22 @@ if (environment === 'development') {
 const router = Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
+const isValidEmail = (email: string) =>
+  email.length <= 50 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isValidName = (name: unknown): name is string =>
+  typeof name === 'string' && name.trim().length > 0 && name.trim().length <= 50;
+const isValidPassword = (password: unknown): password is string =>
+  typeof password === 'string' &&
+  password.length >= 8 &&
+  Buffer.byteLength(password, 'utf8') <= 72 &&
+  /[a-z]/.test(password) &&
+  /[A-Z]/.test(password) &&
+  /\d/.test(password);
+const isUniqueViolation = (error: unknown) =>
+  typeof error === 'object' &&
+  error !== null &&
+  'code' in error &&
+  error.code === '23505';
 const logServerError = (context: string, error: unknown) => {
   console.error(context, error);
 };
@@ -25,108 +44,100 @@ const logServerError = (context: string, error: unknown) => {
 router.get(
   '/',
   authMiddleware,
-  (request: Request, response: Response, next: NextFunction) => {
+  async (request: Request, response: Response, next: NextFunction) => {
     const userId = request.session.userID;
-    client.query(
-      'SELECT email, first_name, last_name FROM users WHERE user_uuid=$1',
-      [userId],
-      (err, res) => {
-        if (err) {
-          logServerError('user GET /', err);
-          return next(err);
-        }
-        if (res.rows.length) {
-          const userData = {
-            email: res.rows[0].email,
-            firstName: res.rows[0].first_name,
-            lastName: res.rows[0].last_name,
-          };
-          response.status(200).json({
-            success: true,
-            userData,
-          });
-        } else {
-          response.status(500);
-        }
-      },
-    );
+    try {
+      const result = await client.query(
+        'SELECT email, first_name, last_name FROM users WHERE user_uuid=$1',
+        [userId],
+      );
+      const user = result.rows[0];
+      if (!user) {
+        return response.status(404).json({
+          success: false,
+          message: 'User not found.',
+        });
+      }
+
+      return response.status(200).json({
+        success: true,
+        userData: {
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+        },
+      });
+    } catch (error) {
+      logServerError('user GET /', error);
+      return next(error);
+    }
   },
 );
 
-router.post('/', (request: Request, response: Response, next: NextFunction) => {
-  const { firstName, lastName, password, email } = request.body;
+router.post(
+  '/',
+  authenticationRateLimit,
+  async (request: Request, response: Response, next: NextFunction) => {
+    const { firstName, lastName, password, email } = request.body;
 
-  if (!firstName || !lastName || !password || !email) {
-    return response.status(400).json({
-      success: false,
-      message: 'Invalid request sent.',
-    });
-  }
-
-  const normalizedEmail = normalizeEmail(email);
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  client.query(
-    'SELECT * FROM users WHERE lower(email)=$1',
-    [normalizedEmail],
-    (err, res) => {
-    if (err) {
-      logServerError('user POST / lookup', err);
-      return next(err);
+    if (
+      !isValidName(firstName) ||
+      !isValidName(lastName) ||
+      !isValidPassword(password) ||
+      typeof email !== 'string'
+    ) {
+      return response.status(400).json({
+        success: false,
+        message: 'Invalid request sent.',
+      });
     }
-    if (res.rows.length >= 1) {
-      return response
-        .status(403)
-        .send({ error: 'An account already exists for this email.' });
-    } else {
-      // if user doesn't exist already, create them:
-      client.query(
-        'INSERT INTO users(first_name, last_name, password, email) VALUES($1, $2, $3, $4)',
-        [firstName, lastName, hashedPassword, normalizedEmail],
-        (err, res) => {
-          if ((err as any)?.code === '23505') {
-            return response
-              .status(409)
-              .json({ error: 'An account already exists for this email.' });
-          }
-          if (err) {
-            logServerError('user POST / insert', err);
-            return next(err);
-          }
-          if (res) {
-            client.query(
-              'SELECT * FROM users WHERE email=$1',
-              [normalizedEmail],
-              (err, res) => {
-                if (err) {
-                  logServerError('user POST / select inserted user', err);
-                  return next(err);
-                }
-                if (res.rows.length) {
-                  const user_uuid = res.rows[0].user_uuid;
-                  const email = res.rows[0].email;
-                  const firstName = res.rows[0].first_name;
-                  const lastName = res.rows[0].last_name;
 
-                  return response.status(201).json({
-                    success: true,
-                    message: 'User created',
-                    userData: {
-                      id: user_uuid,
-                      email,
-                      firstName,
-                      lastName,
-                    },
-                  });
-                }
-              },
-            );
-          }
-        },
+    const normalizedEmail = normalizeEmail(email);
+    if (!isValidEmail(normalizedEmail)) {
+      return response.status(400).json({
+        success: false,
+        message: 'Invalid request sent.',
+      });
+    }
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        request.session.regenerate((error) =>
+          error ? reject(error) : resolve(),
+        );
+      });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const result = await client.query(
+        `INSERT INTO users(first_name, last_name, password, email)
+        VALUES($1, $2, $3, $4)
+        RETURNING user_uuid, email, first_name, last_name`,
+        [firstName.trim(), lastName.trim(), hashedPassword, normalizedEmail],
       );
+      const user = result.rows[0];
+
+      request.session.userID = user.user_uuid;
+      return response.status(201).json({
+        success: true,
+        message: 'User created',
+        userData: {
+          id: user.user_uuid,
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+        },
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        return response.status(409).json({
+          success: false,
+          message: 'An account already exists for this email.',
+        });
+      }
+      logServerError('user POST /', error);
+      return next(error);
     }
-    },
-  );
-});
+  },
+);
 
 router.put(
   '/reset-password',
@@ -135,10 +146,9 @@ router.put(
     const { reset_password_token, password } = request.body;
 
     if (
-      typeof password !== 'string' ||
+      !isValidPassword(password) ||
       typeof reset_password_token !== 'string' ||
-      password.length < 8 ||
-      Buffer.byteLength(password, 'utf8') > 72
+      !reset_password_token
     ) {
       return response.status(400).json({
         success: false,
@@ -180,39 +190,50 @@ router.put(
 router.put(
   '/',
   authMiddleware,
-  (request: Request, response: Response, next: NextFunction) => {
+  async (request: Request, response: Response, next: NextFunction) => {
     const { firstName, lastName, password, newEmail } = request.body;
     const userId = request.session.userID;
+    const wantsNameUpdate = firstName !== undefined || lastName !== undefined;
+    const wantsEmailUpdate = newEmail !== undefined || password !== undefined;
 
-    if (newEmail && (firstName || lastName)) {
+    if (wantsNameUpdate && wantsEmailUpdate) {
       return response.status(400).json({
         success: false,
         message: 'Update name and email separately.',
       });
     }
 
-    if (firstName && lastName) {
-      client.query(
-        'UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
-        [firstName, lastName, userId],
-        (err, res) => {
-          if (err) {
-            logServerError('user PUT / update name', err);
-            return next(err);
-          }
-          if (res.rowCount) {
-            return response.status(200).json({ success: true });
-          } else {
-            return response
-              .status(500)
-              .json({ success: false, message: 'User could not be updated.' });
-          }
-        },
-      );
-      return;
+    if (wantsNameUpdate) {
+      if (!isValidName(firstName) || !isValidName(lastName)) {
+        return response.status(400).json({
+          success: false,
+          message: 'Invalid request sent.',
+        });
+      }
+
+      try {
+        const result = await client.query(
+          'UPDATE users SET first_name=$1, last_name=$2 WHERE user_uuid=$3',
+          [firstName.trim(), lastName.trim(), userId],
+        );
+        if (!result.rowCount) {
+          return response.status(404).json({
+            success: false,
+            message: 'User not found.',
+          });
+        }
+        return response.status(200).json({ success: true });
+      } catch (error) {
+        logServerError('user PUT / update name', error);
+        return next(error);
+      }
     }
 
-    if (!newEmail || !password) {
+    if (
+      typeof newEmail !== 'string' ||
+      typeof password !== 'string' ||
+      !wantsEmailUpdate
+    ) {
       return response.status(400).json({
         success: false,
         message: 'Invalid request sent.',
@@ -220,172 +241,135 @@ router.put(
     }
 
     const normalizedNewEmail = normalizeEmail(newEmail);
-    client.query(
-      'SELECT * FROM users WHERE user_uuid=$1',
-    [userId],
-      (err, res) => {
-        if (err) {
-          logServerError('user PUT / select current user', err);
-          return next(err);
-        }
-        if (!res.rows.length) {
-          return response.status(404).json({
-            success: false,
-            message: 'User not found.',
-          });
-        }
+    if (!isValidEmail(normalizedNewEmail)) {
+      return response.status(400).json({
+        success: false,
+        message: 'Invalid request sent.',
+      });
+    }
 
-        const hashedPassword = res.rows[0].password;
-        const oldEmail = res.rows[0].email;
-        bcrypt.compare(password, hashedPassword, (err, res) => {
-          if (err) {
-            logServerError('user PUT / compare password', err);
-            return next(err);
-          }
-          if (!res) {
-            return response.status(403).json({
-              success: false,
-              message: 'There was an error.',
-            });
-          }
-
-          client.query(
-            'SELECT * FROM users WHERE lower(email)=$1',
-            [normalizedNewEmail],
-            (err, res) => {
-              if (err) {
-                logServerError('user PUT / check email uniqueness', err);
-                return next(err);
-              }
-              if (res.rows.length) {
-                return response.status(200).json({
-                  success: false,
-                  message: 'Email is not unique.',
-                });
-              }
-
-              client.query(
-                'UPDATE users SET email=$1 WHERE user_uuid=$2',
-                [normalizedNewEmail, userId],
-                async (err, res) => {
-                  if ((err as any)?.code === '23505') {
-                    return response.status(409).json({
-                      success: false,
-                      message: 'Email is not unique.',
-                    });
-                  }
-                  if (err) {
-                    logServerError('user PUT / update email', err);
-                    return next(err);
-                  }
-                  if (!res.rowCount) {
-                    return response.status(500).json({
-                      success: false,
-                      message: 'User could not be updated.',
-                    });
-                  }
-
-                  try {
-                    const { error } = await resend.emails.send({
-                      from:
-                        process.env.RESEND_FROM_EMAIL ??
-                        'Recipe Stash <onboarding@resend.dev>',
-                      to: oldEmail,
-                      subject: 'Your Email Address Has Been Changed',
-                      html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
-                    });
-                    if (error) {
-                      logServerError(
-                        'user PUT / send email change notice',
-                        error,
-                      );
-                    }
-                  } catch (error) {
-                    logServerError(
-                      'user PUT / send email change notice',
-                      error,
-                    );
-                  }
-
-                  return response.status(200).json({
-                    success: true,
-                    message: 'Email successfully updated.',
-                  });
-                },
-              );
-            },
-          );
+    try {
+      const userResult = await client.query(
+        'SELECT password, email FROM users WHERE user_uuid=$1',
+        [userId],
+      );
+      const user = userResult.rows[0];
+      if (!user) {
+        return response.status(404).json({
+          success: false,
+          message: 'User not found.',
         });
-      },
-    );
+      }
+
+      const passwordMatches = await bcrypt.compare(password, user.password);
+      if (!passwordMatches) {
+        return response.status(403).json({
+          success: false,
+          message: 'Password is incorrect.',
+        });
+      }
+
+      const updateResult = await client.query(
+        'UPDATE users SET email=$1 WHERE user_uuid=$2',
+        [normalizedNewEmail, userId],
+      );
+      if (!updateResult.rowCount) {
+        return response.status(404).json({
+          success: false,
+          message: 'User not found.',
+        });
+      }
+
+      try {
+        const { error } = await resend.emails.send({
+          from:
+            process.env.RESEND_FROM_EMAIL ??
+            'Recipe Stash <onboarding@resend.dev>',
+          to: user.email,
+          subject: 'Your Email Address Has Been Changed',
+          html: "<h1>recipe stash</h1><p>The email address for your recipe stash account has been recently updated. This message is just to inform you of this update for security purposes; you do not need to take any action.</p> \n\n <p>Next time you login, you'll need to use your updated email address.\n</p>",
+        });
+        if (error) {
+          logServerError('user PUT / send email change notice', error);
+        }
+      } catch (error) {
+        logServerError('user PUT / send email change notice', error);
+      }
+
+      return response.status(200).json({
+        success: true,
+        message: 'Email successfully updated.',
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        return response.status(409).json({
+          success: false,
+          message: 'Email is not unique.',
+        });
+      }
+      logServerError('user PUT / update email', error);
+      return next(error);
+    }
   },
 );
 
 router.delete(
   '/',
   authMiddleware,
-  (request: Request, response: Response, next: NextFunction) => {
+  async (request: Request, response: Response, next: NextFunction) => {
     const id = request.session.userID;
-    client.query(
-      'SELECT key FROM files WHERE user_uuid=$1',
-      [id],
-      async (err, res) => {
-        if (err) {
-          logServerError('user DELETE / select files', err);
-          return next(err);
-        }
-        if (res.rows.length) {
-          const awsKeys = res.rows.map((val) => val.key);
-          try {
-            const awsDeletions = await deleteAWSFiles(awsKeys);
-            if (awsDeletions) {
-              client.query(
-                'DELETE FROM users WHERE user_uuid=$1',
-                [id],
-                (err, res) => {
-                  if (err) {
-                    logServerError('user DELETE / delete user after files', err);
-                    return next(err);
-                  }
-                  if (res) {
-                    return response.status(200).json({ success: true });
-                  } else {
-                    return response.status(500);
-                  }
-                },
-              );
-            } else {
-              return response.status(500).json({
-                success: false,
-                message: 'Could not delete user files.',
-              });
-            }
-          } catch (err) {
-            logServerError('user DELETE / delete files', err);
-            return response.status(500).json({
-              success: false,
-              message: 'Could not delete user.',
-            });
-          }
-        } else {
-          client.query(
-            'DELETE FROM users WHERE user_uuid=$1',
-            [id],
-            (err, res) => {
-              if (err) {
-                logServerError('user DELETE / delete user without files', err);
-                return next(err);
-              }
-              if (res) {
-                return response.status(200).json({ success: true });
-              } else {
-                return response.status(500);
-              }
-            },
-          );
-        }
-      },
-    );
+    const transactionClient = await client.connect();
+    let awsKeys: string[] = [];
+
+    try {
+      await transactionClient.query('BEGIN');
+      const filesResult = await transactionClient.query(
+        'SELECT key FROM files WHERE user_uuid=$1 FOR UPDATE',
+        [id],
+      );
+      awsKeys = filesResult.rows.map((file) => file.key);
+
+      const deleteResult = await transactionClient.query(
+        'DELETE FROM users WHERE user_uuid=$1',
+        [id],
+      );
+      if (!deleteResult.rowCount) {
+        await transactionClient.query('ROLLBACK');
+        return response.status(404).json({
+          success: false,
+          message: 'User not found.',
+        });
+      }
+
+      await transactionClient.query('COMMIT');
+    } catch (error) {
+      try {
+        await transactionClient.query('ROLLBACK');
+      } catch (rollbackError) {
+        logServerError('user DELETE / rollback', rollbackError);
+      }
+      logServerError('user DELETE /', error);
+      return next(error);
+    } finally {
+      transactionClient.release();
+    }
+
+    if (awsKeys.length) {
+      try {
+        await deleteAWSFiles(awsKeys);
+      } catch (error) {
+        logServerError('user DELETE / delete files', error);
+      }
+    }
+
+    await new Promise<void>((resolve) => {
+      request.session.destroy((error) => {
+        if (error) logServerError('user DELETE / destroy session', error);
+        resolve();
+      });
+    });
+    response.clearCookie('connect.sid');
+    return response.status(200).json({ success: true });
   },
 );
 
