@@ -446,6 +446,11 @@ const Dashboard = (props: Props) => {
       )
     : 0;
 
+  const hasNoRecipes =
+    !props.isLoading &&
+    filteredRecipes !== null &&
+    Object.values(props.recipes ?? {}).every((recipes) => !recipes.length);
+
   return (
     <Box
       style={{
@@ -569,6 +574,14 @@ const Dashboard = (props: Props) => {
 
           <Stack gap="xl" pt="xs">
             {props.isLoading ? <DashboardSkeleton gridView={gridView} /> : null}
+            {hasNoRecipes ? (
+              <Stack align="center" gap="xs" py={64}>
+                <Title order={3}>Your recipe box is empty</Title>
+                <Text c="dimmed" ta="center">
+                  Add your first recipe using the + button below.
+                </Text>
+              </Stack>
+            ) : null}
             {!props.isLoading && filteredRecipes !== null
               ? Object.keys(mealCategories).map((mealCat) => {
                   const recipes = (
