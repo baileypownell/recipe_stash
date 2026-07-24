@@ -12,6 +12,8 @@
     "migrate:create": "node-pg-migrate -m migrations -j ts create",
     "migrate:dev": "node-pg-migrate -m migrations --envPath .env.development up",
     "migrate:down:dev": "node-pg-migrate -m migrations --envPath .env.development down",
+    "migrate:prod": "node-pg-migrate -m migrations --check-order --single-transaction --lock up",
+    "test:migrations": "sh ./scripts/test-migrations.sh",
     "start": "NODE_ENV=production node ./public/server/server.js",
     "start:prod-local": "sh -c '(sleep 1; open http://localhost:3000) & exec env NODE_ENV=production node --env-file=.env ./public/server/server.js'",
     "typecheck": "tsc -p . --noEmit && tsc -p tsconfig.server.json --noEmit",
