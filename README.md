@@ -8,5 +8,3 @@
 
 ## [Visit the web app](https://recipe-stash-1.herokuapp.com/)
 
-<img src="src/images/dashboard.png" width="800">
-<img src="src/images/recipe-view.png" width="800">
