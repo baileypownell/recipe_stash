@@ -1,9 +1,7 @@
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery } from 'react-query';
 import { Route, Routes, useParams } from 'react-router-dom';
-import {
-  RecipeService,
-} from '../services/recipe-services';
+import { RecipeService } from '../services/recipe-services';
 import type {
   RecipeInput,
   SortedRecipeInterface,
@@ -12,7 +10,7 @@ import { queryClient } from './App';
 import Dashboard from './Dashboard/Dashboard';
 import Recipe from './Recipe/Recipe';
 import type { NewFileUpload } from '../models/images';
-import type { FullRecipe, RawRecipe } from '../../shared/types';
+import type { FullRecipe } from '../../shared/types';
 
 export interface MealCategoriesType {
   breakfast: 'Breakfast';
@@ -65,12 +63,12 @@ const RecipeCache = () => {
     // @ts-expect-error
     async (recipeInput: AddRecipeMutationParam) => {
       try {
-        const newRecipe: RawRecipe = await RecipeService.createRecipe(
+        const newRecipe: FullRecipe = await RecipeService.createRecipe(
           recipeInput.recipeInput,
           recipeInput.files,
         );
         const recipe: FullRecipe = await RecipeService.getRecipe(
-          newRecipe.recipe_uuid,
+          newRecipe.id,
         );
         return recipe;
       } catch (err) {

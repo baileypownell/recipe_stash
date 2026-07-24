@@ -10,6 +10,11 @@
     "lib": ["esnext"],
     "jsx": "react-jsx"
   },
-  "include": ["server/**/*.ts", "server/**/*.d.ts", "shared/**/*.ts"],
+  "include": [
+    "server/**/*.ts",
+    "server/**/*.d.ts",
+    "shared/**/*.ts",
+    "migrations/**/*.ts"
+  ],
   "exclude": ["node_modules", "build", "**/public/**"]
 }

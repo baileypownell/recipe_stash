@@ -1,420 +1,412 @@
-/* eslint-disable camelcase */
 import { Router } from 'express';
 import type { NextFunction, Request, Response } from 'express';
-import client from './client.js';
+import type { FullRecipe } from '../shared/types.js';
 import { authMiddleware } from './authMiddleware.js';
-import type { FullRecipe, RawRecipe } from '../shared/types.js';
-const router = Router();
 import {
-  getPresignedUrls,
-  getPresignedUrl,
   deleteAWSFiles,
+  getPresignedUrl,
+  getPresignedUrls,
 } from './aws-s3.js';
+import client from './client.js';
 
-type RecipeTagsSource = RawRecipe & {
-  high_protein: string;
+const router = Router();
+
+const categories = [
+  'breakfast',
+  'lunch',
+  'dinner',
+  'dessert',
+  'other',
+  'side_dish',
+  'drinks',
+] as const;
+
+type RecipeCategory = (typeof categories)[number];
+
+interface RecipeRow {
+  recipe_uuid: string;
+  user_uuid: string;
+  title: string;
+  raw_title: string | null;
+  category: string;
+  ingredients: string;
+  directions: string;
+  no_bake: boolean | null;
+  easy: boolean | null;
+  healthy: boolean | null;
+  gluten_free: boolean | null;
+  dairy_free: boolean | null;
+  sugar_free: boolean | null;
+  vegetarian: boolean | null;
+  vegan: boolean | null;
+  keto: boolean | null;
+  high_protein: boolean | null;
+  default_tile_image_key: string | null;
+  tile_thumbnail_key?: string | null;
+}
+
+interface RecipeInput {
+  title: string;
+  rawTitle: string;
+  category: RecipeCategory;
+  ingredients: string;
+  directions: string;
+  isNoBake: boolean;
+  isEasy: boolean;
+  isHealthy: boolean;
+  isGlutenFree: boolean;
+  isDairyFree: boolean;
+  isSugarFree: boolean;
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isKeto: boolean;
+  isHighProtein: boolean;
+}
+
+const isUuid = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+
+const normalizeCategory = (value: unknown): RecipeCategory | null => {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase().replaceAll(' ', '_');
+  return categories.includes(normalized as RecipeCategory)
+    ? (normalized as RecipeCategory)
+    : null;
 };
 
-const constructTags = (recipe: RecipeTagsSource): string[] => {
-  const tagArray: string[] = [];
-  if (recipe.no_bake) {
-    tagArray.push('no_bake');
-  }
-  if (recipe.easy) {
-    tagArray.push('easy');
-  }
-  if (recipe.healthy) {
-    tagArray.push('healthy');
-  }
-  if (recipe.gluten_free) {
-    tagArray.push('gluten_free');
-  }
-  if (recipe.dairy_free) {
-    tagArray.push('dairy_free');
-  }
-  if (recipe.vegetarian) {
-    tagArray.push('vegetarian');
-  }
-  if (recipe.vegan) {
-    tagArray.push('vegan');
-  }
-  if (recipe.keto) {
-    tagArray.push('keto');
-  }
-  if (recipe.sugar_free) {
-    tagArray.push('sugar_free');
-  }
-  if (recipe.high_protein) {
-    tagArray.push('high_protein');
-  }
-  return tagArray;
-};
+const isValidString = (value: unknown, maximumLength: number): value is string =>
+  typeof value === 'string' &&
+  value.trim().length > 0 &&
+  value.length <= maximumLength;
 
-const formatRecipeResponse = (recipe: any): any => {
+const parseRecipeInput = (body: unknown): RecipeInput | null => {
+  if (typeof body !== 'object' || body === null) return null;
+  const input = body as Record<string, unknown>;
+  const category = normalizeCategory(input.category);
+  const booleanFields = [
+    input.isNoBake,
+    input.isEasy,
+    input.isHealthy,
+    input.isGlutenFree,
+    input.isDairyFree,
+    input.isSugarFree,
+    input.isVegetarian,
+    input.isVegan,
+    input.isKeto,
+    input.isHighProtein,
+  ];
+
+  if (
+    !isValidString(input.title, 100) ||
+    !isValidString(input.rawTitle, 100) ||
+    !category ||
+    !isValidString(input.ingredients, 50_000) ||
+    !isValidString(input.directions, 50_000) ||
+    !booleanFields.every((value) => typeof value === 'boolean')
+  ) {
+    return null;
+  }
+
   return {
-    id: recipe.recipe_uuid,
-    title: recipe.title,
-    rawTitle: recipe.raw_title || recipe.title,
-    category: recipe.category,
-    // Every query in this file selects user_uuid, not user_id — the old
-    // field name here was always undefined.
-    user_id: recipe.user_uuid,
-    ingredients: recipe.ingredients,
-    directions: recipe.directions,
-    tags: constructTags(recipe),
-    defaultTileImageKey: recipe.default_tile_image_key,
-    preSignedDefaultTileImageUrl: recipe.preSignedDefaultTileImageUrl,
+    title: input.title.trim(),
+    rawTitle: input.rawTitle.trim(),
+    category,
+    ingredients: input.ingredients,
+    directions: input.directions,
+    isNoBake: input.isNoBake as boolean,
+    isEasy: input.isEasy as boolean,
+    isHealthy: input.isHealthy as boolean,
+    isGlutenFree: input.isGlutenFree as boolean,
+    isDairyFree: input.isDairyFree as boolean,
+    isSugarFree: input.isSugarFree as boolean,
+    isVegetarian: input.isVegetarian as boolean,
+    isVegan: input.isVegan as boolean,
+    isKeto: input.isKeto as boolean,
+    isHighProtein: input.isHighProtein as boolean,
   };
 };
 
-router.use(authMiddleware);
+const constructTags = (recipe: RecipeRow): string[] => {
+  const tags: string[] = [];
+  if (recipe.no_bake) tags.push('no_bake');
+  if (recipe.easy) tags.push('easy');
+  if (recipe.healthy) tags.push('healthy');
+  if (recipe.gluten_free) tags.push('gluten_free');
+  if (recipe.dairy_free) tags.push('dairy_free');
+  if (recipe.vegetarian) tags.push('vegetarian');
+  if (recipe.vegan) tags.push('vegan');
+  if (recipe.keto) tags.push('keto');
+  if (recipe.sugar_free) tags.push('sugar_free');
+  if (recipe.high_protein) tags.push('high_protein');
+  return tags;
+};
 
-// authMiddleware is already applied via router.use() above, so it's
-// dropped from individual route signatures below.
-
-router.get('/', (request: Request, response: Response, next: NextFunction) => {
-  client.query(
-    'SELECT * FROM recipes WHERE user_uuid=$1',
-    [request.session.userID],
-    async (err, res) => {
-      if (err) return next(err);
-      const responseObject: any = {
-        breakfast: [],
-        lunch: [],
-        dinner: [],
-        dessert: [],
-        other: [],
-        side_dish: [],
-        drinks: [],
-      };
-
-      if (!res.rows.length) return response.json(responseObject);
-
-      let results;
-      try {
-        // getPresignedUrl is async — this was previously called inside a
-        // synchronous .map(), which meant every preSignedDefaultTileImageUrl
-        // was a pending Promise instead of a real URL string. Promise.all
-        // over an async map fixes that.
-        results = await Promise.all(
-          res.rows.map(async (recipe) => {
-            if (recipe.default_tile_image_key) {
-              const preSignedDefaultTileImageUrl = await getPresignedUrl(
-                recipe.default_tile_image_key,
-              );
-              return {
-                ...recipe,
-                preSignedDefaultTileImageUrl,
-              };
-            } else {
-              return recipe;
-            }
-          }),
-        );
-      } catch (error) {
-        return response.status(500).json({
-          success: false,
-          message: 'Could not generate image URLs.',
-        });
-      }
-
-      results.forEach((recipe) => {
-        if (recipe.category === 'Dinner' || recipe.category === 'dinner') {
-          responseObject.dinner.push(formatRecipeResponse(recipe));
-        } else if (
-          recipe.category === 'Dessert' ||
-          recipe.category === 'dessert'
-        ) {
-          responseObject.dessert.push(formatRecipeResponse(recipe));
-        } else if (
-          recipe.category === 'Drinks' ||
-          recipe.category === 'drinks'
-        ) {
-          responseObject.drinks.push(formatRecipeResponse(recipe));
-        } else if (recipe.category === 'Lunch' || recipe.category === 'lunch') {
-          responseObject.lunch.push(formatRecipeResponse(recipe));
-        } else if (
-          recipe.category === 'Breakfast' ||
-          recipe.category === 'breakfast'
-        ) {
-          responseObject.breakfast.push(formatRecipeResponse(recipe));
-        } else if (recipe.category === 'Other' || recipe.category === 'other') {
-          responseObject.other.push(formatRecipeResponse(recipe));
-        } else if (
-          recipe.category === 'Side Dish' ||
-          recipe.category === 'side_dish'
-        ) {
-          responseObject.side_dish.push(formatRecipeResponse(recipe));
-        }
-      });
-      response.json(responseObject);
-    },
-  );
+const formatRecipeResponse = (
+  recipe: RecipeRow,
+  preSignedUrls: string[] | null = null,
+  preSignedDefaultTileImageUrl: string | null = null,
+): FullRecipe => ({
+  id: recipe.recipe_uuid,
+  title: recipe.title,
+  rawTitle: recipe.raw_title || recipe.title,
+  category: normalizeCategory(recipe.category) ?? 'other',
+  user_id: recipe.user_uuid,
+  ingredients: recipe.ingredients,
+  directions: recipe.directions,
+  tags: constructTags(recipe),
+  defaultTileImageKey: recipe.default_tile_image_key,
+  preSignedUrls,
+  preSignedDefaultTileImageUrl,
 });
 
-router.post('/', (request: any, response, next) => {
-  const userId = request.session.userID;
-  const {
-    title,
-    rawTitle,
-    category,
-    ingredients,
-    directions,
-    isNoBake,
-    isEasy,
-    isHealthy,
-    isGlutenFree,
-    isDairyFree,
-    isSugarFree,
-    isVegetarian,
-    isVegan,
-    isKeto,
-    isHighProtein,
-  } = request.body;
-  if (!!rawTitle && !!title && !!category && !!ingredients && !!directions) {
-    return client.query(
-      `INSERT INTO recipes(
-        title,
-        raw_title,
-        category,
-        user_uuid,
-        ingredients,
-        directions,
-        no_bake,
-        easy,
-        healthy,
-        gluten_free,
-        dairy_free,
-        sugar_free,
-        vegetarian,
-        vegan,
-        keto,
-        high_protein
-      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`,
-      [
-        title,
-        rawTitle,
-        category,
-        userId,
-        ingredients,
-        directions,
-        isNoBake,
-        isEasy,
-        isHealthy,
-        isGlutenFree,
-        isDairyFree,
-        isSugarFree,
-        isVegetarian,
-        isVegan,
-        isKeto,
-        isHighProtein,
-      ],
-      (err, res) => {
-        if (err) return next(err);
+const recipeValues = (input: RecipeInput, userId: string) => [
+  input.title,
+  input.rawTitle,
+  input.category,
+  userId,
+  input.ingredients,
+  input.directions,
+  input.isNoBake,
+  input.isEasy,
+  input.isHealthy,
+  input.isGlutenFree,
+  input.isDairyFree,
+  input.isSugarFree,
+  input.isVegetarian,
+  input.isVegan,
+  input.isKeto,
+  input.isHighProtein,
+];
 
-        return res.rowCount
-          ? response.status(200).json(res.rows[0])
-          : response.status(500).json(null);
-      },
+router.use(authMiddleware);
+
+router.get('/', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await client.query<RecipeRow>(
+      `SELECT recipes.*, files.thumbnail_key AS tile_thumbnail_key
+      FROM recipes
+      LEFT JOIN files
+        ON files.recipe_uuid=recipes.recipe_uuid
+        AND files.key=recipes.default_tile_image_key
+      WHERE recipes.user_uuid=$1`,
+      [request.session.userID],
     );
-  } else {
-    return response.status(400).json({
-      success: false,
-      message: 'Invalid request sent.',
-    }) as any;
+    const recipesByCategory: Record<RecipeCategory, FullRecipe[]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      dessert: [],
+      other: [],
+      side_dish: [],
+      drinks: [],
+    };
+
+    const recipes = await Promise.all(
+      result.rows.map(async (recipe) => {
+        const tileUrl = recipe.tile_thumbnail_key
+          ? await getPresignedUrl(recipe.tile_thumbnail_key)
+          : recipe.default_tile_image_key
+            ? await getPresignedUrl(recipe.default_tile_image_key)
+          : null;
+        return formatRecipeResponse(recipe, null, tileUrl);
+      }),
+    );
+
+    for (const recipe of recipes) {
+      recipesByCategory[recipe.category as RecipeCategory].push(recipe);
+    }
+    return response.status(200).json(recipesByCategory);
+  } catch (error) {
+    return next(error);
   }
 });
 
-router.put('/', (request: any, response, next) => {
+router.post('/', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const input = parseRecipeInput(request.body);
   const userId = request.session.userID;
-  const {
-    recipeId,
-    title,
-    rawTitle,
-    ingredients,
-    directions,
-    category,
-    isNoBake,
-    isEasy,
-    isHealthy,
-    isGlutenFree,
-    isDairyFree,
-    isSugarFree,
-    isVegetarian,
-    isVegan,
-    isKeto,
-    isHighProtein,
-  } = request.body;
-
-  if (!recipeId || !title || !category || !ingredients || !directions) {
+  if (!input || !userId) {
     return response.status(400).json({
       success: false,
       message: 'Invalid request sent.',
     });
   }
 
-  client.query(
-    `UPDATE recipes SET
-    title=$1,
-    raw_title=$16,
-    ingredients=$2,
-    directions=$3,
-    category=$4,
-    no_bake=$5,
-    easy=$6,
-    healthy=$7,
-    gluten_free=$8,
-    dairy_free=$9,
-    sugar_free=$10,
-    vegetarian=$11,
-    vegan=$12,
-    keto=$13,
-    high_protein=$17 WHERE
-    recipe_uuid=$14 AND
-    user_uuid=$15
-    RETURNING *`,
-    [
-      title,
-      ingredients,
-      directions,
-      category,
-      isNoBake,
-      isEasy,
-      isHealthy,
-      isGlutenFree,
-      isDairyFree,
-      isSugarFree,
-      isVegetarian,
-      isVegan,
-      isKeto,
-      recipeId,
-      userId,
-      rawTitle,
-      isHighProtein,
-    ],
-    (err, res) => {
-      if (err) return next(err);
-      return res.rowCount
-        ? response.status(200).json(res.rows[0])
-        : response
-            .status(404)
-            .json({ success: false, message: 'Recipe not found.' });
-    },
-  );
-});
-
-const getImageAWSKeys = (recipeId: string) => {
-  return new Promise<string[]>((resolve, reject) => {
-    client.query(
-      'SELECT key FROM files WHERE recipe_uuid=$1',
-      [recipeId],
-      (err, res) => {
-        if (err) return reject(err);
-        const imageUrlArray = res.rows.reduce((arr, el) => {
-          arr.push(el.key);
-          return arr;
-        }, []);
-        resolve(imageUrlArray);
-      },
+  try {
+    const result = await client.query<RecipeRow>(
+      `INSERT INTO recipes(
+        title, raw_title, category, user_uuid, ingredients, directions,
+        no_bake, easy, healthy, gluten_free, dairy_free, sugar_free,
+        vegetarian, vegan, keto, high_protein
+      ) VALUES(
+        $1, $2, $3, $4, $5, $6, $7, $8,
+        $9, $10, $11, $12, $13, $14, $15, $16
+      ) RETURNING *`,
+      recipeValues(input, userId),
     );
-  });
-};
-
-router.get('/:recipeId', (request: any, response, next) => {
-  const { recipeId } = request.params;
-  const userId = request.session.userID;
-  client.query(
-    'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
-    [userId, recipeId],
-    async (err, res) => {
-      if (err) return next(err);
-      const recipe = res.rows[0];
-      if (!recipe)
-        return response
-          .status(404)
-          .json({ success: false, message: 'Recipe not found.' });
-
-      const recipeResponse: FullRecipe = {
-        id: recipe.recipe_uuid,
-        title: recipe.title,
-        rawTitle: recipe.raw_title || recipe.title,
-        category: recipe.category,
-        user_id: recipe.user_uuid,
-        ingredients: recipe.ingredients,
-        directions: recipe.directions,
-        tags: constructTags(recipe),
-        defaultTileImageKey: recipe.default_tile_image_key,
-        preSignedUrls: null,
-        preSignedDefaultTileImageUrl: null,
-      };
-      if (!recipe.has_images) return response.status(200).json(recipeResponse);
-
-      try {
-        const urls = await getImageAWSKeys(recipeId);
-        if (urls.length) {
-          recipeResponse.preSignedUrls = await getPresignedUrls(urls);
-          if (recipe.default_tile_image_key) {
-            recipeResponse.preSignedDefaultTileImageUrl = await getPresignedUrl(
-              recipe.default_tile_image_key,
-            );
-          }
-        }
-        response.status(200).json(recipeResponse);
-      } catch (error) {
-        return response.status(500).json({
-          success: false,
-          message: 'Could not generate image URLs.',
-        });
-      }
-    },
-  );
+    return response.status(201).json(formatRecipeResponse(result.rows[0]));
+  } catch (error) {
+    return next(error);
+  }
 });
 
-router.delete('/:recipeId', async (request: any, response, next) => {
+router.put('/', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const input = parseRecipeInput(request.body);
+  const recipeId = (request.body as Record<string, unknown>)?.recipeId;
   const userId = request.session.userID;
-  const { recipeId } = request.params;
+  if (!input || !isUuid(recipeId) || !userId) {
+    return response.status(400).json({
+      success: false,
+      message: 'Invalid request sent.',
+    });
+  }
 
   try {
-    const recipeRes = await client.query(
-      'SELECT has_images FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
-      [recipeId, userId],
+    const values = recipeValues(input, userId);
+    const result = await client.query<RecipeRow>(
+      `UPDATE recipes SET
+        title=$1, raw_title=$2, category=$3, ingredients=$5, directions=$6,
+        no_bake=$7, easy=$8, healthy=$9, gluten_free=$10, dairy_free=$11,
+        sugar_free=$12, vegetarian=$13, vegan=$14, keto=$15,
+        high_protein=$16
+      WHERE recipe_uuid=$17 AND user_uuid=$4
+      RETURNING *`,
+      [...values, recipeId],
     );
-
-    if (!recipeRes.rows.length) {
+    if (!result.rowCount) {
       return response.status(404).json({
-        recipeDeleted: false,
-        message: 'Recipe not found or you do not have permission to delete it.',
+        success: false,
+        message: 'Recipe not found.',
+      });
+    }
+    return response.status(200).json(formatRecipeResponse(result.rows[0]));
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get('/:recipeId', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { recipeId } = request.params;
+  if (!isUuid(recipeId)) {
+    return response.status(400).json({
+      success: false,
+      message: 'Invalid recipe id.',
+    });
+  }
+
+  try {
+    const result = await client.query<RecipeRow>(
+      'SELECT * FROM recipes WHERE user_uuid=$1 AND recipe_uuid=$2',
+      [request.session.userID, recipeId],
+    );
+    const recipe = result.rows[0];
+    if (!recipe) {
+      return response.status(404).json({
+        success: false,
+        message: 'Recipe not found.',
       });
     }
 
-    if (recipeRes.rows[0].has_images) {
-      const filesRes = await client.query(
-        'SELECT key FROM files WHERE recipe_uuid=$1',
-        [recipeId],
-      );
-      const awsKeys = filesRes.rows.map((row) => row.key);
+    const filesResult = await client.query<{ key: string }>(
+      'SELECT key FROM files WHERE recipe_uuid=$1',
+      [recipeId],
+    );
+    const keys = filesResult.rows.map((file) => file.key);
+    const [imageUrls, tileUrl] = await Promise.all([
+      keys.length ? getPresignedUrls(keys) : Promise.resolve(null),
+      recipe.default_tile_image_key
+        ? getPresignedUrl(recipe.default_tile_image_key)
+        : Promise.resolve(null),
+    ]);
 
-      if (awsKeys.length) {
-        await deleteAWSFiles(awsKeys);
-      }
+    return response
+      .status(200)
+      .json(formatRecipeResponse(recipe, imageUrls, tileUrl));
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.delete('/:recipeId', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { recipeId } = request.params;
+  const userId = request.session.userID;
+  if (!isUuid(recipeId)) {
+    return response.status(400).json({
+      recipeDeleted: false,
+      message: 'Invalid recipe id.',
+    });
+  }
+
+  const transactionClient = await client.connect();
+  let awsKeys: string[] = [];
+  try {
+    await transactionClient.query('BEGIN');
+    const recipeResult = await transactionClient.query(
+      `SELECT 1 FROM recipes
+      WHERE recipe_uuid=$1 AND user_uuid=$2
+      FOR UPDATE`,
+      [recipeId, userId],
+    );
+    if (!recipeResult.rowCount) {
+      await transactionClient.query('ROLLBACK');
+      return response.status(404).json({
+        recipeDeleted: false,
+        message: 'Recipe not found.',
+      });
     }
 
-    const deleteRes = await client.query(
+    const filesResult = await transactionClient.query<{ key: string }>(
+      'SELECT key FROM files WHERE recipe_uuid=$1 FOR UPDATE',
+      [recipeId],
+    );
+    awsKeys = filesResult.rows.map((file) => file.key);
+    await transactionClient.query(
       'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
       [recipeId, userId],
     );
-
-    if (!deleteRes.rowCount) {
-      return response.status(404).json({
-        recipeDeleted: false,
-        message: 'Recipe not found or you do not have permission to delete it.',
-      });
+    await transactionClient.query('COMMIT');
+  } catch (error) {
+    try {
+      await transactionClient.query('ROLLBACK');
+    } catch (rollbackError) {
+      console.error('recipe DELETE /:recipeId rollback', rollbackError);
     }
-
-    return response.status(200).json({ recipeDeleted: true });
-  } catch (err) {
-    return next(err);
+    return next(error);
+  } finally {
+    transactionClient.release();
   }
+
+  if (awsKeys.length) {
+    try {
+      await deleteAWSFiles(awsKeys);
+    } catch (error) {
+      console.error('recipe DELETE /:recipeId delete files', error);
+    }
+  }
+
+  return response.status(200).json({ recipeDeleted: true });
 });
 
 export default router;

@@ -51,9 +51,7 @@ const RecipeCard = ({
               ? `url(${defaultTileImageUrl})`
               : 'none',
             transform: hovered ? 'translateY(-2px)' : undefined,
-            boxShadow: hovered
-              ? theme.other.app.shadows.raised
-              : undefined,
+            boxShadow: hovered ? theme.other.app.shadows.raised : undefined,
             transition:
               'transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease',
           }}
@@ -144,7 +142,7 @@ const Square = ({ recipe }: SquareProps) => {
         alt={`${rawTitle}`}
       />
       {!imageLoadingError ? (
-        <Skeleton width={CARD_WIDTH} height={CARD_HEIGHT} />
+        <Skeleton width={CARD_WIDTH} height="100%" />
       ) : (
         <RecipeCard recipe={recipe} rawTitle={rawTitle} />
       )}

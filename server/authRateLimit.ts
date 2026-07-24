@@ -22,4 +22,19 @@ const passwordResetRateLimit = rateLimit({
   },
 });
 
-export { authenticationRateLimit, passwordResetRateLimit };
+const fileUploadRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many uploads. Please try again later.',
+  },
+});
+
+export {
+  authenticationRateLimit,
+  fileUploadRateLimit,
+  passwordResetRateLimit,
+};

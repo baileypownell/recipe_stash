@@ -5,7 +5,7 @@ import type {
   UploadedFileResult,
 } from '../models/images';
 import type tag from '../models/tags';
-import type { FullRecipe, RawRecipe, TileImageSetResponse } from '../../shared/types';
+import type { FullRecipe, TileImageSetResponse } from '../../shared/types';
 
 export interface BaseStringAccessibleObjectBoolean {
   [key: string]: boolean;
@@ -109,13 +109,13 @@ export const RecipeService = {
   createRecipe: async (
     recipeInput: RecipeInput,
     files: NewFileUpload[],
-  ): Promise<RawRecipe> => {
+  ): Promise<FullRecipe> => {
     try {
       const recipeCreated = await axios.post('/recipe', recipeInput);
       if (files?.length) {
         try {
           const uploadedImageKeys = await RecipeService.uploadFiles(
-            recipeCreated.data.recipe_uuid,
+            recipeCreated.data.id,
             files,
           );
           const defaultTileImage = uploadedImageKeys.find(
@@ -125,7 +125,7 @@ export const RecipeService = {
           if (defaultTileImage) {
             try {
               await RecipeService.handleDefaultTileImage(
-                recipeCreated.data.recipe_uuid,
+                recipeCreated.data.id,
                 defaultTileImage.awsKey,
               );
             } catch (error) {
@@ -161,20 +161,25 @@ export const RecipeService = {
           isDefault: boolean;
           backgroundImage: string;
         }) => {
-          const formData = new FormData();
-          formData.append('image', file.file);
-
-          const upload = await axios.post(
-            `/file-upload/${recipeId}`,
-            formData,
+          const intent = await axios.post(
+            `/file-upload/${recipeId}/upload-intent`,
             {
-              headers: {
-                'content-type': 'multipart/form-data',
-              },
+              fileSize: file.file.size,
+              contentType: file.file.type,
             },
           );
+          await axios.put(intent.data.uploadUrl, file.file, {
+            headers: {
+              'Content-Type': file.file.type,
+            },
+            withCredentials: false,
+          });
+          const finalized = await axios.post(
+            `/file-upload/${recipeId}/finalize/${intent.data.key}`,
+            { isTile: file.isDefault },
+          );
           return {
-            awsKey: upload.data.key,
+            awsKey: finalized.data.key,
             file: file,
           };
         },
@@ -188,10 +193,10 @@ export const RecipeService = {
     recipeId: string,
     recipeHasDefaultTileImage: boolean,
     recipeExistingImageUrls?: string[],
-  ): Promise<RawRecipe> => {
+  ): Promise<FullRecipe> => {
     const res = await axios.put('/recipe', recipeInput);
 
-    const recipeUpdated: RawRecipe = res.data;
+    const recipeUpdated: FullRecipe = res.data;
     const uploads: {
       file: File;
       isDefault: boolean;
@@ -234,7 +239,7 @@ export const RecipeService = {
     if (uploading && deleting) {
       await RecipeService.deleteFiles(fileUrlsToDelete);
       if (awsKey) {
-        await RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey);
+        await RecipeService.setTileImage(recipeUpdated.id, awsKey);
         return recipeUpdated;
       } else if (recipeHasDefaultTileImage) {
         await RecipeService.removeTileImage(recipeId);
@@ -245,7 +250,7 @@ export const RecipeService = {
       }
     } else if (uploading) {
       if (awsKey) {
-        await RecipeService.setTileImage(recipeUpdated.recipe_uuid, awsKey);
+        await RecipeService.setTileImage(recipeUpdated.id, awsKey);
         return recipeUpdated;
       } else if (recipeHasDefaultTileImage) {
         await RecipeService.removeTileImage(recipeId);

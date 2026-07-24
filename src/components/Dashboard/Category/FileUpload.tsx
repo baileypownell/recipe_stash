@@ -1,8 +1,13 @@
 import { UploadFileRoundedIcon } from '@icons';
 import { Box, Button, Text, Group, useMantineTheme } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { useEffect, useRef } from 'react';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import {
+  maximumImageSizeBytes,
+  supportedImageContentTypes,
+} from '../../../../shared/uploadConstraints';
 import { ImagePreview } from './ImagePreview';
 import type { ExistingFileUpload, NewFileUpload } from '../../../models/images';
 
@@ -80,8 +85,24 @@ const FileUpload = ({
       return;
     }
 
+    const selectedFiles = Array.from(fileList);
+    const validFiles = selectedFiles.filter(
+      (file) =>
+        file.size <= maximumImageSizeBytes &&
+        supportedImageContentTypes.includes(
+          file.type as (typeof supportedImageContentTypes)[number],
+        ),
+    );
+
+    if (validFiles.length !== selectedFiles.length) {
+      notifications.show({
+        color: 'red',
+        message: 'Images must be JPG or PNG files no larger than 10 MB.',
+      });
+    }
+
     append(
-      Array.from(fileList).map((file) => ({
+      validFiles.map((file) => ({
         file,
         backgroundImage: URL.createObjectURL(file),
         isDefault: false,
@@ -114,6 +135,7 @@ const FileUpload = ({
           disabled={false}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             addFiles(e.target.files);
+            e.target.value = '';
           }}
           multiple
           title="Upload a file"

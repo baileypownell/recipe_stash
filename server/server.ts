@@ -26,7 +26,7 @@ app.use(
       httpOnly: true,
       maxAge: 3600000,
       sameSite: 'lax',
-      secure: isProduction,
+      secure: 'auto',
     },
   }),
 );

@@ -31,7 +31,7 @@ import type {
 } from '../../../services/recipe-services';
 import { queryClient } from '../../App';
 import FileUpload from './FileUpload';
-import type { FullRecipe, RawRecipe } from '../../../../shared/types';
+import type { FullRecipe } from '../../../../shared/types';
 
 type SelectChangeEvent = { target: { value: string } };
 
@@ -253,7 +253,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             ...determineTags(),
           };
           try {
-            const updatedRecipe: RawRecipe = await RecipeService.updateRecipe(
+            const updatedRecipe: FullRecipe = await RecipeService.updateRecipe(
               recipeUpdateInput,
               files,
               (recipeDialogInfo as EditProps).recipe.id,
@@ -261,14 +261,14 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               (recipeDialogInfo as EditProps).presignedUrls,
             );
             const formattedRecipe: FullRecipe = await RecipeService.getRecipe(
-              updatedRecipe.recipe_uuid,
+              updatedRecipe.id,
             );
             queryClient.setQueryData('recipes', () => {
               const current = queryClient.getQueryData(
                 'recipes',
               ) as SortedRecipeInterface;
               const updatedArray = current[category].map((recipe) => {
-                if (recipe.id === updatedRecipe.recipe_uuid) {
+                if (recipe.id === updatedRecipe.id) {
                   return formattedRecipe;
                 }
                 return recipe;
@@ -357,6 +357,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         };
         return updatedQueryState;
       });
+      (recipeDialogInfo as EditProps).openSnackBar('Recipe deleted.');
       navigate('/recipes');
     } catch (err) {
       console.log(err);

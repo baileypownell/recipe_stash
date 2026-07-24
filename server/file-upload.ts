@@ -1,22 +1,30 @@
 import { Router } from 'express';
-import dotenv from 'dotenv';
+import type { NextFunction, Request, Response } from 'express';
 import type { PoolClient } from 'pg';
-import client from './client.js';
-import { authMiddleware } from './authMiddleware.js';
+import { v4 as uuidv4 } from 'uuid';
 import {
-  getPresignedUrls,
-  uploadSingleAWSFile,
+  maximumImageSizeBytes,
+  maximumImagesPerRecipe,
+  supportedImageContentTypes,
+} from '../shared/uploadConstraints.js';
+import { authMiddleware } from './authMiddleware.js';
+import { fileUploadRateLimit } from './authRateLimit.js';
+import {
+  createPresignedUploadUrl,
+  createTileThumbnail,
+  deleteAWSFiles,
   deleteSingleAWSFile,
+  getPresignedUrls,
+  inspectUploadedImage,
 } from './aws-s3.js';
+import client from './client.js';
+
 const router = Router();
+const uploadIntentLifetimeMs = 10 * 60 * 1000;
+const supportedContentTypes = new Set<string>(supportedImageContentTypes);
 
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config();
-}
-
-router.use(authMiddleware);
-
-const isUuid = (value: string) =>
+const isUuid = (value: unknown): value is string =>
+  typeof value === 'string' &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     value,
   );
@@ -25,283 +33,581 @@ const logServerError = (context: string, error: unknown) => {
   console.error(context, error);
 };
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : 'File could not be uploaded.';
+const rollback = async (transactionClient: PoolClient | undefined) => {
+  if (!transactionClient) return;
+  try {
+    await transactionClient.query('ROLLBACK');
+  } catch (error) {
+    logServerError('file-upload transaction rollback', error);
+  }
+};
 
-router.post('/', async (req: any, res) => {
-  const imageKeys = req.body.image_urls;
-  const userId = req.session.userID;
+const deleteObjectsBestEffort = async (keys: string[], context: string) => {
+  if (!keys.length) return;
+  try {
+    await deleteAWSFiles(keys);
+  } catch (error) {
+    logServerError(context, error);
+  }
+};
 
+router.use(authMiddleware);
+
+router.post('/', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const imageKeys = request.body.image_urls;
+  const userId = request.session.userID;
   if (
     !Array.isArray(imageKeys) ||
     !imageKeys.length ||
-    !imageKeys.every((key) => typeof key === 'string' && isUuid(key))
+    !imageKeys.every(isUuid) ||
+    new Set(imageKeys).size !== imageKeys.length
   ) {
-    return res.status(400).json({
+    return response.status(400).json({
       success: false,
       message: 'Invalid image keys.',
     });
   }
 
   try {
-    const fileLookup = await client.query(
+    const fileLookup = await client.query<{ key: string }>(
       'SELECT key FROM files WHERE key = ANY($1::uuid[]) AND user_uuid=$2',
       [imageKeys, userId],
     );
-
     if (fileLookup.rowCount !== imageKeys.length) {
-      return res.status(404).json({
+      return response.status(404).json({
         success: false,
         message: 'One or more files were not found.',
       });
     }
 
-    const urls = await getPresignedUrls(fileLookup.rows.map((row) => row.key));
-    return res.status(200).json({ presignedUrls: urls });
+    const ownedKeys = new Set(fileLookup.rows.map((file) => file.key));
+    const urls = await getPresignedUrls(
+      imageKeys.filter((key) => ownedKeys.has(key)),
+    );
+    return response.status(200).json({ presignedUrls: urls });
   } catch (error) {
-    logServerError('file-upload POST /', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Could not generate presigned URLs.',
-    });
+    return next(error);
   }
 });
 
-router.post('/tile-image/:awsKey/:id', async (req: any, res) => {
-  const { awsKey, id } = req.params;
-  const userId = req.session.userID;
-
-  if (!isUuid(awsKey) || !isUuid(id)) {
-    return res.status(400).json({
+router.post('/tile-image/:awsKey/:recipeId', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { awsKey, recipeId } = request.params;
+  const userId = request.session.userID;
+  if (!isUuid(awsKey) || !isUuid(recipeId)) {
+    return response.status(400).json({
       success: false,
       message: 'Invalid request sent.',
     });
   }
 
+  let generatedThumbnailKey: string | null = null;
+  let previousThumbnailKey: string | null = null;
+  let transactionClient: PoolClient | undefined;
   try {
-    const response = await client.query(
-      `UPDATE recipes
-      SET default_tile_image_key=$1
-      WHERE recipe_uuid=$2
-      AND user_uuid=$3
-      AND EXISTS (
-        SELECT 1 FROM files
-        WHERE key=$1::uuid
-        AND recipe_uuid=$2
-      )`,
-      [awsKey, id, userId],
+    const fileResult = await client.query<{ thumbnail_key: string | null }>(
+      `SELECT thumbnail_key FROM files
+      WHERE key=$1 AND recipe_uuid=$2 AND user_uuid=$3`,
+      [awsKey, recipeId, userId],
     );
-    if (response.rowCount) {
-      return res.status(200).json({ success: true });
-    } else {
-      return res.status(404).json({
+    if (!fileResult.rowCount) {
+      return response.status(404).json({
         success: false,
         message: 'Recipe or file not found.',
       });
     }
+
+    const thumbnailKey =
+      fileResult.rows[0].thumbnail_key ??
+      (generatedThumbnailKey = await createTileThumbnail(awsKey));
+
+    transactionClient = await client.connect();
+    await transactionClient.query('BEGIN');
+    const recipeResult = await transactionClient.query<{
+      default_tile_image_key: string | null;
+      thumbnail_key: string | null;
+    }>(
+      `SELECT recipes.default_tile_image_key, files.thumbnail_key
+      FROM recipes
+      LEFT JOIN files
+        ON files.recipe_uuid=recipes.recipe_uuid
+        AND files.key=recipes.default_tile_image_key
+      WHERE recipes.recipe_uuid=$1 AND recipes.user_uuid=$2
+      FOR UPDATE OF recipes`,
+      [recipeId, userId],
+    );
+    if (!recipeResult.rowCount) {
+      throw new Error('Recipe no longer exists.');
+    }
+
+    const previousKey = recipeResult.rows[0].default_tile_image_key;
+    if (previousKey && previousKey !== awsKey) {
+      previousThumbnailKey = recipeResult.rows[0].thumbnail_key;
+      await transactionClient.query(
+        'UPDATE files SET thumbnail_key=NULL WHERE key=$1',
+        [previousKey],
+      );
+    }
+    await transactionClient.query(
+      'UPDATE files SET thumbnail_key=$1 WHERE key=$2',
+      [thumbnailKey, awsKey],
+    );
+    await transactionClient.query(
+      `UPDATE recipes SET default_tile_image_key=$1
+      WHERE recipe_uuid=$2 AND user_uuid=$3`,
+      [awsKey, recipeId, userId],
+    );
+    await transactionClient.query('COMMIT');
+
+    await deleteObjectsBestEffort(
+      previousThumbnailKey ? [previousThumbnailKey] : [],
+      'file-upload POST /tile-image previous thumbnail cleanup',
+    );
+    return response.status(200).json({ success: true });
   } catch (error) {
-    logServerError('file-upload POST /tile-image/:awsKey/:id', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Could not update tile image.',
-    });
+    await rollback(transactionClient);
+    await deleteObjectsBestEffort(
+      generatedThumbnailKey ? [generatedThumbnailKey] : [],
+      'file-upload POST /tile-image generated thumbnail cleanup',
+    );
+    return next(error);
+  } finally {
+    transactionClient?.release();
   }
 });
 
-router.delete('/tile-image/:recipeId', async (req: any, res) => {
-  const { recipeId } = req.params;
-  const userId = req.session.userID;
-
+router.delete('/tile-image/:recipeId', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { recipeId } = request.params;
+  const userId = request.session.userID;
   if (!isUuid(recipeId)) {
-    return res.status(400).json({
+    return response.status(400).json({
       success: false,
       message: 'Invalid request sent.',
     });
   }
 
+  let thumbnailKey: string | null = null;
+  let transactionClient: PoolClient | undefined;
   try {
-    const response = await client.query(
-      'UPDATE recipes SET default_tile_image_key=$1 WHERE recipe_uuid=$2 AND user_uuid=$3',
-      [null, recipeId, userId],
+    transactionClient = await client.connect();
+    await transactionClient.query('BEGIN');
+    const result = await transactionClient.query<{
+      default_tile_image_key: string | null;
+      thumbnail_key: string | null;
+    }>(
+      `SELECT recipes.default_tile_image_key, files.thumbnail_key
+      FROM recipes
+      LEFT JOIN files
+        ON files.recipe_uuid=recipes.recipe_uuid
+        AND files.key=recipes.default_tile_image_key
+      WHERE recipes.recipe_uuid=$1 AND recipes.user_uuid=$2
+      FOR UPDATE OF recipes`,
+      [recipeId, userId],
     );
-    if (response.rowCount) {
-      return res.status(200).json({ success: true });
-    } else {
-      return res.status(404).json({
+    if (!result.rowCount) {
+      await transactionClient.query('ROLLBACK');
+      return response.status(404).json({
         success: false,
-        message: 'Recipe not found or you do not have permission to edit it.',
+        message: 'Recipe not found.',
       });
     }
+    thumbnailKey = result.rows[0].thumbnail_key;
+    await transactionClient.query(
+      'UPDATE recipes SET default_tile_image_key=NULL WHERE recipe_uuid=$1',
+      [recipeId],
+    );
+    if (result.rows[0].default_tile_image_key) {
+      await transactionClient.query(
+        'UPDATE files SET thumbnail_key=NULL WHERE key=$1',
+        [result.rows[0].default_tile_image_key],
+      );
+    }
+    await transactionClient.query('COMMIT');
+    await deleteObjectsBestEffort(
+      thumbnailKey ? [thumbnailKey] : [],
+      'file-upload DELETE /tile-image thumbnail cleanup',
+    );
+    return response.status(200).json({ success: true });
   } catch (error) {
-    logServerError('file-upload DELETE /tile-image/:recipeId', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Could not remove tile image.',
-    });
+    await rollback(transactionClient);
+    return next(error);
+  } finally {
+    transactionClient?.release();
   }
 });
 
-router.post('/:recipeId', async (req: any, res) => {
-  const { recipeId } = req.params;
-  const userId = req.session.userID;
-
-  if (!isUuid(recipeId)) {
-    return res.status(400).json({
+router.post('/:recipeId/upload-intent', fileUploadRateLimit, async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { recipeId } = request.params;
+  const { fileSize, contentType } = request.body;
+  const userId = request.session.userID;
+  if (
+    !isUuid(recipeId) ||
+    typeof fileSize !== 'number' ||
+    !Number.isSafeInteger(fileSize) ||
+    fileSize <= 0 ||
+    fileSize > maximumImageSizeBytes ||
+    typeof contentType !== 'string' ||
+    !supportedContentTypes.has(contentType)
+  ) {
+    console.log('Invalid upload intent request:', {
+      recipeId,
+      fileSize,
+      contentType,
+      userId,
+    });
+    return response.status(400).json({
       success: false,
-      message: 'Invalid recipe id.',
+      message: 'Invalid image upload request.',
     });
   }
 
+  const key = uuidv4();
+  const expiresAt = new Date(Date.now() + uploadIntentLifetimeMs);
+  let transactionClient: PoolClient | undefined;
+  let expiredKeys: string[] = [];
   try {
-    const ownerCheck = await client.query(
-      'SELECT 1 FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
+    transactionClient = await client.connect();
+    await transactionClient.query('BEGIN');
+    const recipeResult = await transactionClient.query(
+      `SELECT 1 FROM recipes
+      WHERE recipe_uuid=$1 AND user_uuid=$2
+      FOR UPDATE`,
       [recipeId, userId],
     );
-    if (!ownerCheck.rowCount) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Recipe not found.' });
+    if (!recipeResult.rowCount) {
+      await transactionClient.query('ROLLBACK');
+      return response.status(404).json({
+        success: false,
+        message: 'Recipe not found.',
+      });
     }
+
+    const expiredResult = await transactionClient.query<{ key: string }>(
+      `DELETE FROM pending_file_uploads
+      WHERE user_uuid=$1 AND expires_at <= NOW()
+      RETURNING key`,
+      [userId],
+    );
+    expiredKeys = expiredResult.rows.map((upload) => upload.key);
+
+    const countResult = await transactionClient.query<{ count: number }>(
+      `SELECT (
+        (SELECT COUNT(*) FROM files WHERE recipe_uuid=$1) +
+        (SELECT COUNT(*) FROM pending_file_uploads
+          WHERE recipe_uuid=$1 AND expires_at > NOW())
+      )::int AS count`,
+      [recipeId],
+    );
+    if (countResult.rows[0].count >= maximumImagesPerRecipe) {
+      await transactionClient.query('ROLLBACK');
+      return response.status(409).json({
+        success: false,
+        message: `A recipe can have at most ${maximumImagesPerRecipe} images.`,
+      });
+    }
+
+    await transactionClient.query(
+      `INSERT INTO pending_file_uploads(
+        key, recipe_uuid, user_uuid, expected_size, declared_content_type,
+        expires_at
+      ) VALUES($1, $2, $3, $4, $5, $6)`,
+      [key, recipeId, userId, fileSize, contentType, expiresAt],
+    );
+    await transactionClient.query('COMMIT');
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: `There was an error: ${error}` });
+    await rollback(transactionClient);
+    return next(error);
+  } finally {
+    transactionClient?.release();
   }
 
-  let awsUploadRes: any;
+  await deleteObjectsBestEffort(
+    expiredKeys,
+    'file-upload POST /:recipeId/upload-intent expired cleanup',
+  );
+
   try {
-    awsUploadRes = await uploadSingleAWSFile(req, res);
-  } catch (error) {
-    logServerError('file-upload POST /:recipeId upload', error);
-    return res.status(500).json({
-      success: false,
-      message: getErrorMessage(error),
+    const uploadUrl = await createPresignedUploadUrl(
+      key,
+      contentType,
+      fileSize,
+    );
+    return response.status(201).json({
+      success: true,
+      key,
+      uploadUrl,
+      expiresAt: expiresAt.toISOString(),
     });
+  } catch (error) {
+    await client.query('DELETE FROM pending_file_uploads WHERE key=$1', [key]);
+    return next(error);
+  }
+});
+
+router.post('/:recipeId/finalize/:imageKey', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { recipeId, imageKey } = request.params;
+  const { isTile = false } = request.body;
+  const userId = request.session.userID;
+  if (
+    !isUuid(recipeId) ||
+    !isUuid(imageKey) ||
+    typeof isTile !== 'boolean'
+  ) {
+    return response.status(400).json({
+      success: false,
+      message: 'Invalid upload finalization request.',
+    });
+  }
+
+  const intentResult = await client.query<{
+    expected_size: number;
+    declared_content_type: string;
+  }>(
+    `SELECT expected_size, declared_content_type
+    FROM pending_file_uploads
+    WHERE key=$1
+    AND recipe_uuid=$2
+    AND user_uuid=$3
+    AND expires_at > NOW()`,
+    [imageKey, recipeId, userId],
+  );
+  if (!intentResult.rowCount) {
+    return response.status(404).json({
+      success: false,
+      message: 'Upload intent not found or expired.',
+    });
+  }
+
+  let inspection: Awaited<ReturnType<typeof inspectUploadedImage>>;
+  try {
+    inspection = await inspectUploadedImage(imageKey);
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      error.name === 'NotFound'
+    ) {
+      return response.status(400).json({
+        success: false,
+        message: 'Uploaded image was not found.',
+      });
+    }
+    return next(error);
+  }
+
+  const intent = intentResult.rows[0];
+  if (
+    inspection.contentLength !== intent.expected_size ||
+    inspection.contentLength > maximumImageSizeBytes ||
+    inspection.contentType !== intent.declared_content_type ||
+    !inspection.contentType ||
+    !supportedContentTypes.has(inspection.contentType)
+  ) {
+    await Promise.allSettled([
+      deleteSingleAWSFile(imageKey),
+      client.query('DELETE FROM pending_file_uploads WHERE key=$1', [imageKey]),
+    ]);
+    return response.status(400).json({
+      success: false,
+      message: 'Uploaded file failed image validation.',
+    });
+  }
+
+  let thumbnailKey: string | null = null;
+  if (isTile) {
+    try {
+      thumbnailKey = await createTileThumbnail(imageKey);
+    } catch (error) {
+      await Promise.allSettled([
+        deleteSingleAWSFile(imageKey),
+        client.query('DELETE FROM pending_file_uploads WHERE key=$1', [
+          imageKey,
+        ]),
+      ]);
+      return next(error);
+    }
   }
 
   let transactionClient: PoolClient | undefined;
   try {
     transactionClient = await client.connect();
     await transactionClient.query('BEGIN');
-
-    const insertResult = await transactionClient.query(
-      'INSERT INTO files(aws_download_url, recipe_uuid, user_uuid, key) VALUES($1, $2, $3, $4)',
-      [awsUploadRes.downloadUrl, recipeId, userId, awsUploadRes.key],
+    const lockedIntent = await transactionClient.query(
+      `SELECT 1 FROM pending_file_uploads
+      WHERE key=$1
+      AND recipe_uuid=$2
+      AND user_uuid=$3
+      AND expires_at > NOW()
+      FOR UPDATE`,
+      [imageKey, recipeId, userId],
     );
-
-    if (!insertResult.rowCount) {
-      throw new Error('File record could not be saved.');
+    if (!lockedIntent.rowCount) {
+      await transactionClient.query('ROLLBACK');
+      await Promise.allSettled([
+        deleteSingleAWSFile(imageKey),
+        ...(thumbnailKey ? [deleteSingleAWSFile(thumbnailKey)] : []),
+        client.query('DELETE FROM pending_file_uploads WHERE key=$1', [imageKey]),
+      ]);
+      return response.status(409).json({
+        success: false,
+        message: 'Upload intent expired before finalization.',
+      });
     }
 
-    const updateResult = await transactionClient.query(
-      `UPDATE recipes
-      SET has_images = TRUE
-      WHERE recipe_uuid = $1
-      AND user_uuid = $2`,
+    const recipeResult = await transactionClient.query(
+      `SELECT 1 FROM recipes
+      WHERE recipe_uuid=$1 AND user_uuid=$2
+      FOR UPDATE`,
       [recipeId, userId],
     );
-
-    if (!updateResult.rowCount) {
-      throw new Error('Recipe could not be updated.');
+    if (!recipeResult.rowCount) {
+      throw new Error('Recipe no longer exists.');
     }
 
-    await transactionClient.query('COMMIT');
+    const countResult = await transactionClient.query<{ count: number }>(
+      'SELECT COUNT(*)::int AS count FROM files WHERE recipe_uuid=$1',
+      [recipeId],
+    );
+    if (countResult.rows[0].count >= maximumImagesPerRecipe) {
+      await transactionClient.query('ROLLBACK');
+      await Promise.allSettled([
+        deleteSingleAWSFile(imageKey),
+        client.query('DELETE FROM pending_file_uploads WHERE key=$1', [imageKey]),
+      ]);
+      return response.status(409).json({
+        success: false,
+        message: `A recipe can have at most ${maximumImagesPerRecipe} images.`,
+      });
+    }
 
-    return res.status(200).json({
+    await transactionClient.query(
+      `INSERT INTO files(
+        recipe_uuid, user_uuid, key, content_type, size_bytes, thumbnail_key
+      ) VALUES($1, $2, $3, $4, $5, $6)`,
+      [
+        recipeId,
+        userId,
+        imageKey,
+        inspection.contentType,
+        inspection.contentLength,
+        thumbnailKey,
+      ],
+    );
+    await transactionClient.query(
+      'DELETE FROM pending_file_uploads WHERE key=$1',
+      [imageKey],
+    );
+    await transactionClient.query('COMMIT');
+    return response.status(201).json({
       success: true,
-      url: awsUploadRes.downloadUrl,
-      key: awsUploadRes.key,
+      key: imageKey,
     });
   } catch (error) {
-    logServerError('file-upload POST /:recipeId', error);
-    if (transactionClient) {
-      try {
-        await transactionClient.query('ROLLBACK');
-      } catch (rollbackError) {
-        logServerError('file-upload POST /:recipeId rollback', rollbackError);
+    await rollback(transactionClient);
+    const cleanupResults = await Promise.allSettled([
+      deleteSingleAWSFile(imageKey),
+      ...(thumbnailKey ? [deleteSingleAWSFile(thumbnailKey)] : []),
+      client.query('DELETE FROM pending_file_uploads WHERE key=$1', [imageKey]),
+    ]);
+    for (const cleanupResult of cleanupResults) {
+      if (cleanupResult.status === 'rejected') {
+        logServerError(
+          'file-upload POST /:recipeId/finalize/:imageKey cleanup',
+          cleanupResult.reason,
+        );
       }
     }
-    try {
-      await deleteSingleAWSFile(awsUploadRes.key);
-    } catch (cleanupErr) {
-      logServerError('file-upload POST /:recipeId cleanup', cleanupErr);
-    }
-    return res.status(500).json({
-      success: false,
-      message: 'File could not be uploaded.',
-    });
+    return next(error);
   } finally {
     transactionClient?.release();
   }
 });
 
-router.delete('/:imageKey', async (req: any, res) => {
-  const { imageKey } = req.params;
-  const userId = req.session.userID;
-
+router.delete('/:imageKey', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { imageKey } = request.params;
+  const userId = request.session.userID;
   if (!isUuid(imageKey)) {
-    return res.status(400).json({
+    return response.status(400).json({
       success: false,
       message: 'Invalid image key.',
     });
   }
 
+  const transactionClient = await client.connect();
+  let deletedThumbnailKey: string | null = null;
   try {
-    // Confirm ownership and fetch the recipe_uuid BEFORE touching S3, so a
-    // missing/foreign file never results in deleting someone else's object
-    // or crashing on an empty rows array.
-    const fileLookup = await client.query(
-      'SELECT recipe_uuid FROM files WHERE key=$1 AND user_uuid=$2',
+    await transactionClient.query('BEGIN');
+    const fileResult = await transactionClient.query<{
+      recipe_uuid: string;
+      thumbnail_key: string | null;
+    }>(
+      `SELECT recipe_uuid, thumbnail_key FROM files
+      WHERE key=$1 AND user_uuid=$2
+      FOR UPDATE`,
       [imageKey, userId],
     );
-
-    if (!fileLookup.rows.length) {
-      return res.status(404).json({
+    if (!fileResult.rowCount) {
+      await transactionClient.query('ROLLBACK');
+      return response.status(404).json({
         success: false,
-        message: 'File not found or you do not have permission to delete it.',
+        message: 'File not found.',
       });
     }
 
-    const recipeId = fileLookup.rows[0].recipe_uuid;
-
-    await deleteSingleAWSFile(imageKey);
-
-    await client.query('DELETE FROM files WHERE key=$1', [imageKey]);
-
-    await client.query(
+    const recipeId = fileResult.rows[0].recipe_uuid;
+    deletedThumbnailKey = fileResult.rows[0].thumbnail_key;
+    await transactionClient.query(
       `UPDATE recipes
-      SET default_tile_image_key = NULL
-      WHERE recipe_uuid = $1
-      AND default_tile_image_key = $2`,
+      SET default_tile_image_key=NULL
+      WHERE recipe_uuid=$1 AND default_tile_image_key=$2`,
       [recipeId, imageKey],
     );
-
-    const remaining = await client.query(
-      'SELECT * FROM files WHERE recipe_uuid=$1',
-      [recipeId],
+    await transactionClient.query(
+      'DELETE FROM files WHERE key=$1 AND user_uuid=$2',
+      [imageKey, userId],
     );
-
-    if (!remaining.rowCount) {
-      const updateResult = await client.query(
-        'UPDATE recipes SET has_images = FALSE WHERE recipe_uuid = $1',
-        [recipeId],
-      );
-      if (!updateResult.rowCount) {
-        return res.status(500).json({
-          success: false,
-          message: 'File deleted, but recipe could not be updated.',
-        });
-      }
-    }
-
-    return res.status(200).json({ success: true, message: 'File deleted.' });
-  } catch (err) {
-    logServerError('file-upload DELETE /:imageKey', err);
-    return res.status(500).json({
-      success: false,
-      message: 'File could not be deleted.',
-    });
+    await transactionClient.query('COMMIT');
+  } catch (error) {
+    await rollback(transactionClient);
+    return next(error);
+  } finally {
+    transactionClient.release();
   }
+
+  await deleteObjectsBestEffort(
+    [imageKey, deletedThumbnailKey].filter(
+      (key): key is string => Boolean(key),
+    ),
+    'file-upload DELETE /:imageKey S3 cleanup',
+  );
+  return response.status(200).json({
+    success: true,
+    message: 'File deleted.',
+  });
 });
 
 export default router;
