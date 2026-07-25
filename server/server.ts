@@ -13,6 +13,10 @@ if (isProduction) {
   app.set('trust proxy', 1);
 }
 
+app.get('/health', (_, res: Response) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use(
   session({
     store: new pgSession({

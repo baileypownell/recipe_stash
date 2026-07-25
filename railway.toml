@@ -1,0 +1,11 @@
+[build]
+builder = "RAILPACK"
+buildCommand = "pnpm build"
+
+[deploy]
+preDeployCommand = "pnpm migrate:prod"
+startCommand = "pnpm start"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
