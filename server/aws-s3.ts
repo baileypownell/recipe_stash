@@ -92,7 +92,7 @@ const createTileThumbnail = async (key: string) => {
       Key: thumbnailKey,
       Body: thumbnail,
       ContentType: 'image/webp',
-      CacheControl: 'public, max-age=31536000, immutable',
+      CacheControl: 'private, max-age=31536000, immutable',
     }),
   );
   return thumbnailKey;

@@ -323,11 +323,16 @@ router.delete(
 
     try {
       await transactionClient.query('BEGIN');
-      const filesResult = await transactionClient.query(
-        'SELECT key FROM files WHERE user_uuid=$1 FOR UPDATE',
+      const filesResult = await transactionClient.query<{
+        key: string;
+        thumbnail_key: string | null;
+      }>(
+        'SELECT key, thumbnail_key FROM files WHERE user_uuid=$1 FOR UPDATE',
         [id],
       );
-      awsKeys = filesResult.rows.map((file) => file.key);
+      awsKeys = filesResult.rows.flatMap((file) =>
+        file.thumbnail_key ? [file.key, file.thumbnail_key] : [file.key],
+      );
 
       const deleteResult = await transactionClient.query(
         'DELETE FROM users WHERE user_uuid=$1',

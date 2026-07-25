@@ -377,11 +377,16 @@ router.delete('/:recipeId', async (
       });
     }
 
-    const filesResult = await transactionClient.query<{ key: string }>(
-      'SELECT key FROM files WHERE recipe_uuid=$1 FOR UPDATE',
+    const filesResult = await transactionClient.query<{
+      key: string;
+      thumbnail_key: string | null;
+    }>(
+      'SELECT key, thumbnail_key FROM files WHERE recipe_uuid=$1 FOR UPDATE',
       [recipeId],
     );
-    awsKeys = filesResult.rows.map((file) => file.key);
+    awsKeys = filesResult.rows.flatMap((file) =>
+      file.thumbnail_key ? [file.key, file.thumbnail_key] : [file.key],
+    );
     await transactionClient.query(
       'DELETE FROM recipes WHERE recipe_uuid=$1 AND user_uuid=$2',
       [recipeId, userId],
