@@ -1,4 +1,4 @@
-name: Verify and deploy
+name: Verify
 
 on:
   push:
@@ -41,23 +41,3 @@ jobs:
         env:
           MIGRATION_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_stash_migration_test
 
-  deploy:
-    if: github.event_name == 'push'
-    needs: verify
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Configure Heroku credentials
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          printf '%s\n' \
-            'machine git.heroku.com' \
-            '  login heroku' \
-            "  password $HEROKU_API_KEY" \
-            > "$HOME/.netrc"
-          chmod 600 "$HOME/.netrc"
-      - name: Deploy to Heroku
-        run: |
-          git remote add heroku https://git.heroku.com/recipe-stash-1.git
-          git push heroku HEAD:main

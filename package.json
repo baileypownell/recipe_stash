@@ -17,8 +17,7 @@
     "start": "NODE_ENV=production node ./public/server/server.js",
     "start:prod-local": "sh -c '(sleep 1; open http://localhost:3000) & exec env NODE_ENV=production node --env-file=.env ./public/server/server.js'",
     "typecheck": "tsc -p . --noEmit && tsc -p tsconfig.server.json --noEmit",
-    "build": "BABEL_ENV=production webpack && tsc -p tsconfig.server.json",
-    "deploy": "git push heroku master"
+    "build": "BABEL_ENV=production webpack && tsc -p tsconfig.server.json"
   },
   "engines": {
     "node": "24.x",
