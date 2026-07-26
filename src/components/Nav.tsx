@@ -1,5 +1,4 @@
 import { AccountCircleRoundedIcon } from '@icons';
-import { HomeRoundedIcon } from '@icons';
 import { LoginRoundedIcon } from '@icons';
 import { LogoutRoundedIcon } from '@icons';
 import { PersonAddAltRoundedIcon } from '@icons';
@@ -49,6 +48,7 @@ const Nav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useMantineTheme();
+  const logoRoute = isAuthenticated ? '/recipes' : '/';
 
   const logout = async () => {
     try {
@@ -94,7 +94,6 @@ const Nav = () => {
           justify="space-between"
           style={{
             height: 56,
-            maxWidth: 1120,
             margin: '0 auto',
             padding: `0 ${theme.spacing.md}`,
           }}
@@ -109,14 +108,11 @@ const Nav = () => {
               cursor: 'pointer',
               display: 'block',
             }}
-            onClick={() => navigate('/')}
+            onClick={() => navigate(logoRoute)}
           />
           <Group gap={5} visibleFrom="sm">
             {isAuthenticated ? (
               <>
-                <Button variant="subtle" onClick={() => navigate('/')}>
-                  Home
-                </Button>
                 <Button variant="subtle" onClick={() => navigate('/recipes')}>
                   Recipes
                 </Button>
@@ -166,7 +162,13 @@ const Nav = () => {
       <Drawer position="left" opened={open} onClose={() => setOpen(false)}>
         <Stack>
           <Box style={{ height: '35px' }}>
-            <Box component="img" src={whiteLogo} alt="recipe stash" style={{ height: '100%' }} />
+            <Box
+              component="img"
+              src={whiteLogo}
+              alt="recipe stash"
+              onClick={() => handleListItemClick(logoRoute)}
+              style={{ height: '100%', cursor: 'pointer' }}
+            />
           </Box>
 
           <Stack gap={0}>
@@ -183,12 +185,6 @@ const Nav = () => {
                   label="Settings"
                   selected={location.pathname === '/settings'}
                   onClick={() => handleListItemClick('/settings')}
-                />
-                <NavItem
-                  icon={<HomeRoundedIcon />}
-                  label="Home"
-                  selected={location.pathname === '/'}
-                  onClick={() => handleListItemClick('/')}
                 />
                 <Divider />
                 <NavItem

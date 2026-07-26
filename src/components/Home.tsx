@@ -10,7 +10,6 @@ import {
 import { DoubleArrowRoundedIcon } from '@icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import mobileView from '../images/mobile_dashboard.png';
 import transparentLogo from '../images/white-text-transparent.svg';
 import veggies from '../images/cutting_vegetables.jpg';
 
@@ -105,7 +104,7 @@ const Home = () => {
                 Save favorites, organize meals, and pull up your recipe box from
                 the kitchen counter.
               </Text>
-              <Box
+              {/* <Box
                 style={{
                   width: isWide ? 220 : isMedium ? 190 : 168,
                   margin: isWide
@@ -125,7 +124,7 @@ const Home = () => {
                     margin: isWide ? 0 : '0 auto',
                   }}
                 />
-              </Box>
+              </Box> */}
               <Button
                 variant="filled"
                 color="dark"
