@@ -99,12 +99,13 @@ const RecipeHero = ({ recipe, selectedTags }: RecipeDetailContentProps) => {
         overflow: 'hidden',
         border: `1px solid ${theme.other.app.borders.subtle}`,
         borderRadius: 8,
-        background: heroImageUrl
+        backgroundColor: theme.other.app.palette.primary.main,
+        backgroundImage: heroImageUrl
           ? `${theme.other.app.gradients.heroImageOverlay}, url(${heroImageUrl})`
-          : `${theme.other.app.gradients.heroFallback}, ${theme.other.app.palette.gray.main}`,
+          : theme.other.app.gradients.heroFallback,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
-        backgroundBlendMode: heroImageUrl ? 'multiply' : undefined,
+        backgroundBlendMode: heroImageUrl ? 'screen' : undefined,
         boxShadow: theme.other.app.shadows.raised,
       }}
     >
