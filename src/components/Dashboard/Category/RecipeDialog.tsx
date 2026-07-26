@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   TextInput,
+  Divider,
 } from '@mantine/core';
 import DOMPurify from 'dompurify';
 import { htmlToText } from 'html-to-text';
@@ -140,6 +141,8 @@ const determineCategory = (
 
 const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(
     window.innerWidth <= 767.95,
   );
@@ -339,6 +342,7 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
   };
 
   const deleteRecipe = async () => {
+    setDeleteLoading(true);
     try {
       await RecipeService.deleteRecipe(
         (recipeDialogInfo as EditProps).recipe.id,
@@ -358,10 +362,13 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
         return updatedQueryState;
       });
       (recipeDialogInfo as EditProps).openSnackBar('Recipe deleted.');
+      setDeleteConfirmationOpen(false);
       navigate('/recipes');
     } catch (err) {
       console.log(err);
       (recipeDialogInfo as EditProps).openSnackBar('There was an error.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -442,21 +449,49 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
             preExistingImageUrls={(recipeDialogInfo as EditProps).presignedUrls}
           />
         )}
-      </Stack>
-      <Group justify="space-between" mt="xl">
-        <Box>
-          {editing ? (
+
+        {editing ? (
+          <Box pt="md" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
+            <Text fw={600}>Danger zone</Text>
+            <Text size="sm" c="dimmed" mb="sm">
+              Permanently delete this recipe and its images.
+            </Text>
             <Button
               color="red"
-              variant="filled"
-              onClick={deleteRecipe}
+              variant="outline"
+              onClick={() => setDeleteConfirmationOpen(true)}
               leftSection={<DeleteOutlineRoundedIcon />}
             >
               Delete Recipe
             </Button>
-          ) : null}
-        </Box>
-        <Group>
+            <Divider mt="lg" />
+          </Box>
+        ) : null}
+      </Stack>
+      {isSmallScreen ? (
+        <Stack gap="sm" mt="xl">
+          <Button
+            variant="filled"
+            color="dark"
+            disabled={!recipeValid}
+            loading={loading}
+            onClick={saveRecipe}
+            leftSection={loading ? null : <AddCircleRoundedIcon />}
+          >
+            {mode === Mode.Add || (recipeDialogInfo as EditProps).cloning
+              ? 'Add Recipe'
+              : 'Update Recipe'}
+          </Button>
+          <Button
+            onClick={toggleModal}
+            variant="outline"
+            leftSection={<CancelRoundedIcon />}
+          >
+            Cancel
+          </Button>
+        </Stack>
+      ) : (
+        <Group justify="flex-end" mt="xl">
           <Button
             onClick={toggleModal}
             variant="outline"
@@ -477,7 +512,36 @@ const RecipeDialog = ({ recipeDialogInfo, mode, toggleModal, open }: Props) => {
               : 'Update Recipe'}
           </Button>
         </Group>
-      </Group>
+      )}
+      <Modal
+        opened={deleteConfirmationOpen}
+        onClose={() => setDeleteConfirmationOpen(false)}
+        title="Delete recipe?"
+        centered
+        size="sm"
+      >
+        <Text mb="lg">
+          This permanently deletes the recipe and its images. This action
+          cannot be undone.
+        </Text>
+        <Group justify="flex-end">
+          <Button
+            variant="default"
+            onClick={() => setDeleteConfirmationOpen(false)}
+            disabled={deleteLoading}
+          >
+            Keep Recipe
+          </Button>
+          <Button
+            color="red"
+            onClick={deleteRecipe}
+            loading={deleteLoading}
+            leftSection={deleteLoading ? null : <DeleteOutlineRoundedIcon />}
+          >
+            Delete Recipe
+          </Button>
+        </Group>
+      </Modal>
     </Modal>
   );
 };
