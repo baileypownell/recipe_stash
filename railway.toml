@@ -1,6 +1,6 @@
 [build]
 builder = "RAILPACK"
-buildCommand = "pnpm build"
+buildCommand = "pnpm exec playwright install --with-deps chromium && pnpm build"
 
 [deploy]
 preDeployCommand = "pnpm migrate:prod"
