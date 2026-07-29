@@ -9,7 +9,19 @@ on:
       - master
 
 jobs:
-  verify:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+
+  migration-tests:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -33,12 +45,22 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm typecheck
       - run: pnpm test:migrations
         env:
           MIGRATION_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_stash_migration_test
-      - run: pnpm build
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
@@ -47,3 +69,25 @@ jobs:
           path: playwright-report/
           if-no-files-found: ignore
           retention-days: 14
+
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs:
+      - typecheck
+      - migration-tests
+      - e2e
+    steps:
+      - name: Verify prerequisite jobs
+        run: |
+          test "${{ needs.typecheck.result }}" = "success"
+          test "${{ needs['migration-tests'].result }}" = "success"
+          test "${{ needs.e2e.result }}" = "success"
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:app
